@@ -25,6 +25,7 @@ nav {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+    cursor: pointer;
 }
 
 .nav-links a {

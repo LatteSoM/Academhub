@@ -1,7 +1,3 @@
-{#<header>#}
-{#    <h1>Типа хэдар</h1>#}
-{#</header>#}
-
 {% load static %}
 <header class="" style="">
     <div class="container">
@@ -10,18 +6,18 @@
               СУП РОС
           </div>
             <ul class="">
-{#              <li><a href="{% url 'home' %}" class="nav-link px-2" style="color: white">Таблицы</a></li>#}
+                <li><a href="" class="nav-link px-2" style="color: white">Таблицы</a></li>
             </ul>
-                <div class="">
-                    <div class="" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src="{% static 'main_app/icons/ava.jpg' %}" alt="mdo" width="42" height="42px" class="">
-{#                        <h6 style="color: white">{{ user.employee.first_name }} {{ user.employee.last_name }}</h6>#}
-{#                        <h6 style="color: white">{{ user.role.name }}</h6>#}
-                        <h6 style="color: white">имя фамилия</h6>
-                        <h6 style="color: white">голь_пользака</h6>
-                    </div>
-                    <a href="{% url 'logout' %}" class="btn btn-danger ms-2">Выйти</a>
+            <div class="">
+                <div class="" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="{% static 'main_app/icons/ava.jpg' %}" alt="mdo" width="42" height="42px" class="">
+                    <h6 style="color: white">{{ user.employee.first_name }} {{ user.employee.last_name }}</h6>
+                    <h6 style="color: white">{{ user.role.name }}</h6>
+                    <h6 style="color: white">имя фамилия</h6>
+                    <h6 style="color: white">голь_пользака</h6>
                 </div>
+                <a href="{% url 'logout' %}" class="btn btn-danger ms-2">Выйти</a>
+            </div>
       </div>
     </div>
   </header>

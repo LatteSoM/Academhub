@@ -1,0 +1,14 @@
+{% load util %}
+
+{% if link|get_type == 'ParentLink' %}
+<div class="nav-item">
+    <a class="nav-link">{{ link.name }}</a>
+    <div class="submenu">
+        {% for sub_link in link.sub_links %}
+            {% include "inc/_nav_item.html" with link=sub_link %}
+        {% endfor %}
+    </div>
+</div>
+{% else %}
+    <a href="{% url link.url %}">{{ link.name }}</a>
+{% endif %}

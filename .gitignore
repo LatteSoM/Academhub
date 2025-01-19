@@ -7,8 +7,20 @@ __pycache__/
 .env
 .idea/
 *.env
+.venv
+.env 
+env/ 
+venv/ 
 
 # Django
 db.sqlite3
 /static/
 README.txt
+
+# Visual Studio Code # 
+.vscode/* 
+!.vscode/settings.json 
+!.vscode/tasks.json 
+!.vscode/launch.json 
+!.vscode/extensions.json 
+.history

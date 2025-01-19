@@ -1,29 +1,12 @@
 {% load static %}
 <nav>
     <div class="logo">
-        <h2>
-            MyWebsite
-        </h2>
+        <h2>MyWebsite</h2>
     </div>
     <div class="nav-links">
-        <a href="#home">Home</a>
-        <div class="nav-item">
-            <a href="#about" class="nav-link">About</a>
-            <div class="submenu">
-                <a href="#mission">Our Mission</a>
-                <a href="#vision">Our Vision</a>
-                <a href="#team">Our Team</a>
-            </div>
-        </div>
-        <div class="nav-item">
-            <a href="#projects" class="nav-link">Projects</a>
-            <div class="submenu">
-                <a href="#web">Web Development</a>
-                <a href="#mobile">Mobile Apps</a>
-                <a href="#design">UI/UX Design</a>
-            </div>
-        </div>
-        <a href="#contact">Contact</a>
+        {% for link in navigation %}
+            {% include "inc/_nav_item.html" with link=link %}
+        {% endfor %}
     </div>
     <button id="themeToggle" class="theme-toggle">
         <span class="theme-toggle-icon">🌙</span>
