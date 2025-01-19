@@ -105,6 +105,12 @@ main {
         background-color: var(--nav-background);
         border-bottom: 1px solid var(--border-color);
         text-align: center;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 20px;
+        /*background-color: #f8f9fa; !* Цвет фона хедера *!*/
+        /*border-bottom: 1px solid #dee2e6; !* Нижняя граница *!*/
     }
 
     /* Contenat */
@@ -120,3 +126,63 @@ main {
         border-top: 1px solid var(--border-color);
         background-color: var(--nav-background);
     }
+
+    /*стили для хэдера*/
+
+/*.header {*/
+/*    display: flex;*/
+/*    justify-content: space-between;*/
+/*    align-items: center;*/
+/*    padding: 10px 20px;*/
+/*    background-color: #f8f9fa; !* Цвет фона хедера *!*/
+/*    border-bottom: 1px solid #dee2e6; !* Нижняя граница *!*/
+/*}*/
+
+.user-info {
+    display: flex;
+    align-items: center;
+}
+
+.avatar {
+    width: 40px; /* Ширина круга */
+    height: 40px; /* Высота круга */
+    border-radius: 50%; /* Закругление для круга */
+    background-color: #007bff; /* Цвет фона круга */
+    color: white; /* Цвет текста */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px; /* Размер шрифта */
+    margin-right: 10px; /* Отступ справа от круга */
+}
+
+.details {
+    display: flex;
+    flex-direction: column;
+}
+
+.username {
+    font-weight: bold; /* Жирный шрифт для имени пользователя */
+}
+
+.role {
+    font-size: 14px; /* Размер шрифта для роли */
+    color: #6c757d; /* Цвет текста для роли */
+}
+
+.logout-button {
+    padding: 8px 12px; /* Отступы кнопки */
+    background-color: #dc3545; /* Цвет фона кнопки */
+    color: white; /* Цвет текста кнопки */
+    border: none; /* Убираем границу */
+    border-radius: 4px; /* Закругление углов кнопки */
+    cursor: pointer; /* Курсор при наведении */
+}
+
+.logout-button:hover {
+    background-color: #c82333; /* Цвет фона кнопки при наведении */
+}
+
+/*.heade_container{*/
+/*    */
+/*}*/
