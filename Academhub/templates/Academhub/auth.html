@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - MyWebsite</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="auth.css">
+</head>
+<style>
+    .body{
+        width: 100%;
+        height: 100%;
+        
+    }
+    * {
+        margin: 0;
+        padding: 0;
+    }
+    /* Auth Form Styles */
+    .auth-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        {#background: linear-gradient(135deg, var(--accent-color) 0%, #2a6ac2 100%);#}
+        background: #1e1e2e;
+        padding: 1rem;
+    }
+    
+    .auth-card {
+        display: flex;
+        justify-content: center;
+        align-content: center;
+        align-items: center;
+        flex-flow: column;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 2.5rem;
+        width: 100%;
+        max-width: 400px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .auth-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .auth-header h1 {
+        color: white;
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .auth-header p {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.9rem;
+    }
+    
+    .auth-form {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-content: center;
+        gap: 1.5rem;
+    }
+    
+    .form-group {
+        position: relative;
+        width: max-content;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .form-group input {
+        width: 100%;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 10px;
+        color: white;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .form-group input::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .form-group input:focus {
+        outline: none;
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.4);
+    }
+    
+    .auth-button {
+        background: white;
+        color: var(--accent-color);
+        border: none;
+        padding: 1rem;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+    
+    .auth-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .auth-links {
+        margin-top: 1.5rem;
+        text-align: center;
+        color: rgba(255, 255, 255, 0.8);
+    }
+    
+    .auth-links a {
+        color: white;
+        text-decoration: none;
+        font-weight: 500;
+        transition: opacity 0.3s ease;
+    }
+    
+    .auth-links a:hover {
+        opacity: 0.8;
+    }
+    
+    .remember-me {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: rgba(255, 255, 255, 0.8);
+    }
+    
+    .remember-me input[type="checkbox"] {
+        accent-color: white;
+    }
+    
+    @media (max-width: 480px) {
+        .auth-card {
+            padding: 2rem;
+        }
+    }
+</style>
+<body class="dark">
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1>Добро пожаловать</h1>
+                <p>необходимо войти чтобы продолжить</p>
+            </div>
+            
+            <form class="auth-form">
+                <div class="form-group">
+                    <input type="login" placeholder="логин" required>
+                </div>
+                
+                <div class="form-group">
+                    <input type="password" placeholder="пароль" required>
+                </div>
+                
+                <div class="remember-me">
+                    <input type="checkbox" id="remember">
+                    <label for="remember">Запомнить меня</label>
+                </div>
+                
+                <button type="submit" class="auth-button">Войти</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
