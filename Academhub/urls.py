@@ -23,5 +23,4 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path('', BaseView.as_view(), name='home'),
     path('auth/', auth, name='auth'),
-    path('home/', home, name='home'),
 ]
