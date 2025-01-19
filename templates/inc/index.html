@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <!-- {% block title %} -->
+            My Website
+        <!-- {% endblock %} -->
+    </title>
+    <link rel="stylesheet" href="style.css">
+    <!-- {% block css %} -->
+        <link rel="stylesheet" href="components.css">
+    <!-- {% endcss %} -->
+</head>
+<body class="dark">
+    <!-- {% block navigation %} -->
+    <nav>
+        <div class="logo">
+            <h2>
+                MyWebsite
+            </h2>
+        </div>
+        <div class="nav-links">
+            <a href="#home">Home</a>
+            <div class="nav-item">
+                <a href="#about" class="nav-link">About</a>
+                <div class="submenu">
+                    <a href="#mission">Our Mission</a>
+                    <a href="#vision">Our Vision</a>
+                    <a href="#team">Our Team</a>
+                </div>
+            </div>
+            <div class="nav-item">
+                <a href="#projects" class="nav-link">Projects</a>
+                <div class="submenu">
+                    <a href="#web">Web Development</a>
+                    <a href="#mobile">Mobile Apps</a>
+                    <a href="#design">UI/UX Design</a>
+                </div>
+            </div>
+            <a href="#contact">Contact</a>
+        </div>
+        <button id="themeToggle" class="theme-toggle">
+            <span class="theme-toggle-icon">🌙</span>
+        </button>
+    </nav>
+    <!-- {% end block %} -->
+    
+    <!-- {% block main %} -->
+    <main>
+        <!-- {% block header %} -->
+            <header>
+
+            </header>
+
+        <!-- {% endblock %} -->
+
+        <!-- {% block content %} -->
+
+            <content class="light">
+                
+            </content>
+
+        <!-- {% endblock %} -->
+         
+        <!-- {% block footer %} -->
+            <footer>
+                <p>&copy; 2024 MyWebsite. All rights reserved.</p>
+            </footer>
+        <!-- {% endblock %} -->
+    </main>
+    <!-- {% endblock %} -->
+    
+
+    <!-- {% block js %} -->
+        <script src="theme.js"></script>
+        <script src="main.js"></script>
+    <!-- {% endblock %} -->
+</body>
+</html>

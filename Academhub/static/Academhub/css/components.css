@@ -1,0 +1,230 @@
+/* Navigation */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 250px;
+    background-color: var(--nav-bg);
+    padding: 2rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent-color);
+    text-align: center;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.nav-links a {
+    color: var(--text-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+}
+
+.nav-links a:hover {
+    color: var(--accent-color);
+    background-color: var(--card-bg);
+}
+
+/* Nested Navigation */
+.nav-item {
+    position: relative;
+}
+
+.nav-item .nav-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.nav-item .nav-link::after {
+    content: '▸';
+    margin-left: 0.5rem;
+    transition: transform 0.3s;
+}
+
+.nav-item:hover .nav-link::after {
+    transform: rotate(90deg);
+}
+
+.submenu {
+    display: none;
+    padding-left: 1.5rem;
+    margin-top: 0.5rem;
+}
+
+.nav-item:hover .submenu {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.submenu a {
+    font-size: 0.9rem;
+    padding: 0.4rem 1rem;
+}
+
+/* Theme Toggle Button */
+.theme-toggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    font-size: 1.2rem;
+    margin-top: auto;
+}
+
+/* Hero Section */
+.hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 2rem;
+}
+
+/* Cards */
+.card-container {
+    display: flex;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.card {
+    background-color: var(--card-bg);
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    flex: 1;
+}
+
+/* Projects Grid */
+.project-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.project-card {
+    background-color: var(--card-bg);
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Buttons */
+.cta-button, .submit-button {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: transform 0.3s, opacity 0.3s;
+}
+
+.cta-button:hover, .submit-button:hover {
+    transform: translateY(-2px);
+    opacity: 0.9;
+}
+
+/* Contact Form */
+.contact-form {
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.contact-form input,
+.contact-form textarea {
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    background-color: var(--card-bg);
+    color: var(--text-color);
+}
+
+.contact-form textarea {
+    min-height: 150px;
+    resize: vertical;
+}
+
+/* Footer */
+footer {
+    background-color: var(--nav-bg);
+    padding: 2rem;
+    text-align: center;
+    margin-top: 4rem;
+}
+
+/* Adjust main content to account for left navigation */
+main {
+    margin-left: 250px;
+    max-width: calc(1200px + 2rem);
+    padding: 2rem;
+}
+
+/* Responsive design adjustments */
+@media (max-width: 768px) {
+    .navbar {
+        width: 100%;
+        height: auto;
+        bottom: auto;
+        flex-direction: row;
+        padding: 1rem;
+        align-items: center;
+    }
+
+    .logo {
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+
+    .nav-links {
+        display: none;
+    }
+
+    .theme-toggle {
+        margin-top: 0;
+    }
+
+    main {
+        margin-left: 0;
+        margin-top: 60px;
+    }
+
+    /* Mobile submenu adjustments */
+    .submenu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background-color: var(--nav-bg);
+        width: 200px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border-radius: 5px;
+        padding: 0.5rem;
+    }
+}
