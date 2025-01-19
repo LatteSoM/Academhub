@@ -1,0 +1,23 @@
+{% load static %}
+{% include 'inc/_links.html' %}
+{#{% block title %}#}
+{##}
+{#{% endblock %}#}
+<body class="dark">
+    {% include 'inc/_nawbar.html' %}
+    <main>
+        {% include 'inc/_header.html' %}
+        <content>
+            {% block content %}
+                <h1>Блок контента</h1>
+            {% endblock %}
+        </content>
+
+
+        {% include 'inc/_footer.html' %}
+
+    </main>
+
+</body>
+    <script src="{% static 'Academhub/js/theme.js' %}"></script>
+    <script src="{% static 'Academhub/js/main.js' %}"></script>
