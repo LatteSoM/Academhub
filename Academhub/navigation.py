@@ -1,13 +1,6 @@
-from .base_navigation import *
-
-navigation = Navigation(
-    ChildLink(
-        'Home',
-        'home'
-    )
-)
-
 # Пример навигации
+
+# from Academhub.base import Navigation
 
 # navigation = Navigation(
 #     ParentLink(

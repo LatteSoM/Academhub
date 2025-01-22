@@ -37,8 +37,8 @@ ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
 
 # Приложения которые пойдут в навигационную панель
 ACTIVE_APPS = [
+    'Сontingent',
     'Academhub',
-    # 'contingent'
 ]
 
 INSTALLED_APPS = [
@@ -48,6 +48,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_tables2',
+    'django_filters',
+    'bootstrap3',
+
 ] + ACTIVE_APPS
 
 MIDDLEWARE = [
@@ -159,4 +163,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Navigation
 
 for app in ACTIVE_APPS:
-    module = importlib.import_module(f"{app}.navigation")
+    try:
+        module = importlib.import_module(f"{app}.navigation")
+    except ModuleNotFoundError as e:
+        pass

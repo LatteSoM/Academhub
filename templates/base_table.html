@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% load render_table from django_tables2 %}
+{% load bootstrap3 %}
+{% load static %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'Academhub/css/table_style.css' %}">
+    <link rel="stylesheet" href="{% static 'Academhub/css/base_table.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="main">
+        <div class="header-main">
+            <div class="title">
+                <h3>
+                    Таблица {{ table_name }}
+                </h3>
+            </div>
+        </div>
+        <div class="table_container">
+            <form action="" method="get" class="form form-inline">
+                {% bootstrap_form filter.form layout='inline' %}
+                {% bootstrap_button 'filter' %}
+            </form>
+            <form action="" method="post">
+                {% csrf_token %}
+                <button>
+                    Удалить
+                </button>
+            </form>
+            {% render_table table 'django_tables2/bootstrap.html' %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    {{ block.super }}
+
+    <script src="{% static 'Academhub/js/table.js' %}"></script>
+{% endblock %}

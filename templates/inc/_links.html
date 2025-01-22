@@ -6,13 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>
         {% block title %}
-            My Website
+
         {% endblock %}
     </title>
-
     <link rel="stylesheet" href="{% static 'Academhub/css/style.css' %}">
     <link rel="stylesheet" href="{% static 'Academhub/css/components.css' %}">
     {% block css %}
 
     {% endblock %}
 </head>
+<body class="dark">
+{% block body %}
+
+{% endblock %}
+</body>
+{% block js %}
+
+{% endblock %}
+</html>
