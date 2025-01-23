@@ -5,6 +5,12 @@
     overflow-y: auto;
 }
 
+.gap-5{
+    display: flex;
+    justify-content: space-between;
+    gap: 4em;
+}
+
 .header-main {
     width: 100%;
     height: 10%;
@@ -61,3 +67,113 @@
 .pagination > li::marker {
     display: none !important;
 }
+
+.my-custom-form {
+    display: flex;
+    gap: 10px;
+}
+.my-custom-input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+.my-custom-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+}
+
+.my-custom-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.my-custom-table th, .my-custom-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+.my-custom-delete-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.my-custom-delete-btn:hover {
+    background-color: #c82333;
+}
+
+.my-custom-btn {
+    background-color: #5897fb;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.my-custom-btn:hover {
+    background-color: #2e7ffc;
+}
+
+/*.my-custom-table th {*/
+/*    background-color: #000000;*/
+/*}*/
+/*.my-custom-table tr:nth-child(even) {*/
+/*    background-color: #000000;*/
+/*}*/
+
+
+
+
+/* Контейнер для вкладок */
+.tabs-container {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Заголовок вкладок */
+.tabs-header {
+    display: flex;
+}
+
+/* Стили для каждой вкладки */
+.tab {
+    padding: 10px 20px;
+    background-color: #0000; /* Цвет для неактивных вкладок */
+    /*border: 2px solid #ccc;*/
+    border-bottom: none; /* Убираем нижнюю границу */
+    cursor: pointer;
+    border-radius: 8px 8px 0 0; /* Скруглённые верхние углы */
+    margin-right: 5px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Активная вкладка */
+.tab.active {
+    /*background-color: #1e1e2e; !* Цвет активного языка *!*/
+    background-color: var(--nav-background); /* Цвет активного языка */
+    font-weight: bold;
+    /*border: 2px solid #ccc;*/
+
+    color: #007bff; /* Цвет текста */
+    border: none;
+}
+
+/* Содержимое вкладок */
+.tabs-content {
+    display: none;
+    padding: 20px;
+    /*background-color: #1e1e2e;*/
+    background-color: var(--nav-background);
+    border-radius: 0 8px 8px 8px; /* Скругление углов снизу */
+}
+
+/* Отображаем активное содержимое */
+.tabs-content.active {
+    display: block;
+}
+

@@ -1,0 +1,18 @@
+<table class="table my-custom-table">
+    <thead>
+        <tr>
+            {% for column in table.columns %}
+                <th>{{ column.header }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in table.rows %}
+            <tr>
+                {% for column, cell in row.items %}
+                    <td>{{ cell }}</td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
