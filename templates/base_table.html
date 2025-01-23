@@ -35,7 +35,6 @@
                         <div class="form-group mb-3">
                             <label for="{{ field.id_for_label }}" class="mr-2">{{ field.label }}</label>
                             <div class="form-control"> {{ field }}</div>
-{#                            {{ field|add_class:"form-control" }}#}
                         </div>
                     {% endfor %}
                     <button type="submit" class="my-custom-btn">Фильтровать</button>
@@ -43,10 +42,20 @@
             </div>
 
             <div class="tabs-content active" id="table">
-                <form action="" method="post" class="my-custom-delete-form">
-                    {% csrf_token %}
-                    <button type="submit" class="my-custom-delete-btn">Удалить</button>
-                </form>
+                <div class="buttons-conn">
+                    <form action="" method="post" class="my-custom-delete-form">
+                        {% csrf_token %}
+                        <button type="submit" class="my-custom-delete-btn">Удалить</button>
+                    </form>
+                    <br>
+                    {% if url_create|check_url_exists %}
+                        <button class="my-custom-btn">
+                            <a href="{% url url_create %}">
+                                Добавить
+                            </a>
+                        </button>
+                    {% endif %}
+                </div>
                 <br>
                 {% render_table table '_table.html' %}
             </div>

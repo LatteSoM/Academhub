@@ -177,3 +177,13 @@
     display: block;
 }
 
+.buttons-conn {
+    width: 100%;
+    display: flex;
+    gap: 10px;
+}
+
+.my-custom-btn > a {
+    text-decoration: none;
+    color: white;
+}

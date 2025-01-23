@@ -38,9 +38,14 @@ class GroupDTO(AcademHubModel):
         on_delete=models.CASCADE, 
         verbose_name='специальность (FK)'
     )
+    group_name = models.CharField(
+        verbose_name='Номер группы',
+        max_length=255,
+        null=True,
+    )
 
     def __str__(self):
-        return f"Группа {self.id} - {self.qualification.name} ({self.specialization.name})"
+        return f"{self.qualification.name} ({self.group_name})"
 
 class StudentDTO(AcademHubModel):
     class Meta:
