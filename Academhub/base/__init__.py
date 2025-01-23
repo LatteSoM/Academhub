@@ -1,14 +1,17 @@
-from .navigation import Navigation, ParentLink, ChildLink
 from .table import BaseTable
-from .generic import ObjectCreateView, ObjectDeleteView, ObjectDetailView, ObjectListView, ObjectTemplateView, ObjectUpdateView
+from .navigation import Navigation, ParentLink, ChildLink
+from .generic import ObjectCreateView, ObjectDeleteView, ObjectDetailView, ObjectListView, ObjectTemplateView, ObjectUpdateView, ObjectTableView, DeleteView
 
 __all__ = [
-    "Navigation",
-    "ParentLink",
     "ChildLink",
+    "ParentLink",
+    "Navigation",
     
     "BaseTable",
 
+    "AcademHubModel",
+
+    'DeleteView',
     'ObjectListView',
     'ObjectTableView',
     'ObjectDetailView',

@@ -1,0 +1,22 @@
+{% extends 'base_object_view.html' %}
+
+{% load static %}
+
+{% block css %}
+    {{ block.super }}
+    <link href="{% static 'Academhub/css/base_form.css' %}" rel="stylesheet" type="text/css">
+{% endblock %}
+
+{% block h3 %}
+    Создать {{ mobel_verbosename }}
+{% endblock %}
+
+{% block main_content %}
+    <form method="POST" class="model_form">
+        {% csrf_token %}
+        {{ form }}
+        <button>
+            Сохранить
+        </button>
+    </form>
+{% endblock %}

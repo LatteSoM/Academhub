@@ -1,6 +1,7 @@
 from django.db import models
+from Academhub.models import AcademHubModel
 
-class QualificationDTO(models.Model):
+class QualificationDTO(AcademHubModel):
     union_name = models.CharField(
         max_length=255, 
         verbose_name='Наименование (сокращение)'
@@ -13,7 +14,7 @@ class QualificationDTO(models.Model):
     def __str__(self):
         return self.name
 
-class SpecializationDTO(models.Model):
+class SpecializationDTO(AcademHubModel):
     code = models.CharField(
         max_length=50, 
         verbose_name='код'
@@ -26,7 +27,7 @@ class SpecializationDTO(models.Model):
     def __str__(self):
         return self.name
 
-class GroupDTO(models.Model):
+class GroupDTO(AcademHubModel):
     qualification = models.ForeignKey(
         QualificationDTO, 
         on_delete=models.CASCADE, 
@@ -38,14 +39,10 @@ class GroupDTO(models.Model):
         verbose_name='специальность (FK)'
     )
 
-    @property
-    def course(self):
-        return StudentDTO.objects.filter(group=self).first().course
-
     def __str__(self):
         return f"Группа {self.id} - {self.qualification.name} ({self.specialization.name})"
 
-class StudentDTO(models.Model):
+class StudentDTO(AcademHubModel):
     class Meta:
         verbose_name = 'Студент'
         verbose_name_plural = 'Студенты'

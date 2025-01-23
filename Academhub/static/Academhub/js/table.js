@@ -1,5 +1,6 @@
 let select_inputs = new Set();
 
+const delete_button = document.querySelector('');
 const header_input = document.querySelector('input[name=header]');
 const selected_inputs = document.getElementsByName('selected_ids')
 

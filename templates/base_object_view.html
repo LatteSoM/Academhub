@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+    <div class="main">
+        <div class="panel">
+            {% block panel %}
+                <h3>
+                    {% block h3 %}
+                    
+                    {% endblock %}
+                </h3>
+                <a href="{% url url_list %}">
+                    Назад  
+                </a>
+            {% endblock %}
+        </div>
+        {% block main_content %}
+
+        {% endblock %}
+    </div>
+{% endblock %}

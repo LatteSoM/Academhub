@@ -1,10 +1,13 @@
 {% extends 'base.html' %}
 
 {% load render_table from django_tables2 %}
+{% load util %}
 {% load bootstrap3 %}
 {% load static %}
 
 {% block css %}
+    {{ block.super }}
+
     <link rel="stylesheet" href="{% static 'Academhub/css/table_style.css' %}">
     <link rel="stylesheet" href="{% static 'Academhub/css/base_table.css' %}">
 {% endblock %}
@@ -23,12 +26,21 @@
                 {% bootstrap_form filter.form layout='inline' %}
                 {% bootstrap_button 'filter' %}
             </form>
-            <form action="" method="post">
-                {% csrf_token %}
+            <div class="buttons">
+                <form action="" method="post">
+                    {% csrf_token %}
+                    <button>
+                        Удалить
+                    </button>
+                </form>
                 <button>
-                    Удалить
+                    {% if url_create|check_url_exists %}
+                        <a href="{% url url_create %}">
+                            Добавить
+                        </a>
+                    {% endif %}
                 </button>
-            </form>
+            </div>
             {% render_table table 'django_tables2/bootstrap.html' %}
         </div>
     </div>
@@ -36,6 +48,5 @@
 
 {% block js %}
     {{ block.super }}
-
     <script src="{% static 'Academhub/js/table.js' %}"></script>
 {% endblock %}
