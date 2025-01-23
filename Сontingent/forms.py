@@ -11,8 +11,22 @@ class StudentForm(forms.ModelForm):
     )
 
     course = forms.ChoiceField(choices = COURSE_CHOICES, label='Курс')
-    previous_course = forms.ChoiceField(choices = COURSE_CHOICES, label='Курс с которого ушел')
+    # previous_course = forms.ChoiceField(choices = COURSE_CHOICES, label='Курс с которого ушел')
 
     class Meta:
         model = StudentDTO
-        fields = '__all__'
+        fields = [
+            'full_name',
+            'phone',
+            'birth_date',
+            'course',
+            # 'group',
+            'enrollment_order',
+            'education_base',
+            'education_reason',
+            'registration_address',
+            'actual_address',
+            'representative_name',
+            'representative_email',
+            'notes',
+        ]  # Указываем только нужные поля

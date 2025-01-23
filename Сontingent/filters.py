@@ -3,7 +3,7 @@ from cProfile import label
 from django import forms
 from django.db.models import Q
 from .models import StudentDTO, QualificationDTO, SpecializationDTO, GroupDTO
-from django_filters import FilterSet, CharFilter, ModelChoiceFilter, ModelMultipleChoiceFilter
+from django_filters import FilterSet, CharFilter, ModelChoiceFilter, ModelMultipleChoiceFilter, ChoiceFilter
 
 class QualificationFilter(FilterSet):
     search = CharFilter(method='filter_search', label='Поиск')
@@ -51,6 +51,15 @@ class GroupFilter(FilterSet):
 class StudentFilter(FilterSet):
     search = CharFilter(method='filter_search', 
                         label='Поиск')
+
+    COURSE_CHOICES = (
+        ("1", 1),
+        ("2", 2),
+        ("3", 3),
+        ("4", 4)
+    )
+
+    course = ChoiceFilter(choices=COURSE_CHOICES, label='Курс')
 
     group = ModelMultipleChoiceFilter(
         widget=forms.CheckboxSelectMultiple,
