@@ -1,41 +1,210 @@
+{#{% extends 'base.html' %}#}
+{##}
+{#{% load render_table from django_tables2 %}#}
+{#{% load bootstrap3 %}#}
+{#{% load static %}#}
+{##}
+{#{% block css %}#}
+{#    <link rel="stylesheet" href="{% static 'Academhub/css/table_style.css' %}">#}
+{#    <link rel="stylesheet" href="{% static 'Academhub/css/base_table.css' %}">#}
+{#{% endblock %}#}
+{##}
+{#{% block content %}#}
+{#    <div class="main">#}
+{#        <div class="header-main">#}
+{#            <div class="title">#}
+{#                <h3>#}
+{#                    Таблица {{ table_name }}#}
+{#                </h3>#}
+{#            </div>#}
+{#        </div>#}
+{#        <div class="table_container">#}
+{#            <form action="" method="get" class="form form-inline">#}
+{#                {% bootstrap_form filter.form layout='inline' %}#}
+{#                {% bootstrap_button 'filter' %}#}
+{#                <form action="" method="get" class="form form-inline my-custom-form">#}
+{#                    {% for field in filter.form %}#}
+{#                        <div class="form-group">#}
+{#                            <label for="{{ field.id_for_label }}" class="custom-label">{{ field.label }}</label>#}
+{#                            {{ field|add_class:"form-control my-custom-input" }}#}
+{#                        </div>#}
+{#                    {% endfor %}#}
+{#                    <button type="submit" class="btn my-custom-btn">Фильтровать</button>#}
+{#                </form>#}
+{#            </form>#}
+{#            <form action="" method="post">#}
+{#                {% csrf_token %}#}
+{#                <button>#}
+{#                    Удалить#}
+{#                </button>#}
+{#            </form>#}
+{#            {% render_table table 'django_tables2/bootstrap.html' %}#}
+{#        </div>#}
+{#    </div>#}
+{#{% endblock %}#}
+{##}
+{#{% block js %}#}
+{#    {{ block.super }}#}
+{##}
+{#    <script src="{% static 'Academhub/js/table.js' %}"></script>#}
+{#{% endblock %}#}
+
+{##}
+{#{% extends 'base.html' %}#}
+{##}
+{#{% load render_table from django_tables2 %}#}
+{#{% load bootstrap4 %}#}
+{#{% load static %}#}
+{##}
+{#{% block css %}#}
+{#    <link rel="stylesheet" href="{% static 'Academhub/css/table_style.css' %}">#}
+{#    <link rel="stylesheet" href="{% static 'Academhub/css/base_table.css' %}">#}
+{#{% endblock %}#}
+{##}
+{#{% block content %}#}
+{#    <div class="main">#}
+{#        <div class="header-main">#}
+{#            <div class="title">#}
+{#                <h3>Таблица {{ table_name }}</h3>#}
+{#            </div>#}
+{#        </div>#}
+{#        <div class="table_container">#}
+{#            <form action="" method="get" class="form-inline">#}
+{#                {% for field in filter.form %}#}
+{#                    <div class="form-group">#}
+{#                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>#}
+{#                        <div class="form-control">{{ field }}</div>#}
+{#                        {{ field|add_class:"form-control" }}#}
+{#                    </div>#}
+{#                {% endfor %}#}
+{#                <button type="submit" class="my-custom-btn">Фильтровать</button>#}
+{#            </form>#}
+{#            <form action="" method="post">#}
+{#                {% csrf_token %}#}
+{#                <button type="submit" class="btn btn-danger">Удалить</button>#}
+{#            </form>#}
+{#            <form action="" method="post" class="my-custom-delete-form">#}
+{#                {% csrf_token %}#}
+{#                <button type="submit" class="btn my-custom-delete-btn">Удалить</button>#}
+{#            </form>#}
+{##}
+{#            {% render_table table '_table.html' %}#}
+{#        </div>#}
+{#    </div>#}
+{#{% endblock %}#}
+{##}
+{#{% block js %}#}
+{#    {{ block.super }}#}
+{#    <script src="{% static 'Academhub/js/table.js' %}"></script>#}
+{#{% endblock %}#}
+
+
 {% extends 'base.html' %}
 
 {% load render_table from django_tables2 %}
-{% load bootstrap3 %}
+{% load bootstrap4 %}
 {% load static %}
 
 {% block css %}
     <link rel="stylesheet" href="{% static 'Academhub/css/table_style.css' %}">
     <link rel="stylesheet" href="{% static 'Academhub/css/base_table.css' %}">
+    <style>
+        {#/* Для организации табов */#}
+        {#.tabs-container {#}
+        {#    display: flex;#}
+        {#    flex-direction: column;#}
+        {#}#}
+        {#.tabs-header {#}
+        {#    display: flex;#}
+            {#border-bottom: 1px solid #ccc;#}
+        {#}#}
+        {#.tab {#}
+        {#    padding: 10px 15px;#}
+        {#    cursor: pointer;#}
+        {#}#}
+        {#.tab.active {#}
+        {#    border-bottom: 3px solid #007bff;#}
+        {#    font-weight: bold;#}
+        {#    color: #007bff;#}
+        {#}#}
+        {#.tabs-content {#}
+        {#    display: none;#}
+        {#    padding: 20px;#}
+        {#}#}
+        {#.tabs-content.active {#}
+        {#    display: block;#}
+        {#}#}
+
+
+
+    {#</style>#}
+
+    </style>
 {% endblock %}
 
 {% block content %}
     <div class="main">
         <div class="header-main">
             <div class="title">
-                <h3>
-                    Таблица {{ table_name }}
-                </h3>
+                <h3>Таблица {{ table_name }}</h3>
             </div>
         </div>
-        <div class="table_container">
-            <form action="" method="get" class="form form-inline">
-                {% bootstrap_form filter.form layout='inline' %}
-                {% bootstrap_button 'filter' %}
-            </form>
-            <form action="" method="post">
-                {% csrf_token %}
-                <button>
-                    Удалить
-                </button>
-            </form>
-            {% render_table table 'django_tables2/bootstrap.html' %}
+        <div class="tabs-container">
+            <!-- Заголовок вкладок -->
+            <div class="tabs-header">
+                <div class="tab active" data-tab="table">Таблица</div>
+
+                <div class="tab" data-tab="filters">Фильтры</div>
+            </div>
+
+            <!-- Содержимое вкладок -->
+            <div class="tabs-content gap-5" id="filters">
+                <form action="" method="get" class="form-inline">
+                    {% for field in filter.form %}
+                        <div class="form-group mb-3">
+                            <label for="{{ field.id_for_label }}" class="mr-2">{{ field.label }}</label>
+                            <div class="form-control"> {{ field }}</div>
+{#                            {{ field|add_class:"form-control" }}#}
+                        </div>
+                    {% endfor %}
+                    <button type="submit" class="my-custom-btn">Фильтровать</button>
+                </form>
+            </div>
+
+            <div class="tabs-content active" id="table">
+                <form action="" method="post" class="my-custom-delete-form">
+                    {% csrf_token %}
+                    <button type="submit" class="my-custom-delete-btn">Удалить</button>
+                </form>
+                <br>
+                {% render_table table '_table.html' %}
+            </div>
         </div>
     </div>
 {% endblock %}
 
 {% block js %}
     {{ block.super }}
+    <script>
+        // Логика для переключения вкладок
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabs = document.querySelectorAll('.tab');
+            const contents = document.querySelectorAll('.tabs-content');
 
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Удалить активные классы
+                    tabs.forEach(t => t.classList.remove('active'));
+                    contents.forEach(c => c.classList.remove('active'));
+
+                    // Добавить активный класс к текущей вкладке и её содержимому
+                    tab.classList.add('active');
+                    const target = tab.getAttribute('data-tab');
+                    document.getElementById(target).classList.add('active');
+                });
+            });
+        });
+    </script>
     <script src="{% static 'Academhub/js/table.js' %}"></script>
 {% endblock %}
+
