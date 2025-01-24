@@ -24,11 +24,12 @@ class ButtonLinkColumn(tables.Column):
         print(self.url_name)
 
     def render(self, value, record):
-        print(f'Url name в методе  render {self.url_name}')
-        if self.url_name:
+
+        try:
             url = reverse(self.url_name, args=[record.pk])
-        else:
+        except:
             url = '#'
+
 
         return render_to_string('inc/table/button.html', {
             "value": value,

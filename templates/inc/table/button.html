@@ -1,7 +1,11 @@
 {% load util %}
 
-<button class="my-custom-btn">
-    <a href="{{ url }}">
-        {{ text }}
-    </a>
-</button>
+{% if url != '#' %}
+    <button class="my-custom-btn">
+        <a href="{{ url }}">
+            {{ text }}
+        </a>
+    </button>
+{% else %}
+    Такого адресса нету
+{% endif %}

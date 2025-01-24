@@ -245,3 +245,48 @@ select:focus {
     border: none; /* Убираем стандартные границы */
     font-size: 14px; /* Размер текста */
 }
+
+
+/* Используемые фильтры */
+
+.used-filters-conn
+{
+    width: 100%;
+    height: auto;
+}
+
+.used-filters
+{
+    width: 100%;
+    height: auto;
+    display: flex;
+    align-items: start;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.filter_item
+{
+    border: 1px solid white;
+    padding: 0 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.remove-filter
+{
+    margin: 0;
+    height: 100%;
+    color: #c82333;
+    text-align: center;
+}
+
+.remove-filter:hover
+{
+    cursor: pointer;
+    color: #f78a95;
+}
+
+/*  */

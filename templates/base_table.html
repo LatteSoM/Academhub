@@ -42,7 +42,6 @@
                                                     {{ field }}
                                                 </div>
                                             </div>
-{#                                            <p>{EQ</p>#}
                                         {% else %}
                                             <label for="{{ field.id_for_label }}" style="color: var(--text-color)">{{ field.label }}</label>
                                             <div class="form-control" style="text-decoration: white">
@@ -85,6 +84,8 @@
                         </button>
                     {% endif %}
                 </div>
+                <br>
+                {% include 'inc/table/active_filters.html' %}
                 <br>
                 {% render_table table '_table.html' %}
             </div>

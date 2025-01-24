@@ -1,0 +1,48 @@
+{% load filter_util %}
+
+<div class="used-filters-conn">
+    <h3>Примененные фильтры</h3>
+    <div class="used-filters">
+
+        {% for field in filter.form %}
+            {% with value=filter.data|get_list:field.name %}
+                {% if value and value|join:""|trim %}
+                    {% for value_item in value %}
+                        {% if value_item|trim %}
+                            <div class="filter_item">
+                                <p class="remove-filter" filter="{{ field.name }}={{value_item}}">
+                                    &times;
+                                </p>
+                                <strong>{{ field.label }}:</strong>
+                                {{ field|get_field_value:value_item }}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        {% endfor %}
+
+    </div>
+</div>
+
+<script>
+    const delete_filter = (filter_name) => {
+        let search = window.location.search;
+        search = search.replace(filter_name, '');
+        return search;
+    };
+
+    let filters = document.querySelectorAll('.remove-filter');
+
+    if(filters)
+    {
+        filters.forEach(element => {
+            element.addEventListener('click', function(){
+                let attribut = this.getAttribute('filter');
+                let search = delete_filter(attribut);
+                window.location.search = search;
+                window.length.reload();
+            });
+        });
+    }
+</script>
