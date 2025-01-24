@@ -76,7 +76,7 @@
                         <button type="submit" class="my-custom-delete-btn">Удалить</button>
                     </form>
                     <br>
-                    {% if url_create|check_url_exists %}
+                    {% if url_create|check_url_name_exists %}
                         <button class="my-custom-btn">
                             <a href="{% url url_create %}">
                                 Добавить
