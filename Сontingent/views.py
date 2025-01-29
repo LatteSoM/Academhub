@@ -1,9 +1,14 @@
-from .models import *
-from .tables import *
+from django.views.generic import DeleteView
+
+from Academhub.base import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView
+from Academhub.models import Group, Qualification, Specialty, Student
+# TODO
+## - from Academhub.models import *
 from .filters import *
 from .forms import StudentForm
-from django.shortcuts import render
-from Academhub.base import ObjectTableView, ObjectUpdateView, DeleteView, ObjectDetailView, ObjectCreateView
+from .tables import *
+
+
 # Create your views here.
 
 #
@@ -13,7 +18,7 @@ from Academhub.base import ObjectTableView, ObjectUpdateView, DeleteView, Object
 class QualificationTableView(ObjectTableView):
     table_class = QualificationTable
     filterset_class = QualificationFilter
-    queryset = QualificationDTO.objects.all()
+    queryset = Qualification.objects.all()
 
 #
 ## Specialization
@@ -22,7 +27,7 @@ class QualificationTableView(ObjectTableView):
 class SpecializationTableView(ObjectTableView):
     table_class = SpecializationTable
     filterset_class = SpecializationFilter
-    queryset = SpecializationDTO.objects.all()
+    queryset = Specialty.objects.all()
 
 #
 ## Group
@@ -31,7 +36,7 @@ class SpecializationTableView(ObjectTableView):
 class GroupTableView(ObjectTableView):
     table_class = GroupTable
     filterset_class = GroupFilter
-    queryset = GroupDTO.objects.all()
+    queryset = Group.objects.all()
 
 #
 ## Student
@@ -40,18 +45,18 @@ class GroupTableView(ObjectTableView):
 class StudentTableView(ObjectTableView):
     table_class = StudentTable
     filterset_class = StudentFilter
-    queryset = StudentDTO.objects.all()
+    queryset = Student.objects.all()
 
 class StudentDeleteView(DeleteView):
-    queryset = StudentDTO.objects.all()
+    queryset = Student.objects.all()
 
 class StudentDetailView(ObjectDetailView):
-    model= StudentDTO
+    model= Student
 
 class StudentUpdateView(ObjectUpdateView):
     form_class = StudentForm
-    queryset = StudentDTO.objects.all()
+    queryset = Student.objects.all()
 
 class StudentCreateView(ObjectCreateView):
-    model = StudentDTO
+    model = Student
     form_class = StudentForm

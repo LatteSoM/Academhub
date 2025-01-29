@@ -1,4 +1,6 @@
 from django import forms
+
+from Academhub.models import Student
 from .models import *
 
 
@@ -14,19 +16,19 @@ class StudentForm(forms.ModelForm):
     # previous_course = forms.ChoiceField(choices = COURSE_CHOICES, label='Курс с которого ушел')
 
     class Meta:
-        model = StudentDTO
+        model = Student
         fields = [
             'full_name',
             'phone',
             'birth_date',
             'course',
-            # 'group',
-            'enrollment_order',
+            'group',
+            'admission_order',
             'education_base',
-            'education_reason',
+            'education_basis',
             'registration_address',
             'actual_address',
-            'representative_name',
+            'representative_full_name',
             'representative_email',
-            'notes',
+            'note',
         ]  # Указываем только нужные поля

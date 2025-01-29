@@ -1,6 +1,6 @@
 from django_tables2 import tables
 from Academhub.base import BaseTable
-from .models import QualificationDTO, SpecializationDTO, GroupDTO, StudentDTO
+from Academhub.models import Qualification, Specialty, Group, Student
 
 __all__ = (
     'GroupTable',
@@ -11,13 +11,13 @@ __all__ = (
 
 class QualificationTable(BaseTable):
     class Meta:
-        model = QualificationDTO
+        model = Qualification
         paginate_by = 10
         fields = ('pk', 'union_name', 'name')
 
 class SpecializationTable(BaseTable):
     class Meta:
-        model = SpecializationDTO
+        model = Specialty
         paginate_by = 10
         fields = ('pk', 'code', 'name')
 
@@ -26,7 +26,7 @@ class GroupTable(tables.Table):
     specialization = tables.Column(accessor='specialization.name', verbose_name='Специальность')
 
     class Meta:
-        model = GroupDTO
+        model = Group
         paginate_by = 10
         fields = ('pk', 'qualification', 'specialization')
 
@@ -36,6 +36,6 @@ class StudentTable(BaseTable):
     )
 
     class Meta:
-        model = StudentDTO
+        model = Student
         paginate_by = 10
         fields = ('pk', 'full_name', 'phone', 'birth_date', 'course', 'group')

@@ -24,5 +24,6 @@ urlpatterns = [
     path('', HomeView.as_view(), name='home'),
     path('auth/', auth, name='auth'),
 
-    path('contingent/', include('Сontingent.urls')),
+    path('AcademHub/', include('Сontingent.urls')),
+
 ]

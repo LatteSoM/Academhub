@@ -12,9 +12,9 @@ urlpatterns = [
     ## Student
     #
     
-    path('student/list', StudentTableView.as_view(), name='studentdto_list'),
-    path('student/create', StudentCreateView.as_view(), name='studentdto_create'),
-    path('student/<int:pk>', StudentDetailView.as_view(), name='studentdto_detail'),
-    path('student/update/<int:pk>', StudentUpdateView.as_view(), name='studentdto_update'),
-    path('student/delete/<int:pk>', StudentDeleteView.as_view(), name='studentdto_delete'),
+    path('student/list', StudentTableView.as_view(), name='student_list'),
+    path('student/create', StudentCreateView.as_view(), name='student_create'),
+    path('student/<int:pk>', StudentDetailView.as_view(), name='student_detail'),
+    path('student/update/<int:pk>', StudentUpdateView.as_view(), name='student_update'),
+    path('student/delete/<int:pk>', StudentDeleteView.as_view(), name='student_delete'),
 ]

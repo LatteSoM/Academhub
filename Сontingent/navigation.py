@@ -4,7 +4,7 @@ navigation = Navigation(
     ParentLink(
         'Контингент',
         sub_links=[
-            ChildLink('Студенты', 'studentdto_list'),
+            ChildLink('Студенты', 'student_list'),
             ChildLink('Группы', 'group_list'),
             ChildLink('Специализации', 'specialization_list'),
             ChildLink('Квалификации', 'qualification_list'),
