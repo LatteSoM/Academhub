@@ -1,5 +1,6 @@
 from django.db import models
 from django.shortcuts import reverse
+from Academhub.validators import *
 
 __all__ = {
     # 'BaseModel',
@@ -14,6 +15,7 @@ __all__ = {
     'Student',
     'Gradebook',
 }
+
 
 url_attrs = [
     'list',
@@ -304,19 +306,20 @@ class Student(AcademHubModel):
     )
 
     EDUCATION_BASE_CHOICES = (
-        ("9 класс", "9"),
-        ("11 класс", "11"),
+        ("Основное общее", "9 класс"),
+        ("Среднее общее", "11 класс"),
     )
 
     EDUCATION_BASIS_CHOICES = (
-        ("Бюджетная основа", 'Бюджетная основа'),
-        ("Внебюджетная основа", "Внебюджетная основа")
+        ("Бюджет", 'Бюджетная основа'),
+        ("Внебюджет", "Внебюджетная основа")
     )
     
     id = models.AutoField(primary_key=True)
-    full_name = models.CharField(max_length=255, verbose_name="ФИО")
-    phone = models.CharField(max_length=15, verbose_name="Телефон")
+    full_name = models.CharField(max_length=255, verbose_name="ФИО", validators=[validate_full_name])
+    phone = models.CharField(max_length=15, verbose_name="Телефон", validators=[validate_phone])
     birth_date = models.DateField(verbose_name="Дата рождения")
+    snils = models.CharField(max_length=14, unique=True, verbose_name="СНИЛС", validators=[validate_snils])
     course = models.IntegerField(
         verbose_name="Курс",
         choices=COURSE_CHOICES,
@@ -329,13 +332,13 @@ class Student(AcademHubModel):
         max_length=255, verbose_name="Приказ о зачислении"
     )
     transfer_to_2nd_year_order = models.CharField(
-        max_length=255, verbose_name="Приказ о переводе на 2 курс", blank=True, null=True
+        max_length=255, verbose_name="Переводной приказ на 2 курс", blank=True, null=True
     )
     transfer_to_3rd_year_order = models.CharField(
-        max_length=255, verbose_name="Приказ о переводе на 3 курс", blank=True, null=True
+        max_length=255, verbose_name="Переводной приказ на 3 курс", blank=True, null=True
     )
     transfer_to_4th_year_order = models.CharField(
-        max_length=255, verbose_name="Приказ о переводе на 4 курс", blank=True, null=True
+        max_length=255, verbose_name="Переводной приказ на 4 курс", blank=True, null=True
     )
     expelled_due_to_graduation = models.BooleanField(
         default=False, verbose_name="Отчислен в связи с окончанием обучения"
@@ -357,7 +360,7 @@ class Student(AcademHubModel):
         verbose_name="Адрес фактический"
     )
     representative_full_name = models.CharField(
-        max_length=255, verbose_name="ФИО представителя"
+        max_length=255, verbose_name="ФИО представителя", validators=[validate_full_name]
     )
     representative_email = models.EmailField(
         verbose_name="Почта представителя"
