@@ -296,11 +296,32 @@ class Group(AcademHubModel):
         return self.number
 
 class Student(AcademHubModel):
+    COURSE_CHOICES = (
+        (1, 1),
+        (2, 2),
+        (3, 3),
+        (4, 4)
+    )
+
+    EDUCATION_BASE_CHOICES = (
+        ("9 класс", "9"),
+        ("11 класс", "11"),
+    )
+
+    EDUCATION_BASIS_CHOICES = (
+        ("Бюджетная основа", 'Бюджетная основа'),
+        ("Внебюджетная основа", "Внебюджетная основа")
+    )
+    
     id = models.AutoField(primary_key=True)
     full_name = models.CharField(max_length=255, verbose_name="ФИО")
     phone = models.CharField(max_length=15, verbose_name="Телефон")
     birth_date = models.DateField(verbose_name="Дата рождения")
-    course = models.IntegerField(verbose_name="Курс")
+    course = models.IntegerField(
+        verbose_name="Курс",
+        choices=COURSE_CHOICES,
+        default=COURSE_CHOICES[0][1] 
+    )
     group = models.ForeignKey(
         Group, on_delete=models.CASCADE, related_name="students", verbose_name="Группа"
     )
@@ -320,10 +341,14 @@ class Student(AcademHubModel):
         default=False, verbose_name="Отчислен в связи с окончанием обучения"
     )
     education_base = models.CharField(
-        max_length=255, verbose_name="База образования"
+        max_length=255, verbose_name="База образования",
+        choices=EDUCATION_BASE_CHOICES,
+        default=EDUCATION_BASE_CHOICES[0][1]
     )
     education_basis = models.CharField(
-        max_length=255, verbose_name="Основа образования"
+        max_length=255, verbose_name="Основа образования",
+        choices=EDUCATION_BASIS_CHOICES,
+        default=EDUCATION_BASIS_CHOICES[0][1]
     )
     registration_address = models.TextField(
         verbose_name="Адрес прописки"

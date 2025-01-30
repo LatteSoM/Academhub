@@ -71,10 +71,12 @@
 
             <div class="tabs-content active" id="table">
                 <div class="buttons-conn">
-                    <form action="" method="post" class="my-custom-delete-form">
+                    {% if url_delete|check_url_name_exists %}
+                    <form action="{% url url_delete %}" method="post" class="my-custom-delete-form">
                         {% csrf_token %}
                         <button type="submit" class="my-custom-delete-btn">Удалить</button>
                     </form>
+                    {% endif %}
                     <br>
                     {% if url_create|check_url_name_exists %}
                         <button class="my-custom-btn">

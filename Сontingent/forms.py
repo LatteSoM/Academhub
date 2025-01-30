@@ -5,15 +5,11 @@ from .models import *
 
 
 class StudentForm(forms.ModelForm):
-    COURSE_CHOICES = (
-        ("1", 1),
-        ("2", 2),
-        ("3", 3),
-        ("4", 4)
+    birth_date = forms.DateField(
+        input_formats='%d.%m.%Y',
+        label='Дата рождения',
+        widget=forms.DateInput(attrs={'type': 'date'})
     )
-
-    course = forms.ChoiceField(choices = COURSE_CHOICES, label='Курс')
-    # previous_course = forms.ChoiceField(choices = COURSE_CHOICES, label='Курс с которого ушел')
 
     class Meta:
         model = Student

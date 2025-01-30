@@ -18,13 +18,12 @@
         <div class="container">
             <div class="row">
                 {% for field in form %}
-                    <div  style="display: flex; justify-content: space-between;">
+                    <div style="display: flex;">
                         <div class="prime">
                             <label for="{{ field.id_for_label }}" style="color: var(--text-color)">{{ field.label }}</label>
                             <div class="form-control">
                                 {{ field }}
                             </div>
-    {#                        {{ field|add_class:"form-control" }}#}
                             {% if field.help_text %}
                                 <small class="form-text text-muted">{{ field.help_text }}</small>
                             {% endif %}

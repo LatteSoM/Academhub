@@ -17,7 +17,9 @@ venv/
 db.sqlite3
 /static/
 README.txt
-
+**/migrations/**
+!**/migrations
+!**/migrations/__init__.py
 # Visual Studio Code # 
 .vscode/* 
 !.vscode/settings.json 
