@@ -21,12 +21,12 @@ class QualificationTableView(ObjectTableView):
     queryset = Qualification.objects.all()
 
 #
-## Specialization
+## Specialty
 #
 
-class SpecializationTableView(ObjectTableView):
-    table_class = SpecializationTable
-    filterset_class = SpecializationFilter
+class SpecialtyTableView(ObjectTableView):
+    table_class = SpecialtyTable
+    filterset_class = SpecialtyFilter
     queryset = Specialty.objects.all()
 
 #

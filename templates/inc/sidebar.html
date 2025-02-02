@@ -1,0 +1,23 @@
+<aside class="sidebar">
+    <div class="sidebar-header">
+        <h1 style="text-align: center;">
+            AcademHub
+        </h1>
+    </div>
+    <nav class="sidebar-nav">
+        <ul id="nav-menu">
+            {% for link in navigation %}
+                {% include "inc/navigation_item.html" with link=link %}
+            {% endfor %}
+        </ul>
+    </nav>
+    <div class="sidebar-footer">
+        <div id="theme-toggle" class="theme-toggle">
+            <span class="material-icons">dark_mode</span>
+        </div>
+        <div id="user-section" class="user-section">
+            <span id="username"></span>
+            <button id="logout-btn" class="btn-secondary btn-red">Logout</button>
+        </div>
+    </div>
+</aside>

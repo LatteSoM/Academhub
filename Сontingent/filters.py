@@ -7,6 +7,13 @@ from django_filters import FilterSet, CharFilter, ModelChoiceFilter, ModelMultip
 
 from Academhub.models import Qualification, Specialty, Group, Student
 
+__all__ = (
+    'GroupFilter',
+    'StudentFilter',
+    'SpecialtyFilter',
+    'QualificationFilter',
+)
+
 
 class QualificationFilter(FilterSet):
     search = CharFilter(method='filter_search', label='Поиск')
@@ -21,7 +28,7 @@ class QualificationFilter(FilterSet):
             Q(name__icontains=value)
         )
 
-class SpecializationFilter(FilterSet):
+class SpecialtyFilter(FilterSet):
     search = CharFilter(method='filter_search', label='Поиск')
 
     class Meta:

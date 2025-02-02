@@ -1,0 +1,109 @@
+.sidebar {
+    width: 280px;
+    background-color: var(--surface-color);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.sidebar-header h1 {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+}
+
+.sidebar-nav {
+    flex-grow: 1;
+    padding: 1rem 0;
+}
+
+.sidebar-nav ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.sidebar-nav ul ul {
+    padding-left: 1.5rem;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+}
+
+.sidebar-nav ul ul.open {
+    max-height: 500px;
+}
+
+.nav-item {
+    padding: 0.75rem 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    color: var(--text-color);
+    text-decoration: none;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.nav-item:hover {
+    background-color: var(--surface-hover-color);
+}
+
+.nav-item.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.nav-item .material-icons {
+    margin-right: 0.5rem;
+}
+
+.nav-item.has-children {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.nav-item.has-children::after {
+    content: "▸";
+    transition: transform 0.2s;
+    margin-left: 0.5rem; /* Небольшой отступ для треугольника */
+}
+
+.nav-item.has-children.open::after {
+    transform: rotate(90deg);
+}
+
+.sidebar-nav ul ul .nav-item {
+    padding-left: 2.5rem;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-left: 2px solid var(--primary-color);
+    transition: background-color 0.2s;
+}
+
+.sidebar-nav ul ul .nav-item:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-nav ul ul .nav-item.active {
+    background-color: var(--primary-color);
+    color: white;
+    border-left-color: white;
+}
+
+.sidebar-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.user-section {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}

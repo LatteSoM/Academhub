@@ -22,6 +22,7 @@ def validate_snils(value):
     elif weighted_sum > 101 and (weighted_sum % 101) != control_sum and (weighted_sum % 101) != 0:
         raise ValidationError('Некорректный СНИЛС: неправильное контрольное число.')
 
+
 def validate_full_name(value):
     """Проверяет, что ФИО содержит минимум 2 слова (Фамилия и Имя)"""
     words = value.strip().split()

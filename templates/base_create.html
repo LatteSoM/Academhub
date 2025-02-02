@@ -1,50 +1,28 @@
-{% extends 'base_object_view.html' %}
+{% extends 'base.html' %}
 
 {% load static %}
-{% load bootstrap4 %}
 
-{% block css %}
-    {{ block.super }}
-    <link href="{% static 'Academhub/css/base_form.css' %}" rel="stylesheet" type="text/css">
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'Academhub/css/form.css' %}">
 {% endblock %}
 
-{% block h3 %}
-    Создать {{ mobel_verbosename }}
-{% endblock %}
-
-{% block main_content %}
-    <form method="POST" class="needs-validation" novalidate>
-        {% csrf_token %}
-        <div class="container">
-            <div class="row">
-                {% for field in form %}
-                    <div style="display: flex;">
-                        <div class="prime">
-                            <label for="{{ field.id_for_label }}" style="color: var(--text-color)">{{ field.label }}</label>
-                            <div class="form-control">
-                                {{ field }}
-                            </div>
-                            {% if field.help_text %}
-                                <small class="form-text text-muted">{{ field.help_text }}</small>
-                            {% endif %}
-                            {% for error in field.errors %}
-                                <div class="invalid-feedback">{{ error }}</div>
-                            {% endfor %}
-                        </div>
-
-                    </div>
-                {% endfor %}
-            </div>
-            <div class="row">
-                <div class="col-md-12 text-center">
-                    <button type="submit" class="btn btn-primary btn-lg">Сохранить</button>
-                </div>
-            </div>
+{% block content %}
+    <div class="page-container">
+        <div class="page-header">
+            <h2>
+                {% block form_title %}
+                    Создать
+                {% endblock %}
+                {{ mobel_verbosename }} 
+            </h2>
+            <a id="back-to-table" class="btn-primary" style="display: inline-block; margin: 10px 0;" href="{% url url_list %}">
+                Назад
+            </a>
         </div>
-    </form>
-{% endblock %}
-
-{% block js %}
-    {{ block.super }}
-    <script src="{% static 'Academhub/js/validation.js' %}"></script>
-{% endblock %}
+        <form id="edit-form" class="form" method="post">
+            {% csrf_token %}
+            {% include 'inc/form.html' %}
+            <button type="submit" class="btn-primary">Добавить</button>
+        </form>
+    </div>
+{% endblock  %}

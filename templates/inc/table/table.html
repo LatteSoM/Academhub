@@ -1,4 +1,8 @@
-<table class="table my-custom-table">
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'Academhub/css/table.css' %}">
+
+<table class="data-table">
     <thead>
         <tr>
             {% for column in table.columns %}

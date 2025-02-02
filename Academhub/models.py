@@ -3,7 +3,6 @@ from django.shortcuts import reverse
 from Academhub.validators import *
 
 __all__ = {
-    # 'BaseModel',
     'AcademHubModel',
     'User',
     'GroupPermission',
@@ -39,17 +38,18 @@ class AcademHubModel(models.Model):
         return cls._urls
     
     @classmethod
-    def get_urls(cls):
+    def _check_urls(cls):
         if not cls._urls:
             cls._generate_url()
 
+    @classmethod
+    def get_urls(cls):
+        cls._check_urls()
         return cls._urls
 
     @classmethod
     def set_url(cls, name):
-        if not cls._urls:
-            cls._generate_url()
-            
+        cls._check_urls()
         cls._urls[name] = name
     
     def get_absolute_url(self):
@@ -319,7 +319,10 @@ class Student(AcademHubModel):
     full_name = models.CharField(max_length=255, verbose_name="ФИО", validators=[validate_full_name])
     phone = models.CharField(max_length=15, verbose_name="Телефон", validators=[validate_phone])
     birth_date = models.DateField(verbose_name="Дата рождения")
-    snils = models.CharField(max_length=14, unique=True, verbose_name="СНИЛС", validators=[validate_snils])
+    snils = models.CharField(max_length=14, 
+        verbose_name="СНИЛС", 
+        validators=[validate_snils]
+    )
     course = models.IntegerField(
         verbose_name="Курс",
         choices=COURSE_CHOICES,

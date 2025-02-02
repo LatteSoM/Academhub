@@ -79,7 +79,7 @@ class ObjectTableView(FilterView, BaseObjectTableView):
         Наследуется от BaseContextMixin и SingleTableView (из django-tables2) и FilterView (из django-filter).
         Используется для отображения данных в виде таблиц с фильтрации и поддержкой навигации.
     '''
-    template_name = 'base_table.html'
+    template_name = 'base_view.html'
 
 
 class ObjectListView(BaseContextMixin, ListView):

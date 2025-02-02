@@ -1,29 +1,44 @@
-{% extends 'inc/_links.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
 
-{% load static %}
+    {% load static %}
 
-{% block title %}
-    Ам ням
-{% endblock %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        {% block title %}
+            Academhub
+        {% endblock %}
+    </title>
 
-{% block body %}
+    <link rel="stylesheet" href="{% static 'Academhub/css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'Academhub/css/themes.css' %}">
+    <link rel="stylesheet" href="{% static 'Academhub/css/sidebar.css' %}">
 
-    {% include 'inc/_nawbar.html' %}
-    <main>
-        {% include 'inc/_header.html' %}
-        <content>
+    {% block extra_css %}
+    {% endblock %}
+
+</head>
+<body class="theme-light">
+    
+    <div class="app-container">
+
+        {% include 'inc/sidebar.html' %}
+
+        <main class="main-content">
             {% block content %}
-                <h1>Блок контента</h1>
+
             {% endblock %}
-        </content>
+        </main>
 
+    </div>
 
-        {% include 'inc/_footer.html' %}
+    <script type="module" src="{% static 'Academhub/js/theme.js' %}"></script>
+    <script type="module" src="{% static 'Academhub/js/navigation.js' %}"></script>
 
-    </main>
+    {% block extra_js %}
+    {% endblock %}
 
-{% endblock %}
-
-{% block js %}
-    <script src="{% static 'Academhub/js/theme.js' %}"></script>
-{% endblock %}
+</body>
+</html>

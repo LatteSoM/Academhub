@@ -5,30 +5,37 @@ from Academhub.models import Qualification, Specialty, Group, Student
 __all__ = (
     'GroupTable',
     'StudentTable',
+    'SpecialtyTable',
     'QualificationTable',
-    'SpecializationTable',
 )
 
-class QualificationTable(BaseTable):
-    class Meta:
-        model = Qualification
-        paginate_by = 10
-        fields = ('pk', 'union_name', 'name')
-
-class SpecializationTable(BaseTable):
+class SpecialtyTable(BaseTable):
     class Meta:
         model = Specialty
         paginate_by = 10
         fields = ('pk', 'code', 'name')
 
+
+class QualificationTable(BaseTable):
+    specialty = tables.Column(
+        accessor='specialty.name'
+    )
+
+    class Meta:
+        model = Qualification
+        paginate_by = 10
+        fields = ('pk', 'short_name', 'name', 'specialty')
+
+
 class GroupTable(tables.Table):
-    qualification = tables.Column(accessor='qualification.name', verbose_name='Квалификация')
-    specialization = tables.Column(accessor='specialization.name', verbose_name='Специальность')
+    qualification = tables.Column(accessor='qualification.name', 
+        verbose_name='Квалификация')
 
     class Meta:
         model = Group
         paginate_by = 10
-        fields = ('pk', 'qualification', 'specialization')
+        fields = ('pk', 'number', 'qualification')
+
 
 class StudentTable(BaseTable):
     group = tables.Column(

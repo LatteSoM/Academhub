@@ -4,7 +4,7 @@ from django.urls import path
 urlpatterns = [
     path('qualification/list', QualificationTableView.as_view(), name='qualification_list'),
 
-    path('specialization/list', SpecializationTableView.as_view(), name='specialization_list'),
+    path('specialization/list', SpecialtyTableView.as_view(), name='specialization_list'),
     
     path('group/list', GroupTableView.as_view(), name='group_list'),
     

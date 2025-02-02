@@ -1,7 +1,10 @@
 {% load filter_util %}
 
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'Academhub/css/active_filter.css' %}">
+
 <div class="used-filters-conn">
-    <h3>Примененные фильтры</h3>
     <div class="used-filters">
 
         {% for field in filter.form %}

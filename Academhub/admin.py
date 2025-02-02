@@ -12,9 +12,3 @@ admin.site.register(Qualification)
 admin.site.register(Group)
 admin.site.register(Student)
 admin.site.register(Gradebook)
-
-
-# admin.site.register(StudentDTO)
-# admin.site.register(GroupDTO)
-# admin.site.register(QualificationDTO)
-# admin.site.register(SpecializationDTO)
