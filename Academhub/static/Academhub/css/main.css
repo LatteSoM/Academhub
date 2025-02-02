@@ -63,6 +63,7 @@ body {
 
 .btn-primary:hover {
     background-color: var(--primary-color-dark);
+    color: var(--text-color);
 }
 
 .btn-secondary {
@@ -104,6 +105,7 @@ body {
 
 .tabs {
     display: flex;
+    width: 100%;
     border-bottom: 1px solid var(--light-border);
     margin-bottom: 1rem;
 }

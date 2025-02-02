@@ -79,7 +79,7 @@ class StudentFilter(FilterSet):
 
     class Meta:
         model = Student
-        fields = ['phone', 'course', 'group']
+        fields = ['course', 'group']
 
     def filter_search(self, queryset, name, value):
         return queryset.filter(

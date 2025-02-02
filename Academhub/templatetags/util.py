@@ -23,3 +23,7 @@ def check_url_exists(url):
         return True
     except Resolver404:
         return False
+    
+@register.filter
+def exclude_field(form, field_name):
+    return [field for field in form if field.name != field_name]

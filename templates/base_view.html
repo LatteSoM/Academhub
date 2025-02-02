@@ -29,15 +29,37 @@
                     Добавить
                 </a>
             {% endif %}
+            <form class="search-form" style="width: 70%; display: flex;">
+                {% with search_field=filter.form.search %}
+                    <div class="form-group">
+                        {{ search_field.errors }}
+                        {{ search_field.label_tag }}
+                        {{ search_field }}
+                        {% if search_field.help_text %}
+                            <p class="help" id="{{ search_field.auto_id }}_helptext">
+                                {{ search_field.help_text|safe }}
+                            </p>
+                        {% endif %}
+                    </div>
+                {% endwith %}
+
+                <button class="btn-primary">
+                    Поиск
+                </button>
+            </form>
+
+            <br/>
+
             <div class="active-filters">
                 {% include 'inc/table/active_filters.html' %}
             </div>
+            
             {% render_table table 'inc/table/table.html' %}
         </div>
 
         <div id="filters" class="tab-pane">
             <form method="get" class="form">
-                {% include 'inc/form.html' with form=filter.form %}
+                {% include 'inc/form.html' with form=filter.form|exclude_field:"search" %}
                 <button type="submit" class="btn-primary">Применить фильтры</button>
                 <a href="?" class="btn-secondary">Сбросить фильтры</a>
             </form>

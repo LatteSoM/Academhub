@@ -57,3 +57,19 @@
     border-color: var(--primary-color);
     box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
 }
+
+.search-form {
+    width: 90%;
+    display: flex;
+    gap: 10px;
+    align-items: end;
+    justify-content: start;
+}
+
+.search-form > .form-group {
+    width: 80%
+}
+
+.search-form > button {
+    padding-top: 10px;
+}
