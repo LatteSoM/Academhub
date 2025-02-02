@@ -5,7 +5,7 @@ from django.db.models import Q
 
 from django_filters import FilterSet, CharFilter, ModelChoiceFilter, ModelMultipleChoiceFilter, ChoiceFilter
 
-from Academhub.models import Qualification, Specialty, Group, Student
+from Academhub.models import Qualification, Specialty, GroupStudents, Student
 
 __all__ = (
     'GroupFilter',
@@ -47,7 +47,7 @@ class GroupFilter(FilterSet):
     search = CharFilter(method='filter_search', label='Поиск')
 
     class Meta:
-        model = Group
+        model = GroupStudents
         fields = ['number', 'qualification']
 
     def filter_search(self, queryset, name, value):
@@ -74,7 +74,7 @@ class StudentFilter(FilterSet):
     group = ModelMultipleChoiceFilter(
         widget=forms.CheckboxSelectMultiple,
         label='Группа',
-        queryset=Group.objects.all(),
+        queryset=GroupStudents.objects.all(),
     )
 
     class Meta:

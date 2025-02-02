@@ -1,16 +1,19 @@
 {% extends 'base.html' %}
 
-{% load render_table from django_tables2 %}
+{% load django_tables2 %}
 {% load bootstrap4 %}
 {% load static %}
 {% load util %}
 
 {% block extra_css %}
+    {{ block.super }}
     <link rel="stylesheet" href="{% static 'Academhub/css/form.css' %}">
+    <link rel="stylesheet" href="{% static 'Academhub/css/pagination.css' %}">
 {% endblock %}
 
 {% block content %}
 <div class="page-container">
+    
     <div class="page-header">
         <h2>Таблица {{table_name}}</h2>
     </div>
@@ -24,29 +27,35 @@
 
     <div class="tab-content">
         <div id="table" class="tab-pane active">
+
             {% if url_create|check_url_name_exists %}
                 <a id="add-new" class="btn-primary" style="margin: 10px 0; display: inline-block;" href="{% url url_create %}">
                     Добавить
                 </a>
             {% endif %}
-            <form class="search-form" style="width: 70%; display: flex;">
-                {% with search_field=filter.form.search %}
-                    <div class="form-group">
-                        {{ search_field.errors }}
-                        {{ search_field.label_tag }}
-                        {{ search_field }}
-                        {% if search_field.help_text %}
-                            <p class="help" id="{{ search_field.auto_id }}_helptext">
-                                {{ search_field.help_text|safe }}
-                            </p>
-                        {% endif %}
-                    </div>
-                {% endwith %}
 
-                <button class="btn-primary">
-                    Поиск
-                </button>
-            </form>
+            {% if filter.form.search %}
+                <form class="search-form" style="width: 70%; display: flex;">
+
+                    {% with search_field=filter.form.search %}
+                        <div class="form-group">
+                            {{ search_field.errors }}
+                            {{ search_field.label_tag }}
+                            {{ search_field }}
+                            {% if search_field.help_text %}
+                                <p class="help" id="{{ search_field.auto_id }}_helptext">
+                                    {{ search_field.help_text|safe }}
+                                </p>
+                            {% endif %}
+                        </div>
+                    {% endwith %}
+
+                    <button class="btn-primary">
+                        Поиск
+                    </button>
+
+                </form>
+            {% endif %}
 
             <br/>
 
@@ -55,6 +64,10 @@
             </div>
             
             {% render_table table 'inc/table/table.html' %}
+
+            {% include 'inc/pagination.html' with page_obj=table.page %}
+             
+            
         </div>
 
         <div id="filters" class="tab-pane">
@@ -64,9 +77,11 @@
                 <a href="?" class="btn-secondary">Сбросить фильтры</a>
             </form>
         </div>
+
     </div>
 {% endblock %}
 
 {% block extra_js %}
+    {{ block.super }}
     <script type="module" src="{% static 'Academhub/js/switchTab.js' %}"></script>
 {% endblock %}

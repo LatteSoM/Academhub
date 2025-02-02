@@ -1,6 +1,6 @@
 from django_tables2 import tables
 from Academhub.base import BaseTable
-from Academhub.models import Qualification, Specialty, Group, Student
+from Academhub.models import Qualification, Specialty, GroupStudents, Student
 
 __all__ = (
     'GroupTable',
@@ -32,7 +32,7 @@ class GroupTable(tables.Table):
         verbose_name='Квалификация')
 
     class Meta:
-        model = Group
+        model = GroupStudents
         paginate_by = 10
         fields = ('pk', 'number', 'qualification')
 

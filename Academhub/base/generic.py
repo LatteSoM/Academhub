@@ -80,6 +80,7 @@ class ObjectTableView(FilterView, BaseObjectTableView):
         Используется для отображения данных в виде таблиц с фильтрации и поддержкой навигации.
     '''
     template_name = 'base_view.html'
+    paginate_by = 10
 
 
 class ObjectListView(BaseContextMixin, ListView):

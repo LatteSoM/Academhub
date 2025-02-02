@@ -39,6 +39,7 @@ ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
 ACTIVE_APPS = [
     'Сontingent',
     'Academhub',
+    'AccessControl',
 ]
 
 INSTALLED_APPS = [
@@ -63,6 +64,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'Academhub.middleware.AuthMiddleware',
 ]
 
 ROOT_URLCONF = 'Academhub.urls'
@@ -138,6 +140,8 @@ USE_I18N = True
 
 USE_TZ = True
 
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'login'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
@@ -160,6 +164,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Добавление кастомной модели пользователя
+AUTH_USER_MODEL = 'Academhub.CustomUser'
 
 # Navigation
 

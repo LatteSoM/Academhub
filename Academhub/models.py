@@ -1,16 +1,16 @@
 from django.db import models
-from django.shortcuts import reverse
 from Academhub.validators import *
+from django.shortcuts import reverse
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, Permission, Group
 
 __all__ = {
     'AcademHubModel',
-    'User',
+    'CustomUser',
+    'GroupStudents',
     'GroupPermission',
-    'Permission',
     'Discipline',
     'Specialty',
     'Qualification',
-    'Group',
     'Student',
     'Gradebook',
 }
@@ -59,187 +59,134 @@ class AcademHubModel(models.Model):
     class Meta:
         abstract = True
 
+class CustomUserManager(BaseUserManager):
+    '''
+    Менеджер для пользовательской модели, который управляет созданием пользователей.
+    Предоставляет методы для создания обычного пользователя и суперпользователя.
+    '''
+    def create_user(self, email, password=None, **extra_fields):
+        if not email:
+            raise ValueError('The Email field must be set')
+        
+        email = self.normalize_email(email)
 
-#--------------From Contingent----------------------
+        user = self.model(email=email, **extra_fields)
 
-# class QualificationDTO(AcademHubModel):
-#     union_name = models.CharField(
-#         max_length=255,
-#         verbose_name='Наименование (сокращение)'
-#     )
-#     name = models.CharField(
-#         max_length=255,
-#         verbose_name='Наименование'
-#     )
-#
-#     def __str__(self):
-#         return self.name
-#
-# class SpecializationDTO(AcademHubModel):
-#     code = models.CharField(
-#         max_length=50,
-#         verbose_name='код'
-#     )
-#     name = models.CharField(
-#         max_length=255,
-#         verbose_name='Наименование'
-#     )
-#
-#     def __str__(self):
-#         return self.name
-#
-# class GroupDTO(AcademHubModel):
-#     qualification = models.ForeignKey(
-#         QualificationDTO,
-#         on_delete=models.CASCADE,
-#         verbose_name='Квалификация'
-#     )
-#     specialization = models.ForeignKey(
-#         SpecializationDTO,
-#         on_delete=models.CASCADE,
-#         verbose_name='специальность (FK)'
-#     )
-#     group_name = models.CharField(
-#         verbose_name='Номер группы',
-#         max_length=255,
-#         null=True,
-#     )
-#
-#     def __str__(self):
-#         return f"{self.qualification.name} ({self.group_name})"
-#
-# class StudentDTO(AcademHubModel):
-#     class Meta:
-#         verbose_name = 'Студент'
-#         verbose_name_plural = 'Студенты'
-#
-#     full_name = models.CharField(
-#         max_length=255,
-#         verbose_name='ФИО'
-#     )
-#     phone = models.CharField(
-#         max_length=20,
-#         verbose_name='телефон'
-#     )
-#     birth_date = models.DateField(
-#         verbose_name='Дата рождения'
-#     )
-#     course = models.IntegerField(
-#         verbose_name='курс'
-#     )
-#     group = models.ForeignKey(
-#         GroupDTO,
-#         on_delete=models.CASCADE,
-#         verbose_name='группа(FK)',
-#         null=True,
-#         blank=True
-#     )
-#     enrollment_order = models.CharField(
-#         max_length=255,
-#         verbose_name='приказ о зачислении'
-#     )
-#     transfer_to_second_course_order = models.CharField(
-#         max_length=255,
-#         blank=True,
-#         null=True,
-#         verbose_name='приказ о переводе на 2 курс'
-#     )
-#     transfer_to_third_course_order = models.CharField(
-#         max_length=255,
-#         blank=True,
-#         null=True,
-#         verbose_name='приказ о переводе на 3 курс'
-#     )
-#     transfer_to_fourth_course_order = models.CharField(
-#         max_length=255,
-#         blank=True,
-#         null=True,
-#         verbose_name='приказ о переводе на 4 курс'
-#     )
-#     graduation_order = models.CharField(
-#         max_length=255,
-#         blank=True,
-#         null=True,
-#         verbose_name='Отчислен в связи с окончанием обучения'
-#     )
-#     education_base = models.CharField(
-#         max_length=255,
-#         verbose_name='база образования'
-#     )
-#     education_reason = models.CharField(
-#         max_length=255,
-#         verbose_name='основа образования'
-#     )
-#     registration_address = models.CharField(
-#         max_length=255,
-#         verbose_name='адрес прописка'
-#     )
-#     actual_address = models.CharField(
-#         max_length=255,
-#         verbose_name='адрес фактический'
-#     )
-#     representative_name = models.CharField(
-#         max_length=255,
-#         verbose_name='ФИО представителя'
-#     )
-#     representative_email = models.EmailField(
-#         verbose_name='почта представителя'
-#     )
-#     notes = models.TextField(
-#         blank=True,
-#         null=True,
-#         verbose_name='примечание'
-#     )
-#     previous_course = models.IntegerField(
-#         blank=True,
-#         null=True,
-#         verbose_name='курс с которого ушел'
-#     )
-#
-#     def __str__(self):
-#         return self.full_name
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
 
+    def create_superuser(self, email, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
 
-#--------------From Contingent----------------------
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('Superuser must have is_staff=True.')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Superuser must have is_superuser=True.')
 
+        return self.create_user(email, password, **extra_fields)
 
-class User(AcademHubModel):
-    id = models.AutoField(primary_key=True)
-    login = models.CharField(max_length=150, unique=True, verbose_name="Логин")
-    password = models.CharField(max_length=128, verbose_name="Пароль")
-    full_name = models.CharField(max_length=255, verbose_name="ФИО")
-    is_teacher = models.BooleanField(default=False, verbose_name="Преподаватель")
+class CustomUser(AcademHubModel, AbstractBaseUser, PermissionsMixin):
+    '''
+    Пользовательская модель, представляющая пользователей системы. 
+    Наследует от AbstractBaseUser и PermissionsMixin для поддержки аутентификации и управления правами доступа.
+    '''
+    email = models.EmailField(unique=True)
+    full_name = models.CharField(
+        max_length=255,
+        verbose_name='ФИО'
+    )
+    is_active = models.BooleanField(default=True, verbose_name='Активный?')
+    is_staff = models.BooleanField(default=False, verbose_name='Персонал?')
+    is_teacher = models.BooleanField(default=False, verbose_name='Учитель?')
+    is_superuser = models.BooleanField(default=False, verbose_name='Суперпользователь?')
+
+    objects = CustomUserManager()
+
+    USERNAME_FIELD = 'email'
 
     class Meta:
-        verbose_name = "Пользователь"
-        verbose_name_plural = "Пользователи"
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
 
     def __str__(self):
-        return self.full_name
+        return self.email
 
-class GroupPermission(AcademHubModel):
-    id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=255, verbose_name="Право")
+class PermissionProxy(Permission):
+    _urls = None
+
+    @classmethod
+    def _generate_url(cls):
+        cls._urls = {}
+        
+        for attr in url_attrs:
+            prefix_name = 'url_' + attr
+            cls._urls[prefix_name] = f'{cls.__name__.lower()}_{attr}'
+
+        return cls._urls
+    
+    @classmethod
+    def _check_urls(cls):
+        if not cls._urls:
+            cls._generate_url()
+
+    @classmethod
+    def get_urls(cls):
+        cls._check_urls()
+        return cls._urls
+
+    @classmethod
+    def set_url(cls, name):
+        cls._check_urls()
+        cls._urls[name] = name
+    
+    def get_absolute_url(self):
+        url = self.get_urls()['url_detail']
+        return reverse(url, kwargs={'pk': self.pk})
 
     class Meta:
-        verbose_name = "Группа прав"
-        verbose_name_plural = "Группы прав"
+        proxy = True
+        ordering = ['pk']
+        verbose_name = 'Право'
+        verbose_name_plural = 'Права'
 
-    def __str__(self):
-        return self.name
+class GroupProxy(Group):
+    _urls = None
 
-class Permission(AcademHubModel):
-    id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=255, verbose_name="Право")
-    groups = models.ManyToManyField(GroupPermission, related_name="permissions", verbose_name="Группы прав")
-    users = models.ManyToManyField(User, related_name="permissions", verbose_name="Пользователи")
+    @classmethod
+    def _generate_url(cls):
+        cls._urls = {}
+        
+        for attr in url_attrs:
+            prefix_name = 'url_' + attr
+            cls._urls[prefix_name] = f'{cls.__name__.lower()}_{attr}'
+
+        return cls._urls
+    
+    @classmethod
+    def _check_urls(cls):
+        if not cls._urls:
+            cls._generate_url()
+
+    @classmethod
+    def get_urls(cls):
+        cls._check_urls()
+        return cls._urls
+
+    @classmethod
+    def set_url(cls, name):
+        cls._check_urls()
+        cls._urls[name] = name
+    
+    def get_absolute_url(self):
+        url = self.get_urls()['url_detail']
+        return reverse(url, kwargs={'pk': self.pk})
 
     class Meta:
-        verbose_name = "Право"
-        verbose_name_plural = "Права"
-
-    def __str__(self):
-        return self.name
+        proxy = True
+        verbose_name = 'Группа прав'
+        verbose_name_plural = 'Группы прав'
 
 class Discipline(AcademHubModel):
     id = models.AutoField(primary_key=True)
@@ -283,7 +230,7 @@ class Qualification(AcademHubModel):
     def __str__(self):
         return self.name
 
-class Group(AcademHubModel):
+class GroupStudents(AcademHubModel):
     id = models.AutoField(primary_key=True)
     number = models.CharField(max_length=50, unique=True, verbose_name="Номер")
     qualification = models.ForeignKey(
@@ -329,7 +276,7 @@ class Student(AcademHubModel):
         default=COURSE_CHOICES[0][1] 
     )
     group = models.ForeignKey(
-        Group, on_delete=models.CASCADE, related_name="students", verbose_name="Группа"
+        GroupStudents, on_delete=models.CASCADE, related_name="students", verbose_name="Группа"
     )
     admission_order = models.CharField(
         max_length=255, verbose_name="Приказ о зачислении"
@@ -383,12 +330,12 @@ class Student(AcademHubModel):
 class Gradebook(AcademHubModel):
     id = models.AutoField(primary_key=True)
     teacher = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="gradebooks", verbose_name="Преподаватель"
+        CustomUser, on_delete=models.CASCADE, related_name="gradebooks", verbose_name="Преподаватель"
     )
     number = models.CharField(max_length=50, verbose_name="Номер")
     name = models.CharField(max_length=255, verbose_name="Наименование")
     group = models.ForeignKey(
-        Group, on_delete=models.CASCADE, related_name="gradebooks", verbose_name="Группа"
+        GroupStudents, on_delete=models.CASCADE, related_name="gradebooks", verbose_name="Группа"
     )
     discipline = models.ForeignKey(
         Discipline, on_delete=models.CASCADE, related_name="gradebooks", verbose_name="Дисциплина"

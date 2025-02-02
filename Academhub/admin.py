@@ -1,14 +1,14 @@
 from django.contrib import admin
 
-from Academhub.models import User, GroupPermission, Permission, Discipline, Specialty, Qualification, Group, Student, \
-    Gradebook
 
-admin.site.register(User)
-admin.site.register(GroupPermission)
+from django.contrib.auth.models import Group, Permission
+from Academhub.models import CustomUser, Discipline, Specialty, Qualification, GroupStudents, Student, Gradebook
+
+admin.site.register(CustomUser)
+admin.site.register(GroupStudents)
 admin.site.register(Permission)
 admin.site.register(Discipline)
 admin.site.register(Specialty)
 admin.site.register(Qualification)
-admin.site.register(Group)
 admin.site.register(Student)
 admin.site.register(Gradebook)

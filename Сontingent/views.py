@@ -1,9 +1,5 @@
-from django.views.generic import DeleteView
-
 from Academhub.base import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView
-from Academhub.models import Group, Qualification, Specialty, Student
-# TODO
-## - from Academhub.models import *
+from Academhub.models import GroupStudents, Qualification, Specialty, Student
 from .filters import *
 from .forms import StudentForm
 from .tables import *
@@ -36,7 +32,7 @@ class SpecialtyTableView(ObjectTableView):
 class GroupTableView(ObjectTableView):
     table_class = GroupTable
     filterset_class = GroupFilter
-    queryset = Group.objects.all()
+    queryset = GroupStudents.objects.all()
 
 #
 ## Student
@@ -45,9 +41,6 @@ class GroupTableView(ObjectTableView):
 class StudentTableView(ObjectTableView):
     table_class = StudentTable
     filterset_class = StudentFilter
-    queryset = Student.objects.all()
-
-class StudentDeleteView(DeleteView):
     queryset = Student.objects.all()
 
 class StudentDetailView(ObjectDetailView):

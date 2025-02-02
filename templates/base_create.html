@@ -3,6 +3,7 @@
 {% load static %}
 
 {% block extra_css %}
+    {{ block.super }}
     <link rel="stylesheet" href="{% static 'Academhub/css/form.css' %}">
 {% endblock %}
 

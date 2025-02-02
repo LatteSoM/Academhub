@@ -1,7 +1,9 @@
 <aside class="sidebar">
     <div class="sidebar-header">
         <h1 style="text-align: center;">
-            AcademHub
+            <a href="{% url 'home' %}" style="text-decoration: none; color: var(--text-color);">
+                AcademHub
+            </a>
         </h1>
     </div>
     <nav class="sidebar-nav">
@@ -17,7 +19,10 @@
         </div>
         <div id="user-section" class="user-section">
             <span id="username"></span>
-            <button id="logout-btn" class="btn-secondary btn-red">Logout</button>
+            <form method="POST" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button id="logout-btn" class="btn-secondary btn-red">Logout</button>
+            </form>
         </div>
     </div>
 </aside>

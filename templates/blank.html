@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    {% load static %}
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        {% block title %}
+            Academhub
+        {% endblock %}
+    </title>
+
+    <link rel="stylesheet" href="{% static 'Academhub/css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'Academhub/css/themes.css' %}">
+
+    {% block extra_css %}
+    {% endblock %}
+
+</head>
+<body class="theme-light">
+    {% block body %}
+
+    {% endblock %}
+</body>
+{% block extra_js %}
+    <script type="module" src="{% static 'Academhub/js/theme.js' %}"></script>
+{% endblock %}
+</html>

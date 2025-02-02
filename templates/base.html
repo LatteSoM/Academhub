@@ -1,27 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+{% extends 'blank.html' %}
 
-    {% load static %}
+{% load static %}
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>
-        {% block title %}
-            Academhub
-        {% endblock %}
-    </title>
-
-    <link rel="stylesheet" href="{% static 'Academhub/css/main.css' %}">
-    <link rel="stylesheet" href="{% static 'Academhub/css/themes.css' %}">
+{% block extra_css %}
     <link rel="stylesheet" href="{% static 'Academhub/css/sidebar.css' %}">
+{% endblock %}
 
-    {% block extra_css %}
-    {% endblock %}
-
-</head>
-<body class="theme-light">
-    
+{% block body %}
     <div class="app-container">
 
         {% include 'inc/sidebar.html' %}
@@ -33,12 +18,10 @@
         </main>
 
     </div>
+{% endblock %}
 
-    <script type="module" src="{% static 'Academhub/js/theme.js' %}"></script>
+    
+{% block extra_js %}
+    {{ block.super }}
     <script type="module" src="{% static 'Academhub/js/navigation.js' %}"></script>
-
-    {% block extra_js %}
-    {% endblock %}
-
-</body>
-</html>
+{% endblock %}
