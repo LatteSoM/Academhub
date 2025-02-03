@@ -114,6 +114,9 @@ class CustomUser(AcademHubModel, AbstractBaseUser, PermissionsMixin):
         return self.email
 
 class PermissionProxy(Permission):
+    '''
+        Расширение для модели Permissions. Поддерживает навигацию
+    '''
     _urls = None
 
     @classmethod
@@ -152,6 +155,9 @@ class PermissionProxy(Permission):
         verbose_name_plural = 'Права'
 
 class GroupProxy(Group):
+    '''
+        Расширение для модели Group. Поддерживает навигацию
+    '''
     _urls = None
 
     @classmethod

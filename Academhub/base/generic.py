@@ -98,7 +98,7 @@ class ObjectDetailView(BaseContextMixin, DetailView):
     Наследуется от BaseContextMixin и DetailView.
     Используется для отображения деталей одного объекта с поддержкой навигации.
     '''
-    template_name = 'base_ditail.html'
+    template_name = 'base_detail.html'
 
     def get_model_name(self):
         return self.model._meta.model_name

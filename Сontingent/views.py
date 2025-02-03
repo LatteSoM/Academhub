@@ -45,6 +45,7 @@ class StudentTableView(ObjectTableView):
 
 class StudentDetailView(ObjectDetailView):
     model= Student
+    template_name = 'Contingent/student_ditail.html'
 
 class StudentUpdateView(ObjectUpdateView):
     form_class = StudentForm

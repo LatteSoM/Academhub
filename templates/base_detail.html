@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block extra_css %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'Academhub/css/detail.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="detail-container">
+    <div class="detail-header">
+        {% block detail-header %}
+
+        {% endblock %}
+        <div class="header-actions">
+            <a class="btn-primary" href="{% url url_list %}">
+                Назад к таблице
+            </a>
+            {% block actions-button %}
+
+            {% endblock %}
+        </div>
+    </div>
+    
+    <div class="detail-content">
+        <div class="detail-tabs">
+            {% block tabs_button %}
+
+            {% endblock %}
+        </div>
+        
+        <div class="detail-tab-content">
+            <div id="info" class="tab-pane active">
+                {% block tabs %}
+                
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    {{ block.super }}
+    <script type="module" src="{% static 'Academhub/js/switchTab.js' %}"></script>
+{% endblock %}

@@ -16,9 +16,11 @@
                 {% endblock %}
                 {{ mobel_verbosename }} 
             </h2>
-            <a id="back-to-table" class="btn-primary" style="display: inline-block; margin: 10px 0;" href="{% url url_list %}">
-                Назад
-            </a>
+            {% block buttons %}
+                <a class="btn-primary" style="display: inline-block; margin: 10px 0;" href="{% url url_list %}">
+                    К таблице
+                </a>
+            {% endblock %}
         </div>
         <form id="edit-form" class="form" method="post">
             {% csrf_token %}
