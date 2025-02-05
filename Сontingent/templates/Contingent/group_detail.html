@@ -1,0 +1,59 @@
+{% extends 'base_detail.html' %}
+
+{% load django_tables2 %}
+{% load util %}
+
+{% block detail-header %}
+<h1>
+    Группа {{ object }}
+</h1>
+{% endblock %}
+
+{% block actions-button %}
+    <a class="btn-primary" href="{% url url_update pk=object.pk %}">
+        Изменить
+    </a>
+{% endblock %}
+
+
+{% block ditail-content %}
+
+    {{ block.super }}
+
+
+    <div class="detail-content" style="margin-top: 20px;">
+        <div class="detail-tabs">
+            <button class="detail-tab active tab-button" data-tab="info">Студенты</button>
+        </div>
+        
+        <div class="detail-tab-content">
+            {% render_table table 'inc/table/table.html' %}
+            {% include 'inc/pagination.html' with page_obj=table.page %}
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block tabs_button %}
+    <button class="detail-tab active tab-button" data-tab="info">Основная информация</button>
+{% endblock %}
+
+{% block tabs %}
+
+<div id="info" class="tab-pane active">
+    <div class="info-list">
+        <div class="info-item">
+            <span class="info-label">Номер группы</span>
+            <span class="info-value">{{ object.number }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Квалификация</span>
+            <span class="info-value">
+                    {{ object.qualification }}
+{#                    <a href="{% url object.qualification|get_url:'url_detail' object.qualification.pk %}"> #}
+{#                     </a> #}
+                </span>
+            </div>
+        </div>
+    </div>
+{% endblock %}

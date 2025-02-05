@@ -18,7 +18,6 @@ def get_field_value(field, value):
 
 @register.filter(name='is_list')
 def is_list(value):
-    print(f'I am {value}')
     return isinstance(value, list)
 
 @register.filter(name='get_list')

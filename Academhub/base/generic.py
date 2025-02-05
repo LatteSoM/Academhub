@@ -102,6 +102,18 @@ class ObjectDetailView(BaseContextMixin, DetailView):
 
     def get_model_name(self):
         return self.model._meta.model_name
+    
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        context = self.get_context_data(object=self.object)
+        self.get_table(context, request)
+        return self.render_to_response(context)
+
+    def get_table(self, context, request):
+        '''
+            Отрисовка допонительных таблиц
+        '''
+        pass
 
 
 class ObjectUpdateView(BaseContextMixin, UpdateView):

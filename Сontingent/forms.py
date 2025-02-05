@@ -1,6 +1,6 @@
 from django import forms
 
-from Academhub.models import Student
+from Academhub.models import Student, GroupStudents, Qualification
 
 
 class StudentForm(forms.ModelForm):
@@ -73,4 +73,9 @@ class StudentForm(forms.ModelForm):
             'representative_full_name',
             'representative_email',
             'note',
-        ]  # Указываем только нужные поля
+        ] 
+
+class GroupForm(forms.ModelForm):
+    class Meta:
+        model = GroupStudents
+        fields = '__all__'

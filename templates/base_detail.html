@@ -23,21 +23,23 @@
         </div>
     </div>
     
-    <div class="detail-content">
-        <div class="detail-tabs">
-            {% block tabs_button %}
+    {% block ditail-content %}
 
-            {% endblock %}
-        </div>
-        
-        <div class="detail-tab-content">
-            <div id="info" class="tab-pane active">
+        <div class="detail-content">
+            <div class="detail-tabs">
+                {% block tabs_button %}
+
+                {% endblock %}
+            </div>
+            
+            <div class="detail-tab-content">
                 {% block tabs %}
-                
+
                 {% endblock %}
             </div>
         </div>
-    </div>
+
+    {% endblock %}
 {% endblock %}
 
 {% block extra_js %}

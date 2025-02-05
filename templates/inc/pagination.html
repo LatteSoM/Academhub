@@ -1,3 +1,7 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'Academhub/css/pagination.css' %}">
+
 <div class="pagination">
     <div class="pagination-info">
         Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}.

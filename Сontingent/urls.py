@@ -6,7 +6,14 @@ urlpatterns = [
 
     path('specialization/list', SpecialtyTableView.as_view(), name='specialization_list'),
     
-    path('group/list', GroupTableView.as_view(), name='group_list'),
+    #
+    ## Group
+    #
+
+    path('group/list', GroupTableView.as_view(), name='groupstudents_list'),
+    path('group/create', GroupCreateView.as_view(), name='groupstudents_create'),
+    path('group/<int:pk>', GroupDetailView.as_view(), name='groupstudents_detail'),
+    path('group/update/<int:pk>', GroupUpdateView.as_view(), name='groupstudents_update'),
     
     #
     ## Student

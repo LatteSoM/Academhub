@@ -21,7 +21,6 @@ class ButtonLinkColumn(tables.Column):
 
     def _set_url_name(self, url_name):
         self.url_name = url_name
-        print(self.url_name)
 
     def render(self, value, record):
 

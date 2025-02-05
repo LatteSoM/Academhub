@@ -1,0 +1,117 @@
+{% extends 'base_detail.html' %}
+
+{% load util %}
+
+{% block detail-header %}
+<h1>
+    Студент {{ student.full_name }}
+</h1>
+{% endblock %}
+
+{% block actions-button %}
+    <a class="btn-primary" href="{% url url_update pk=student.pk%}">
+        Изменить
+    </a>
+{% endblock %}
+
+{% block tabs_button %}
+    <button class="detail-tab active tab-button" data-tab="info">Основная информация</button>
+    <button class="detail-tab tab-button" data-tab="education">Образование</button>
+    <button class="detail-tab tab-button" data-tab="contacts">Контакты</button>
+{% endblock %}
+
+{% block tabs %}
+
+<div id="info" class="tab-pane active">
+    <div class="info-list">
+        <div class="info-item">
+            <span class="info-label">ФИО</span>
+            <span class="info-value">{{ student.full_name }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Телефон</span>
+            <span class="info-value">{{ student.phone }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Дата рождения</span>
+            <span class="info-value">{{ student.birth_date }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">СНИЛС</span>
+            <span class="info-value">{{ student.snils }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Курс</span>
+            <span class="info-value">{{ student.get_course_display }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Группа</span>
+            <a class="info-value" href="{% url student.group|get_url:'url_detail' student.group.pk %}">
+                {{ student.group.number }}
+            </a>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Приказ о зачислении</span>
+            <span class="info-value">{{ student.admission_order }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Примечание</span>
+            <span class="info-value">{{ student.note|default:"-" }}</span>
+        </div>
+    </div>
+</div>
+
+<div id="education" class="tab-pane">
+<div class="info-list">
+    <div class="info-item">
+        <span class="info-label">База образования</span>
+        <span class="info-value">{{ student.get_education_base_display }}</span>
+    </div>
+    <div class="info-item">
+        <span class="info-label">Основа образования</span>
+        <span class="info-value">{{ student.get_education_basis_display }}</span>
+    </div>
+    <div class="info-item">
+        <span class="info-label">Приказ о переводе на 2 курс</span>
+        <span class="info-value">{{ student.transfer_to_2nd_year_order|default:"-" }}</span>
+    </div>
+    <div class="info-item">
+        <span class="info-label">Приказ о переводе на 3 курс</span>
+        <span class="info-value">{{ student.transfer_to_3rd_year_order|default:"-" }}</span>
+    </div>
+    <div class="info-item">
+        <span class="info-label">Приказ о переводе на 4 курс</span>
+        <span class="info-value">{{ student.transfer_to_4th_year_order|default:"-" }}</span>
+    </div>
+    <div class="info-item">
+        <span class="info-label">Отчислен в связи с окончанием обучения</span>
+        <span class="info-value">{{ student.expelled_due_to_graduation|yesno:"Да,Нет" }}</span>
+    </div>
+    <div class="info-item">
+        <span class="info-label">Курс, с которого ушел</span>
+        <span class="info-value">{{ student.left_course|default:"-" }}</span>
+    </div>
+</div>
+</div>
+
+<div id="contacts" class="tab-pane">
+    <div class="info-list">
+        <div class="info-item">
+            <span class="info-label">Адрес прописки</span>
+            <span class="info-value">{{ student.registration_address }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Фактический адрес</span>
+            <span class="info-value">{{ student.actual_address }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">ФИО представителя</span>
+            <span class="info-value">{{ student.representative_full_name }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Почта представителя</span>
+            <span class="info-value">{{ student.representative_email }}</span>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,3 +1,7 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'Academhub/css/form.css' %}">
+
 {% for field in form %}
     <div class="form-group">
         {{ field.errors }}

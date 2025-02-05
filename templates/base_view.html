@@ -1,15 +1,8 @@
 {% extends 'base.html' %}
 
 {% load django_tables2 %}
-{% load bootstrap4 %}
 {% load static %}
 {% load util %}
-
-{% block extra_css %}
-    {{ block.super }}
-    <link rel="stylesheet" href="{% static 'Academhub/css/form.css' %}">
-    <link rel="stylesheet" href="{% static 'Academhub/css/pagination.css' %}">
-{% endblock %}
 
 {% block content %}
 <div class="page-container">

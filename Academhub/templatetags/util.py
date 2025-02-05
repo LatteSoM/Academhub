@@ -27,3 +27,11 @@ def check_url_exists(url):
 @register.filter
 def exclude_field(form, field_name):
     return [field for field in form if field.name != field_name]
+
+@register.filter
+def get_url(model, url_name):
+    return model.get_urls()[url_name]
+
+@register.filter
+def get_item(dictionary, key):
+    return dictionary[key]
