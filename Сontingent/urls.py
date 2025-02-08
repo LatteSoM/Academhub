@@ -2,10 +2,25 @@ from .views import *
 from django.urls import path
 
 urlpatterns = [
-    path('qualification/list', QualificationTableView.as_view(), name='qualification_list'),
+    #
+    ## Specialty
+    #
 
-    path('specialization/list', SpecialtyTableView.as_view(), name='specialization_list'),
-    
+    path('specialty/list', SpecialtyTableView.as_view(), name='specialty_list'),
+    path('specialty/create', SpecialtyCreateView.as_view(), name='specialty_create'),
+    path('specialty/<int:pk>', SpecialtyDetailView.as_view(), name='specialty_detail'),
+    path('specialty/update/<int:pk>', SpecialtyUpdateView.as_view(), name='specialty_update'),
+
+    #
+    ## Qualification
+    #
+
+    path('qualification/list', QualificationTableView.as_view(), name='qualification_list'),
+    path('qualification/create', QualificationCreateView.as_view(), name='qualification_create'),
+    path('qualification/<int:pk>', QualificationDetailView.as_view(), name='qualification_detail'),
+    path('qualification/update/<int:pk>', QualificationUpdateView.as_view(), name='qualification_update'),
+
+
     #
     ## Group
     #

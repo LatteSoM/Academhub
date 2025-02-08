@@ -1,12 +1,11 @@
 {% extends 'base_detail.html' %}
 
 {% load django_tables2 %}
-{% load static %}
 {% load util %}
 
 {% block detail-header %}
 <h1>
-    Группа {{ object }}
+    Квалификация {{ object }}
 </h1>
 {% endblock %}
 
@@ -16,7 +15,6 @@
     </a>
 {% endblock %}
 
-
 {% block ditail-content %}
 
     {{ block.super }}
@@ -24,13 +22,10 @@
 
     <div class="detail-content" style="margin-top: 20px;">
         <div class="detail-tabs">
-            <button class="detail-tab active tab-button" data-tab="info">Студенты</button>
+            <button class="detail-tab active tab-button" data-tab="info">Группы</button>
         </div>
         
         <div class="detail-tab-content">
-            <a class="btn-primary">
-                Создать сессионный документ
-            </a>
             {% render_table table 'inc/table/table.html' %}
             {% include 'inc/pagination.html' with page_obj=table.page %}
         </div>
@@ -47,20 +42,19 @@
 <div id="info" class="tab-pane active">
     <div class="info-list">
         <div class="info-item">
-            <span class="info-label">Номер группы</span>
-            <span class="info-value">{{ object.number }}</span>
+            <span class="info-label">Сокращенное название</span>
+            <span class="info-value">{{ object.short_name }}</span>
         </div>
         <div class="info-item">
-            <span class="info-label">Квалификация</span>
-            <a class="info-value" href="{% url object.qualification|get_url:'url_detail' object.qualification.pk %}">
-                {{ object.qualification }}
+            <span class="info-label">Наименование</span>
+            <span class="info-value">{{ object.name }}</span>
+        </div>
+        <div class="info-item">
+            <span class="info-label">Специальность</span>
+            <a class="info-value" href="{% url object.specialty|get_url:'url_detail' object.specialty.pk %}">
+                {{ object.specialty }}
             </a>
         </div>
     </div>
 </div>
-{% endblock %}
-
-{% block extra_js %}
-    {{ block.super }}
-    <script src="{% static 'Contingent/js/group_detail.js' %}"></script>
 {% endblock %}

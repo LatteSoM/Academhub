@@ -13,9 +13,17 @@ class UserTable(BaseTable):
         verbose_name='Почта'
     )
 
+    user_permissions = table.ManyToManyColumn(
+        verbose_name='Права'
+    )
+    
+    groups = table.ManyToManyColumn(
+        verbose_name='Группы прав'
+    )
+
     class Meta:
         model = CustomUser
-        fields = ('pk', 'email', 'full_name', 'is_active', 'is_staff', 'is_teacher')
+        fields = ('pk', 'email', 'full_name', 'user_permissions', 'groups', 'is_active', 'is_staff', 'is_teacher')
 
 
 class GroupTable(BaseTable):
@@ -24,11 +32,17 @@ class GroupTable(BaseTable):
     )
 
     class Meta:
-        model = PermissionProxy
+        model = GroupProxy
         fields = ('pk', 'name', 'permissions')
 
 
 class PermissionTable(BaseTable):
+
+    content_type = table.Column(
+        verbose_name='Объект',
+        accessor='content_type.app_labeled_name'
+    )
+
     class Meta:
-        model = GroupProxy
-        fields = ('pk', 'name', 'content_type', 'codename')
+        model = PermissionProxy
+        fields = ('pk', 'name', 'content_type', 'can_add', 'can_view', 'can_delete', 'can_change')

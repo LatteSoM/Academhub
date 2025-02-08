@@ -9,7 +9,7 @@ class CheckBoxColumn(tables.Column):
         return format_html('<input type="checkbox" name="selected_ids" value="{}" />', value)
 
     def header(self):
-        return mark_safe('<input type="checkbox" name="header" />')
+        return mark_safe('<input type="checkbox" id="header"/>')
 
 class ButtonLinkColumn(tables.Column):
     def __init__(self, *args, **kwargs):

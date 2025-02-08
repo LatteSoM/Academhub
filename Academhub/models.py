@@ -24,7 +24,7 @@ url_attrs = [
     'detail',
 ]
 
-class AcademHubModel(models.Model):
+class UrlGenerateMixin:
     _urls = None
 
     @classmethod
@@ -51,7 +51,8 @@ class AcademHubModel(models.Model):
     def set_url(cls, name):
         cls._check_urls()
         cls._urls[name] = name
-    
+
+class AcademHubModel(models.Model, UrlGenerateMixin):
     def get_absolute_url(self):
         url = self.get_urls()['url_detail']
         return reverse(url, kwargs={'pk': self.pk})
@@ -110,39 +111,73 @@ class CustomUser(AcademHubModel, AbstractBaseUser, PermissionsMixin):
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
 
+    def has_perm(self, perm, obj = ...):
+        print(perm)
+        return super().has_perm(perm, obj)
+
     def __str__(self):
         return self.email
 
-class PermissionProxy(Permission):
+class PermissionManager(models.Manager):
+    def _find_permissions(self, action):
+        return self.queryset.filter(
+            content_type=self.content_type, 
+            codename__icontains=action
+        ).exists()
+
+    def get_queryset(self):
+        self.queryset = super().get_queryset()
+
+        return self.queryset
+    
+    @property
+    def can_view(self)->bool:
+        return self._find_permissions('view')
+    
+    @property
+    def can_delete(self)->bool:
+        return self._find_permissions('delete')
+
+    @property
+    def can_change(self)->bool:
+        return self._find_permissions('change')
+
+    @property
+    def can_add(self)->bool:
+        return self._find_permissions('add')
+
+    def get_queryset(self):
+        self.queryset = super().get_queryset()
+
+        queryset = self.queryset.values('content_type').annotate(
+            can_view=models.Case(
+                models.When(codename__contains='view', then=models.Value(True)),
+                default=models.Value(False),
+                output_field=models.BooleanField()
+            ),
+            can_delete=models.Case(
+                models.When(codename__contains='delete', then=models.Value(True)),
+                default=models.Value(False),
+                output_field=models.BooleanField()
+            ),
+            can_change=models.Case(
+                models.When(codename__contains='change', then=models.Value(True)),
+                default=models.Value(False),
+                output_field=models.BooleanField()
+            ),
+            can_add=models.Case(
+                models.When(codename__contains='add', then=models.Value(True)),
+                default=models.Value(False),
+                output_field=models.BooleanField()
+            )
+        ).distinct()
+
+        return queryset
+
+class PermissionProxy(Permission, UrlGenerateMixin):
     '''
         Расширение для модели Permissions. Поддерживает навигацию
     '''
-    _urls = None
-
-    @classmethod
-    def _generate_url(cls):
-        cls._urls = {}
-        
-        for attr in url_attrs:
-            prefix_name = 'url_' + attr
-            cls._urls[prefix_name] = f'{cls.__name__.lower()}_{attr}'
-
-        return cls._urls
-    
-    @classmethod
-    def _check_urls(cls):
-        if not cls._urls:
-            cls._generate_url()
-
-    @classmethod
-    def get_urls(cls):
-        cls._check_urls()
-        return cls._urls
-
-    @classmethod
-    def set_url(cls, name):
-        cls._check_urls()
-        cls._urls[name] = name
     
     def get_absolute_url(self):
         url = self.get_urls()['url_detail']
@@ -154,36 +189,10 @@ class PermissionProxy(Permission):
         verbose_name = 'Право'
         verbose_name_plural = 'Права'
 
-class GroupProxy(Group):
+class GroupProxy(Group, UrlGenerateMixin):
     '''
         Расширение для модели Group. Поддерживает навигацию
     '''
-    _urls = None
-
-    @classmethod
-    def _generate_url(cls):
-        cls._urls = {}
-        
-        for attr in url_attrs:
-            prefix_name = 'url_' + attr
-            cls._urls[prefix_name] = f'{cls.__name__.lower()}_{attr}'
-
-        return cls._urls
-    
-    @classmethod
-    def _check_urls(cls):
-        if not cls._urls:
-            cls._generate_url()
-
-    @classmethod
-    def get_urls(cls):
-        cls._check_urls()
-        return cls._urls
-
-    @classmethod
-    def set_url(cls, name):
-        cls._check_urls()
-        cls._urls[name] = name
     
     def get_absolute_url(self):
         url = self.get_urls()['url_detail']

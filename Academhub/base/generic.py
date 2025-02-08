@@ -1,9 +1,10 @@
 from django.http import JsonResponse
+from django_tables2 import RequestConfig
 from django_tables2 import SingleTableView
 from django_filters.views import FilterView
 from Academhub.base.navigation import Navigation
 from django.views.generic.base import ContextMixin
-from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic import TemplateView, ListView, DetailView, UpdateView, CreateView, DeleteView, View
 
 __all__  = [
@@ -98,6 +99,7 @@ class ObjectDetailView(BaseContextMixin, DetailView):
     Наследуется от BaseContextMixin и DetailView.
     Используется для отображения деталей одного объекта с поддержкой навигации.
     '''
+    pagination_by = 10
     template_name = 'base_detail.html'
 
     def get_model_name(self):
@@ -106,10 +108,15 @@ class ObjectDetailView(BaseContextMixin, DetailView):
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         context = self.get_context_data(object=self.object)
-        self.get_table(context, request)
+        table = self.get_table()
+        
+        if table:
+            RequestConfig(request, paginate={"per_page": self.pagination_by}).configure(table)
+            context['table'] = table
+
         return self.render_to_response(context)
 
-    def get_table(self, context, request):
+    def get_table(self):
         '''
             Отрисовка допонительных таблиц
         '''

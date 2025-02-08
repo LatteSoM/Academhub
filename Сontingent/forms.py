@@ -1,6 +1,6 @@
 from django import forms
 
-from Academhub.models import Student, GroupStudents, Qualification
+from Academhub.models import Student, GroupStudents, Specialty, Qualification
 
 
 class StudentForm(forms.ModelForm):
@@ -78,4 +78,14 @@ class StudentForm(forms.ModelForm):
 class GroupForm(forms.ModelForm):
     class Meta:
         model = GroupStudents
+        fields = '__all__'
+
+class QualificationForm(forms.ModelForm):
+    class Meta:
+        model = Qualification
+        fields = '__all__'
+
+class SpecialtyForm(forms.ModelForm ):
+    class Meta:
+        model = Specialty
         fields = '__all__'

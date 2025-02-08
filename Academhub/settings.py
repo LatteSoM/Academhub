@@ -10,10 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
-from pathlib import Path
-import importlib
-from dotenv import load_dotenv
 import os
+import importlib
+from pathlib import Path
+from dotenv import load_dotenv
 
 #тут подгружаете переменные окружения
 load_dotenv()

@@ -6,8 +6,8 @@ navigation = Navigation(
         sub_links=[
             ChildLink('Студенты', 'student_list'),
             ChildLink('Группы', 'groupstudents_list'),
-            ChildLink('Специализации', 'specialization_list'),
             ChildLink('Квалификации', 'qualification_list'),
+            ChildLink('Специализации', 'specialty_list'),
         ]
     )
 )

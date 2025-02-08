@@ -5,7 +5,12 @@
 {% for field in form %}
     <div class="form-group">
         {{ field.errors }}
-        {{ field.label_tag }}
+        <label for="{{ field.id_for_label }}">
+            {{ field.label }}
+            {% if field.field.required %}
+                <span class="required" style="color: red;">*</span>
+            {% endif %}
+        </label>
         {{ field }}
         {% if field.help_text %}
             <p class="help" id="{{ field.auto_id }}_helptext">
