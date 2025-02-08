@@ -258,7 +258,6 @@ class GroupStudents(AcademHubModel):
 
     def __str__(self):
         return self.number
-
 class Student(AcademHubModel):
     COURSE_CHOICES = (
         (1, 1),
@@ -352,6 +351,7 @@ class Gradebook(AcademHubModel):
     group = models.ForeignKey(
         GroupStudents, on_delete=models.CASCADE, related_name="gradebooks", verbose_name="Группа"
     )
+
     discipline = models.ForeignKey(
         Discipline, on_delete=models.CASCADE, related_name="gradebooks", verbose_name="Дисциплина"
     )

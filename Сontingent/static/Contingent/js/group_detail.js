@@ -5,10 +5,11 @@ const init = () => {
     const inputs = document.getElementsByName('selected_ids');
 
     header_input.addEventListener('change', function() {
+        const event
         if (this.chacked)
         {
             inputs.forEach(input =>{
-    
+                input.
             });
         }
         else
