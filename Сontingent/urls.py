@@ -37,5 +37,14 @@ urlpatterns = [
     path('student/list', StudentTableView.as_view(), name='student_list'),
     path('student/create', StudentCreateView.as_view(), name='student_create'),
     path('student/<int:pk>', StudentDetailView.as_view(), name='student_detail'),
-    path('student/update/<int:pk>', StudentUpdateView.as_view(), name='student_update')
+    path('student/update/<int:pk>', StudentUpdateView.as_view(), name='student_update'),
+
+    #
+    ## Gradebook
+    #
+    
+    path('gradebook/list', GradebookTableView.as_view(), name='gradebook_list'),
+    path('gradebook/create', GradebookCreateView.as_view(), name='gradebook_create'),
+    path('gradebook/<int:pk>', GradebookDetailView.as_view(), name='gradebook_detail'),
+    path('gradebook/update/<int:pk>', GradebookUpdateView.as_view(), name='gradebook_update')
 ]

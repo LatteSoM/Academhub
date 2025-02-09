@@ -32,23 +32,3 @@
     </div>
 
 {% endblock %}
-
-{% block tabs_button %}
-    <button class="detail-tab active tab-button" data-tab="info">Основная информация</button>
-{% endblock %}
-
-{% block tabs %}
-
-<div id="info" class="tab-pane active">
-    <div class="info-list">
-        <div class="info-item">
-            <span class="info-label">Код</span>
-            <span class="info-value">{{ object.code }}</span>
-        </div>
-        <div class="info-item">
-            <span class="info-label">Наименование</span>
-            <span class="info-value">{{ object.name }}</span>
-        </div>
-    </div>
-</div>
-{% endblock %}

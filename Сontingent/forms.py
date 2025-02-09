@@ -1,6 +1,6 @@
 from django import forms
 
-from Academhub.models import Student, GroupStudents, Specialty, Qualification
+from Academhub.models import Student, GroupStudents, Specialty, Gradebook, Qualification, CustomUser
 
 
 class StudentForm(forms.ModelForm):
@@ -89,3 +89,12 @@ class SpecialtyForm(forms.ModelForm ):
     class Meta:
         model = Specialty
         fields = '__all__'
+
+class GradebookForm(forms.ModelForm):
+    teacher = forms.ModelChoiceField(
+        queryset=CustomUser.objects.filter(is_teacher=True),
+        label='Преподаватель',
+    )
+    class Meta:
+        model = Gradebook
+        fields = ['name', 'number', 'teacher', 'group', 'discipline']

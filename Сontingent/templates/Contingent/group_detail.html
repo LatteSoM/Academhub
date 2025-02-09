@@ -28,7 +28,7 @@
         </div>
         
         <div class="detail-tab-content">
-            <a class="btn-primary">
+            <a class="btn-primary" style="display: inline-block;">
                 Создать сессионный документ
             </a>
             {% render_table table 'inc/table/table.html' %}
@@ -36,31 +36,4 @@
         </div>
     </div>
 
-{% endblock %}
-
-{% block tabs_button %}
-    <button class="detail-tab active tab-button" data-tab="info">Основная информация</button>
-{% endblock %}
-
-{% block tabs %}
-
-<div id="info" class="tab-pane active">
-    <div class="info-list">
-        <div class="info-item">
-            <span class="info-label">Номер группы</span>
-            <span class="info-value">{{ object.number }}</span>
-        </div>
-        <div class="info-item">
-            <span class="info-label">Квалификация</span>
-            <a class="info-value" href="{% url object.qualification|get_url:'url_detail' object.qualification.pk %}">
-                {{ object.qualification }}
-            </a>
-        </div>
-    </div>
-</div>
-{% endblock %}
-
-{% block extra_js %}
-    {{ block.super }}
-    <script src="{% static 'Contingent/js/group_detail.js' %}"></script>
 {% endblock %}

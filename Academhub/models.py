@@ -258,6 +258,7 @@ class GroupStudents(AcademHubModel):
 
     def __str__(self):
         return self.number
+
 class Student(AcademHubModel):
     COURSE_CHOICES = (
         (1, 1),
@@ -308,12 +309,14 @@ class Student(AcademHubModel):
         default=False, verbose_name="Отчислен в связи с окончанием обучения"
     )
     education_base = models.CharField(
-        max_length=255, verbose_name="База образования",
+        max_length=255, 
+        verbose_name="База образования",
         choices=EDUCATION_BASE_CHOICES,
         default=EDUCATION_BASE_CHOICES[0][1]
     )
     education_basis = models.CharField(
-        max_length=255, verbose_name="Основа образования",
+        max_length=255, 
+        verbose_name="Основа образования",
         choices=EDUCATION_BASIS_CHOICES,
         default=EDUCATION_BASIS_CHOICES[0][1]
     )
@@ -342,9 +345,17 @@ class Student(AcademHubModel):
         return self.full_name
 
 class Gradebook(AcademHubModel):
+    STATUS_CHOICE = (
+        ('Заполнен', 'Заполнен'),
+        ('Не заполнен', 'Не заполнен')
+    )
+
     id = models.AutoField(primary_key=True)
     teacher = models.ForeignKey(
-        CustomUser, on_delete=models.CASCADE, related_name="gradebooks", verbose_name="Преподаватель"
+        CustomUser, 
+        on_delete=models.CASCADE, 
+        related_name="gradebooks", 
+        verbose_name="Преподаватель"
     )
     number = models.CharField(max_length=50, verbose_name="Номер")
     name = models.CharField(max_length=255, verbose_name="Наименование")
@@ -355,7 +366,12 @@ class Gradebook(AcademHubModel):
     discipline = models.ForeignKey(
         Discipline, on_delete=models.CASCADE, related_name="gradebooks", verbose_name="Дисциплина"
     )
-    status = models.CharField(max_length=50, verbose_name="Статус")
+    
+    status = models.CharField(max_length=50,
+        verbose_name="Статус", 
+        choices=STATUS_CHOICE,
+        default=STATUS_CHOICE[1][1]
+    )
 
     class Meta:
         verbose_name = "Ведомость"

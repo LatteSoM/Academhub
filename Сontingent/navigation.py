@@ -8,6 +8,7 @@ navigation = Navigation(
             ChildLink('Группы', 'groupstudents_list'),
             ChildLink('Квалификации', 'qualification_list'),
             ChildLink('Специализации', 'specialty_list'),
+            ChildLink('Ведомости', 'gradebook_list'),
         ]
     )
 )

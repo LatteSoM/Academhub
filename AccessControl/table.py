@@ -45,4 +45,4 @@ class PermissionTable(BaseTable):
 
     class Meta:
         model = PermissionProxy
-        fields = ('pk', 'name', 'content_type', 'can_add', 'can_view', 'can_delete', 'can_change')
+        fields = ('pk', 'name', 'content_type', 'codename')

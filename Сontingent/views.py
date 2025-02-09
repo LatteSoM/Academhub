@@ -1,8 +1,7 @@
 from .forms import *
 from .tables import *
 from .filters import *
-from django_tables2 import RequestConfig
-from Academhub.models import GroupStudents, Qualification, Specialty, Student
+from Academhub.models import GroupStudents, Qualification, Specialty, Student, Gradebook
 from Academhub.base import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView
 
 #
@@ -16,8 +15,13 @@ class SpecialtyTableView(ObjectTableView):
 
 class SpecialtyDetailView(ObjectDetailView):
     model= Specialty
-    pagination_by = 30
+    paginate_by  = 30
     template_name = 'Contingent/specialty_detail.html'
+
+    fieldset = {
+        'Основная информация':
+            ['code', 'name'],
+    }
 
     def get_table(self):
         students = Qualification.objects.filter(specialty__pk=self.object.pk)
@@ -48,8 +52,13 @@ class QualificationTableView(ObjectTableView):
 
 class QualificationDetailView(ObjectDetailView):
     model= Qualification
-    pagination_by = 30
+    paginate_by  = 30
     template_name = 'Contingent/qualification_detail.html'
+
+    fieldset = {
+        'Основная информация':
+            ['short_name', 'name', 'specialty']
+    }
 
     def get_table(self):
         students = GroupStudents.objects.filter(qualification__pk=self.object.pk)
@@ -75,15 +84,18 @@ class GroupTableView(ObjectTableView):
     queryset = GroupStudents.objects.all()
 
 class GroupDetailView(ObjectDetailView):
-    pagination_by = 30
+    paginate_by  = 30
     model= GroupStudents
     template_name = 'Contingent/group_detail.html'
 
-    def get_table(self):
+    fieldset = {
+        'Основная информация':
+            ['number', 'qualification']
+    }
 
+    def get_table(self):
         students = Student.objects.filter(group__pk=self.object.pk)
         table = StudentTable2(data=students)
-
         return table
 
 class GroupUpdateView(ObjectUpdateView):
@@ -105,8 +117,20 @@ class StudentTableView(ObjectTableView):
 
 class StudentDetailView(ObjectDetailView):
     model= Student
-    pagination_by = 30
+    paginate_by  = 30
     template_name = 'Contingent/student_detail.html'
+
+    fieldset = {
+        'Основная информация':
+            ['full_name', 'phone', 'birth_date', 'snils', 'course', 'group', 'admission_order', 'note'],
+            
+        'Образование':
+            ['education_base', 'education_basis', 'transfer_to_2nd_year_order', 'transfer_to_3rd_year_order', 'transfer_to_4th_year_order', 'expelled_due_to_graduation', 'left_course'],
+        
+        'Контакты':
+            ['registration_address', 'actual_address', 'representative_full_name', 'representative_email'],
+    }
+
 
 class StudentUpdateView(ObjectUpdateView):
     form_class = StudentForm
@@ -115,3 +139,25 @@ class StudentUpdateView(ObjectUpdateView):
 class StudentCreateView(ObjectCreateView):
     model = Student
     form_class = StudentForm
+
+#
+## Gradebook
+#
+
+class GradebookTableView(ObjectTableView):
+    table_class = GradebookTable
+    filterset_class = GradebookFilter
+    queryset = Gradebook.objects.all()
+
+class GradebookDetailView(ObjectDetailView):
+    model= Gradebook
+    paginate_by   = 30
+    template_name = 'Contingent/student_detail.html'
+
+class GradebookUpdateView(ObjectUpdateView):
+    form_class = GradebookForm
+    queryset = Gradebook.objects.all()
+
+class GradebookCreateView(ObjectCreateView):
+    model = Gradebook
+    form_class = GradebookForm

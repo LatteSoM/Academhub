@@ -1,31 +1,28 @@
 const init = () => {
     let __selected_input = new Set();
-    
+
     const header_input = document.getElementById('header');
     const inputs = document.getElementsByName('selected_ids');
 
+    const set_selected_input = (checked, input) => {
+        checked ? __selected_input.add(input) : __selected_input.delete(input);
+        console.log(__selected_input);
+    };
+
     header_input.addEventListener('change', function() {
-        const event
-        if (this.chacked)
-        {
-            inputs.forEach(input =>{
-                input.
-            });
-        }
-        else
-        {
-            inputs.forEach(input =>{
-    
-            });
-        }
+        const event = new Event('change');
+
+        inputs.forEach(input =>{
+            input.checked = this.checked;
+            input.dispatchEvent(event);
+        });
     });
 
     inputs.forEach(input => {
         input.addEventListener('change', function() {
-            this.checked ? __selected_input.add(this) : __selected_input.delete(this);
+            set_selected_input(this.checked, this);
         });
     });
-
 };
 
 init();

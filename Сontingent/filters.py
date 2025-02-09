@@ -3,13 +3,14 @@ from cProfile import label
 from django import forms
 from django.db.models import Q
 
+from Academhub.models import Qualification, Specialty, GroupStudents, Student, Gradebook
 from django_filters import FilterSet, CharFilter, ModelChoiceFilter, ModelMultipleChoiceFilter, ChoiceFilter
 
-from Academhub.models import Qualification, Specialty, GroupStudents, Student
 
 __all__ = (
     'GroupFilter',
     'StudentFilter',
+    'GradebookFilter',
     'SpecialtyFilter',
     'QualificationFilter',
 )
@@ -87,3 +88,11 @@ class StudentFilter(FilterSet):
             Q(phone__icontains=value) |
             Q(course__icontains=value)
         )
+
+class GradebookFilter(FilterSet):
+    search = CharFilter(method='filter_search',
+                        label='Поиск')
+    
+    class Meta:
+        model = Gradebook
+        fields = '__all__'
