@@ -60,7 +60,6 @@ class StudentForm(forms.ModelForm):
             'full_name',
             'phone',
             'birth_date',
-            'course',
             'snils',
             'group',
             'admission_order',

@@ -244,9 +244,10 @@ class Student(AcademHubModel):
     )
 
     REASONS_OF_EXPELLING_CHOICES = (
-        "с/ж",
-        "Перевод"
-        #TODO: Выяснить про другие причины
+        ("с/ж", "с/ж"),
+        ("Перевод", "Перевод"),
+        ("Смерть", "Смерть"),
+        # TODO: Выяснить про другие причины
     )
 
     full_name = models.CharField(max_length=255, verbose_name="ФИО", validators=[validate_full_name])
@@ -400,7 +401,6 @@ class Gradebook(AcademHubModel):
         on_delete=models.CASCADE,
         related_name="gradebooks",
         verbose_name="Группа",
-        throught=GradebookStudents
     )
     students = models.ManyToManyField(
         Student,
