@@ -5,7 +5,7 @@ from Academhub.validators import *
 from django.shortcuts import reverse
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, Permission, Group
 
-__all__ = {
+__all__ = (
     'AcademHubModel',
     'CustomUser',
     'GroupStudents',
@@ -14,7 +14,7 @@ __all__ = {
     'Qualification',
     'Student',
     'Gradebook',
-}
+)
 
 
 url_attrs = [

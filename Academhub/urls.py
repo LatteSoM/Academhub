@@ -28,7 +28,8 @@ urlpatterns = [
     path('auth/', CustomLoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
 
-    path('AcademHub/', include('Сontingent.urls')),
+    path('ContingentApp/', include('Сontingent.urls')),
     path('AccessControl/', include('AccessControl.urls')),
+    path('GradeBookApp/', include('Gradebook.urls')),
 
 ]
