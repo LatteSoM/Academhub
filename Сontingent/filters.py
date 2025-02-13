@@ -10,7 +10,6 @@ from django_filters import FilterSet, CharFilter, ModelChoiceFilter, ModelMultip
 __all__ = (
     'GroupFilter',
     'StudentFilter',
-    'GradebookFilter',
     'SpecialtyFilter',
     'QualificationFilter',
 )
@@ -60,7 +59,7 @@ class GroupFilter(FilterSet):
         )
 
 class StudentFilter(FilterSet):
-    search = CharFilter(method='filter_search', 
+    search = CharFilter(method='filter_search',
                         label='Поиск')
 
     COURSE_CHOICES = (
@@ -89,10 +88,4 @@ class StudentFilter(FilterSet):
             Q(course__icontains=value)
         )
 
-class GradebookFilter(FilterSet):
-    search = CharFilter(method='filter_search',
-                        label='Поиск')
-    
-    class Meta:
-        model = Gradebook
-        fields = '__all__'
+
