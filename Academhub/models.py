@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.db import models
 from Academhub.validators import *
 from django.shortcuts import reverse
@@ -195,6 +197,28 @@ class GroupStudents(AcademHubModel):
         Qualification, on_delete=models.CASCADE, related_name="groups", verbose_name="Квалификация"
     )
 
+    EDUCATION_BASE_CHOICES = (
+        ("Основное общее", "Основное общее"),
+        ("Среднее общее", "Среднее общее"),
+    )
+
+    education_base = models.CharField(
+        max_length=255,
+        verbose_name="База образования",
+        choices=EDUCATION_BASE_CHOICES,
+        default=EDUCATION_BASE_CHOICES[0][1]
+    )
+
+    date_of_creation = models.DateField(
+        auto_now=True,
+        verbose_name="Дата создания"
+    )
+
+    current_course = models.IntegerField(
+        verbose_name="Курс",
+        null=False
+    )
+
     class Meta:
         verbose_name = "Группа"
         verbose_name_plural = "Группы"
@@ -203,21 +227,27 @@ class GroupStudents(AcademHubModel):
         return self.number
 
 class Student(AcademHubModel):
-    COURSE_CHOICES = (
-        (1, 1),
-        (2, 2),
-        (3, 3),
-        (4, 4)
-    )
+    # COURSE_CHOICES = (
+    #     (1, 1),
+    #     (2, 2),
+    #     (3, 3),
+    #     (4, 4)
+    # )
 
     EDUCATION_BASE_CHOICES = (
-        ("Основное общее", "9 класс"),
-        ("Среднее общее", "11 класс"),
+        ("Основное общее", "Основное общее"),
+        ("Среднее общее", "Среднее общее"),
     )
 
     EDUCATION_BASIS_CHOICES = (
-        ("Бюджет", 'Бюджетная основа'),
-        ("Внебюджет", "Внебюджетная основа")
+        ("Бюджет", 'Бюджет'),
+        ("Внебюджет", "Внебюджет")
+    )
+
+    REASONS_OF_EXPELLING_CHOICES = (
+        "с/ж",
+        "Перевод"
+        #TODO: Выяснить про другие причины
     )
 
     full_name = models.CharField(max_length=255, verbose_name="ФИО", validators=[validate_full_name])
@@ -227,11 +257,11 @@ class Student(AcademHubModel):
         verbose_name="СНИЛС", 
         validators=[validate_snils]
     )
-    course = models.IntegerField(
-        verbose_name="Курс",
-        choices=COURSE_CHOICES,
-        default=COURSE_CHOICES[0][1] 
-    )
+    # course = models.IntegerField(
+    #     verbose_name="Курс",
+    #     choices=COURSE_CHOICES,
+    #     default=COURSE_CHOICES[0][1]
+    # )
     group = models.ForeignKey(
         GroupStudents, on_delete=models.CASCADE, related_name="students", verbose_name="Группа"
     )
@@ -247,9 +277,10 @@ class Student(AcademHubModel):
     transfer_to_4th_year_order = models.CharField(
         max_length=255, verbose_name="Переводной приказ на 4 курс", blank=True, null=True
     )
-    expelled_due_to_graduation = models.BooleanField(
-        default=False, verbose_name="Отчислен в связи с окончанием обучения"
-    )
+    expelled_due_to_graduation = models.CharField(
+        default=False, max_length=255, verbose_name="Отчислен в связи с окончанием обучения",
+    blank=True, null=True)
+
     education_base = models.CharField(
         max_length=255, 
         verbose_name="База образования",
@@ -277,6 +308,13 @@ class Student(AcademHubModel):
     note = models.TextField(blank=True, null=True, verbose_name="Примечание")
     left_course = models.IntegerField(
         blank=True, null=True, verbose_name="Курс, с которого ушел"
+    )
+
+    reason_of_expelling = models.CharField(
+        max_length=255,
+        verbose_name="Причина отчисления",
+        blank=True, null=True,
+        choices=REASONS_OF_EXPELLING_CHOICES
     )
 
     class Meta:
@@ -317,9 +355,32 @@ class GradebookStudents(AcademHubModel):
     )
 
 class Gradebook(AcademHubModel):
+
     STATUS_CHOICE = (
         ('Не заполнен', 'Не заполнен'),
         ('Заполнен', 'Заполнен'),
+        ('Закрыта', 'Закрыта'),
+    )
+
+    SEMESTER_CHOICES = (
+        (1, 1),
+        (2, 2),
+        (3, 3),
+        (4, 4),
+        (5, 5),
+        (6, 6),
+        (7, 7),
+        (8, 8),
+    )
+
+    NAME_CHOICES = (
+        ("Экзаменационная ведомость", "Экзаменационная ведомость"),
+        ("Ведомость защиты курсового проекта", "Ведомость защиты курсового проекта"),
+        ("Ведомость защиты курсовой работы", "Ведомость защиты курсовой работы"),
+        ("Зачетная ведомость", "Зачетная ведомость"),
+        ("Ведомость результатов демонстрационного экзамена", "Ведомость результатов демонстрационного экзамена"),
+        ("Ведомость дифференцированного зачета", "Ведомость дифференцированного зачета"),
+        ("Ведомость успеваемости", "Ведомость успеваемости")
     )
 
     teacher = models.ForeignKey(
@@ -328,21 +389,29 @@ class Gradebook(AcademHubModel):
         related_name="gradebooks", 
         verbose_name="Преподаватель"
     )
+
     name = models.CharField(
         max_length=255,
         verbose_name="Наименование"
     )
     group = models.ForeignKey(
-        Group, 
+        GroupStudents, 
         on_delete=models.CASCADE, 
         related_name="gradebooks", 
-        verbose_name="Группа"
+        verbose_name="Группа",
+        throught=GradebookStudents
     )
     students = models.ManyToManyField(
         Student,
         verbose_name="Студенты",
         related_name="gradebooks",
         through=GradebookStudents
+    )
+    name = models.CharField(
+        max_length=255,
+        verbose_name="Наименование ведомости",
+        choices=NAME_CHOICES,
+        default=NAME_CHOICES[0][1]
     )
     discipline = models.ForeignKey(
         Discipline, 
@@ -354,8 +423,14 @@ class Gradebook(AcademHubModel):
     status = models.CharField(
         max_length=50,
         verbose_name="Статус", 
-        choices=STATUS_CHOICE,
-        default=STATUS_CHOICE[0][0]
+        default=STATUS_CHOICE[0][0],
+        null=False
+    )
+
+    semester_number = models.IntegerField(
+        verbose_name="Номер семестра",
+        choices=SEMESTER_CHOICES,
+        null=False
     )
 
     class Meta:
