@@ -65,7 +65,7 @@
 
         <div id="filters" class="tab-pane">
             <form method="get" class="form">
-                {% include 'inc/form.html' with form=filter.form|exclude_field:"search" %}
+                {% include 'inc/form/form.html' with form=filter.form|exclude_field:"search" %}
                 <button type="submit" class="btn-primary">Применить фильтры</button>
                 <a href="?" class="btn-secondary">Сбросить фильтры</a>
             </form>

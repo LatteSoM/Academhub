@@ -40,9 +40,12 @@ urlpatterns = [
     path('student/update/<int:pk>', StudentUpdateView.as_view(), name='student_update'),
 
     #
-    # Gradebook
+    ## Gradebook
     #
-
-    path('gradebook/list', GradebooktableView.as_view(), name='gradebook_list'),
+    
+    path('gradebook/list', GradebookTableView.as_view(), name='gradebook_list'),
+    path('gradebook/create', GradebookCreateView.as_view(), name='gradebook_create'),
+    path('gradebook/<int:pk>', GradebookDetailView.as_view(), name='gradebook_detail'),
+    path('gradebook/update/<int:pk>', GradebookUpdateView.as_view(), name='gradebook_update')
 
 ]

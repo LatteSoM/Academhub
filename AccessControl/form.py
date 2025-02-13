@@ -19,14 +19,12 @@ class UserForm(forms.ModelForm):
                 'placeholder': 'Иванов Иван Иванович'
             }
         ),
-        required=True
     )
 
     password = forms.Field(
         widget=forms.PasswordInput(),
         label='Пароль'
     )
-
 
     class Meta:
         model = CustomUser

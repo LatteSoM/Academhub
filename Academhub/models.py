@@ -116,63 +116,7 @@ class CustomUser(AcademHubModel, AbstractBaseUser, PermissionsMixin):
         return super().has_perm(perm, obj)
 
     def __str__(self):
-        return self.email
-
-class PermissionManager(models.Manager):
-    def _find_permissions(self, action):
-        return self.queryset.filter(
-            content_type=self.content_type, 
-            codename__icontains=action
-        ).exists()
-
-    def get_queryset(self):
-        self.queryset = super().get_queryset()
-
-        return self.queryset
-    
-    @property
-    def can_view(self)->bool:
-        return self._find_permissions('view')
-    
-    @property
-    def can_delete(self)->bool:
-        return self._find_permissions('delete')
-
-    @property
-    def can_change(self)->bool:
-        return self._find_permissions('change')
-
-    @property
-    def can_add(self)->bool:
-        return self._find_permissions('add')
-
-    def get_queryset(self):
-        self.queryset = super().get_queryset()
-
-        queryset = self.queryset.values('content_type').annotate(
-            can_view=models.Case(
-                models.When(codename__contains='view', then=models.Value(True)),
-                default=models.Value(False),
-                output_field=models.BooleanField()
-            ),
-            can_delete=models.Case(
-                models.When(codename__contains='delete', then=models.Value(True)),
-                default=models.Value(False),
-                output_field=models.BooleanField()
-            ),
-            can_change=models.Case(
-                models.When(codename__contains='change', then=models.Value(True)),
-                default=models.Value(False),
-                output_field=models.BooleanField()
-            ),
-            can_add=models.Case(
-                models.When(codename__contains='add', then=models.Value(True)),
-                default=models.Value(False),
-                output_field=models.BooleanField()
-            )
-        ).distinct()
-
-        return queryset
+        return self.full_name
 
 class PermissionProxy(Permission, UrlGenerateMixin):
     '''
@@ -204,7 +148,6 @@ class GroupProxy(Group, UrlGenerateMixin):
         verbose_name_plural = 'Группы прав'
 
 class Discipline(AcademHubModel):
-    id = models.AutoField(primary_key=True)
     code = models.CharField(max_length=50, unique=True, verbose_name="Код")
     name = models.CharField(max_length=255, verbose_name="Наименование")
     specialty = models.ForeignKey(
@@ -219,7 +162,7 @@ class Discipline(AcademHubModel):
         return self.name
 
 class Specialty(AcademHubModel):
-    id = models.AutoField(primary_key=True)
+
     code = models.CharField(max_length=50, unique=True, verbose_name="Код")
     name = models.CharField(max_length=255, verbose_name="Наименование")
 
@@ -231,7 +174,7 @@ class Specialty(AcademHubModel):
         return self.name
 
 class Qualification(AcademHubModel):
-    id = models.AutoField(primary_key=True)
+
     short_name = models.CharField(max_length=50, verbose_name="Сокращенное название")
     name = models.CharField(max_length=255, verbose_name="Наименование")
     specialty = models.ForeignKey(
@@ -246,7 +189,7 @@ class Qualification(AcademHubModel):
         return self.name
 
 class GroupStudents(AcademHubModel):
-    id = models.AutoField(primary_key=True)
+
     number = models.CharField(max_length=50, unique=True, verbose_name="Номер")
     qualification = models.ForeignKey(
         Qualification, on_delete=models.CASCADE, related_name="groups", verbose_name="Квалификация"
@@ -276,14 +219,15 @@ class Student(AcademHubModel):
         ("Бюджет", 'Бюджетная основа'),
         ("Внебюджет", "Внебюджетная основа")
     )
-    
-    id = models.AutoField(primary_key=True)
+
     full_name = models.CharField(max_length=255, verbose_name="ФИО", validators=[validate_full_name])
-    phone = models.CharField(max_length=15, verbose_name="Телефон", validators=[validate_phone])
+    phone = models.CharField(max_length=15, verbose_name="Телефон",
+                             # validators=[validate_phone]
+                             )
     birth_date = models.DateField(verbose_name="Дата рождения")
     snils = models.CharField(max_length=14, 
         verbose_name="СНИЛС", 
-        validators=[validate_snils]
+        # validators=[validate_snils]
     )
     course = models.IntegerField(
         verbose_name="Курс",
@@ -309,12 +253,14 @@ class Student(AcademHubModel):
         default=False, verbose_name="Отчислен в связи с окончанием обучения"
     )
     education_base = models.CharField(
-        max_length=255, verbose_name="База образования",
+        max_length=255, 
+        verbose_name="База образования",
         choices=EDUCATION_BASE_CHOICES,
         default=EDUCATION_BASE_CHOICES[0][1]
     )
     education_basis = models.CharField(
-        max_length=255, verbose_name="Основа образования",
+        max_length=255, 
+        verbose_name="Основа образования",
         choices=EDUCATION_BASIS_CHOICES,
         default=EDUCATION_BASIS_CHOICES[0][1]
     )
@@ -342,20 +288,77 @@ class Student(AcademHubModel):
     def __str__(self):
         return self.full_name
 
-class Gradebook(AcademHubModel):
-    id = models.AutoField(primary_key=True)
-    teacher = models.ForeignKey(
-        CustomUser, on_delete=models.CASCADE, related_name="gradebooks", verbose_name="Преподаватель"
+class GradebookStudents(AcademHubModel):
+    ASSESSMENT_CHOICES = (
+        ('Не указана', 'Не указана'),
+        ('Отлично', '5'),
+        ('Хорошо', '4'),
+        ('Удовлетворительно', '3'),
+        ('Неудовлетворительно', '2'),
+        ('Неявка', 'Неявка'),
     )
-    number = models.CharField(max_length=50, verbose_name="Номер")
-    name = models.CharField(max_length=255, verbose_name="Наименование")
+
+    student = models.ForeignKey(
+        Student,
+        on_delete=models.CASCADE,
+        verbose_name='Студент',
+    )
+    gradebook = models.ForeignKey(
+        to='Gradebook',
+        on_delete=models.CASCADE,
+        verbose_name='Ведомость',
+    )
+    ticket_number = models.PositiveIntegerField(
+        verbose_name='Номер билета',
+    )
+    grade = models.CharField(
+        choices=ASSESSMENT_CHOICES,
+        verbose_name='Оценка',
+        default=ASSESSMENT_CHOICES[0][0],
+        max_length=50,
+    )
+
+class Gradebook(AcademHubModel):
+    STATUS_CHOICE = (
+        ('Не заполнен', 'Не заполнен'),
+        ('Заполнен', 'Заполнен'),
+    )
+
+    teacher = models.ForeignKey(
+        CustomUser, 
+        on_delete=models.CASCADE, 
+        related_name="gradebooks", 
+        verbose_name="Преподаватель"
+    )
+    name = models.CharField(
+        max_length=255,
+        verbose_name="Наименование"
+    )
     group = models.ForeignKey(
-        GroupStudents, on_delete=models.CASCADE, related_name="gradebooks", verbose_name="Группа"
+        GroupStudents,
+        on_delete=models.CASCADE, 
+        related_name="gradebooks", 
+        verbose_name="Группа"
+    )
+    students = models.ManyToManyField(
+        Student,
+        verbose_name="Студенты",
+        related_name="gradebooks",
+        through=GradebookStudents
     )
     discipline = models.ForeignKey(
-        Discipline, on_delete=models.CASCADE, related_name="gradebooks", verbose_name="Дисциплина"
+        Discipline, 
+        on_delete=models.CASCADE, 
+        related_name="gradebooks", 
+        verbose_name="Дисциплина"
     )
-    status = models.CharField(max_length=50, verbose_name="Статус")
+    
+    status = models.CharField(
+        max_length=50,
+        verbose_name="Статус", 
+        choices=STATUS_CHOICE,
+        default=STATUS_CHOICE[0][0]
+    )
 
     class Meta:
         verbose_name = "Ведомость"

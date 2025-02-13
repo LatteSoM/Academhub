@@ -68,7 +68,6 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'Academhub.urls'
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

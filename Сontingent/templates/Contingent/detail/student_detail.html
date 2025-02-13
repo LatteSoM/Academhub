@@ -1,0 +1,15 @@
+{% extends 'base_detail.html' %}
+
+{% load util %}
+
+{% block detail-header %}
+<h1>
+    Студент {{ student.full_name }}
+</h1>
+{% endblock %}
+
+{% block actions-button %}
+    <a class="btn-primary" href="{% url url_update pk=student.pk%}">
+        Изменить
+    </a>
+{% endblock %}
