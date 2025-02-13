@@ -1,6 +1,6 @@
 const init = () => {
 
-    const select_group = document.getElementById('id_groups')
+    const select_group = document.getElementById('id_group')
 
     select_group.addEventListener('change', function(event) {
         group_id =  event.target.value;

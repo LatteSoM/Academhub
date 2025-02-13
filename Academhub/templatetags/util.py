@@ -59,26 +59,45 @@ def attr(object, field):
    """
    Возвращает атрибут объекта по имени поля.
    """
-   return getattr(object, field)
+   obj_field = getattr(object, field, None)
+    
+   if not obj_field:
+      class_attr = getattr(object.__class__, field, None)
+      if isinstance(class_attr, property):
+         obj_field = class_attr.__get__(object, object.__class__)
+   
+   return obj_field
 
 @register.filter
 def verbose_name(object, field):
    """
    Возвращает `verbose_name` поля объекта.
    """
-   return object._meta.get_field(field).verbose_name.title()
+   try:
+      return object._meta.get_field(field).verbose_name.title()
+   except:
+      return field
 
 @register.filter
 def is_foreign_key(model, field):
-    field = model._meta.get_field(field)
-    return field.is_relation
+   try:
+      field = model._meta.get_field(field)
+      return field.is_relation
+   except:
+      return False
 
 @register.filter
 def is_many_to_many(model, field):
-    field = model._meta.get_field(field)
-    return field.many_to_many
+   try:
+      field = model._meta.get_field(field)
+      return field.many_to_many
+   except:
+      return False
 
 @register.filter
 def is_one_to_one(model, field):
-    field = model._meta.get_field(field)
-    return field.one_to_one
+   try:
+      field = model._meta.get_field(field)
+      return field.one_to_one
+   except:
+      return False
