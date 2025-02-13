@@ -9,7 +9,6 @@ __all__ = {
     'AcademHubModel',
     'CustomUser',
     'GroupStudents',
-    'GroupPermission',
     'Discipline',
     'Specialty',
     'Qualification',
@@ -202,6 +201,13 @@ class GroupStudents(AcademHubModel):
         ("Среднее общее", "Среднее общее"),
     )
 
+    COURCE_CHOICES = (
+        ('1','1'),
+        ('2','2'),
+        ('3','3'),
+        ('4','4')
+    )
+
     education_base = models.CharField(
         max_length=255,
         verbose_name="База образования",
@@ -216,6 +222,8 @@ class GroupStudents(AcademHubModel):
 
     current_course = models.IntegerField(
         verbose_name="Курс",
+        choices=COURCE_CHOICES,
+        default=COURCE_CHOICES[0][1],
         null=False
     )
 
@@ -245,8 +253,8 @@ class Student(AcademHubModel):
     )
 
     REASONS_OF_EXPELLING_CHOICES = (
-        "с/ж",
-        "Перевод"
+        ("с/ж", "с/ж"),
+        ("Перевод", "Перевод"),
         #TODO: Выяснить про другие причины
     )
 
@@ -334,6 +342,8 @@ class GradebookStudents(AcademHubModel):
         ('Неявка', 'Неявка'),
     )
 
+
+
     student = models.ForeignKey(
         Student,
         on_delete=models.CASCADE,
@@ -390,16 +400,11 @@ class Gradebook(AcademHubModel):
         verbose_name="Преподаватель"
     )
 
-    name = models.CharField(
-        max_length=255,
-        verbose_name="Наименование"
-    )
     group = models.ForeignKey(
         GroupStudents, 
         on_delete=models.CASCADE, 
         related_name="gradebooks", 
         verbose_name="Группа",
-        throught=GradebookStudents
     )
     students = models.ManyToManyField(
         Student,
