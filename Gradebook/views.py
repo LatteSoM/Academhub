@@ -44,7 +44,7 @@ class GradebookCreateView(ObjectCreateView):
     """
     model = Gradebook
     form_class = GradebookForm
-    template_name = 'Contingent/create/grade_book.html'
+    template_name = 'Gradebook/create/grade_book.html'
     properties = {
         'group_id': ''
     }
