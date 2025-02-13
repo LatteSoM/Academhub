@@ -1,6 +1,6 @@
 from django_tables2 import tables
 from Academhub.base import BaseTable
-from Academhub.models import Qualification, Specialty, GroupStudents, Student
+from Academhub.models import Qualification, Specialty, GroupStudents, Student, Gradebook
 
 __all__ = (
     'GroupTable',
@@ -53,3 +53,12 @@ class StudentTable2(BaseTable):
         model = Student
         paginate_by=30
         fields = ('full_name', 'course',)
+
+
+class GradebookTable(BaseTable):
+    grade_books = tables.Column(verbose_name='Ведомости')
+
+    class Meta:
+        model = Gradebook
+        paginate_by = 10
+        fields = ('pk', 'name', 'group', 'teacher', 'number')

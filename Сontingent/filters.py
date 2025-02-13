@@ -87,3 +87,7 @@ class StudentFilter(FilterSet):
             Q(phone__icontains=value) |
             Q(course__icontains=value)
         )
+
+class GradebookFilter(FilterSet):
+    search = CharFilter(method='filter_search',
+                        label='Поиск')

@@ -1,9 +1,12 @@
+from .filters import GradebookFilter
 from .forms import *
 from .tables import *
 from .filters import *
 from django_tables2 import RequestConfig
-from Academhub.models import GroupStudents, Qualification, Specialty, Student
+from Academhub.models import GroupStudents, Qualification, Specialty, Student, Gradebook
 from Academhub.base import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView
+from .tables import GradebookTable
+
 
 #
 ## Specialty
@@ -115,3 +118,14 @@ class StudentUpdateView(ObjectUpdateView):
 class StudentCreateView(ObjectCreateView):
     model = Student
     form_class = StudentForm
+
+
+class GradebooktableView(ObjectTableView):
+    table_class = GradebookTable
+    filterset_class = GradebookFilter
+    queryset = Gradebook.objects.all()
+
+class GradebookDetailView(ObjectDetailView):
+    model= Gradebook
+    pagination_by = 30
+
