@@ -1,0 +1,22 @@
+{% include "django/forms/widgets/input.html" %}
+<script>
+    snils_inputs = document.querySelectorAll('input[type="snils"]');
+    
+    snils_inputs.forEach(element => {
+        element.addEventListener('input', function(event) {
+            let cleanedValue = this.value.replace(/[^0-9]/g, '');
+
+            if (cleanedValue.length > 3) {
+                cleanedValue = cleanedValue.slice(0, 3) + '-' + cleanedValue.slice(3);
+            }
+            if (cleanedValue.length > 7) {
+                cleanedValue = cleanedValue.slice(0, 7) + '-' + cleanedValue.slice(7);
+            }
+            if (cleanedValue.length > 11) {
+                cleanedValue = cleanedValue.slice(0, 11) + ' ' + cleanedValue.slice(11);
+            }
+
+            this.value = cleanedValue;
+        });
+    });
+</script>

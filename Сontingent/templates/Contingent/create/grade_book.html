@@ -1,0 +1,8 @@
+{% extends 'base_create.html' %}
+
+{% load static %}
+
+{% block extra_js %}
+    {{ block.super }}
+    <script src="{% static 'Contingent/js/grade_book_form.js' %}"></script>
+{% endblock %}

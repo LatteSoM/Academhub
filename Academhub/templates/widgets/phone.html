@@ -1,0 +1,28 @@
+{% include "django/forms/widgets/input.html" %}
+<script>
+    snils_inputs = document.querySelectorAll('input[type="phone"]');
+        
+    snils_inputs.forEach(element => {
+        element.addEventListener('input', function(event) {
+        let cleanedValue = this.value.replace(/[^0-9]/g, '');
+
+        if (cleanedValue.length > 0) {
+            cleanedValue += '+7 ' + cleanedValue.slice(1); // Кода страны
+        }
+        if (cleanedValue.length > 4) {
+            cleanedValue += ' (' + cleanedValue.slice(2) + ' '; // Код города
+        }
+        if (cleanedValue.length > 9) {
+            cleanedValue = cleanedValue.slice(0, 9) + ') ' + cleanedValue.slice(9); // Закрываем скобку
+        }
+        if (cleanedValue.length > 13) {
+            cleanedValue = cleanedValue.slice(0, 13) + '-' + cleanedValue.slice(13); // Добавляем первый дефис
+        }
+        if (cleanedValue.length > 16) {
+            cleanedValue = cleanedValue.slice(0, 16) + '-' + cleanedValue.slice(16); // Добавляем второй дефис
+        }
+
+this.value = cleanedValue;
+        });
+    });
+</script>
