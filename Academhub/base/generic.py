@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django_tables2 import RequestConfig
 from django_tables2 import SingleTableView
 from django_filters.views import FilterView
@@ -58,12 +58,17 @@ class ObjectTemplateView(NavigationContextMixin, TemplateView):
   '''
 
 
+
+from django.utils.translation import gettext as _
+
 class BaseObjectTableView(BaseContextMixin, SingleTableView):
   '''
   Базовый класс для представлений с таблицами.
   Наследуется от BaseContextMixin и SingleTableView (из django-tables2).
   Используется для отображения данных в виде таблиц с поддержкой навигации.
   '''
+
+
 
   def get_context_data(self, **kwargs):
       context = super().get_context_data(**kwargs)
@@ -110,14 +115,14 @@ class ObjectDetailView(BaseContextMixin, DetailView):
 
   def get_model_name(self):
       return self.model._meta.model_name
-  
+
   def get_context_data(self, **kwargs):
       context = super().get_context_data(**kwargs)
 
       context['fieldset'] = self.fieldset
 
       return context
-  
+
   def get(self, request, *args, **kwargs):
       self.object = self.get_object()
       context = self.get_context_data(object=self.object)
@@ -190,7 +195,7 @@ class ObjectDelete(View):
   def delete(self, request, *args, **kwargs):
       if not self.queryset:
           return JsonResponse({'error': 'Model is not specified'}, status=500)
-      
+
       pk = kwargs.get('pk')
 
       result = {}
@@ -199,7 +204,7 @@ class ObjectDelete(View):
       try:
           obj = self.queryset.get(pk=pk)
           obj.delete()
-          result[pk] = None 
+          result[pk] = None
 
       except ObjectDoesNotExist:
           status = 400
@@ -208,5 +213,5 @@ class ObjectDelete(View):
       except Exception:
           status = 500
           result[pk] = 'Server error. Try later'
-      
+
       return JsonResponse(result, status)

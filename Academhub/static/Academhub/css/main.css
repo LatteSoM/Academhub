@@ -138,3 +138,7 @@ body {
 .tab-pane.active {
     display: block;
 }
+
+.burger-menu{
+    display: none;
+}

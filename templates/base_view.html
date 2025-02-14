@@ -6,7 +6,7 @@
 
 {% block content %}
 <div class="page-container">
-    
+
     <div class="page-header">
         <h2>Таблица {{table_name}}</h2>
     </div>
@@ -55,12 +55,12 @@
             <div class="active-filters">
                 {% include 'inc/table/active_filters.html' %}
             </div>
-            
+
             {% render_table table 'inc/table/table.html' %}
 
             {% include 'inc/pagination.html' with page_obj=table.page %}
-             
-            
+
+
         </div>
 
         <div id="filters" class="tab-pane">
@@ -78,3 +78,4 @@
     {{ block.super }}
     <script type="module" src="{% static 'Academhub/js/switchTab.js' %}"></script>
 {% endblock %}
+

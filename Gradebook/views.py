@@ -5,6 +5,7 @@ from Gradebook.forms import *
 from Gradebook.tables import *
 
 
+
 # Create your views here.
 
 #
@@ -18,6 +19,18 @@ class GradebookTableView(ObjectTableView):
     table_class = GradebookTable
     filterset_class = GradebookFilter
     queryset = Gradebook.objects.all()
+
+    def get_table_class(self):
+        if self.request.GET.get("mobile") == "1":
+            return GradebookMobileTable
+        return GradebookTable
+
+    # def get_table_class(self):
+    #     """Определяет, какую таблицу использовать (мобильную или десктопную)."""
+    #     user_agent = self.request.META.get('HTTP_USER_AGENT', '').lower()
+    #     if 'mobile' in user_agent:
+    #         return GradebookMobileTable
+    #     return GradebookMobileTable
 
 class GradebookDetailView(ObjectDetailView):
     """
