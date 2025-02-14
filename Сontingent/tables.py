@@ -14,7 +14,7 @@ class SpecialtyTable(BaseTable):
     class Meta:
         model = Specialty
         paginate_by = 10
-        fields = ('pk', 'code', 'name')
+        fields = ('code', 'name')
 
 
 class QualificationTable(BaseTable):
@@ -25,7 +25,7 @@ class QualificationTable(BaseTable):
     class Meta:
         model = Qualification
         paginate_by = 10
-        fields = ('pk', 'short_name', 'name', 'specialty')
+        fields = ('short_name', 'name', 'specialty')
 
 
 class GroupTable(BaseTable):
@@ -35,7 +35,7 @@ class GroupTable(BaseTable):
     class Meta:
         model = GroupStudents
         paginate_by = 10
-        fields = ('pk', 'number', 'qualification')
+        fields = ('number', 'qualification')
 
 
 class StudentTable(BaseTable):
@@ -46,7 +46,7 @@ class StudentTable(BaseTable):
     class Meta:
         model = Student
         paginate_by = 10
-        fields = ('pk', 'full_name', 'phone', 'birth_date', 'course', 'group')
+        fields = ('full_name', 'phone', 'birth_date', 'course', 'group')
 
 class StudentTable2(BaseTable):
     class Meta:

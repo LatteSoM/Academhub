@@ -1,11 +1,12 @@
 from django_tables2 import tables
 
 from Academhub.base import BaseTable
-from Academhub.models import *
+from Academhub.models import Gradebook, GradebookStudents
 
 __all__ = (
     'GradebookTable',
     'GradebookMobileTable',
+    'GradebookStudentsTable'
 )
 
 
@@ -25,7 +26,8 @@ class GradebookTable(BaseTable):
     class Meta:
         model = Gradebook
         paginate_by=30
-        fields = ('pk', 'teacher', 'number', 'name', 'group', 'discipline', 'status')
+        fields = ('name', 'teacher', 'group', 'discipline', 'status')
+
 
 
 class GradebookMobileTable(BaseTable):
@@ -36,3 +38,15 @@ class GradebookMobileTable(BaseTable):
         model = Gradebook
         paginate_by = 30
         fields = ('pk', 'teacher', 'group')  # Только ключевые колонки
+
+
+
+
+class GradebookStudentsTable(BaseTable):
+    student = tables.Column(verbose_name='Студент')
+
+    class Meta:
+        model = GradebookStudents
+        paginate_by=30
+        fields = ('student', 'ticket_number', 'grade')
+

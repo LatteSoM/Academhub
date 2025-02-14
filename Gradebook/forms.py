@@ -1,6 +1,6 @@
 from django import forms
 
-from Academhub.models import *
+from Academhub.models import Gradebook, GradebookStudents, CustomUser, Discipline, Student, GroupStudents
 
 
 class GradebookForm(forms.ModelForm):
@@ -31,7 +31,7 @@ class GradebookForm(forms.ModelForm):
         Метакласс для настройки формы.
         """
         model = Gradebook
-        fields = ['name', 'teacher', 'discipline', 'group', 'students']
+        fields = ['name', 'semester_number', 'teacher', 'discipline', 'group', 'students']
 
     def __init__(self, *args, **kwargs):
         """
@@ -48,7 +48,7 @@ class GradebookForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         if self.group_id:
-            self.initial['groups'] = self.group_id
+            self.initial['group'] = self.group_id
 
         self.fields['students'].queryset = self.get_student_queryset()
 
@@ -75,3 +75,9 @@ class GradebookForm(forms.ModelForm):
             return Student.objects.filter(group__id=self.group_id)
         except:
             return Student.objects.none()
+
+class GradebookStudentsForm(forms.ModelForm):
+
+    class Meta:
+        model = GradebookStudents
+        fields = ()

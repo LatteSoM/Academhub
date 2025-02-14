@@ -1,11 +1,9 @@
-from datetime import datetime
-
 from django.db import models
 from Academhub.validators import *
 from django.shortcuts import reverse
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, Permission, Group
 
-__all__ = (
+__all__ = [
     'AcademHubModel',
     'CustomUser',
     'GroupStudents',
@@ -14,7 +12,7 @@ __all__ = (
     'Qualification',
     'Student',
     'Gradebook',
-)
+]
 
 
 url_attrs = [
@@ -53,7 +51,7 @@ class UrlGenerateMixin:
         cls._check_urls()
         cls._urls[name] = name
 
-class AcademHubModel(models.Model, UrlGenerateMixin):
+class AcademHubModel(UrlGenerateMixin, models.Model):
     def get_absolute_url(self):
         url = self.get_urls()['url_detail']
         return reverse(url, kwargs={'pk': self.pk})
@@ -201,6 +199,13 @@ class GroupStudents(AcademHubModel):
         ("Среднее общее", "Среднее общее"),
     )
 
+    COURCE_CHOICES = (
+        (1, 1),
+        (2, 2),
+        (3, 3),
+        (4, 4)
+    )
+
     education_base = models.CharField(
         max_length=255,
         verbose_name="База образования",
@@ -215,6 +220,8 @@ class GroupStudents(AcademHubModel):
 
     current_course = models.IntegerField(
         verbose_name="Курс",
+        choices=COURCE_CHOICES,
+        default=COURCE_CHOICES[0][1],
         null=False
     )
 
@@ -226,13 +233,6 @@ class GroupStudents(AcademHubModel):
         return self.number
 
 class Student(AcademHubModel):
-    # COURSE_CHOICES = (
-    #     (1, 1),
-    #     (2, 2),
-    #     (3, 3),
-    #     (4, 4)
-    # )
-
     EDUCATION_BASE_CHOICES = (
         ("Основное общее", "Основное общее"),
         ("Среднее общее", "Среднее общее"),
@@ -247,81 +247,48 @@ class Student(AcademHubModel):
         ("с/ж", "с/ж"),
         ("Перевод", "Перевод"),
         ("Смерть", "Смерть"),
-        # TODO: Выяснить про другие причины
     )
 
-    full_name = models.CharField(max_length=255, verbose_name="ФИО", validators=[validate_full_name])
-    phone = models.CharField(max_length=15, verbose_name="Телефон",
-                             # validators=[validate_phone]
-                             )
+    full_name = models.CharField(
+        max_length=255, 
+        verbose_name="ФИО", 
+        validators=[validate_full_name]
+    )
+    phone = models.CharField(max_length=15, verbose_name="Телефон")
     birth_date = models.DateField(verbose_name="Дата рождения")
-    snils = models.CharField(max_length=14, 
-        verbose_name="СНИЛС", 
-        # validators=[validate_snils]
-    )
-    # course = models.IntegerField(
-    #     verbose_name="Курс",
-    #     choices=COURSE_CHOICES,
-    #     default=COURSE_CHOICES[0][1]
-    # )
+    snils = models.CharField(max_length=14, verbose_name="СНИЛС")
     group = models.ForeignKey(
-        GroupStudents, on_delete=models.CASCADE, related_name="students", verbose_name="Группа"
+        'GroupStudents', on_delete=models.CASCADE, related_name="students", verbose_name="Группа"
     )
-    admission_order = models.CharField(
-        max_length=255, verbose_name="Приказ о зачислении"
-    )
-    transfer_to_2nd_year_order = models.CharField(
-        max_length=255, verbose_name="Переводной приказ на 2 курс", blank=True, null=True
-    )
-    transfer_to_3rd_year_order = models.CharField(
-        max_length=255, verbose_name="Переводной приказ на 3 курс", blank=True, null=True
-    )
-    transfer_to_4th_year_order = models.CharField(
-        max_length=255, verbose_name="Переводной приказ на 4 курс", blank=True, null=True
-    )
-    expelled_due_to_graduation = models.CharField(
-        default=False, max_length=255, verbose_name="Отчислен в связи с окончанием обучения",
-    blank=True, null=True)
-
-    education_base = models.CharField(
-        max_length=255, 
-        verbose_name="База образования",
-        choices=EDUCATION_BASE_CHOICES,
-        default=EDUCATION_BASE_CHOICES[0][1]
-    )
-    education_basis = models.CharField(
-        max_length=255, 
-        verbose_name="Основа образования",
-        choices=EDUCATION_BASIS_CHOICES,
-        default=EDUCATION_BASIS_CHOICES[0][1]
-    )
-    registration_address = models.TextField(
-        verbose_name="Адрес прописки"
-    )
-    actual_address = models.TextField(
-        verbose_name="Адрес фактический"
-    )
+    admission_order = models.CharField(max_length=255, verbose_name="Приказ о зачислении")
+    transfer_to_2nd_year_order = models.CharField(max_length=255, verbose_name="Переводной приказ на 2 курс", blank=True, null=True)
+    transfer_to_3rd_year_order = models.CharField(max_length=255, verbose_name="Переводной приказ на 3 курс", blank=True, null=True)
+    transfer_to_4th_year_order = models.CharField(max_length=255, verbose_name="Переводной приказ на 4 курс", blank=True, null=True)
+    expelled_due_to_graduation = models.CharField(max_length=255, verbose_name="Отчислен в связи с окончанием обучения", blank=True, null=True)
+    education_base = models.CharField(max_length=255, verbose_name="База образования", choices=EDUCATION_BASE_CHOICES, default=EDUCATION_BASE_CHOICES[0][1])
+    education_basis = models.CharField(max_length=255, verbose_name="Основа образования", choices=EDUCATION_BASIS_CHOICES, default=EDUCATION_BASIS_CHOICES[0][1])
+    registration_address = models.TextField(verbose_name="Адрес прописки")
+    actual_address = models.TextField(verbose_name="Адрес фактический")
     representative_full_name = models.CharField(
-        max_length=255, verbose_name="ФИО представителя", validators=[validate_full_name]
+        max_length=255, 
+        verbose_name="ФИО представителя", 
+        # validators=[validate_full_name]
     )
     representative_email = models.EmailField(
-        verbose_name="Почта представителя"
+        verbose_name="Почта представителя", 
+        # validators=[validate_email]
     )
     note = models.TextField(blank=True, null=True, verbose_name="Примечание")
-    left_course = models.IntegerField(
-        blank=True, null=True, verbose_name="Курс, с которого ушел"
-    )
-
-    reason_of_expelling = models.CharField(
-        max_length=255,
-        verbose_name="Причина отчисления",
-        blank=True, null=True,
-        choices=REASONS_OF_EXPELLING_CHOICES
-    )
+    left_course = models.IntegerField(blank=True, null=True, verbose_name="Курс, с которого ушел")
+    reason_of_expelling = models.CharField(max_length=255, verbose_name="Причина отчисления", blank=True, null=True, choices=REASONS_OF_EXPELLING_CHOICES)
 
     class Meta:
         verbose_name = "Студент"
         verbose_name_plural = "Студенты"
+
+    @property
+    def course(self):
+        return self.group.current_course
 
     def __str__(self):
         return self.full_name
@@ -337,27 +304,36 @@ class GradebookStudents(AcademHubModel):
     )
 
     student = models.ForeignKey(
-        Student,
-        on_delete=models.CASCADE,
-        verbose_name='Студент',
+        Student, 
+        on_delete=models.CASCADE, 
+        verbose_name='Студент'
     )
     gradebook = models.ForeignKey(
-        to='Gradebook',
+        'Gradebook', 
         on_delete=models.CASCADE,
-        verbose_name='Ведомость',
+        verbose_name='Ведомость'
     )
     ticket_number = models.PositiveIntegerField(
         verbose_name='Номер билета',
+        blank=True,
+        null=True
     )
     grade = models.CharField(
-        choices=ASSESSMENT_CHOICES,
-        verbose_name='Оценка',
-        default=ASSESSMENT_CHOICES[0][0],
+        choices=ASSESSMENT_CHOICES, 
+        verbose_name='Оценка', 
+        default=ASSESSMENT_CHOICES[0][0], 
         max_length=50,
+        blank=True
     )
 
-class Gradebook(AcademHubModel):
+    class Meta:
+        verbose_name = "Оценка студента"
+        verbose_name_plural = "Оценки студентов"
 
+    def __str__(self):
+        return f"{self.student.full_name} - {self.grade}"
+
+class Gradebook(AcademHubModel):
     STATUS_CHOICE = (
         ('Не заполнен', 'Не заполнен'),
         ('Заполнен', 'Заполнен'),
@@ -386,53 +362,25 @@ class Gradebook(AcademHubModel):
     )
 
     teacher = models.ForeignKey(
-        CustomUser, 
-        on_delete=models.CASCADE, 
-        related_name="gradebooks", 
-        verbose_name="Преподаватель"
-    )
-
-    name = models.CharField(
-        max_length=255,
-        verbose_name="Наименование"
+        'CustomUser', on_delete=models.CASCADE, related_name="gradebooks", verbose_name="Преподаватель"
     )
     group = models.ForeignKey(
-        GroupStudents,
-        on_delete=models.CASCADE,
-        related_name="gradebooks",
-        verbose_name="Группа",
+        GroupStudents, on_delete=models.CASCADE, related_name="gradebooks", verbose_name="Группа"
     )
     students = models.ManyToManyField(
-        Student,
-        verbose_name="Студенты",
-        related_name="gradebooks",
-        through=GradebookStudents
+        Student, verbose_name="Студенты", related_name="gradebooks", through=GradebookStudents
     )
-    name = models.CharField(
-        max_length=255,
-        verbose_name="Наименование ведомости",
-        choices=NAME_CHOICES,
-        default=NAME_CHOICES[0][1]
-    )
+    name = models.CharField(max_length=255, verbose_name="Наименование ведомости", choices=NAME_CHOICES, default=NAME_CHOICES[0][1])
     discipline = models.ForeignKey(
-        Discipline, 
-        on_delete=models.CASCADE, 
-        related_name="gradebooks", 
-        verbose_name="Дисциплина"
+        'Discipline', on_delete=models.CASCADE, related_name="gradebooks", verbose_name="Дисциплина"
     )
-    
     status = models.CharField(
-        max_length=50,
-        verbose_name="Статус", 
-        default=STATUS_CHOICE[0][0],
-        null=False
-    )
-
-    semester_number = models.IntegerField(
-        verbose_name="Номер семестра",
-        choices=SEMESTER_CHOICES,
-        null=False
-    )
+        max_length=50, 
+        verbose_name="Статус",
+        choices=STATUS_CHOICE,
+        default=STATUS_CHOICE[0][0], 
+        blank=False)
+    semester_number = models.IntegerField(verbose_name="Номер семестра", choices=SEMESTER_CHOICES, default=SEMESTER_CHOICES[0][1])
 
     class Meta:
         verbose_name = "Ведомость"

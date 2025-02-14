@@ -62,21 +62,19 @@ class ObjectTemplateView(NavigationContextMixin, TemplateView):
 from django.utils.translation import gettext as _
 
 class BaseObjectTableView(BaseContextMixin, SingleTableView):
-  '''
-  Базовый класс для представлений с таблицами.
-  Наследуется от BaseContextMixin и SingleTableView (из django-tables2).
-  Используется для отображения данных в виде таблиц с поддержкой навигации.
-  '''
+    '''
+    Базовый класс для представлений с таблицами.
+    Наследуется от BaseContextMixin и SingleTableView (из django-tables2).
+    Используется для отображения данных в виде таблиц с поддержкой навигации.
+    '''
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['table_name'] = self.get_table_name()
+        return context
 
-
-  def get_context_data(self, **kwargs):
-      context = super().get_context_data(**kwargs)
-      context['table_name'] = self.get_table_name()
-      return context
-
-  def get_table_name(self):
-      return self.get_table_class()._meta.model._meta.verbose_name_plural
+    def get_table_name(self):
+        return self.get_table_class()._meta.model._meta.verbose_name_plural
 
 class ObjectTableView(FilterView, BaseObjectTableView):
   '''
@@ -98,120 +96,119 @@ class ObjectListView(BaseContextMixin, ListView):
 
 
 class ObjectDetailView(BaseContextMixin, DetailView):
-  '''
-  Базовый класс для представлений с деталями объекта.
-  Наследуется от BaseContextMixin и DetailView.
-  Используется для отображения деталей одного объекта с поддержкой навигации.
+    '''
+    Базовый класс для представлений с деталями объекта.
+    Наследуется от BaseContextMixin и DetailView.
+    Используется для отображения деталей одного объекта с поддержкой навигации.
 
-  fieldset = {
-     'Основная информация': ['field1', 'field2'],
-     'Дополнительная информация': ['field3', 'field4'],
-  }
-  '''
-  paginate_by  = 10
-  template_name = 'base_detail.html'
+    fieldset = {
+        'Основная информация': ['field1', 'field2'],
+        'Дополнительная информация': ['field3', 'field4'],
+    }
+    '''
+    paginate_by  = 10
+    template_name = 'base_detail.html'
 
-  fieldset = {}
+    fieldset = {}
 
-  def get_model_name(self):
-      return self.model._meta.model_name
+    def get_model_name(self):
+        return self.model._meta.model_name
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['fieldset'] = self.fieldset
+        return context
+    
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        context = self.get_context_data(object=self.object)
+        table = self.get_table()
 
-  def get_context_data(self, **kwargs):
-      context = super().get_context_data(**kwargs)
+        if table:
+            RequestConfig(request, paginate={"per_page": self.paginate_by }).configure(table)
+            context['table'] = table
 
-      context['fieldset'] = self.fieldset
+        return self.render_to_response(context)
 
-      return context
-
-  def get(self, request, *args, **kwargs):
-      self.object = self.get_object()
-      context = self.get_context_data(object=self.object)
-      table = self.get_table()
-
-      if table:
-          RequestConfig(request, paginate={"per_page": self.paginate_by }).configure(table)
-          context['table'] = table
-
-      return self.render_to_response(context)
-
-  def get_table(self):
-      '''
-          Отрисовка допонительных таблиц
-      '''
-      pass
+    def get_table(self):
+        '''
+            Отрисовка допонительных таблиц
+        '''
+        pass
 
 
 class ObjectUpdateView(BaseContextMixin, UpdateView):
-  '''
-  Базовый класс для представлений с обновлением объекта.
-  Наследуется от BaseContextMixin и UpdateView.
-  Используется для редактирования существующего объекта с поддержкой навигации.
-  '''
-  template_name = 'base_update.html'
+    '''
+    Базовый класс для представлений с обновлением объекта.
+    Наследуется от BaseContextMixin и UpdateView.
+    Используется для редактирования существующего объекта с поддержкой навигации.
+    '''
+    template_name = 'base_update.html'
 
-  def get_context_data(self, **kwargs):
-      context = super().get_context_data(**kwargs)
-      context['mobel_verbosename'] = self.get_verbose_name()
-      return context
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['mobel_verbosename'] = self.get_verbose_name()
+        return context
 
-  def get_verbose_name(self):
-      model_class = self.queryset.model
-      return model_class._meta.verbose_name
+    def get_verbose_name(self):
+        model_class = self.queryset.model
+        return model_class._meta.verbose_name
 
 
 class ObjectCreateView(BaseContextMixin, CreateView):
-  '''
-  Базовый класс для представлений с созданием объекта.
-  Наследуется от BaseContextMixin и CreateView.
-  Используется для создания нового объекта с поддержкой навигации.
-  '''
-  template_name = 'base_create.html'
+    '''
+    Базовый класс для представлений с созданием объекта.
+    Наследуется от BaseContextMixin и CreateView.
+    Используется для создания нового объекта с поддержкой навигации.
+    '''
+    template_name = 'base_create.html'
 
-  def get_context_data(self, **kwargs):
-      context = super().get_context_data(**kwargs)
-      context['mobel_verbosename'] = self.get_verbose_name()
-      return context
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['mobel_verbosename'] = self.get_verbose_name()
+        return context
 
-  def get_verbose_name(self):
-      return self.model._meta.verbose_name
+    def get_verbose_name(self):
+        return self.model._meta.verbose_name
 
-  def get_model_name(self):
-      return self.model._meta.model_name
+    def get_model_name(self):
+        return self.model._meta.model_name
 
 class ObjectDeleteView(BaseContextMixin, DeleteView):
-  '''
-      Базовый класс для представлений с удалением объекта.
-      Наследуется от BaseContextMixin.
-      Используется для удаления объекта с поддержкой навигации и возможностью отмены.
-  '''
+    '''
+        Базовый класс для представлений с удалением объекта.
+        Наследуется от BaseContextMixin.
+        Используется для удаления объекта с поддержкой навигации и возможностью отмены.
+    '''
 
 class ObjectDelete(View):
-  '''
-  Базовый класс для для удалением объекта.
-  Наследуется от View.
-  '''
-  queryset = None
+    '''
+    Базовый класс для для удалением объекта.
+    Наследуется от View.
+    '''
+    queryset = None
 
-  def delete(self, request, *args, **kwargs):
-      if not self.queryset:
-          return JsonResponse({'error': 'Model is not specified'}, status=500)
 
-      pk = kwargs.get('pk')
+    def delete(self, request, *args, **kwargs):
+        if not self.queryset:
+            return JsonResponse({'error': 'Model is not specified'}, status=500)
+        
+        pk = kwargs.get('pk')
 
-      result = {}
-      status = 200
+        result = {}
+        status = 200
 
-      try:
-          obj = self.queryset.get(pk=pk)
-          obj.delete()
-          result[pk] = None
+        try:
+            obj = self.queryset.get(pk=pk)
+            obj.delete()
+            result[pk] = None 
 
-      except ObjectDoesNotExist:
-          status = 400
-          result[pk] = 'Object not found'
+        except ObjectDoesNotExist:
+            status = 400
+            result[pk] = 'Object not found'
 
-      except Exception:
-          status = 500
-          result[pk] = 'Server error. Try later'
-
-      return JsonResponse(result, status)
+        except Exception:
+            status = 500
+            result[pk] = 'Server error. Try later'
+        
+        return JsonResponse(result, status)

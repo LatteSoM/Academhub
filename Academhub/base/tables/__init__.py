@@ -1,15 +1,15 @@
 from .column import *
 
 class BaseTable(tables.Table):
-    selection = CheckBoxColumn(accessor='pk', orderable=False, verbose_name='')
+    # selection = CheckBoxColumn(accessor='pk', orderable=False, verbose_name='')
 
     edition = ButtonLinkColumn(accessor='pk', text='Изменить', verbose_name='')
     
     view_detail = ButtonLinkColumn(accessor='pk', text='Просмотреть', verbose_name='')
 
     def __init__(self, *args, **kwargs):
-        if 'selection' not in self._meta.fields:
-            self._meta.fields = ('selection',) + self._meta.fields
+        # if 'selection' not in self._meta.fields:
+        #     self._meta.fields = ('selection',) + self._meta.fields
         
         if 'edition' not in self._meta.fields:
             self._meta.fields += ('edition', )

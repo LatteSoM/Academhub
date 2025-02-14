@@ -1,8 +1,8 @@
-from django.shortcuts import render
-from Academhub.base import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView
-from Gradebook.filters import *
 from Gradebook.forms import *
 from Gradebook.tables import *
+from Gradebook.filters import *
+from Academhub.models import GradebookStudents
+from Academhub.base import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView
 
 
 
@@ -38,11 +38,17 @@ class GradebookDetailView(ObjectDetailView):
     """
     model= Gradebook
     paginate_by   = 30
+    template_name = 'Gradebook/detail/gradebook_student.html'
 
     fieldset = {
         'Основная информация':
             ['name', 'teacher', 'status', ]
     }
+
+    def get_table(self):
+        students = GradebookStudents.objects.filter(gradebook__pk=self.object.pk)
+        table = GradebookStudentsTable(data=students)
+        return table
 
 class GradebookUpdateView(ObjectUpdateView):
     """

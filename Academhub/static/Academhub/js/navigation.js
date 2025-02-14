@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function () {
     window.addEventListener('resize', () => {
         if (window.innerWidth > 768) {
             sidebar.classList.remove('open');
-            burgerMenu.querySelector('.material-icons').textContent = 'menu';
+            // burgerMenu.querySelector('.material-icons').textContent = 'menu';
         }
     });
 });

@@ -1,0 +1,39 @@
+{% extends 'base_detail.html' %}
+
+{% load django_tables2 %}
+{% load util %}
+
+{% block detail-header %}
+<h1>
+    Ведомость {{object}}
+</h1>
+{% endblock %}
+
+{% block actions-button %}
+    <a class="btn-primary" href="{% url url_update pk=object.pk %}">
+        Изменить
+    </a>
+    <a class="btn-primary" href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank">
+        Скачать
+    </a>
+{% endblock %}
+
+{% block ditail-content %}
+
+    {{ block.super }}
+    
+    <div class="detail-content" style="margin-top: 20px;">
+        <div class="detail-tabs">
+            <button class="detail-tab active tab-button" data-tab="info">Квалификации</button>
+        </div>
+        
+        <div class="detail-tab-content">
+            <a class="btn-primary" href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank">
+                Заполнить ведомость
+            </a>
+            {% render_table table 'inc/table/table.html' %}
+            {% include 'inc/pagination.html' with page_obj=table.page %}
+        </div>
+    </div>
+
+{% endblock %}
