@@ -1,10 +1,11 @@
 from django_tables2 import tables
 
 from Academhub.base import BaseTable
-from Academhub.models import *
+from Academhub.models import Gradebook, GradebookStudents
 
 __all__ = (
     'GradebookTable',
+    'GradebookStudentsTable'
 )
 
 
@@ -24,4 +25,13 @@ class GradebookTable(BaseTable):
     class Meta:
         model = Gradebook
         paginate_by=30
-        fields = ('pk', 'teacher', 'number', 'name', 'group', 'discipline', 'status')
+        fields = ('name', 'teacher', 'group', 'discipline', 'status')
+
+
+class GradebookStudentsTable(BaseTable):
+    student = tables.Column(verbose_name='Студент')
+
+    class Meta:
+        model = GradebookStudents
+        paginate_by=30
+        fields = ('student', 'ticket_number', 'grade')
