@@ -185,11 +185,10 @@ class StudentUpdateView(ObjectUpdateView):
     form_class = StudentForm
     queryset = Student.objects.all()
 
+
 class StudentCreateView(ObjectCreateView):
     """
     Класс для создания нового студента.
     """
     model = Student
     form_class = StudentForm
-
-
