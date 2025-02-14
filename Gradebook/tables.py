@@ -5,6 +5,7 @@ from Academhub.models import Gradebook, GradebookStudents
 
 __all__ = (
     'GradebookTable',
+    'GradebookMobileTable',
     'GradebookStudentsTable'
 )
 
@@ -28,6 +29,19 @@ class GradebookTable(BaseTable):
         fields = ('name', 'teacher', 'group', 'discipline', 'status')
 
 
+
+class GradebookMobileTable(BaseTable):
+    teacher = tables.Column(verbose_name='Учитель')
+    group = tables.Column(verbose_name='Группа')
+
+    class Meta:
+        model = Gradebook
+        paginate_by = 30
+        fields = ('pk', 'teacher', 'group')  # Только ключевые колонки
+
+
+
+
 class GradebookStudentsTable(BaseTable):
     student = tables.Column(verbose_name='Студент')
 
@@ -35,3 +49,4 @@ class GradebookStudentsTable(BaseTable):
         model = GradebookStudents
         paginate_by=30
         fields = ('student', 'ticket_number', 'grade')
+

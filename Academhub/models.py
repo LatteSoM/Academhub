@@ -315,7 +315,7 @@ class GradebookStudents(AcademHubModel):
         verbose_name='Ведомость'
     )
     ticket_number = models.PositiveIntegerField(
-        verbose_name='Номер билета',
+        verbose_name='№ билета',
         blank=True,
         null=True
     )

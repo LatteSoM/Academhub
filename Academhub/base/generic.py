@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django_tables2 import RequestConfig
 from django_tables2 import SingleTableView
 from django_filters.views import FilterView
@@ -58,6 +58,9 @@ class ObjectTemplateView(NavigationContextMixin, TemplateView):
   '''
 
 
+
+from django.utils.translation import gettext as _
+
 class BaseObjectTableView(BaseContextMixin, SingleTableView):
     '''
     Базовый класс для представлений с таблицами.
@@ -113,9 +116,7 @@ class ObjectDetailView(BaseContextMixin, DetailView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         context['fieldset'] = self.fieldset
-
         return context
     
     def get(self, request, *args, **kwargs):
@@ -186,6 +187,7 @@ class ObjectDelete(View):
     Наследуется от View.
     '''
     queryset = None
+
 
     def delete(self, request, *args, **kwargs):
         if not self.queryset:
