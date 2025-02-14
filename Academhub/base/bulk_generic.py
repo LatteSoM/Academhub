@@ -1,60 +1,49 @@
-from .generic import NavigationContextMixin
+from django.shortcuts import render
+from django.views.generic import View
 from django.forms import modelformset_factory
-from django.views.generic import UpdateView
+from .generic import NavigationContextMixin
 
 __all__ = (
     'BulkUpdateView',
 )
 
-class BulkUpdateView(NavigationContextMixin, UpdateView):
-    """
-    View for updating multiple objects using a formset.
-    """
+class BulkUpdateView(NavigationContextMixin, View):
+    extra = 0
     model = None
-    queryset = None
     form_class = None
+    success_url = None
+    template_name = ''
 
     def get_formset_class(self):
-        """
-        Возвращает класс formset. Если formset_class не указан, создает его на основе model и form_class.
-        """
-        if self.formset_class:
-            return self.formset_class
         return modelformset_factory(
-            self.model,
+            extra=self.extra,
+            model=self.model,
             form=self.form_class,
-            extra=0
         )
+    
+    def get_formset(self):
+        return self.get_formset_class()(queryset=self.get_queryset())
 
     def get_queryset(self):
-        """
-        Возвращает QuerySet для объектов, которые будут редактироваться.
-        """
-        if self.queryset is not None:
-            return self.queryset
         return self.model.objects.all()
-
-    def get_formset(self):
-        """
-        Возвращает инициализированный formset.
-        """
+    
+    def save_form(self, request):
         FormSet = self.get_formset_class()
-        return FormSet(queryset=self.get_queryset())
+        formset = FormSet(request.POST, request.FILES)
+        if formset.is_valid():
+            instances = formset.save(commit=False)
+            for instance in instances:
+                instance.save()
 
-    def get_context_data(self, **kwargs):
-        """
-        Добавляет formset в контекст шаблона.
-        """
-        context = super().get_context_data(**kwargs)
-        context['formset'] = self.get_formset()
-        return context
+        return formset
+    
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(formset=self.get_formset())
+        return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
-        """
-        Обрабатывает POST-запрос и сохраняет изменения в formset.
-        """
-        FormSet = self.get_formset_class()
-        formset = FormSet(request.POST)
-
-        # Если форма невалидна, возвращаем форму с ошибками
-        return self.render_to_response(self.get_context_data(formset=formset))
+        """Обрабатывает POST-запрос, валидирует и сохраняет formset."""
+        return render(request, 
+            self.template_name, 
+            self.get_context_data(formset=self.save_form(request))
+        )

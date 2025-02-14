@@ -1,11 +1,45 @@
 from Gradebook.forms import *
 from Gradebook.tables import *
 from Gradebook.filters import *
+from Gradebook.mixins import GradeBookMixin
+from django.shortcuts import get_object_or_404
 from Academhub.models import GradebookStudents
-from Academhub.base import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView
+from Academhub.base import BulkUpdateView, ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView
 
-
+#
 # Create your views here.
+#
+
+class GradebookStudentBulkUpdateView(BulkUpdateView):
+    model = GradebookStudents
+    form_class = GradebookStudentsForm
+    template_name = 'Gradebook/create/grade_book_students.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        self.gradebook_pk = self.kwargs.get('pk', None)
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_queryset(self):
+        return self.model.objects.filter(gradebook__pk = self.gradebook_pk)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        self.gradebook = get_object_or_404(Gradebook, pk=self.gradebook_pk)
+        context['gradebook'] = self.gradebook
+        return context
+    
+    def save_form(self, request):
+        form = super().save_form(request)
+
+        if form.is_valid():
+            gradebook = get_object_or_404(
+                Gradebook, 
+                pk=self.gradebook_pk
+            )
+            gradebook.status = Gradebook.STATUS_CHOICE[1][1]
+            gradebook.save()
+
+        return form
 
 #
 ## Gradebook
@@ -37,14 +71,19 @@ class GradebookDetailView(ObjectDetailView):
         table = GradebookStudentsTable(data=students)
         return table
 
-class GradebookUpdateView(ObjectUpdateView):
+class GradebookUpdateView(GradeBookMixin, ObjectUpdateView):
     """
     Класс для обновления информации об учебном журнале.
     """
     form_class = GradebookForm
     queryset = Gradebook.objects.all()
+    template_name = 'Gradebook/update/grade_book.html'
+    properties = {
+        'group_id': ''
+    }
+    
 
-class GradebookCreateView(ObjectCreateView):
+class GradebookCreateView(GradeBookMixin, ObjectCreateView):
     """
     Класс для создания нового учебного журнала.
     """
@@ -54,31 +93,3 @@ class GradebookCreateView(ObjectCreateView):
     properties = {
         'group_id': ''
     }
-
-    def get_properties(self, request):
-        """
-        Получает id группы из запроса и сохраняет его в словаре properties.
-        """
-        self.properties['group_id'] = request.GET.get('group_id')
-
-    def get_form_kwargs(self):
-        """
-        Добавляет словарь properties в аргументы формы.
-        """
-        kwargs = super().get_form_kwargs()
-        kwargs['properties'] = self.properties
-        return kwargs
-
-    def get(self, request, *args, **kwargs):
-        """
-        Обрабатывает GET-запрос.
-        """
-        self.get_properties(request)
-        return super().get(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        """
-        Обрабатывает POST-запрос.
-        """
-        self.get_properties(request)
-        return super().post(request, *args, **kwargs)

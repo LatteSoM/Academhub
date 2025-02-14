@@ -320,9 +320,9 @@ class GradebookStudents(AcademHubModel):
         null=True
     )
     grade = models.CharField(
-        choices=ASSESSMENT_CHOICES, 
         verbose_name='Оценка', 
-        default=ASSESSMENT_CHOICES[0][0], 
+        choices=ASSESSMENT_CHOICES, 
+        default=ASSESSMENT_CHOICES[0][1], 
         max_length=50,
         blank=True
     )
