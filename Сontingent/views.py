@@ -1,7 +1,8 @@
 from .forms import *
 from .tables import *
 from .filters import *
-from Academhub.models import GroupStudents, Qualification, Specialty, Student
+from Gradebook.tables import GradebookTable2
+from Academhub.models import GroupStudents, Qualification, Specialty, Student, Gradebook
 from Academhub.base import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView
 
 
@@ -30,10 +31,10 @@ class SpecialtyDetailView(ObjectDetailView):
             ['code', 'name'],
     }
 
-    def get_table(self):
+    def get_tables(self):
         students = Qualification.objects.filter(specialty__pk=self.object.pk)
         table = QualificationTable(data=students)
-        return table
+        return [table]
 
 class SpecialtyUpdateView(ObjectUpdateView):
     """
@@ -82,10 +83,10 @@ class QualificationDetailView(ObjectDetailView):
             ['short_name', 'name', 'specialty']
     }
 
-    def get_table(self):
+    def get_tables(self):
         students = GroupStudents.objects.filter(qualification__pk=self.object.pk)
         table = GroupTable(data=students)
-        return table
+        return [table]
 
 class QualificationUpdateView(ObjectUpdateView):
     """
@@ -127,10 +128,14 @@ class GroupDetailView(ObjectDetailView):
             ['number', 'qualification']
     }
 
-    def get_table(self):
+    def get_tables(self):
         students = Student.objects.filter(group__pk=self.object.pk)
         table = StudentTable2(data=students)
-        return table
+
+        gradebooks = Gradebook.objects.filter(group__pk=self.object.pk)
+        table2 = GradebookTable2(data=gradebooks)
+
+        return [table, table2]
 
 class GroupUpdateView(ObjectUpdateView):
     """
@@ -191,5 +196,3 @@ class StudentCreateView(ObjectCreateView):
     """
     model = Student
     form_class = StudentForm
-
-

@@ -31,8 +31,10 @@
             <a class="btn-primary" href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank">
                 Заполнить ведомость
             </a>
-            {% render_table table 'inc/table/table.html' %}
-            {% include 'inc/pagination.html' with page_obj=table.page %}
+            {% with table=tables.0 %}
+                {% render_table table 'inc/table/table.html' %}
+                {% include 'inc/pagination.html' with page_obj=table.page %}
+            {% endwith %}
         </div>
     </div>
 
