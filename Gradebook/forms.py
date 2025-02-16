@@ -22,6 +22,7 @@ class GradebookForm(forms.ModelForm):
     students = forms.ModelMultipleChoiceField(
         queryset=Student.objects.all(),
         label='Студенты',
+        widget=forms.CheckboxSelectMultiple()
     )
 
     group_id = None

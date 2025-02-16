@@ -36,11 +36,14 @@ class GroupForm(forms.ModelForm):
     )
     permissions = forms.ModelMultipleChoiceField(
         queryset=PermissionProxy.objects.all(),
-        label='Права'
+        label='Права',
+        widget=forms.CheckboxSelectMultiple(),
     )
     users = forms.ModelMultipleChoiceField(
         queryset=CustomUser.objects.all(),
-        label='Пользователи'
+        label='Пользователи',
+        widget=forms.CheckboxSelectMultiple(),
+
     )
 
     class Meta:
@@ -61,6 +64,7 @@ class PermissionForm(forms.ModelForm):
     content_type = forms.ModelMultipleChoiceField(
         queryset=ContentType.objects.all(),
         label = 'Модели',
+        widget=forms.CheckboxSelectMultiple(),
     )
 
     class Meta:
