@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% load util %}
+
+{% block content %}
+    <div class="page-container">
+        <div class="page-header">
+            <h2>
+                {% block form_title %}
+                    Ведомость
+                {% endblock %}
+                {{ gradebook }} 
+                № {{gradebook.pk}}
+            </h2>
+            {% block buttons %}
+                <a class="btn-primary" style="display: inline-block; margin: 10px 0;" href="{% url gradebook|get_url:'url_detail' gradebook.pk %}">
+                    К ведомости
+                </a>
+            {% endblock %}
+        </div>
+        <form class="multi-form" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% include 'inc/form/form_set.html' %}
+            <button class="btn-primary" type="submit">
+                Заполнить
+            </button>
+        </form>
+    </div>
+{% endblock  %}
+
+{% block extra_js %}
+    {{ block.super }}
+    <script>
+        
+    </script>
+{% endblock %}

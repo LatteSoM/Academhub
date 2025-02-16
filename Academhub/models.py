@@ -247,6 +247,7 @@ class Student(AcademHubModel):
         ("с/ж", "с/ж"),
         ("Перевод", "Перевод"),
         ("Смерть", "Смерть"),
+        #TODO: Выяснить про другие причины
     )
 
     full_name = models.CharField(
@@ -319,9 +320,9 @@ class GradebookStudents(AcademHubModel):
         null=True
     )
     grade = models.CharField(
-        choices=ASSESSMENT_CHOICES, 
         verbose_name='Оценка', 
-        default=ASSESSMENT_CHOICES[0][0], 
+        choices=ASSESSMENT_CHOICES, 
+        default=ASSESSMENT_CHOICES[0][1], 
         max_length=50,
         blank=True
     )
@@ -362,10 +363,16 @@ class Gradebook(AcademHubModel):
     )
 
     teacher = models.ForeignKey(
-        'CustomUser', on_delete=models.CASCADE, related_name="gradebooks", verbose_name="Преподаватель"
+        'CustomUser', 
+        on_delete=models.CASCADE, 
+        related_name="gradebooks",
+        verbose_name="Преподаватель"
     )
     group = models.ForeignKey(
-        GroupStudents, on_delete=models.CASCADE, related_name="gradebooks", verbose_name="Группа"
+        GroupStudents, 
+        on_delete=models.CASCADE, 
+        related_name="gradebooks",
+        verbose_name="Группа"
     )
     students = models.ManyToManyField(
         Student, verbose_name="Студенты", related_name="gradebooks", through=GradebookStudents

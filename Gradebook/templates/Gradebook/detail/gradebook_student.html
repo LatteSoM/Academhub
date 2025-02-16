@@ -28,7 +28,7 @@
         </div>
         
         <div class="detail-tab-content">
-            <a class="btn-primary" href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank">
+            <a class="btn-primary" href="{% url 'gradebookstudents_bulk_create' pk=object.pk %}">
                 Заполнить ведомость
             </a>
             {% render_table table 'inc/table/table.html' %}

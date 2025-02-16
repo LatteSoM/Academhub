@@ -20,6 +20,8 @@ from django.urls import path, include
 from django.contrib.auth.views import LogoutView
 
 urlpatterns = [
+    path("prometheus/", include("django_prometheus.urls")),
+    
     path('admin/', admin.site.urls),
 
     path('', HomeView.as_view(), name='home'),

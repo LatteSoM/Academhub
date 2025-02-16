@@ -1,4 +1,5 @@
 from .tables import *
+from .bulk_generic import *
 from .navigation import Navigation, ParentLink, ChildLink
 from .generic import ObjectCreateView, ObjectDeleteView, ObjectDetailView, ObjectListView, ObjectTemplateView, ObjectUpdateView, ObjectTableView, DeleteView
 
@@ -13,6 +14,8 @@ __all__ = [
     "EmailColumn",
 
     "AcademHubModel",
+
+    "BulkUpdateView",
 
     'DeleteView',
     'ObjectListView',
