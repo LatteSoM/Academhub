@@ -254,7 +254,7 @@ class Student(AcademHubModel):
         verbose_name="ФИО", 
         validators=[validate_full_name]
     )
-    phone = models.CharField(max_length=15, verbose_name="Телефон")
+    phone = models.CharField(max_length=18, verbose_name="Телефон")
     birth_date = models.DateField(verbose_name="Дата рождения")
     snils = models.CharField(max_length=14, verbose_name="СНИЛС")
     group = models.ForeignKey(

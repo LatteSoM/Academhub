@@ -28,13 +28,19 @@ class StudentForm(forms.ModelForm):
         )
     )
 
+    # phone = forms.CharField(
+    #     label='Телефон',
+    #     max_length=20,
+    #     # widget=widgets.Phone(attrs={
+    #     #     'placeholder': '+7 (XXX) XXX-XX-XX',
+    #     #     'class': 'delete-arrow-input-number'
+    #     # }),
+    # )
+
     phone = forms.CharField(
         label='Телефон',
-        max_length=20,
-        # widget=widgets.Phone(attrs={
-        #     'placeholder': '+7 (XXX) XXX-XX-XX',
-        #     'class': 'delete-arrow-input-number'
-        # }),
+        max_length=19,
+        widget=widgets.Phone(attrs={'class': 'phone-input'})
     )
 
     snils = forms.CharField(

@@ -1,28 +1,44 @@
 {% include "django/forms/widgets/input.html" %}
 <script>
-    snils_inputs = document.querySelectorAll('input[type="phone"]');
-        
-    snils_inputs.forEach(element => {
-        element.addEventListener('input', function(event) {
-        let cleanedValue = this.value.replace(/[^0-9]/g, '');
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll('input[data-mask="phone"]').forEach(input => {
+            input.addEventListener("input", function (event) {
+                let numbers = input.value.replace(/\D/g, ""); // Оставляем только цифры
 
-        if (cleanedValue.length > 0) {
-            cleanedValue += '+7 ' + cleanedValue.slice(1); // Кода страны
-        }
-        if (cleanedValue.length > 4) {
-            cleanedValue += ' (' + cleanedValue.slice(2) + ' '; // Код города
-        }
-        if (cleanedValue.length > 9) {
-            cleanedValue = cleanedValue.slice(0, 9) + ') ' + cleanedValue.slice(9); // Закрываем скобку
-        }
-        if (cleanedValue.length > 13) {
-            cleanedValue = cleanedValue.slice(0, 13) + '-' + cleanedValue.slice(13); // Добавляем первый дефис
-        }
-        if (cleanedValue.length > 16) {
-            cleanedValue = cleanedValue.slice(0, 16) + '-' + cleanedValue.slice(16); // Добавляем второй дефис
-        }
+                if (numbers.startsWith("8")) numbers = "7" + numbers.slice(1); // Если начинается с 8, заменяем на 7
+                if (!numbers.startsWith("7")) numbers = "7" + numbers; // Если не начинается с 7, добавляем 7
 
-this.value = cleanedValue;
+                let formatted = "+7 ";
+                if (numbers.length > 1) formatted += "(" + numbers.substring(1, 4);
+                if (numbers.length >= 5) formatted += ") " + numbers.substring(4, 7);
+                if (numbers.length >= 8) formatted += "-" + numbers.substring(7, 9);
+                if (numbers.length >= 10) formatted += "-" + numbers.substring(9, 11);
+
+                input.value = formatted;
+            });
+
+            input.addEventListener("keydown", function (event) {
+                if (input.selectionStart <= 3 && (event.key === "Backspace" || event.key === "Delete")) {
+                    event.preventDefault(); // Блокируем удаление "+7"
+                }
+            });
+
+            input.addEventListener("paste", function (event) {
+                event.preventDefault();
+                let paste = (event.clipboardData || window.clipboardData).getData("text");
+                paste = paste.replace(/\D/g, ""); // Оставляем только цифры
+                if (paste.startsWith("8")) paste = "7" + paste.slice(1);
+                if (!paste.startsWith("7")) paste = "7" + paste;
+
+                let formatted = "+7 ";
+                if (paste.length > 1) formatted += "(" + paste.substring(1, 4);
+                if (paste.length >= 5) formatted += ") " + paste.substring(4, 7);
+                if (paste.length >= 8) formatted += "-" + paste.substring(7, 9);
+                if (paste.length >= 10) formatted += "-" + paste.substring(9, 11);
+
+                input.value = formatted;
+            });
         });
     });
 </script>
+
