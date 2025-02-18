@@ -2,7 +2,7 @@ import os
 import sys
 import django
 
-from openpyxl import Workbook, load_workbook
+from openpyxl import Workbook
 
 # Определение среды Django для тестов
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
@@ -12,10 +12,21 @@ from Academhub.models import GroupStudents, Student
 
 
 class GroupTableGenerator:
-    def __init__(self, groups):
+    """
+    Класс для генерации таблицы групп
+    """ 
+    def __init__(self, groups) -> None:
+        """
+        Принимает на вход список групп
+
+        groups: list[GroupStudents]
+        """
         self.groups = groups
 
-    def generate_document(self, path):
+    def generate_document(self, path: str) -> None:
+        """
+        Генерирует новый документ по указанному пути
+        """
         workbook = Workbook()
         worksheet = workbook.active
         if worksheet is not None:
@@ -32,7 +43,7 @@ class GroupTableGenerator:
 
             # Ширина ячеек
             worksheet.column_dimensions['A'].width = len(str(len(self.groups))) + 3
-            GROUPNAME_CELL_WIDTH = max([len(i.number) for i in self.groups])
+            GROUPNAME_CELL_WIDTH = max([len(str(i.number)) for i in self.groups])
             worksheet.column_dimensions['B'].width = GROUPNAME_CELL_WIDTH
             worksheet.column_dimensions['C'].width = GROUPNAME_CELL_WIDTH
             worksheet.column_dimensions['D'].width = GROUPNAME_CELL_WIDTH
@@ -84,7 +95,16 @@ class EducationBaseDifferenceError(Exception):
         super().__init__(self.message)
 
 class CourseTableGenerator:
-    def __init__(self, students):
+    """
+    Класс для генерации таблицы курса
+    """
+    def __init__(self, students) -> None:
+        """
+        Принимает на вход список со студентами у которых
+        указан одинаковый курс
+
+        students: list[Student]
+        """
         if not all(student.group.current_course == students[0].group.current_course for student in students):
             raise CourseDifferenceError
         if not all(student.group.education_base == students[0].group.education_base for student in students):
@@ -97,7 +117,10 @@ class CourseTableGenerator:
         elif students[0].group.education_base == "Среднее общее":
             self.education_base = "11 кл."
 
-    def generate_document(self, path):
+    def generate_document(self, path: str) -> None:
+        """
+        Генерирует новый документ по указанному пути
+        """
         workbook = Workbook()
         worksheet = workbook.active
         
@@ -158,7 +181,74 @@ class CourseTableGenerator:
             workbook.save(path)
 
 class StatisticsTableGenerator:
-    pass
+    def __init__(self, specialties, qualifications, students) -> None:
+        self.specialties = specialties
+        self.qualifications = qualifications
+        self.students = students
+
+    def generate_document(self, path):
+        workbook = Workbook()
+        worksheet = workbook.active
+
+        if worksheet is not None:
+            from datetime import date
+            today = date.today()
+            worksheet.title = f"Статистика ({today.day}.{today.month}.{today.year})"
+            
+            # Заголовки (первый ряд)
+            worksheet["A1"] = "№ п/п"
+            worksheet["B1"] = "Код"
+            worksheet["C1"] = "Направление подготовки/специальности"
+            worksheet["D1"] = "Профиль (направленность/ специализация), квалификация для программ СПО"
+            worksheet["E1"] = "Форма обучения"
+            worksheet["F1"] = "Вид обучения"
+            worksheet.merge_cells("G1:R1")
+            worksheet["G1"] = "Контингент"
+            
+            # Заголовки (второй ряд)
+            worksheet["A2"] = 1
+            worksheet["B2"] = 2
+            worksheet["C2"] = 3
+            worksheet["D2"] = 4
+            worksheet["E2"] = 5
+            worksheet["F2"] = 6
+            worksheet.merge_cells("G2:J2")
+            worksheet["G2"] = 7
+            worksheet.merge_cells("K2:M2")
+            worksheet["K2"] = 8
+            worksheet.merge_cells("N2:Q2")
+            worksheet["N2"] = 9
+            worksheet["R2"] = 10
+
+            # Заголовки (третий ряд)
+            worksheet["A3"] = '-'
+            worksheet["B3"] = '-'
+            worksheet["C3"] = '-'
+            worksheet["D3"] = '-'
+            worksheet["E3"] = '-'
+            worksheet["F3"] = '-'
+            worksheet.merge_cells("G3:J3")
+            worksheet["G3"] = "9кл" 
+            worksheet.merge_cells("K3:M3")
+            worksheet["K3"] = "11кл" 
+            worksheet.merge_cells("N3:Q3")
+            worksheet["N3"] = "Акад.отпуск"
+            worksheet["R3"] = "Итого"
+
+            # Заголовки (четверый ряд)
+            worksheet["G4"] = "1 курс"
+            worksheet["H4"] = "2 курс"
+            worksheet["I4"] = "3 курс"
+            worksheet["J4"] = "4 курс"
+            worksheet["K4"] = "1 курс"
+            worksheet["L4"] = "2 курс"
+            worksheet["M4"] = "3 курс"
+            worksheet["N4"] = "1 курс"
+            worksheet["O4"] = "2 курс"
+            worksheet["P4"] = "3 курс"
+            worksheet["Q4"] = "4 курс"
+                
+        workbook.save(path)
 
 class VacationTableGenerator:
     pass
@@ -166,34 +256,35 @@ class VacationTableGenerator:
 class MovementTableGenerator:
     pass
 
-def tableStudentsParse(path):
-    ext = os.path.splitext(path)[1].lower()
-    data = []
-    if ext == ".xlsx":
-        workbook = load_workbook(filename=path, data_only=True)
-        worksheet = workbook.active
-        if worksheet is not None:
-            for row in worksheet.iter_rows(values_only=True):
-                data.append(list(row))
-    elif ext == ".xls":
-        import xlrd
-        workbook = xlrd.open_workbook(path)
-        worksheet = workbook.sheet_by_index(0)
-        for row_index in range(worksheet.nrows):
-            data.append(worksheet.row_values(row_index))
-    else:
-        ValueError("Неподдерживаемый формат файла")
-    
-    students = []
-    for student_row in data:
-       student = Student(full_name=student_row[1], )
+# def tableStudentsParse(path):
+#     ext = os.path.splitext(path)[1].lower()
+#     data = []
+#     if ext == ".xlsx":
+#         workbook = load_workbook(filename=path, data_only=True)
+#         worksheet = workbook.active
+#         if worksheet is not None:
+#             for row in worksheet.iter_rows(values_only=True):
+#                 data.append(list(row))
+#     elif ext == ".xls":
+#         import xlrd
+#         workbook = xlrd.open_workbook(path)
+#         worksheet = workbook.sheet_by_index(0)
+#         for row_index in range(worksheet.nrows):
+#             data.append(worksheet.row_values(row_index))
+#     else:
+#         ValueError("Неподдерживаемый формат файла")
+#     
+#     students = []
+#     for student_row in data:
+#        student = Student(full_name=student_row[1], )
 
 if __name__ == "__main__":
+    pass
     # groups = GroupStudents.objects.all()
+    # print(type(groups))
     # gtg = GroupTableGenerator(groups)
     # gtg.generate_document("test.xlsx")
     # students = Student.objects.all()
     # ctg = CourseTableGenerator(students)
     # ctg.generate_document("test_course.xlsx")
-    students = tableStudentsParse("/home/vzr/Downloads/1.xls")
-    print(students[0])
+    # students = tableStudentsParse("/home/vzr/Downloads/1.xls")
