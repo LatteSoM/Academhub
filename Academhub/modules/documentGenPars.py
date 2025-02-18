@@ -2,7 +2,7 @@ import os
 import sys
 import django
 
-from openpyxl import Workbook
+from openpyxl import Workbook, load_workbook
 
 # Определение среды Django для тестов
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
@@ -166,13 +166,34 @@ class VacationTableGenerator:
 class MovementTableGenerator:
     pass
 
-class StudentsTableParser:
-    pass
+def tableStudentsParse(path):
+    ext = os.path.splitext(path)[1].lower()
+    data = []
+    if ext == ".xlsx":
+        workbook = load_workbook(filename=path, data_only=True)
+        worksheet = workbook.active
+        if worksheet is not None:
+            for row in worksheet.iter_rows(values_only=True):
+                data.append(list(row))
+    elif ext == ".xls":
+        import xlrd
+        workbook = xlrd.open_workbook(path)
+        worksheet = workbook.sheet_by_index(0)
+        for row_index in range(worksheet.nrows):
+            data.append(worksheet.row_values(row_index))
+    else:
+        ValueError("Неподдерживаемый формат файла")
+    
+    students = []
+    for student_row in data:
+       student = Student(full_name=student_row[1], )
 
-# if __name__ == "__main__":
-#     groups = GroupStudents.objects.all()
-#     gtg = GroupTableGenerator(groups)
-#     gtg.generate_document("test.xlsx")
-#     students = Student.objects.filter(group__current_course=1)
-#     ctg = CourseTableGenerator(students)
-#     ctg.generate_document("test_course.xlsx")
+if __name__ == "__main__":
+    # groups = GroupStudents.objects.all()
+    # gtg = GroupTableGenerator(groups)
+    # gtg.generate_document("test.xlsx")
+    # students = Student.objects.all()
+    # ctg = CourseTableGenerator(students)
+    # ctg.generate_document("test_course.xlsx")
+    students = tableStudentsParse("/home/vzr/Downloads/1.xls")
+    print(students[0])

@@ -8,19 +8,19 @@ def validate_snils(value):
         raise ValidationError('Неверный формат СНИЛС. Используйте XXX-XXX-XXX XX')
 
     # Убираем разделители
-    # digits = [int(d) for d in value if d.isdigit()]
-    # snils_number = digits[:9]
-    # control_sum = digits[-2] * 10 + digits[-1]  # последние 2 цифры - контрольная сумма
+    digits = [int(d) for d in value if d.isdigit()]
+    snils_number = digits[:9]
+    control_sum = digits[-2] * 10 + digits[-1]  # последние 2 цифры - контрольная сумма
 
     # Вычисляем контрольную сумму по правилам ПФР
-    # weighted_sum = sum((i + 1) * num for i, num in enumerate(snils_number))
-    #
-    # if weighted_sum < 100 and weighted_sum != control_sum:
-    #     raise ValidationError('Некорректный СНИЛС: неправильное контрольное число.')
-    # elif weighted_sum in (100, 101) and control_sum != 0:
-    #     raise ValidationError('Некорректный СНИЛС: неправильное контрольное число.')
-    # elif weighted_sum > 101 and (weighted_sum % 101) != control_sum and (weighted_sum % 101) != 0:
-    #     raise ValidationError('Некорректный СНИЛС: неправильное контрольное число.')
+    weighted_sum = sum((i + 1) * num for i, num in enumerate(snils_number))
+
+    if weighted_sum < 100 and weighted_sum != control_sum:
+        raise ValidationError('Некорректный СНИЛС: неправильное контрольное число.')
+    elif weighted_sum in (100, 101) and control_sum != 0:
+        raise ValidationError('Некорректный СНИЛС: неправильное контрольное число.')
+    elif weighted_sum > 101 and (weighted_sum % 101) != control_sum and (weighted_sum % 101) != 0:
+        raise ValidationError('Некорректный СНИЛС: неправильное контрольное число.')
 
 
 def validate_full_name(value):
