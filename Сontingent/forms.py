@@ -31,10 +31,10 @@ class StudentForm(forms.ModelForm):
     phone = forms.CharField(
         label='Телефон',
         max_length=20,
-        widget=widgets.Phone(attrs={
-            'placeholder': '+7 (XXX) XXX-XX-XX',
-            'class': 'delete-arrow-input-number'
-        }),
+        # widget=widgets.Phone(attrs={
+        #     'placeholder': '+7 (XXX) XXX-XX-XX',
+        #     'class': 'delete-arrow-input-number'
+        # }),
     )
 
     snils = forms.CharField(
@@ -87,75 +87,3 @@ class SpecialtyForm(forms.ModelForm ):
         model = Specialty
         fields = '__all__'
 
-class GradebookForm(forms.ModelForm):
-    """
-    Форма для создания и редактирования записей в журнале оценок.
-    """
-    teacher = forms.ModelChoiceField(
-        queryset=CustomUser.objects.filter(is_teacher=True),
-        label='Преподаватель',
-    )
-    discipline = forms.ModelChoiceField(
-        queryset=Discipline.objects.all(),
-        label='Дисциплина',
-    )
-    groups = forms.ModelChoiceField(
-        queryset=GroupStudents.objects.all(),
-        label='Группа'
-    )
-    students = forms.ModelMultipleChoiceField(
-        queryset=Student.objects.all(),
-        label='Студенты',
-    )
-
-    group_id = None
-
-    class Meta:
-        """
-        Метакласс для настройки формы.
-        """
-        model = Gradebook
-        fields = ['name', 'teacher', 'discipline', 'groups', 'students']
-
-    def __init__(self, *args, **kwargs):
-        """
-        Инициализация формы.
-
-        Args:
-            *args: Позиционные аргументы.
-            **kwargs: Именованные аргументы.
-        """
-        properties = kwargs.pop('properties', None)
-        if properties:
-            self.group_id = properties['group_id']
-
-        super().__init__(*args, **kwargs)
-
-        if self.group_id:
-            self.initial['groups'] = self.group_id
-
-        self.fields['students'].queryset = self.get_student_queryset()
-
-    def get_group_queryset(self):
-        """
-        Возвращает queryset для группы.
-
-        Returns:
-            QuerySet: QuerySet для группы.
-        """
-        try:
-            return GroupStudents.objects.filter(pk=self.group_id)
-        except:
-            return GroupStudents.objects.all()
-
-    def get_student_queryset(self):
-        """
-        Возвращает queryset для студентов.
-
-        Returns:
-            QuerySet: QuerySet для студентов.
-        """
-        try:
-            return Student.objects.filter(group__id=self.group_id)
-        except:
-            return Student.objects.none()
