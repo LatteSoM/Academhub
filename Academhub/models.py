@@ -283,6 +283,8 @@ class Student(AcademHubModel):
     left_course = models.IntegerField(blank=True, null=True, verbose_name="Курс, с которого ушел")
     reason_of_expelling = models.CharField(max_length=255, verbose_name="Причина отчисления", blank=True, null=True, choices=REASONS_OF_EXPELLING_CHOICES)
 
+    is_in_academ = models.BooleanField(verbose_name="Находится ли студент в академе", default=False, blank=True, null=True)
+
     class Meta:
         verbose_name = "Студент"
         verbose_name_plural = "Студенты"
