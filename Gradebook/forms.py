@@ -21,7 +21,6 @@ class GradebookForm(forms.ModelForm):
     students = forms.ModelMultipleChoiceField(
         queryset=Student.objects.none(),
         label='Студенты',
-        widget=forms.CheckboxSelectMultiple()
     )
 
     class Meta:
@@ -73,8 +72,12 @@ class GradebookStudentsForm(forms.ModelForm):
         model = GradebookStudents
         fields = ['student', 'ticket_number', 'grade']
     
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        self.fields['student'].widget.attrs['disabled'] = True 
+        self.fields['student'].widget.attrs['handshakable'] = 'un'
 
-    #     if 'instance' in kwargs:
-    #         self.fields['student'].initial = kwargs['instance'].student
+        if 'instance' in kwargs:
+            self.fields['student'].initial = kwargs['instance'].student
+            

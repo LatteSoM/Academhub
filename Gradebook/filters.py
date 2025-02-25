@@ -1,6 +1,7 @@
+from django import forms
 from django.db.models import Q
 import django_filters as filters
-from Academhub.models import CustomUser, Gradebook, GradebookStudents, Discipline
+from Academhub.models import CustomUser, Gradebook, GroupStudents, Discipline
 
 __all__ = (
     'GradebookFilter',
@@ -10,22 +11,25 @@ __all__ = (
 class GradebookFilter(filters.FilterSet):
     search = filters.CharFilter(
         method='filter_search',
-        label='Поиск'
+        label='Поиск',
     )
 
     teacher = filters.ModelMultipleChoiceFilter(
         queryset=CustomUser.objects.filter(is_teacher=True), 
-        label='Учитель'
+        label='Учитель',
+        widget=forms.CheckboxSelectMultiple
     )
 
     group = filters.ModelMultipleChoiceFilter(
-        queryset=GradebookStudents.objects.all(),
+        queryset=GroupStudents.objects.all(),
         label='Группа',
+        widget=forms.CheckboxSelectMultiple
     )
 
     discipline = filters.ModelMultipleChoiceFilter(
         queryset=Discipline.objects.all(),
         label='Дисциплина',
+        widget=forms.CheckboxSelectMultiple
     )
 
     class Meta:

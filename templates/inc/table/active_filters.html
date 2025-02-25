@@ -30,21 +30,22 @@
 
 <script>
     const delete_filter = (filter_name) => {
-        let search = window.location.search;
-        search = search.replace(filter_name, '');
-        return search;
+        let searchParams = new URLSearchParams(window.location.search);
+        
+        searchParams.delete(filter_name);
+        
+        return searchParams.toString();
     };
-
     let filters = document.querySelectorAll('.remove-filter');
 
-    if(filters)
-    {
+    if(filters) {
         filters.forEach(element => {
             element.addEventListener('click', function(){
                 let attribut = this.getAttribute('filter');
                 let search = delete_filter(attribut);
+                
                 window.location.search = search;
-                window.length.reload();
+                window.location.reload()
             });
         });
     }

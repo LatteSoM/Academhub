@@ -3,8 +3,8 @@ from cProfile import label
 from django import forms
 from django.db.models import Q
 
-from Academhub.models import Qualification, Specialty, GroupStudents, Student, Gradebook
-from django_filters import FilterSet, CharFilter, ModelChoiceFilter, ModelMultipleChoiceFilter, ChoiceFilter
+from Academhub.models import Qualification, Specialty, GroupStudents, Student
+from django_filters import FilterSet, CharFilter, ModelChoiceFilter, ModelMultipleChoiceFilter, ChoiceFilter, MultipleChoiceFilter
 
 
 __all__ = (
@@ -77,9 +77,21 @@ class StudentFilter(FilterSet):
         queryset=GroupStudents.objects.all(),
     )
 
+    education_base = MultipleChoiceFilter(
+        label='База образования',
+        widget=forms.CheckboxSelectMultiple,
+        choices = Student.EDUCATION_BASE_CHOICES
+    )
+
+    education_basis = MultipleChoiceFilter(
+        label='Основа образования',
+        choices = Student.EDUCATION_BASIS_CHOICES,
+        widget=forms.CheckboxSelectMultiple,
+    )
+
     class Meta:
         model = Student
-        fields = ['course', 'group']
+        fields = ['course', 'group', 'education_base', 'education_basis']
 
     def filter_search(self, queryset, name, value):
         return queryset.filter(

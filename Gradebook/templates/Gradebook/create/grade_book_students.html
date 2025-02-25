@@ -18,7 +18,7 @@
                 </a>
             {% endblock %}
         </div>
-        <form class="multi-form" method="post" enctype="multipart/form-data">
+        <form id="multi-form" class="multi-form" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {% include 'inc/form/form_set.html' %}
             <button class="btn-primary" type="submit">
@@ -31,6 +31,17 @@
 {% block extra_js %}
     {{ block.super }}
     <script>
-        
+        const selects = document.querySelectorAll("select[handshakable='un']");
+        const form = document.getElementById('multi-form');
+
+        form.addEventListener('submit' , function(e){
+            e.preventDefault();
+
+            selects.forEach(element => {
+                element.disabled = false;
+            });
+
+            this.submit();
+        });
     </script>
 {% endblock %}
