@@ -200,10 +200,10 @@ class GroupStudents(AcademHubModel):
     )
 
     COURCE_CHOICES = (
-        (1, 1),
-        (2, 2),
-        (3, 3),
-        (4, 4)
+        (1,'1'),
+        (2,'2'),
+        (3,'3'),
+        (4,'4')
     )
 
     education_base = models.CharField(
@@ -282,6 +282,8 @@ class Student(AcademHubModel):
     note = models.TextField(blank=True, null=True, verbose_name="Примечание")
     left_course = models.IntegerField(blank=True, null=True, verbose_name="Курс, с которого ушел")
     reason_of_expelling = models.CharField(max_length=255, verbose_name="Причина отчисления", blank=True, null=True, choices=REASONS_OF_EXPELLING_CHOICES)
+
+    is_in_academ = models.BooleanField(verbose_name="Находится ли студент в академе", default=False, blank=True, null=True)
 
     class Meta:
         verbose_name = "Студент"
