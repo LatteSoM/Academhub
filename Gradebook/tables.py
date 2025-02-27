@@ -4,6 +4,7 @@ from Academhub.base import BaseTable
 from Academhub.models import Gradebook, GradebookStudents
 
 __all__ = (
+    'GradebookTable2',
     'GradebookTable',
     'GradebookMobileTable',
     'GradebookStudentsTable'
@@ -28,6 +29,19 @@ class GradebookTable(BaseTable):
         paginate_by=30
         fields = ('name', 'teacher', 'group', 'discipline', 'status')
 
+class GradebookTable2(BaseTable):
+    teacher = tables.Column(
+        verbose_name='Учитель'
+    )
+
+    discipline = tables.Column(
+        verbose_name='Дисциплина'
+    )
+
+    class Meta:
+        model = Gradebook
+        paginate_by=30
+        fields = ('name', 'teacher', 'discipline', 'status')
 
 
 class GradebookMobileTable(BaseTable):

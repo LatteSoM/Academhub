@@ -1,6 +1,7 @@
 from django.db import models
 from Academhub.validators import *
 from django.shortcuts import reverse
+from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, Permission, Group
 
 __all__ = [
@@ -147,7 +148,7 @@ class GroupProxy(Group, UrlGenerateMixin):
         verbose_name_plural = 'Группы прав'
 
 class Discipline(AcademHubModel):
-    code = models.CharField(max_length=50, unique=True, verbose_name="Код")
+    code = models.CharField(max_length=50, unique=True, verbose_name="Код", blank=True ,null=True)
     name = models.CharField(max_length=255, verbose_name="Наименование")
     specialty = models.ForeignKey(
         'Specialty', on_delete=models.CASCADE, related_name="disciplines", verbose_name="Специальность"
@@ -161,6 +162,9 @@ class Discipline(AcademHubModel):
         return self.name
 
 class Specialty(AcademHubModel):
+    '''
+        09.02.07
+    '''
 
     code = models.CharField(max_length=50, unique=True, verbose_name="Код")
     name = models.CharField(max_length=255, verbose_name="Наименование")
@@ -173,6 +177,11 @@ class Specialty(AcademHubModel):
         return self.name
 
 class Qualification(AcademHubModel):
+    '''
+        Программист
+        Веб дизайнер
+        и т.д
+    '''
 
     short_name = models.CharField(max_length=50, verbose_name="Сокращенное название")
     name = models.CharField(max_length=255, verbose_name="Наименование")
@@ -188,11 +197,9 @@ class Qualification(AcademHubModel):
         return self.name
 
 class GroupStudents(AcademHubModel):
-
-    number = models.CharField(max_length=50, unique=True, verbose_name="Номер")
-    qualification = models.ForeignKey(
-        Qualification, on_delete=models.CASCADE, related_name="groups", verbose_name="Квалификация"
-    )
+    '''
+        П50-9-21
+    '''
 
     EDUCATION_BASE_CHOICES = (
         ("Основное общее", "Основное общее"),
@@ -206,6 +213,28 @@ class GroupStudents(AcademHubModel):
         (4, 4)
     )
 
+    def get_years_choices():
+        years = []
+        for i in range(1990, timezone.now().year + 1):
+            years.append((i, i))
+        return years
+    
+    def get_default_number_value(self):
+        return GroupStudents.objects.filter(
+            year_create = self.year_create,
+            qualification = self.qualification,
+        ).count() + 1
+
+    full_name = models.CharField(blank=True, null=True, verbose_name='Полное название группы', max_length=1000, unique=True)
+
+    qualification = models.ForeignKey(
+        Qualification, on_delete=models.CASCADE, related_name="groups", verbose_name="Квалификация"
+    )
+
+    number = models.PositiveIntegerField(
+        verbose_name='Порядковый номер группы в потоке',
+    )
+
     education_base = models.CharField(
         max_length=255,
         verbose_name="База образования",
@@ -213,9 +242,10 @@ class GroupStudents(AcademHubModel):
         default=EDUCATION_BASE_CHOICES[0][1]
     )
 
-    date_of_creation = models.DateField(
-        auto_now=True,
-        verbose_name="Дата создания"
+    year_create = models.PositiveIntegerField(
+        verbose_name='Год создания',
+        choices=get_years_choices(),
+        default=timezone.now().year
     )
 
     current_course = models.IntegerField(
@@ -225,12 +255,27 @@ class GroupStudents(AcademHubModel):
         null=False
     )
 
+    disciplines = models.ManyToManyField(
+        Discipline,
+        verbose_name='Дисциплины',
+        blank=True,
+        null=True
+    )
+
     class Meta:
         verbose_name = "Группа"
         verbose_name_plural = "Группы"
 
     def __str__(self):
-        return self.number
+        return self.full_name
+    
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.number = self.get_default_number_value()
+
+        self.full_name = f"{self.qualification.short_name}-{self.number}-{self.year_create}"
+        
+        return super().save(*args, **kwargs)
 
 class Student(AcademHubModel):
     EDUCATION_BASE_CHOICES = (

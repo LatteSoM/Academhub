@@ -78,10 +78,10 @@ class GradebookDetailView(ObjectDetailView):
             ['name', 'teacher', 'status', ]
     }
 
-    def get_table(self):
+    def get_tables(self):
         students = GradebookStudents.objects.filter(gradebook__pk=self.object.pk)
         table = GradebookStudentsTable(data=students)
-        return table
+        return [table]
 
 class GradebookUpdateView(GradeBookMixin, ObjectUpdateView):
     """

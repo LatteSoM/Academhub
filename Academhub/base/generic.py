@@ -122,19 +122,21 @@ class ObjectDetailView(BaseContextMixin, DetailView):
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         context = self.get_context_data(object=self.object)
-        table = self.get_table()
+        tables = self.get_tables()
 
-        if table:
+        context['tables'] = []
+
+        for table in tables:
             RequestConfig(request, paginate={"per_page": self.paginate_by }).configure(table)
-            context['table'] = table
+            context['tables'].append(table)
 
         return self.render_to_response(context)
 
-    def get_table(self):
+    def get_tables(self):
         '''
             Отрисовка допонительных таблиц
         '''
-        pass
+        return []
 
 
 class ObjectUpdateView(BaseContextMixin, UpdateView):

@@ -4,7 +4,7 @@ from django.contrib.auth.forms import AuthenticationForm, UsernameField
 class CustomAuthenticationForm(AuthenticationForm):
     username = UsernameField(
         widget=forms.TextInput(attrs={"autofocus": True}),
-        label='Логин'
+        label='Почта'
     )
     password = forms.CharField(
         label='Пароль',

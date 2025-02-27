@@ -31,8 +31,10 @@
             <a class="btn-primary" href="{% url 'gradebookstudents_bulk_create' pk=object.pk %}">
                 Заполнить ведомость
             </a>
-            {% render_table table 'inc/table/table.html' %}
-            {% include 'inc/pagination.html' with page_obj=table.page %}
+            {% with table=tables.0 %}
+                {% render_table table 'inc/table/table.html' %}
+                {% include 'inc/pagination.html' with page_obj=table.page %}
+            {% endwith %}
         </div>
     </div>
 
