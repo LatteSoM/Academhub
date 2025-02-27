@@ -250,6 +250,12 @@ class Student(AcademHubModel):
         #TODO: Выяснить про другие причины
     )
 
+    REASONS_OF_ACADEM_CHOICES = (
+        ("с/о", "с/о"),
+        ("Смерть", "Смерть"),
+        # TODO: Выяснить про другие причины
+    )
+
     full_name = models.CharField(
         max_length=255, 
         verbose_name="ФИО", 
@@ -284,6 +290,8 @@ class Student(AcademHubModel):
     reason_of_expelling = models.CharField(max_length=255, verbose_name="Причина отчисления", blank=True, null=True, choices=REASONS_OF_EXPELLING_CHOICES)
 
     is_in_academ = models.BooleanField(verbose_name="Находится ли студент в академе", default=False, blank=True, null=True)
+    reason_of_academ = models.CharField(max_length=255, verbose_name="Причина ухода в академ", blank=True, null=True, choices=REASONS_OF_ACADEM_CHOICES)
+
 
     class Meta:
         verbose_name = "Студент"
