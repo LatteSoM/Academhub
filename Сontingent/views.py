@@ -2,9 +2,72 @@ from .forms import *
 from .tables import *
 from .filters import *
 from Gradebook.tables import GradebookTable2
-from Academhub.models import GroupStudents, Qualification, Specialty, Student, Gradebook
 from Academhub.base import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView
+from Academhub.models import GroupStudents, Discipline, Qualification, Specialty, Student, Gradebook
 
+__all__ = (
+    'DisciplineTableView',
+    'DisciplineDetailView',
+    'DisciplineUpdateView',
+    'DisciplineCreateView',
+
+    'SpecialtyTableView',
+    'SpecialtyDetailView',
+    'SpecialtyUpdateView',
+    'SpecialtyCreateView',
+
+    'StudentTableView', 
+    'StudentDetailView', 
+    'StudentUpdateView', 
+    'StudentCreateView',
+
+    'GroupTableView', 
+    'GroupDetailView', 
+    'GroupUpdateView', 
+    'GroupCreateView',
+
+    'QualificationTableView',
+    'QualificationCreateView',
+    'QualificationDetailView',
+    'QualificationUpdateView'
+)
+
+#
+## Discipline
+#
+
+class DisciplineTableView(ObjectTableView):
+    """
+        Класс для отображения таблицы дисциплин.
+    """
+    table_class = DisciplineTable
+    filterset_class = DisciplineFilter
+    queryset = Discipline.objects.all()
+
+class DisciplineDetailView(ObjectDetailView):
+    """
+    Класс для отображения детальной информации о дисциплине.
+    """
+    model= Discipline
+    paginate_by  = 30
+    fieldset = {
+        'Основная информация':
+            ['name', 'code', 'specialty',]
+    }
+        
+class DisciplineUpdateView(ObjectUpdateView):
+    """
+    Класс для обновления информации о дисциплине.
+    """
+    form_class = DisciplineForm
+    queryset = Discipline.objects.all()
+    
+class DisciplineCreateView(ObjectCreateView):
+    """
+    Класс для создания новой дисциплины.
+    """
+    model = Discipline
+    form_class = DisciplineForm
 
 #
 ## Specialty
@@ -135,7 +198,9 @@ class GroupDetailView(ObjectDetailView):
         gradebooks = Gradebook.objects.filter(group__pk=self.object.pk)
         table2 = GradebookTable2(data=gradebooks)
 
-        return [table, table2]
+        table3 = DisciplineTable(data=self.object.disciplines.all())
+
+        return [table, table2, table3]
 
 class GroupUpdateView(ObjectUpdateView):
     """

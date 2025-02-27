@@ -7,42 +7,65 @@
 <div class="used-filters-conn">
     <div class="used-filters">
 
-    {% for field in filter.form %}
-        {% with value=filter.data|get_list:field.name %}
-            {% if value and value|join:""|trim %}
-                {% for value_item in value %}
-                    {% if value_item|trim %}
-                        <div class="filter_item">
-                            <p class="remove-filter" filter="{{ field.name }}={{value_item}}">
-                                &times;
-                            </p>
-                            <strong>{{ field.label }}:</strong>
-                            {{ field|get_field_value:value_item }}
-                        </div>
-                    {% endif %}
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-    {% endfor %}
+        {% for field in filter.form %}
+            {% with value=filter.data|get_list:field.name %}
+                {% if value and value|join:""|trim %}
+                    {% with iterator=forloop.counter0 %}
+                        {% for value_item in value %}
+                            {% with iterator=iterator|add:forloop.counter0 %}
+                                {% if value_item|trim %}
+                                    <div class="filter_item">
+                                        <p class="remove-filter" iterator="{{ iterator }}" filter="{{ field.name }}={{value_item}}">
+                                            &times;
+                                        </p>
+                                        <strong>{{ field.label }}:</strong>
+                                        {{ field|get_field_value:value_item }}
+                                    </div>
+                                {% endif %}
+                            {% endwith %}
+                        {% endfor %}
+                    {% endwith %}
+                {% endif %}
+            {% endwith %}
+        {% endfor %}
 
     </div>
 </div>
 
 <script>
-    const delete_filter = (filter_name) => {
+    const delete_filter = (index) => {
+
         let search = window.location.search;
-        search = search.replace(filter_name, '');
-        return search;
+
+        const urlParams = new URLSearchParams(search);
+
+        urlParamsArr = Array.from(urlParams.entries());
+
+        if (index >= 0 && index < urlParamsArr.length) {
+            const paramToRemove = urlParamsArr[index][0];
+            
+            const newUrlParams = new URLSearchParams();
+
+            urlParamsArr.forEach((param, i) => {
+                if (i !== index) {
+                    newUrlParams.append(param[0], param[1]);
+                }
+            });
+
+            return newUrlParams.toString();
+        }
+
+        return urlParams
     };
 
     let filters = document.querySelectorAll('.remove-filter');
 
-    if(filters)
+    if (filters)
     {
         filters.forEach(element => {
             element.addEventListener('click', function(){
-                let attribut = this.getAttribute('filter');
-                let search = delete_filter(attribut);
+                let index = Number(this.getAttribute('iterator'));
+                let search = delete_filter(index);
                 window.location.search = search;
                 window.length.reload();
             });

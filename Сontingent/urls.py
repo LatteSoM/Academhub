@@ -2,6 +2,16 @@ from .views import *
 from django.urls import path
 
 urlpatterns = [
+
+    #
+    ## Disciplines
+    #
+
+    path('discipline/list', DisciplineTableView.as_view(), name='discipline_list'),
+    path('discipline/create', DisciplineCreateView.as_view(), name='discipline_create'),
+    path('discipline/<int:pk>', DisciplineDetailView.as_view(), name='discipline_detail'),
+    path('discipline/update/<int:pk>', DisciplineUpdateView.as_view(), name='discipline_update'),
+
     #
     ## Specialty
     #

@@ -1,8 +1,29 @@
 from django import forms
 from Academhub.base import widgets
 
-from Academhub.models import Student, Discipline, GroupStudents, Specialty, Gradebook, Qualification, CustomUser
+from Academhub.models import Student, Discipline, GroupStudents, Specialty, Qualification
 
+__all__ = [
+    'DisciplineForm', 
+    'StudentForm',
+    'GroupForm',
+    'QualificationForm',
+    'SpecialtyForm',
+]
+
+class DisciplineForm(forms.ModelForm):
+    specialty = forms.ModelChoiceField(
+        queryset=Specialty.objects.all(),
+        label='Специальность',
+    )
+
+    class Meta:
+        model = Discipline
+        fields = [
+            'name',
+            'code',
+            'specialty',
+        ]
 
 class StudentForm(forms.ModelForm):
     birth_date = forms.DateField(
@@ -30,11 +51,7 @@ class StudentForm(forms.ModelForm):
 
     phone = forms.CharField(
         label='Телефон',
-        max_length=20,
-        # widget=widgets.Phone(attrs={
-        #     'placeholder': '+7 (XXX) XXX-XX-XX',
-        #     'class': 'delete-arrow-input-number'
-        # }),
+        widget=widgets.Phone(attrs={'class': 'phone-input'})
     )
 
     snils = forms.CharField(
@@ -75,7 +92,13 @@ class StudentForm(forms.ModelForm):
 class GroupForm(forms.ModelForm):
     class Meta:
         model = GroupStudents
-        fields = '__all__'
+        fields = [
+            'qualification',
+            'year_create',
+            'education_base',
+            'current_course',
+            'disciplines',
+        ]
 
 class QualificationForm(forms.ModelForm):
     class Meta:

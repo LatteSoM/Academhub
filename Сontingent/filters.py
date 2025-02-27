@@ -3,7 +3,7 @@ from cProfile import label
 from django import forms
 from django.db.models import Q
 
-from Academhub.models import Qualification, Specialty, GroupStudents, Student, Gradebook
+from Academhub.models import Qualification, Specialty, GroupStudents, Student, Discipline
 from django_filters import FilterSet, CharFilter, ModelChoiceFilter, ModelMultipleChoiceFilter, ChoiceFilter
 
 
@@ -11,9 +11,31 @@ __all__ = (
     'GroupFilter',
     'StudentFilter',
     'SpecialtyFilter',
+    'DisciplineFilter',
     'QualificationFilter',
 )
 
+class DisciplineFilter(FilterSet):
+    search = CharFilter(method='filter_search', label='Поиск')
+
+    qualification = ModelMultipleChoiceFilter(
+        queryset=Qualification.objects.all(), 
+        widget=forms.CheckboxSelectMultiple,
+        label='Квалификация',
+    )
+
+    groups = ModelMultipleChoiceFilter(
+        queryset=GroupStudents.objects.all(), 
+        widget=forms.CheckboxSelectMultiple,
+        label='Группы',
+    )
+
+    class Meta:
+        model = Discipline
+        fields = [
+            'specialty',
+            'groups',
+        ]
 
 class QualificationFilter(FilterSet):
     search = CharFilter(method='filter_search', label='Поиск')
@@ -43,7 +65,6 @@ class SpecialtyFilter(FilterSet):
 
 class GroupFilter(FilterSet):
     qualification = ModelChoiceFilter(queryset=Qualification.objects.all(), label='Квалификация')
-    specialization = ModelChoiceFilter(queryset=Specialty.objects.all(), label='Специальность')
     search = CharFilter(method='filter_search', label='Поиск')
 
     class Meta:
@@ -53,9 +74,7 @@ class GroupFilter(FilterSet):
     def filter_search(self, queryset, name, value):
         return queryset.filter(
             Q(qualification__short_name__icontains=value) |
-            Q(qualification__name__icontains=value) |
-            Q(specialization__code__icontains=value) |
-            Q(specialization__name__icontains=value)
+            Q(qualification__name__icontains=value)
         )
 
 class StudentFilter(FilterSet):
