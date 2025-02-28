@@ -55,7 +55,7 @@
             return newUrlParams.toString();
         }
 
-        return urlParams
+        return urlParams.toString();
     };
     let filters = document.querySelectorAll('.remove-filter');
 
@@ -65,8 +65,10 @@
             element.addEventListener('click', function(){
                 let index = Number(this.getAttribute('iterator'));
                 let search = delete_filter(index);
-                window.location.search = search;
-                window.location.reload()
+                
+                const newUrl = window.location.origin + window.location.pathname + '?' + search;
+                
+                window.location.href = newUrl;
             });
         });
     }

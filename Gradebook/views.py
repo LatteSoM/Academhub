@@ -67,13 +67,6 @@ class GradebookTableView(ObjectTableView):
             return GradebookMobileTable
         return GradebookTable
 
-    # def get_table_class(self):
-    #     """Определяет, какую таблицу использовать (мобильную или десктопную)."""
-    #     user_agent = self.request.META.get('HTTP_USER_AGENT', '').lower()
-    #     if 'mobile' in user_agent:
-    #         return GradebookMobileTable
-    #     return GradebookMobileTable
-
 class GradebookDetailView(ObjectDetailView):
     """
     Класс для отображения детальной информации об учебном журнале.

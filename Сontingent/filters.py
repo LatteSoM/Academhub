@@ -18,12 +18,6 @@ __all__ = (
 class DisciplineFilter(FilterSet):
     search = CharFilter(method='filter_search', label='Поиск')
 
-    qualification = ModelMultipleChoiceFilter(
-        queryset=Qualification.objects.all(), 
-        widget=forms.CheckboxSelectMultiple,
-        label='Квалификация',
-    )
-
     groups = ModelMultipleChoiceFilter(
         queryset=GroupStudents.objects.all(), 
         widget=forms.CheckboxSelectMultiple,
