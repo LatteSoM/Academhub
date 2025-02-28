@@ -1,14 +1,30 @@
+import django_tables2 as table
 from django_tables2 import tables
 from Academhub.base import BaseTable
-from Academhub.models import Qualification, Specialty, GroupStudents, Student, Gradebook
+from Academhub.models import Qualification, Specialty, GroupStudents, Student, Discipline
 
 __all__ = (
     'GroupTable',
     'StudentTable',
     'StudentTable2',
     'SpecialtyTable',
+    'DisciplineTable',
     'QualificationTable',
 )
+
+class DisciplineTable(BaseTable):
+    specialty = tables.Column(
+        accessor='specialty.name', 
+    )
+
+    class Meta:
+        model = Discipline
+        paginate_by = 10
+        fields = (
+            'name',
+            'code',
+            'specialty'
+        )
 
 class SpecialtyTable(BaseTable):
     class Meta:
@@ -35,7 +51,7 @@ class GroupTable(BaseTable):
     class Meta:
         model = GroupStudents
         paginate_by = 10
-        fields = ('number', 'qualification')
+        fields = ('full_name', 'qualification')
 
 
 class StudentTable(BaseTable):

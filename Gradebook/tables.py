@@ -1,18 +1,20 @@
+import django_tables2 as table
 from django_tables2 import tables
-
 from Academhub.base import BaseTable
-from Academhub.models import Gradebook, GradebookStudents
+from Academhub.models import Gradebook, GradebookStudents, CustomUser
 
 __all__ = (
     'GradebookTable',
+    'GradebookTable2',
     'GradebookMobileTable',
-    'GradebookStudentsTable'
+    'GradebookTeachersTable',
+    'GradebookStudentsTable',
 )
 
 
 class GradebookTable(BaseTable):
-    teacher = tables.Column(
-        verbose_name='Учитель'
+    teachers = table.ManyToManyColumn(
+        verbose_name='Учителя'
     )
 
     group = tables.Column(
@@ -26,20 +28,31 @@ class GradebookTable(BaseTable):
     class Meta:
         model = Gradebook
         paginate_by=30
-        fields = ('name', 'teacher', 'group', 'discipline', 'status')
+        fields = ('name', 'teachers', 'group', 'discipline', 'status')
 
+class GradebookTable2(BaseTable):
+    teachers = table.ManyToManyColumn(
+        verbose_name='Учителя'
+    )
+
+    discipline = tables.Column(
+        verbose_name='Дисциплина'
+    )
+
+    class Meta:
+        model = Gradebook
+        paginate_by=30
+        fields = ('name', 'teachers', 'discipline', 'status')
 
 
 class GradebookMobileTable(BaseTable):
-    teacher = tables.Column(verbose_name='Учитель')
+    teachers = table.ManyToManyColumn(verbose_name='Учителя')
     group = tables.Column(verbose_name='Группа')
 
     class Meta:
         model = Gradebook
         paginate_by = 30
-        fields = ('pk', 'teacher', 'group')  # Только ключевые колонки
-
-
+        fields = ('pk', 'teachers', 'group')  # Только ключевые колонки
 
 
 class GradebookStudentsTable(BaseTable):
@@ -50,3 +63,9 @@ class GradebookStudentsTable(BaseTable):
         paginate_by=30
         fields = ('student', 'ticket_number', 'grade')
 
+
+class GradebookTeachersTable(BaseTable):
+    class Meta:
+        model = CustomUser
+        paginate_by=30
+        fields = ('full_name', )
