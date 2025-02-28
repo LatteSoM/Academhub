@@ -1,0 +1,147 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Просмотр зачетной книжки</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { width: 80%; margin: 0 auto; }
+        h2, h3 { text-align: center; }
+        .section { margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid black; padding: 8px; text-align: center; }
+        th { background-color: #f4f4f4; }
+        .info-block { margin-bottom: 20px; }
+        .info-block p { margin: 5px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Зачетная книжка</h2>
+
+        <div class="info-block">
+            <h3>Информация о студенте</h3>
+            <p><strong>ФИО:</strong> {{ template.student_name|default:"Не указано" }}</p>
+            <p><strong>Номер зачетной книжки:</strong> {{ template.record_book_number|default:"Не указано" }}</p>
+            <p><strong>Направление подготовки:</strong> {{ qualification.specialty.name }}</p>
+            <p><strong>Приказ о зачислении:</strong> {{ template.admission_order|default:"Не указано" }}</p>
+            <p><strong>Дата выдачи:</strong> {{ template.issue_date|date:"d.m.Y"|default:"Не указано" }}</p>
+            <p><strong>Квалификация:</strong> {{ qualification.name }}</p>
+            <p><strong>Год поступления:</strong> {{ admission_year }}</p>
+        </div>
+
+        <div class="section">
+            <h3>Результаты промежуточной аттестации</h3>
+            {% if template.middle_certifications.all %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Семестр</th>
+                        <th>Дисциплина</th>
+                        <th>Часы</th>
+                        <th>Тип</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cert in template.middle_certifications.all %}
+                    <tr>
+                        <td>{{ cert.semester }}</td>
+                        <td>{{ cert.discipline.name }}</td>
+                        <td>{{ cert.hours }}</td>
+                        <td>{{ cert.is_exam|yesno:"Экзамен,Зачет" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>Нет данных о промежуточной аттестации.</p>
+            {% endif %}
+        </div>
+
+        <div class="section">
+            <h3>Профессиональные модули</h3>
+            {% if template.professional_modules.all %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Название модуля</th>
+                        <th>Часы</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for module in template.professional_modules.all %}
+                    <tr>
+                        <td>{{ module.module_name }}</td>
+                        <td>{{ module.hours }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>Нет данных о профессиональных модулях.</p>
+            {% endif %}
+        </div>
+
+        <div class="section">
+            <h3>Практики</h3>
+            {% if template.practices.all %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Название</th>
+                        <th>Часы</th>
+                        <th>Семестр</th>
+                        <th>Тип</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for practice in template.practices.all %}
+                    <tr>
+                        <td>{{ practice.practice_name }}</td>
+                        <td>{{ practice.hours }}</td>
+                        <td>{{ practice.semester }}</td>
+                        <td>{{ practice.get_practice_type_display }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>Нет данных о практиках.</p>
+            {% endif %}
+        </div>
+
+        <div class="section">
+            <h3>Курсовые работы</h3>
+            {% if template.term_papers.all %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Дисциплина</th>
+                        <th>Тема</th>
+                        <th>Оценка</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for paper in template.term_papers.all %}
+                    <tr>
+                        <td>{{ paper.discipline.name }}</td>
+                        <td>{{ paper.topic|default:"Не указано" }}</td>
+                        <td>{{ paper.grade|default:"Не указано" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>Нет данных о курсовых работах.</p>
+            {% endif %}
+        </div>
+
+        <div class="section">
+            <a href="{% url 'create_record_book_template' qualification.id admission_year %}" class="btn">Редактировать</a>
+            <a href="{% url 'qualification_detail' pk=qualification.id %}" class="btn">Назад к квалификации</a>
+        </div>
+    </div>
+</body>
+</html>

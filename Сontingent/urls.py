@@ -39,6 +39,14 @@ urlpatterns = [
     path('student/<int:pk>', StudentDetailView.as_view(), name='student_detail'),
     path('student/update/<int:pk>', StudentUpdateView.as_view(), name='student_update'),
 
+    #
+    ##
+    #
 
+    path('qualification/<int:qualification_id>/<int:admission_year>/record-book/', create_record_book_template,
+         name='create_record_book_template'),
+    path('qualification/<int:qualification_id>/<int:admission_year>/record-book/save/', save_record_book_template,
+         name='save_record_book_template'),
+    path('qualification/<int:qualification_id>/<int:admission_year>/record-book/view/', view_record_book, name='view_record_book'),
 
 ]

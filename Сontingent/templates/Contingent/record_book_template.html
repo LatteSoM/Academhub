@@ -1,0 +1,613 @@
+{#{% load static %}#}
+{#<!DOCTYPE html>#}
+{#<html lang="ru">#}
+{#<head>#}
+{#    <meta charset="UTF-8">#}
+{#    <meta name="viewport" content="width=device-width, initial-scale=1.0">#}
+{#    <title>Конструктор зачетной книжки</title>#}
+{#    <style>#}
+{#        body { font-family: Arial, sans-serif; text-align: center; }#}
+{#        .container { width: 80%; margin: 20px auto; text-align: left; }#}
+{#        table { width: 100%; margin-top: 20px; border-collapse: collapse; }#}
+{#        th, td { border: 1px solid black; padding: 8px; text-align: center; }#}
+{#        th { background-color: #f4f4f4; }#}
+{#        input, select { width: 100%; border: none; text-align: center; }#}
+{#        button { margin: 5px; padding: 10px; cursor: pointer; }#}
+{#        .section { margin-top: 30px; }#}
+{#    </style>#}
+{#</head>#}
+{#<body>#}
+{#    <div class="container">#}
+{#        <h2>Конструктор зачетной книжки</h2>#}
+{##}
+{#        <form method="post" action="{% url 'save_record_book_template' qualification.id admission_year %}">#}
+{#            {% csrf_token %}#}
+{#            <div class="section">#}
+{#                <h3>Информация о студенте</h3>#}
+{#                <label>ФИО: <input type="text" name="student_name" value="{{ template.student_name|default:'' }}"></label><br>#}
+{#                <label>Номер зачетной книжки: <input type="text" name="record_book_number" value="{{ template.record_book_number|default:'' }}"></label><br>#}
+{#                <label>Направление подготовки: <input type="text" name="specialty" value="{{ qualification.specialty.name }}" readonly></label><br>#}
+{#                <label>Приказ о зачислении: <input type="text" name="admission_order" value="{{ template.admission_order|default:'' }}"></label><br>#}
+{#                <label>Дата выдачи: <input type="date" name="issue_date" value="{{ template.issue_date|date:'Y-m-d'|default:'' }}"></label>#}
+{#            </div>#}
+{##}
+{#            <div class="section">#}
+{#                <h3>Результаты промежуточной аттестации</h3>#}
+{#                <button type="button" onclick="addRow('disciplineTable')">Добавить дисциплину</button>#}
+{#                <table id="disciplineTable">#}
+{#                    <thead>#}
+{#                        <tr>#}
+{#                            <th>Семестр</th>#}
+{#                            <th>Дисциплина</th>#}
+{#                            <th>Часы</th>#}
+{#                        </tr>#}
+{#                    </thead>#}
+{#                    <tbody>#}
+{#                        {% for cert in template.middle_certifications.all %}#}
+{#                        <tr>#}
+{#                            <td><input type="number" name="middle_semester[]" value="{{ cert.semester }}"></td>#}
+{#                            <td>#}
+{#                                <select name="middle_discipline[]">#}
+{#                                    {% for discipline in curriculum.disciplines.all %}#}
+{#                                        <option value="{{ discipline.id }}" {% if cert.discipline.id == discipline.id %}selected{% endif %}>{{ discipline.name }}</option>#}
+{#                                    {% endfor %}#}
+{#                                </select>#}
+{#                            </td>#}
+{#                            <td><input type="number" name="middle_hours[]" value="{{ cert.hours }}"></td>#}
+{#                        </tr>#}
+{#                        {% endfor %}#}
+{#                    </tbody>#}
+{#                </table>#}
+{#            </div>#}
+{##}
+{#            <div class="section">#}
+{#                <h3>Профессиональные модули</h3>#}
+{#                <button type="button" onclick="addRow('moduleTable')">Добавить модуль</button>#}
+{#                <table id="moduleTable">#}
+{#                    <thead>#}
+{#                        <tr>#}
+{#                            <th>Название модуля</th>#}
+{#                            <th>Часы</th>#}
+{#                        </tr>#}
+{#                    </thead>#}
+{#                    <tbody>#}
+{#                        {% for module in template.professional_modules.all %}#}
+{#                        <tr>#}
+{#                            <td><input type="text" name="module_name[]" value="{{ module.module_name }}"></td>#}
+{#                            <td><input type="number" name="module_hours[]" value="{{ module.hours }}"></td>#}
+{#                        </tr>#}
+{#                        {% endfor %}#}
+{#                    </tbody>#}
+{#                </table>#}
+{#            </div>#}
+{##}
+{#            <div class="section">#}
+{#                <h3>Практики</h3>#}
+{#                <button type="button" onclick="addRow('practiceTable')">Добавить практику</button>#}
+{#                <table id="practiceTable">#}
+{#                    <thead>#}
+{#                        <tr>#}
+{#                            <th>Название</th>#}
+{#                            <th>Часы</th>#}
+{#                            <th>Семестр</th>#}
+{#                        </tr>#}
+{#                    </thead>#}
+{#                    <tbody>#}
+{#                        {% for practice in template.practices.all %}#}
+{#                        <tr>#}
+{#                            <td><input type="text" name="practice_name[]" value="{{ practice.practice_name }}"></td>#}
+{#                            <td><input type="number" name="practice_hours[]" value="{{ practice.hours }}"></td>#}
+{#                            <td><input type="number" name="practice_semester[]" value="{{ practice.semester }}"></td>#}
+{#                        </tr>#}
+{#                        {% endfor %}#}
+{#                    </tbody>#}
+{#                </table>#}
+{#            </div>#}
+{##}
+{#            <div class="section">#}
+{#                <h3>Курсовые работы</h3>#}
+{#                <button type="button" onclick="addRow('courseTable')">Добавить курсовую</button>#}
+{#                <table id="courseTable">#}
+{#                    <thead>#}
+{#                        <tr>#}
+{#                            <th>Дисциплина</th>#}
+{#                            <th>Тема</th>#}
+{#                            <th>Оценка</th>#}
+{#                        </tr>#}
+{#                    </thead>#}
+{#                    <tbody>#}
+{#                        {% for paper in template.term_papers.all %}#}
+{#                        <tr>#}
+{#                            <td>#}
+{#                                <select name="term_discipline[]">#}
+{#                                    {% for discipline in curriculum.disciplines.all %}#}
+{#                                        <option value="{{ discipline.id }}" {% if paper.discipline.id == discipline.id %}selected{% endif %}>{{ discipline.name }}</option>#}
+{#                                    {% endfor %}#}
+{#                                </select>#}
+{#                            </td>#}
+{#                            <td><input type="text" name="term_topic[]" value="{{ paper.topic|default:'' }}"></td>#}
+{#                            <td><input type="text" name="term_grade[]" value="{{ paper.grade|default:'' }}"></td>#}
+{#                        </tr>#}
+{#                        {% endfor %}#}
+{#                    </tbody>#}
+{#                </table>#}
+{#            </div>#}
+{##}
+{#            <button type="submit">Сохранить шаблон</button>#}
+{#        </form>#}
+{#    </div>#}
+{##}
+{#    {{ curriculum_disciplines|json_script:"disciplines-data" }}#}
+{##}
+{#    <script>#}
+{#        // Инициализация данных дисциплин с обработкой ошибок#}
+{#        let disciplines = [];#}
+{#        try {#}
+{#            const scriptElement = document.getElementById('disciplines-data');#}
+{#            const rawData = scriptElement ? scriptElement.textContent : '[]';#}
+{#            console.log("Raw disciplines data:", rawData); // Отладка: что приходит в JSON#}
+{#            disciplines = JSON.parse(rawData);#}
+{#            console.log("Parsed disciplines:", disciplines); // Отладка: результат парсинга#}
+{#        } catch (e) {#}
+{#            console.error("Error parsing disciplines:", e);#}
+{#        }#}
+{##}
+{#        function addRow(tableId) {#}
+{#            console.log("Button clicked for table:", tableId); // Отладка: клик по кнопке#}
+{#            let table = document.getElementById(tableId).getElementsByTagName("tbody")[0];#}
+{#            let row = document.createElement("tr");#}
+{##}
+{#            if (tableId === 'disciplineTable') {#}
+{#                const options = disciplines.length ? disciplines.map(d => `<option value="${d.id}">${d.name}</option>`).join('') : '<option value="">Нет дисциплин</option>';#}
+{#                row.innerHTML = `#}
+{#                    <td><input type="number" name="middle_semester[]"></td>#}
+{#                    <td><select name="middle_discipline[]">${options}</select></td>#}
+{#                    <td><input type="number" name="middle_hours[]"></td>#}
+{#                `;#}
+{#            } else if (tableId === 'moduleTable') {#}
+{#                row.innerHTML = `#}
+{#                    <td><input type="text" name="module_name[]"></td>#}
+{#                    <td><input type="number" name="module_hours[]"></td>#}
+{#                `;#}
+{#            } else if (tableId === 'practiceTable') {#}
+{#                row.innerHTML = `#}
+{#                    <td><input type="text" name="practice_name[]"></td>#}
+{#                    <td><input type="number" name="practice_hours[]"></td>#}
+{#                    <td><input type="number" name="practice_semester[]"></td>#}
+{#                `;#}
+{#            } else if (tableId === 'courseTable') {#}
+{#                const options = disciplines.length ? disciplines.map(d => `<option value="${d.id}">${d.name}</option>`).join('') : '<option value="">Нет дисциплин</option>';#}
+{#                row.innerHTML = `#}
+{#                    <td><select name="term_discipline[]">${options}</select></td>#}
+{#                    <td><input type="text" name="term_topic[]"></td>#}
+{#                    <td><input type="text" name="term_grade[]"></td>#}
+{#                `;#}
+{#            }#}
+{#            table.appendChild(row);#}
+{#        }#}
+{#    </script>#}
+{#</body>#}
+{#</html>#}
+
+
+{#{% load static %}#}
+{#<!DOCTYPE html>#}
+{#<html lang="ru">#}
+{#<head>#}
+{#    <meta charset="UTF-8">#}
+{#    <meta name="viewport" content="width=device-width, initial-scale=1.0">#}
+{#    <title>Конструктор зачетной книжки</title>#}
+{#    <style>#}
+{#        body { font-family: Arial, sans-serif; text-align: center; }#}
+{#        .container { width: 80%; margin: 20px auto; text-align: left; }#}
+{#        table { width: 100%; margin-top: 20px; border-collapse: collapse; }#}
+{#        th, td { border: 1px solid black; padding: 8px; text-align: center; }#}
+{#        th { background-color: #f4f4f4; }#}
+{#        input, select { width: 100%; border: none; text-align: center; }#}
+{#        button { margin: 5px; padding: 10px; cursor: pointer; }#}
+{#        .section { margin-top: 30px; }#}
+{#    </style>#}
+{#</head>#}
+{#<body>#}
+{#    <div class="container">#}
+{#        <h2>Конструктор зачетной книжки</h2>#}
+{##}
+{#        <form method="post" action="{% url 'save_record_book_template' qualification.id admission_year %}">#}
+{#            {% csrf_token %}#}
+{#            <div class="section">#}
+{#                <h3>Информация о студенте</h3>#}
+{#                <label>ФИО: <input type="text" name="student_name" value="{{ template.student_name|default:'' }}"></label><br>#}
+{#                <label>Номер зачетной книжки: <input type="text" name="record_book_number" value="{{ template.record_book_number|default:'' }}"></label><br>#}
+{#                <label>Направление подготовки: <input type="text" name="specialty" value="{{ qualification.specialty.name }}" readonly></label><br>#}
+{#                <label>Приказ о зачислении: <input type="text" name="admission_order" value="{{ template.admission_order|default:'' }}"></label><br>#}
+{#                <label>Дата выдачи: <input type="date" name="issue_date" value="{{ template.issue_date|date:'Y-m-d'|default:'' }}"></label>#}
+{#            </div>#}
+{##}
+{#            <div class="section">#}
+{#                <h3>Результаты промежуточной аттестации</h3>#}
+{#                <button type="button" onclick="addRow('disciplineTable')">Добавить дисциплину</button>#}
+{#                <table id="disciplineTable">#}
+{#                    <thead>#}
+{#                        <tr>#}
+{#                            <th>Семестр</th>#}
+{#                            <th>Дисциплина</th>#}
+{#                            <th>Часы</th>#}
+{#                            <th>Тип</th> <!-- Новая колонка -->#}
+{#                        </tr>#}
+{#                    </thead>#}
+{#                    <tbody>#}
+{#                        {% for cert in template.middle_certifications.all %}#}
+{#                        <tr>#}
+{#                            <td><input type="number" name="middle_semester[]" value="{{ cert.semester }}"></td>#}
+{#                            <td>#}
+{#                                <select name="middle_discipline[]">#}
+{#                                    {% for discipline in curriculum.disciplines.all %}#}
+{#                                        <option value="{{ discipline.id }}" {% if cert.discipline.id == discipline.id %}selected{% endif %}>{{ discipline.name }}</option>#}
+{#                                    {% endfor %}#}
+{#                                </select>#}
+{#                            </td>#}
+{#                            <td><input type="number" name="middle_hours[]" value="{{ cert.hours }}"></td>#}
+{#                            <td>#}
+{#                                <select name="middle_is_exam[]">#}
+{#                                    <option value="True" {% if cert.is_exam %}selected{% endif %}>Экзамен</option>#}
+{#                                    <option value="False" {% if not cert.is_exam %}selected{% endif %}>Зачет</option>#}
+{#                                </select>#}
+{#                            </td>#}
+{#                        </tr>#}
+{#                        {% endfor %}#}
+{#                    </tbody>#}
+{#                </table>#}
+{#            </div>#}
+{##}
+{#            <div class="section">#}
+{#                <h3>Профессиональные модули</h3>#}
+{#                <button type="button" onclick="addRow('moduleTable')">Добавить модуль</button>#}
+{#                <table id="moduleTable">#}
+{#                    <thead>#}
+{#                        <tr>#}
+{#                            <th>Название модуля</th>#}
+{#                            <th>Часы</th>#}
+{#                        </tr>#}
+{#                    </thead>#}
+{#                    <tbody>#}
+{#                        {% for module in template.professional_modules.all %}#}
+{#                        <tr>#}
+{#                            <td><input type="text" name="module_name[]" value="{{ module.module_name }}"></td>#}
+{#                            <td><input type="number" name="module_hours[]" value="{{ module.hours }}"></td>#}
+{#                        </tr>#}
+{#                        {% endfor %}#}
+{#                    </tbody>#}
+{#                </table>#}
+{#            </div>#}
+{##}
+{#            <div class="section">#}
+{#                <h3>Практики</h3>#}
+{#                <button type="button" onclick="addRow('practiceTable')">Добавить практику</button>#}
+{#                <table id="practiceTable">#}
+{#                    <thead>#}
+{#                        <tr>#}
+{#                            <th>Название</th>#}
+{#                            <th>Часы</th>#}
+{#                            <th>Семестр</th>#}
+{#                        </tr>#}
+{#                    </thead>#}
+{#                    <tbody>#}
+{#                        {% for practice in template.practices.all %}#}
+{#                        <tr>#}
+{#                            <td><input type="text" name="practice_name[]" value="{{ practice.practice_name }}"></td>#}
+{#                            <td><input type="number" name="practice_hours[]" value="{{ practice.hours }}"></td>#}
+{#                            <td><input type="number" name="practice_semester[]" value="{{ practice.semester }}"></td>#}
+{#                        </tr>#}
+{#                        {% endfor %}#}
+{#                    </tbody>#}
+{#                </table>#}
+{#            </div>#}
+{##}
+{#            <div class="section">#}
+{#                <h3>Курсовые работы</h3>#}
+{#                <button type="button" onclick="addRow('courseTable')">Добавить курсовую</button>#}
+{#                <table id="courseTable">#}
+{#                    <thead>#}
+{#                        <tr>#}
+{#                            <th>Дисциплина</th>#}
+{#                            <th>Тема</th>#}
+{#                            <th>Оценка</th>#}
+{#                        </tr>#}
+{#                    </thead>#}
+{#                    <tbody>#}
+{#                        {% for paper in template.term_papers.all %}#}
+{#                        <tr>#}
+{#                            <td>#}
+{#                                <select name="term_discipline[]">#}
+{#                                    {% for discipline in curriculum.disciplines.all %}#}
+{#                                        <option value="{{ discipline.id }}" {% if paper.discipline.id == discipline.id %}selected{% endif %}>{{ discipline.name }}</option>#}
+{#                                    {% endfor %}#}
+{#                                </select>#}
+{#                            </td>#}
+{#                            <td><input type="text" name="term_topic[]" value="{{ paper.topic|default:'' }}"></td>#}
+{#                            <td><input type="text" name="term_grade[]" value="{{ paper.grade|default:'' }}"></td>#}
+{#                        </tr>#}
+{#                        {% endfor %}#}
+{#                    </tbody>#}
+{#                </table>#}
+{#            </div>#}
+{##}
+{#            <button type="submit">Сохранить шаблон</button>#}
+{#        </form>#}
+{#    </div>#}
+{##}
+{#    {{ curriculum_disciplines|json_script:"disciplines-data" }}#}
+{##}
+{#    <script>#}
+{#        let disciplines = [];#}
+{#        try {#}
+{#            const scriptElement = document.getElementById('disciplines-data');#}
+{#            const rawData = scriptElement ? scriptElement.textContent : '[]';#}
+{#            console.log("Raw disciplines data:", rawData);#}
+{#            disciplines = JSON.parse(rawData);#}
+{#            console.log("Parsed disciplines:", disciplines);#}
+{#        } catch (e) {#}
+{#            console.error("Error parsing disciplines:", e);#}
+{#        }#}
+{##}
+{#        function addRow(tableId) {#}
+{#            console.log("Button clicked for table:", tableId);#}
+{#            let table = document.getElementById(tableId).getElementsByTagName("tbody")[0];#}
+{#            let row = document.createElement("tr");#}
+{##}
+{#            if (tableId === 'disciplineTable') {#}
+{#                const disciplineOptions = disciplines.length ? disciplines.map(d => `<option value="${d.id}">${d.name}</option>`).join('') : '<option value="">Нет дисциплин</option>';#}
+{#                row.innerHTML = `#}
+{#                    <td><input type="number" name="middle_semester[]"></td>#}
+{#                    <td><select name="middle_discipline[]">${disciplineOptions}</select></td>#}
+{#                    <td><input type="number" name="middle_hours[]"></td>#}
+{#                    <td>#}
+{#                        <select name="middle_is_exam[]">#}
+{#                            <option value="True">Экзамен</option>#}
+{#                            <option value="False" selected>Зачет</option>#}
+{#                        </select>#}
+{#                    </td>#}
+{#                `;#}
+{#            } else if (tableId === 'moduleTable') {#}
+{#                row.innerHTML = `#}
+{#                    <td><input type="text" name="module_name[]"></td>#}
+{#                    <td><input type="number" name="module_hours[]"></td>#}
+{#                `;#}
+{#            } else if (tableId === 'practiceTable') {#}
+{#                row.innerHTML = `#}
+{#                    <td><input type="text" name="practice_name[]"></td>#}
+{#                    <td><input type="number" name="practice_hours[]"></td>#}
+{#                    <td><input type="number" name="practice_semester[]"></td>#}
+{#                `;#}
+{#            } else if (tableId === 'courseTable') {#}
+{#                const disciplineOptions = disciplines.length ? disciplines.map(d => `<option value="${d.id}">${d.name}</option>`).join('') : '<option value="">Нет дисциплин</option>';#}
+{#                row.innerHTML = `#}
+{#                    <td><select name="term_discipline[]">${disciplineOptions}</select></td>#}
+{#                    <td><input type="text" name="term_topic[]"></td>#}
+{#                    <td><input type="text" name="term_grade[]"></td>#}
+{#                `;#}
+{#            }#}
+{#            table.appendChild(row);#}
+{#        }#}
+{#    </script>#}
+{#</body>#}
+{#</html>#}
+
+
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Конструктор зачетной книжки</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .container { width: 80%; margin: 20px auto; text-align: left; }
+        table { width: 100%; margin-top: 20px; border-collapse: collapse; }
+        th, td { border: 1px solid black; padding: 8px; text-align: center; }
+        th { background-color: #f4f4f4; }
+        input, select { width: 100%; border: none; text-align: center; }
+        button { margin: 5px; padding: 10px; cursor: pointer; }
+        .section { margin-top: 30px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Конструктор зачетной книжки</h2>
+
+        <form method="post" action="{% url 'save_record_book_template' qualification.id admission_year %}">
+            {% csrf_token %}
+            <div class="section">
+                <h3>Информация о студенте</h3>
+                <label>ФИО: <input type="text" name="student_name" value="{{ template.student_name|default:'' }}"></label><br>
+                <label>Номер зачетной книжки: <input type="text" name="record_book_number" value="{{ template.record_book_number|default:'' }}"></label><br>
+                <label>Направление подготовки: <input type="text" name="specialty" value="{{ qualification.specialty.name }}" readonly></label><br>
+                <label>Приказ о зачислении: <input type="text" name="admission_order" value="{{ template.admission_order|default:'' }}"></label><br>
+                <label>Дата выдачи: <input type="date" name="issue_date" value="{{ template.issue_date|date:'Y-m-d'|default:'' }}"></label>
+            </div>
+
+            <div class="section">
+                <h3>Результаты промежуточной аттестации</h3>
+                <button type="button" onclick="addRow('disciplineTable')">Добавить дисциплину</button>
+                <table id="disciplineTable">
+                    <thead>
+                        <tr>
+                            <th>Семестр</th>
+                            <th>Дисциплина</th>
+                            <th>Часы</th>
+                            <th>Тип</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cert in template.middle_certifications.all %}
+                        <tr>
+                            <td>
+                                <select name="middle_semester[]">
+                                    {% for value, display in cert.SEMESTER_CHOICES %}
+                                        <option value="{{ value }}" {% if cert.semester == value %}selected{% endif %}>{{ display }}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                            <td>
+                                <select name="middle_discipline[]">
+                                    {% for discipline in curriculum.disciplines.all %}
+                                        <option value="{{ discipline.id }}" {% if cert.discipline.id == discipline.id %}selected{% endif %}>{{ discipline.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                            <td><input type="number" name="middle_hours[]" value="{{ cert.hours }}"></td>
+                            <td>
+                                <select name="middle_is_exam[]">
+                                    <option value="True" {% if cert.is_exam %}selected{% endif %}>Экзамен</option>
+                                    <option value="False" {% if not cert.is_exam %}selected{% endif %}>Зачет</option>
+                                </select>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section">
+                <h3>Профессиональные модули</h3>
+                <button type="button" onclick="addRow('moduleTable')">Добавить модуль</button>
+                <table id="moduleTable">
+                    <thead>
+                        <tr>
+                            <th>Название модуля</th>
+                            <th>Часы</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for module in template.professional_modules.all %}
+                        <tr>
+                            <td><input type="text" name="module_name[]" value="{{ module.module_name }}"></td>
+                            <td><input type="number" name="module_hours[]" value="{{ module.hours }}"></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section">
+                <h3>Практики</h3>
+                <button type="button" onclick="addRow('practiceTable')">Добавить практику</button>
+                <table id="practiceTable">
+                    <thead>
+                        <tr>
+                            <th>Название</th>
+                            <th>Часы</th>
+                            <th>Семестр</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for practice in template.practices.all %}
+                        <tr>
+                            <td><input type="text" name="practice_name[]" value="{{ practice.practice_name }}"></td>
+                            <td><input type="number" name="practice_hours[]" value="{{ practice.hours }}"></td>
+                            <td>
+                                <select name="practice_semester[]">
+                                    {% for value, display in practice.SEMESTER_CHOICES %}
+                                        <option value="{{ value }}" {% if practice.semester == value %}selected{% endif %}>{{ display }}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section">
+                <h3>Курсовые работы</h3>
+                <button type="button" onclick="addRow('courseTable')">Добавить курсовую</button>
+                <table id="courseTable">
+                    <thead>
+                        <tr>
+                            <th>Дисциплина</th>
+{#                            <th>Тема</th>#}
+{#                            <th>Оценка</th>#}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for paper in template.term_papers.all %}
+                        <tr>
+                            <td>
+                                <select name="term_discipline[]">
+                                    {% for discipline in curriculum.disciplines.all %}
+                                        <option value="{{ discipline.id }}" {% if paper.discipline.id == discipline.id %}selected{% endif %}>{{ discipline.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+{#                            <td><input type="text" name="term_topic[]" value="{{ paper.topic|default:'' }}"></td>#}
+{#                            <td><input type="text" name="term_grade[]" value="{{ paper.grade|default:'' }}"></td>#}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <button type="submit">Сохранить шаблон</button>
+        </form>
+    </div>
+
+    {{ curriculum_disciplines|json_script:"disciplines-data" }}
+
+    <script>
+        let disciplines = [];
+        try {
+            const scriptElement = document.getElementById('disciplines-data');
+            const rawData = scriptElement ? scriptElement.textContent : '[]';
+            console.log("Raw disciplines data:", rawData);
+            disciplines = JSON.parse(rawData);
+            console.log("Parsed disciplines:", disciplines);
+        } catch (e) {
+            console.error("Error parsing disciplines:", e);
+        }
+
+        function addRow(tableId) {
+            console.log("Button clicked for table:", tableId);
+            let table = document.getElementById(tableId).getElementsByTagName("tbody")[0];
+            let row = document.createElement("tr");
+
+            if (tableId === 'disciplineTable') {
+                const disciplineOptions = disciplines.length ? disciplines.map(d => `<option value="${d.id}">${d.name}</option>`).join('') : '<option value="">Нет дисциплин</option>';
+                const semesterOptions = Array.from({length: 8}, (_, i) => i + 1).map(i => `<option value="${i}">${i}</option>`).join('');
+                row.innerHTML = `
+                    <td><select name="middle_semester[]">${semesterOptions}</select></td>
+                    <td><select name="middle_discipline[]">${disciplineOptions}</select></td>
+                    <td><input type="number" name="middle_hours[]"></td>
+                    <td>
+                        <select name="middle_is_exam[]">
+                            <option value="True">Экзамен</option>
+                            <option value="False" selected>Зачет</option>
+                        </select>
+                    </td>
+                `;
+            } else if (tableId === 'moduleTable') {
+                row.innerHTML = `
+                    <td><input type="text" name="module_name[]"></td>
+                    <td><input type="number" name="module_hours[]"></td>
+                `;
+            } else if (tableId === 'practiceTable') {
+                const semesterOptions = Array.from({length: 8}, (_, i) => i + 1).map(i => `<option value="${i}">${i}</option>`).join('');
+                row.innerHTML = `
+                    <td><input type="text" name="practice_name[]"></td>
+                    <td><input type="number" name="practice_hours[]"></td>
+                    <td><select name="practice_semester[]">${semesterOptions}</select></td>
+                `;
+            } else if (tableId === 'courseTable') {
+                const disciplineOptions = disciplines.length ? disciplines.map(d => `<option value="${d.id}">${d.name}</option>`).join('') : '<option value="">Нет дисциплин</option>';
+                row.innerHTML = `
+                    <td><select name="term_discipline[]">${disciplineOptions}</select></td>
+{#                    <td><input type="text" name="term_topic[]"></td>#}
+{#                    <td><input type="text" name="term_grade[]"></td>#}
+                `;
+            }
+            table.appendChild(row);
+        }
+    </script>
+</body>
+</html>

@@ -192,3 +192,105 @@ class StudentCreateView(ObjectCreateView):
     """
     model = Student
     form_class = StudentForm
+
+
+from django.shortcuts import render, get_object_or_404, redirect
+from Academhub.models import Qualification, Curriculum, RecordBookTemplate, MiddleCertification, ProfessionalModule, Practice, TermPaper
+
+
+def qualification_detail(request, qualification_id):
+    qualification = get_object_or_404(Qualification, id=qualification_id)
+    # Предположим, что admission_year выбирается пользователем или берется текущий год
+    admission_year = 2023  # Замените на логику выбора года
+    return render(request, 'qualification_detail.html',
+                  {'qualification': qualification, 'admission_year': admission_year})
+
+
+def create_record_book_template(request, qualification_id, admission_year):
+    qualification = get_object_or_404(Qualification, id=qualification_id)
+    curriculum = get_object_or_404(Curriculum, qualification=qualification, admission_year=admission_year)
+    template, created = RecordBookTemplate.objects.get_or_create(qualification=qualification,
+                                                                 admission_year=admission_year, curriculum=curriculum)
+
+    curriculum_disciplines = [{"id": d.id, "name": d.name} for d in curriculum.disciplines.all()]
+
+    return render(request, 'Contingent/record_book_template.html', {
+        'qualification': qualification,
+        'template': template,
+        'curriculum': curriculum,
+        'curriculum_disciplines': curriculum_disciplines,
+        'admission_year': admission_year,
+    })
+
+
+def save_record_book_template(request, qualification_id, admission_year):
+    qualification = get_object_or_404(Qualification, id=qualification_id)
+    curriculum = get_object_or_404(Curriculum, qualification=qualification, admission_year=admission_year)
+    template = RecordBookTemplate.objects.get(qualification=qualification, admission_year=admission_year)
+
+    if request.method == 'POST':
+        # Обновление основной информации
+        template.student_name = request.POST.get('student_name', '')
+        template.record_book_number = request.POST.get('record_book_number', '')
+        template.admission_order = request.POST.get('admission_order', '')
+        template.issue_date = request.POST.get('issue_date')
+        template.save()
+
+        # Обработка промежуточных аттестаций
+        middle_semesters = request.POST.getlist('middle_semester[]')
+        middle_disciplines = request.POST.getlist('middle_discipline[]')
+        middle_hours = request.POST.getlist('middle_hours[]')
+        middle_is_exams = request.POST.getlist('middle_is_exam[]')
+        template.middle_certifications.clear()
+        for sem, disc, hrs, is_exam in zip(middle_semesters, middle_disciplines, middle_hours, middle_is_exams):
+            cert = MiddleCertification.objects.create(
+                semester=sem,
+                discipline_id=disc,
+                hours=hrs,
+                is_exam=is_exam == 'True'
+            )
+            template.middle_certifications.add(cert)
+
+        # Обработка модулей
+        module_names = request.POST.getlist('module_name[]')
+        module_hours = request.POST.getlist('module_hours[]')
+        template.professional_modules.clear()
+        for name, hrs in zip(module_names, module_hours):
+            module = ProfessionalModule.objects.create(module_name=name, hours=hrs)
+            template.professional_modules.add(module)
+
+        # Обработка практик
+        practice_names = request.POST.getlist('practice_name[]')
+        practice_hours = request.POST.getlist('practice_hours[]')
+        practice_semesters = request.POST.getlist('practice_semester[]')
+        template.practices.clear()
+        for name, hrs, sem in zip(practice_names, practice_hours, practice_semesters):
+            practice = Practice.objects.create(practice_name=name, hours=hrs, semester=sem, practice_type='УП')
+            template.practices.add(practice)
+
+        # Обработка курсовых
+        term_disciplines = request.POST.getlist('term_discipline[]')
+        term_topics = request.POST.getlist('term_topic[]')
+        term_grades = request.POST.getlist('term_grade[]')
+        template.term_papers.clear()
+        for disc, topic, grade in zip(term_disciplines, term_topics, term_grades):
+            paper = TermPaper.objects.create(discipline_id=disc, topic=topic, grade=grade)
+            template.term_papers.add(paper)
+
+        # return redirect('qualification_detail', pk=qualification_id)
+        return redirect('view_record_book', qualification_id=qualification_id, admission_year=admission_year)
+
+    return redirect('create_record_book_template', qualification_id=qualification_id, admission_year=admission_year)
+
+
+def view_record_book(request, qualification_id, admission_year):
+    qualification = get_object_or_404(Qualification, id=qualification_id)
+    template = get_object_or_404(RecordBookTemplate, qualification=qualification, admission_year=admission_year)
+
+    context = {
+        'qualification': qualification,
+        'template': template,
+        'admission_year': admission_year,
+    }
+    return render(request, 'Contingent/record_book_view.html', context)
+
