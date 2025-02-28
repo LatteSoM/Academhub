@@ -4,7 +4,7 @@ from django import forms
 from django.db.models import Q
 
 from Academhub.models import Qualification, Specialty, GroupStudents, Student, Discipline
-from django_filters import FilterSet, CharFilter, ModelChoiceFilter, ModelMultipleChoiceFilter, ChoiceFilter
+from django_filters import FilterSet, CharFilter, ModelChoiceFilter, ModelMultipleChoiceFilter, ChoiceFilter, MultipleChoiceFilter
 
 
 __all__ = (

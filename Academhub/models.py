@@ -407,11 +407,14 @@ class Gradebook(AcademHubModel):
         ("Ведомость успеваемости", "Ведомость успеваемости")
     )
 
-    teacher = models.ForeignKey(
+    number = models.CharField(
+        max_length=255,
+        verbose_name='Номер ведомости'
+    )
+
+    teachers = models.ManyToManyField(
         'CustomUser', 
-        on_delete=models.CASCADE, 
-        related_name="gradebooks",
-        verbose_name="Преподаватель"
+        verbose_name="Преподаватели"
     )
     group = models.ForeignKey(
         GroupStudents, 

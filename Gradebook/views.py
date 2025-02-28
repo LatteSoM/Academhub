@@ -3,12 +3,21 @@ from Gradebook.tables import *
 from Gradebook.filters import *
 from Gradebook.mixins import GradeBookMixin
 from django.shortcuts import get_object_or_404
-from Academhub.models import GradebookStudents
+from Academhub.models import GradebookStudents, Gradebook
 from Academhub.base import BulkUpdateView, ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView
 
 #
 # Create your views here.
 #
+
+__all__ = (
+    'GradebookTableView',
+    'GradebookDetailView',
+    'GradebookCreateView',
+    'GradebookUpdateView',
+    'GradebookDisciplineCreateView',
+    'GradebookStudentBulkUpdateView',
+)
 
 class GradebookStudentBulkUpdateView(BulkUpdateView):
     model = GradebookStudents
@@ -75,13 +84,15 @@ class GradebookDetailView(ObjectDetailView):
 
     fieldset = {
         'Основная информация':
-            ['name', 'teacher', 'status', ]
+            ['name', 'status', ]
     }
 
     def get_tables(self):
-        students = GradebookStudents.objects.filter(gradebook__pk=self.object.pk)
-        table = GradebookStudentsTable(data=students)
-        return [table]
+        table = GradebookStudentsTable(data=self.object.students.all())
+
+        table2 = GradebookTeachersTable(data=self.object.teachers.all())
+        
+        return [table, table2]
 
 class GradebookUpdateView(GradeBookMixin, ObjectUpdateView):
     """
@@ -102,6 +113,13 @@ class GradebookCreateView(GradeBookMixin, ObjectCreateView):
     model = Gradebook
     form_class = GradebookForm
     template_name = 'Gradebook/create/grade_book.html'
-    properties = {
-        'group_id': ''
-    }
+    properties = ['group_id']
+
+class GradebookDisciplineCreateView(GradeBookMixin, ObjectCreateView):
+    """
+    Класс для создания нового учебного журнала.
+    """
+    model = Gradebook
+    form_class = GradebookForm
+    template_name = 'Gradebook/create/grade_book.html'
+    properties = ['group_id', 'discipile_id']

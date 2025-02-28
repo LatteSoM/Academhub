@@ -90,6 +90,12 @@ class StudentForm(forms.ModelForm):
         ] 
 
 class GroupForm(forms.ModelForm):
+    disciplines = forms.ModelMultipleChoiceField(
+        queryset=Discipline.objects.all(),
+        label='Дисциплины',
+        widget=forms.CheckboxSelectMultiple()
+    )
+
     class Meta:
         model = GroupStudents
         fields = [
