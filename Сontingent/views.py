@@ -1,9 +1,91 @@
 from .forms import *
 from .tables import *
 from .filters import *
-from Academhub.models import GroupStudents, Qualification, Specialty, Student
+from Academhub.models import (
+    Student, 
+    Practice,
+    TermPaper,
+    Specialty, 
+    Gradebook, 
+    Discipline, 
+    Curriculum, 
+    GroupStudents, 
+    Qualification,
+    RecordBookTemplate, 
+    ProfessionalModule,
+    MiddleCertification,
+)
+from Gradebook.tables import GradebookTable2
+from django.shortcuts import render, get_object_or_404, redirect
 from Academhub.base import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView
 
+__all__ = (
+    'view_record_book',
+    'save_record_book_template',
+    'create_record_book_template',
+
+    'DisciplineTableView',
+    'DisciplineDetailView',
+    'DisciplineUpdateView',
+    'DisciplineCreateView',
+
+    'SpecialtyTableView',
+    'SpecialtyDetailView',
+    'SpecialtyUpdateView',
+    'SpecialtyCreateView',
+
+    'StudentTableView', 
+    'StudentDetailView', 
+    'StudentUpdateView', 
+    'StudentCreateView',
+
+    'GroupTableView', 
+    'GroupDetailView', 
+    'GroupUpdateView', 
+    'GroupCreateView',
+
+    'QualificationTableView',
+    'QualificationCreateView',
+    'QualificationDetailView',
+    'QualificationUpdateView'
+)
+
+#
+## Discipline
+#
+
+class DisciplineTableView(ObjectTableView):
+    """
+        Класс для отображения таблицы дисциплин.
+    """
+    table_class = DisciplineTable
+    filterset_class = DisciplineFilter
+    queryset = Discipline.objects.all()
+
+class DisciplineDetailView(ObjectDetailView):
+    """
+    Класс для отображения детальной информации о дисциплине.
+    """
+    model= Discipline
+    paginate_by  = 30
+    fieldset = {
+        'Основная информация':
+            ['name', 'code', 'specialty',]
+    }
+        
+class DisciplineUpdateView(ObjectUpdateView):
+    """
+    Класс для обновления информации о дисциплине.
+    """
+    form_class = DisciplineForm
+    queryset = Discipline.objects.all()
+    
+class DisciplineCreateView(ObjectCreateView):
+    """
+    Класс для создания новой дисциплины.
+    """
+    model = Discipline
+    form_class = DisciplineForm
 
 #
 ## Specialty
@@ -30,10 +112,10 @@ class SpecialtyDetailView(ObjectDetailView):
             ['code', 'name'],
     }
 
-    def get_table(self):
+    def get_tables(self):
         students = Qualification.objects.filter(specialty__pk=self.object.pk)
         table = QualificationTable(data=students)
-        return table
+        return [table]
 
 class SpecialtyUpdateView(ObjectUpdateView):
     """
@@ -82,10 +164,10 @@ class QualificationDetailView(ObjectDetailView):
             ['short_name', 'name', 'specialty']
     }
 
-    def get_table(self):
+    def get_tables(self):
         students = GroupStudents.objects.filter(qualification__pk=self.object.pk)
         table = GroupTable(data=students)
-        return table
+        return [table]
 
 class QualificationUpdateView(ObjectUpdateView):
     """
@@ -127,10 +209,16 @@ class GroupDetailView(ObjectDetailView):
             ['number', 'qualification']
     }
 
-    def get_table(self):
+    def get_tables(self):
         students = Student.objects.filter(group__pk=self.object.pk)
         table = StudentTable2(data=students)
-        return table
+
+        gradebooks = Gradebook.objects.filter(group__pk=self.object.pk)
+        table2 = GradebookTable2(data=gradebooks)
+
+        table3 = DisciplineTable(data=self.object.disciplines.all())
+
+        return [table, table2, table3]
 
 class GroupUpdateView(ObjectUpdateView):
     """
@@ -193,10 +281,9 @@ class StudentCreateView(ObjectCreateView):
     model = Student
     form_class = StudentForm
 
-
-from django.shortcuts import render, get_object_or_404, redirect
-from Academhub.models import Qualification, Curriculum, RecordBookTemplate, MiddleCertification, ProfessionalModule, Practice, TermPaper
-
+#
+##
+#
 
 def qualification_detail(request, qualification_id):
     qualification = get_object_or_404(Qualification, id=qualification_id)
