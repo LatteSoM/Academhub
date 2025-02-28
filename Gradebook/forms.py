@@ -1,17 +1,22 @@
 from django import forms
 from Academhub.models import Gradebook, GradebookStudents, CustomUser, Discipline, Student, GroupStudents
 
+__all__ = (
+    'GradebookForm',
+    'GradebookStudentsForm',
+)
 
 class GradebookForm(forms.ModelForm):
     """
     Форма для создания и редактирования записей в журнале оценок.
     """
-    teacher = forms.ModelChoiceField(
+    teachers = forms.ModelMultipleChoiceField(
         queryset=CustomUser.objects.filter(is_teacher=True),
-        label='Преподаватель',
+        label='Преподаватели',
+        widget=forms.CheckboxSelectMultiple
     )
     discipline = forms.ModelChoiceField(
-        queryset=Discipline.objects.all(),
+        queryset=Discipline.objects.none(),
         label='Дисциплина',
     )
     group = forms.ModelChoiceField(
@@ -21,6 +26,7 @@ class GradebookForm(forms.ModelForm):
     students = forms.ModelMultipleChoiceField(
         queryset=Student.objects.none(),
         label='Студенты',
+        widget=forms.CheckboxSelectMultiple
     )
 
     class Meta:
@@ -28,7 +34,7 @@ class GradebookForm(forms.ModelForm):
         Метакласс для настройки формы.
         """
         model = Gradebook
-        fields = ['name', 'semester_number', 'teacher', 'discipline', 'group', 'students']
+        fields = ["number", 'name', 'semester_number', 'teachers', 'group', 'discipline', 'students']
 
     def __init__(self, *args, **kwargs):
         """
@@ -51,9 +57,17 @@ class GradebookForm(forms.ModelForm):
         if self.group_id:
             self.initial['group'] = self.group_id
             self.fields['students'].queryset = Student.objects.filter(group__id=self.group_id)
+            
+            group = GroupStudents.objects.filter(pk=self.group_id)
+
+            if  group.exists():
+                group = group.first()
+                self.fields['discipline'].queryset = group.disciplines.all()
+
         elif self.instance.pk:
             self.initial['group'] = self.group_id
             self.fields['students'].queryset = Student.objects.filter(group__id=self.group_id)
+            self.fields['discipline'].queryset = self.instance.group.disciplines.all()
 
 class GradebookStudentsForm(forms.ModelForm):
     ticket_number = forms.IntegerField(
@@ -67,7 +81,6 @@ class GradebookStudentsForm(forms.ModelForm):
         label='Оценка'
     )
     
-
     class Meta:
         model = GradebookStudents
         fields = ['student', 'ticket_number', 'grade']

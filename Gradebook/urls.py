@@ -10,6 +10,7 @@ urlpatterns = [
     path('gradebook/create', GradebookCreateView.as_view(), name='gradebook_create'),
     path('gradebook/<int:pk>', GradebookDetailView.as_view(), name='gradebook_detail'),
     path('gradebook/update/<int:pk>', GradebookUpdateView.as_view(), name='gradebook_update'),
+    path('gradebook/create/discipline', GradebookCreateView.as_view(), name='gradebook_with_discipline_create'),
 
     #
     ## GradebookStudents

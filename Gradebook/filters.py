@@ -14,9 +14,9 @@ class GradebookFilter(filters.FilterSet):
         label='Поиск',
     )
 
-    teacher = filters.ModelMultipleChoiceFilter(
+    teachers = filters.ModelMultipleChoiceFilter(
         queryset=CustomUser.objects.filter(is_teacher=True), 
-        label='Учитель',
+        label='Учителя',
         widget=forms.CheckboxSelectMultiple
     )
 
@@ -34,7 +34,7 @@ class GradebookFilter(filters.FilterSet):
 
     class Meta:
         model = Gradebook
-        fields = ['group', 'teacher', 'status', 'discipline', 'semester_number']
+        fields = ['group', 'teachers', 'status', 'discipline', 'semester_number']
     
     def filter_search(self, queryset, name, value):
         return queryset.filter(
