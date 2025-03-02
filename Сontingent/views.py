@@ -1,3 +1,4 @@
+from collections import defaultdict
 from contextlib import nullcontext
 
 from django.views import View
@@ -328,8 +329,86 @@ class RecoverStudent(ObjectUpdateView):
     form_class = RecoverStudentForm
     queryset = Student.objects.filter(is_expelled=True)
 
+
+def student_format_to_list():
+    students = []
+    for student in Student.objects.all():
+        student_specialty = student.group.qualification.specialty
+        student_qualification = student.group.qualification.name
+        student_current_course = student.group.current_course
+        student_education_base = student.education_base
+        student_education_basis = student.education_basis
+        student_is_in_academ = student.is_in_academ
+
+        students.append({"specialty_code": student_specialty.code, "specialty_name": student_specialty.name,
+                         "qualification": student_qualification,
+                         "course": student_current_course, "base": student_education_base, "budget": student_education_basis,
+                         "academic_leave": student_is_in_academ})
+    return students
 def statisticks_view(request):
-    return render(request, 'Contingent/statisticks.html')
+    student_list = student_format_to_list()
+    specialty_data = defaultdict(lambda: defaultdict(int))
+
+    for student in student_list:
+        spec_code = student["specialty_code"]
+        spec_name = student["specialty_name"]
+        qualification = student["qualification"]
+        course = student["course"]
+        base = student["base"]  # Основное общее или Среднее общее
+        budget = student["budget"]  # Бюджет или Внебюджет
+        academic = student["academic_leave"]  # True - в академе, False - нет
+
+        if base == "Основное общее":
+            base = 9
+        else:
+            base = 11
+
+        if academic:
+            key = f"students_academic_{course}_{'budget' if budget else 'paid'}"
+        else:
+            key = f"students_{base}_{course}_{'budget' if budget else 'paid'}"
+
+        specialty_data[(spec_code, spec_name, qualification)][key] += 1
+
+    number = 1
+    table_data = []
+    for (code, name, qualification), counts in specialty_data.items():
+        total_budget = sum(counts.get(key, 0) for key in counts if "budget" in key)
+        total_paid = sum(counts.get(key, 0) for key in counts if "paid" in key)
+        row = [
+            number,
+            code,  # Код специальности
+            name,  # Название специальности
+            qualification,  # Квалификация
+            counts.get("students_9_1_budget", 0),
+            counts.get("students_9_1_paid", 0),
+            counts.get("students_9_2_budget", 0),
+            counts.get("students_9_2_paid", 0),
+            counts.get("students_9_3_budget", 0),
+            counts.get("students_9_3_paid", 0),
+            counts.get("students_9_4_budget", 0),
+            counts.get("students_9_4_paid", 0),
+            counts.get("students_11_1_budget", 0),
+            counts.get("students_11_1_paid", 0),
+            counts.get("students_11_2_budget", 0),
+            counts.get("students_11_2_paid", 0),
+            counts.get("students_11_3_budget", 0),
+            counts.get("students_11_3_paid", 0),
+            counts.get("students_academic_1_budget", 0),
+            counts.get("students_academic_1_paid", 0),
+            counts.get("students_academic_2_budget", 0),
+            counts.get("students_academic_2_paid", 0),
+            counts.get("students_academic_3_budget", 0),
+            counts.get("students_academic_3_paid", 0),
+            counts.get("students_academic_4_budget", 0),
+            counts.get("students_academic_4_paid", 0),
+            total_budget,  # Итого бюджет
+            total_paid,  # Итого внебюджет
+        ]
+        table_data.append(row)
+        number += 1
+
+    return render(request, 'Contingent/statisticks.html', context={'table_data': table_data})
 
 
 def qualification_detail(request, qualification_id):
