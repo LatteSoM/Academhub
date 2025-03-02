@@ -124,6 +124,7 @@ class AcademLeaveForm(forms.ModelForm):
             'academ_leave_date',
             'academ_return_date',
             'reason_of_academ',
+            'note'
         ]
         widgets = {
             'academ_leave_date': forms.DateInput(
@@ -160,4 +161,49 @@ class AcademReturnForm(forms.ModelForm):
 
         if commit:
             student.save()  # Сохраняем изменения
+        return student
+
+class ExpellStudentForm(forms.ModelForm):
+    class Meta:
+        model = Student
+        fields = [
+            'date_of_expelling',
+            'reason_of_expelling',
+            'note',
+        ]
+
+        widgets = {
+            'date_of_expelling': forms.DateInput(
+                attrs={'type': 'date'}, format='%Y-%m-%d'
+            )
+        }
+
+    def save(self, commit=True):
+        student = super().save(commit=False)  # Получаем объект студента, но пока не сохраняем
+        student.is_expelled = True
+        student.left_course = student.group.current_course  # Берем текущий курс группы
+        student.academ_leave_date = None
+        student.academ_return_date = None
+        student.reason_of_academ = None
+        student.is_in_academ = False
+
+        if commit:
+            student.save()  # Сохраняем изменения
+        return student
+
+class RecoverStudentForm(forms.ModelForm):
+    class Meta:
+        model = Student
+        fields = ['group',
+                  'note']
+
+    def save(self, commit=True):
+        student = super().save(commit=False)
+        student.is_expelled = False
+        student.date_of_expelling = None
+        student.reason_of_expelling = None
+        student.left_course = None
+
+        if commit:
+            student.save()
         return student

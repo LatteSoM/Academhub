@@ -157,5 +157,48 @@ class AcademFilter(FilterSet):
             Q(course__icontains=value)
         )
 
+class ExpulsionFilter(FilterSet):
+    search = CharFilter(method='filter_search', label='Поиск')
 
+    COURSE_CHOICES = (
+        ("1", 1),
+        ("2", 2),
+        ("3", 3),
+        ("4", 4)
+    )
+
+    REASONS_OF_EXPELLING_CHOICES = (
+        ("с/ж", "с/ж"),
+        ("Перевод", "Перевод"),
+        ("Смерть", "Смерть"),
+        # TODO: Выяснить про другие причины
+    )
+
+    left_course = ChoiceFilter(choices=COURSE_CHOICES, label='Курс, с которого ушел')
+
+    group = ModelMultipleChoiceFilter(
+        widget=forms.CheckboxSelectMultiple,
+        label='Группа',
+        queryset=GroupStudents.objects.all(),
+    )
+
+    education_base = MultipleChoiceFilter(
+        label='База образования',
+        widget=forms.CheckboxSelectMultiple,
+        choices=Student.EDUCATION_BASE_CHOICES
+    )
+
+    education_basis = MultipleChoiceFilter(
+        label='Основа образования',
+        choices=Student.EDUCATION_BASIS_CHOICES,
+        widget=forms.CheckboxSelectMultiple,
+    )
+
+    reason_of_expulsion = MultipleChoiceFilter(choices=REASONS_OF_EXPELLING_CHOICES,
+                                               label="Причина отчисления", widget=forms.CheckboxSelectMultiple)
+
+    # TODO: Сделать фильтр на год
+
+    qualification = ModelChoiceFilter(queryset=Qualification.objects.all(), label='Квалификация')
+    specialty = ModelChoiceFilter(queryset=Specialty.objects.all(), label='Специальность')
 

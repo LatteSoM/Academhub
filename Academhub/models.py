@@ -477,6 +477,8 @@ class Student(AcademHubModel):
     academ_leave_date = models.DateField(null=True, blank=True, verbose_name="Дата ухода в академ")
     academ_return_date = models.DateField(null=True, blank=True, verbose_name="Дата возвращения из академа")
 
+    date_of_expelling = models.DateField(null=True, blank=True, verbose_name="Дата отчисления")
+    is_expelled = models.BooleanField(null=True, blank=True, default=False, verbose_name="Отчислен ли студент")
     class Meta:
         verbose_name = "Студент"
         verbose_name_plural = "Студенты"

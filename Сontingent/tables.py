@@ -75,8 +75,17 @@ class AcademTable(BaseTable):
     class Meta:
         model = Student
         paginate_by = 10
-        table_name = ' Академический отпуск'
+        table_name = 'Академический отпуск'
         fields = ('full_name', 'birth_date', 'group', 'left_course', 'academ_leave_date',
                   'academ_return_date', 'reason_of_academ')
 
+class ExpulsionTable(BaseTable):
+    specialty = tables.Column(accessor='group.qualification.specialty.code', verbose_name="Специальность")
 
+    class Meta:
+        model = Student
+        paginate_by = 10
+        table_name = 'Отчисленные'
+        fields = ('date_of_expelling', 'reason_of_expelling', 'full_name', 'birth_date', 'specialty',
+                  'group', 'education_base', 'education_basis', 'admission_order', 'transfer_to_2nd_year_order',
+                  'transfer_to_3rd_year_order', 'transfer_to_4th_year_order', 'note', 'phone')

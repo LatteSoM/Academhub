@@ -1,7 +1,7 @@
 from .views import *
 from django.urls import path
 
-from .views import AcademListView, AcademUpdateView, AcademReturn
+from .views import AcademListView, AcademUpdateView, AcademReturn, ExpulsionListView, ExpelStudent, RecoverStudent
 
 urlpatterns = [
 
@@ -68,4 +68,9 @@ urlpatterns = [
 
     path('academ_return/<int:pk>/', AcademReturn.as_view(), name='academ_return'),
 
+    # Страница движений
+    path('expelled_students/', ExpulsionListView.as_view(), name='expelled_students'),
+    path('student/<int:pk>/expell', ExpelStudent.as_view(), name='expel_student'),
+
+    path('student/<int:pk>/recover', RecoverStudent.as_view(), name='student_recover'),
 ]

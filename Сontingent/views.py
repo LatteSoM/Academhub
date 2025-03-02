@@ -2,9 +2,9 @@ from contextlib import nullcontext
 
 from django.views import View
 
-from .filters import AcademFilter
+from .filters import AcademFilter, ExpulsionFilter
 from .forms import *
-from .forms import AcademLeaveForm, AcademReturnForm
+from .forms import AcademLeaveForm, AcademReturnForm, ExpellStudentForm, RecoverStudentForm
 from .tables import *
 from .filters import *
 from Academhub.models import (
@@ -56,7 +56,7 @@ __all__ = (
     'QualificationUpdateView'
 )
 
-from .tables import AcademTable
+from .tables import AcademTable, ExpulsionTable
 
 
 #
@@ -174,7 +174,7 @@ class QualificationDetailView(ObjectDetailView):
     }
 
     def get_tables(self):
-        students = GroupStudents.objects.filter(qualification__pk=self.object.pk)
+        students = GroupStudents.objects.filter(qualification__pk=self.object.pk, is_in_academ=False, is_expelled=False)
         table = GroupTable(data=students)
         return [table]
 
@@ -219,7 +219,7 @@ class GroupDetailView(ObjectDetailView):
     }
 
     def get_tables(self):
-        students = Student.objects.filter(group__pk=self.object.pk)
+        students = Student.objects.filter(group__pk=self.object.pk, is_expelled=False, is_in_academ=False)
         table = StudentTable2(data=students)
 
         gradebooks = Gradebook.objects.filter(group__pk=self.object.pk)
@@ -253,7 +253,7 @@ class StudentTableView(ObjectTableView):
     """
     table_class = StudentTable
     filterset_class = StudentFilter
-    queryset = Student.objects.all()
+    queryset = Student.objects.filter(is_expelled=False, is_in_academ=False)
 
 class StudentDetailView(ObjectDetailView):
     """
@@ -314,6 +314,19 @@ class AcademReturn(ObjectUpdateView):
     form_class = AcademReturnForm
     queryset = Student.objects.all()
 
+
+class ExpulsionListView(ObjectTableView):
+    table_class = ExpulsionTable
+    filterset_class = ExpulsionFilter
+    queryset = Student.objects.filter(is_expelled=True)
+
+class ExpelStudent(ObjectUpdateView):
+    form_class = ExpellStudentForm
+    queryset = Student.objects.all()
+
+class RecoverStudent(ObjectUpdateView):
+    form_class = RecoverStudentForm
+    queryset = Student.objects.filter(is_expelled=True)
 
 
 def qualification_detail(request, qualification_id):
