@@ -1,7 +1,8 @@
 from .views import *
 from django.urls import path
 
-from .views import AcademListView, AcademUpdateView, AcademReturn, ExpulsionListView, ExpelStudent, RecoverStudent
+from .views import AcademListView, AcademUpdateView, AcademReturn, ExpulsionListView, ExpelStudent, RecoverStudent, \
+    statisticks_view
 
 urlpatterns = [
 
@@ -73,4 +74,7 @@ urlpatterns = [
     path('student/<int:pk>/expell', ExpelStudent.as_view(), name='expel_student'),
 
     path('student/<int:pk>/recover', RecoverStudent.as_view(), name='student_recover'),
+
+    # Страница статистики
+    path('statisticks/', statisticks_view, name='statisticks'),
 ]

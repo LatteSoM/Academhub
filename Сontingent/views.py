@@ -328,6 +328,9 @@ class RecoverStudent(ObjectUpdateView):
     form_class = RecoverStudentForm
     queryset = Student.objects.filter(is_expelled=True)
 
+def statisticks_view(request):
+    return render(request, 'Contingent/statisticks.html')
+
 
 def qualification_detail(request, qualification_id):
     qualification = get_object_or_404(Qualification, id=qualification_id)

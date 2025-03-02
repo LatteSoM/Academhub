@@ -1,0 +1,155 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Таблица</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 5px;
+            text-align: center;
+        }
+        .highlight-green {
+            background-color: lime;
+        }
+        .highlight-blue {
+            background-color: cyan;
+        }
+        .highlight-yellow {
+            background-color: yellow;
+        }
+        .divider {
+            width: 100%;
+            height: 1px;
+            background-color: #000;
+            margin: 5px 0;
+        }
+
+    </style>
+</head>
+<body>
+
+<table>
+    <thead>
+        <tr>
+            <th rowspan="2">№ п/п</th>
+            <th rowspan="2">Код</th>
+            <th rowspan="2">Направление подготовки/специальности</th>
+            <th rowspan="2">Профиль (направленность/специализация), квалификация</th>
+            <th rowspan="2">Форма обучения</th>
+            <th rowspan="2">Вид обучения</th>
+            <th colspan="4">9кл</th>
+            <th colspan="3">11кл</th>
+            <th colspan="4">Акад. отпуск</th>
+            <th rowspan="2">ИТОГО</th>
+        </tr>
+        <tr>
+            <th>1 курс</th><th>2 курс</th><th>3 курс</th><th>4 курс</th>
+            <th>1 курс</th><th>2 курс</th><th>3 курс</th>
+            <th>1 курс</th><th>2 курс</th><th>3 курс</th><th>4 курс</th>
+        </tr>
+    </thead>
+    <tbody>
+{#        {% for row in fields %}#}
+        <tr>
+            <td>1</td>
+            <td>09.02.07</td>
+            <td style="width: 30%; padding: 0;">Компьютерные системы и комплексы</td>
+            <td style="width: 50%; padding: 0;">Техник по компьютерным системам</td>
+            <td>очная</td>
+            <td style="width: 100%; padding: 0;">
+{#                 Бюджет <hr style="border: none; border-top: 1px solid #000; width: 100%; margin: 5px 0;"> Внебюджет#}
+                <div>Бюджет</div>
+                <div class="divider"></div>
+                <div>Внебюджет</div>
+            </td>
+            <td style="width: 100%; padding: 0;">
+                <div>28</div>
+                <div class="divider"></div>
+                <div>11</div>
+            </td>
+            <td style="width: 100%; padding: 0;">
+                <div>26</div>
+                <div class="divider"></div>
+                <div>15</div>
+            </td>
+            <td style="width: 100%; padding: 0;">
+                <div>27</div>
+                <div class="divider"></div>
+                <div>12</div>
+            </td>
+            <td style="width: 100%; padding: 0;">
+                <div>28</div>
+                <div class="divider"></div>
+                <div>5</div>
+            </td>
+            <td style="width: 100%; padding: 0;">
+                <div>5</div>
+                <div class="divider"></div>
+                <div>1</div>
+            </td>
+            <td style="width: 100%; padding: 0;">
+                <div>2</div>
+                <div class="divider"></div>
+                <div>4</div>
+            </td>
+            <td style="width: 100%; padding: 0;">
+                <div>4</div>
+                <div class="divider"></div>
+                <div>1</div>
+            </td>
+            <td style="width: 100%; padding: 0;">
+                <div>0</div>
+                <div class="divider"></div>
+                <div>0</div>
+            </td>
+            <td style="width: 100%; padding: 0;">
+                <div>0</div>
+                <div class="divider"></div>
+                <div>0</div>
+            </td>
+            <td style="width: 100%; padding: 0;">
+                <div>0</div>
+                <div class="divider"></div>
+                <div>0</div>
+            </td>
+            <td style="width: 100%; padding: 0;">
+                <div>0</div>
+                <div class="divider"></div>
+                <div>0</div>
+            </td>
+            <td style="width: 100%; padding: 0;">
+                <div><b>120</b></div>
+                <div class="divider"></div>
+                <div><b>59</b></div>
+            </td>
+        </tr>
+{#        {% endfor %}#}
+    </tbody>
+    <tfoot>
+        <tr class="highlight-yellow">
+            <td colspan="6">Итого:</td>
+            <td><b>599</b></td>
+            <td><b>660</b></td>
+            <td><b>619</b></td>
+            <td><b>428</b></td>
+            <td><b>85</b></td>
+            <td><b>76</b></td>
+            <td><b>84</b></td>
+            <td><b>6</b></td>
+            <td><b>13</b></td>
+            <td><b>4</b></td>
+            <td><b>9</b></td>
+            <td><b>2583</b></td>
+        </tr>
+    </tfoot>
+</table>
+
+</body>
+</html>

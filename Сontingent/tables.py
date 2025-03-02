@@ -89,3 +89,43 @@ class ExpulsionTable(BaseTable):
         fields = ('date_of_expelling', 'reason_of_expelling', 'full_name', 'birth_date', 'specialty',
                   'group', 'education_base', 'education_basis', 'admission_order', 'transfer_to_2nd_year_order',
                   'transfer_to_3rd_year_order', 'transfer_to_4th_year_order', 'note', 'phone')
+
+
+class ContingentColumn(tables.Column):
+    def render(self, value):
+        return value if value is not None else "-"
+
+
+class StatisticksTable(tables.Table):
+    index = tables.Column(empty_values=(), verbose_name="№ п/п")
+    code = tables.Column(accessor='group.qualification.specialty.code', verbose_name="Код")
+    specialty = tables.Column(accessor='group.qualification.specialty.name',
+                              verbose_name="Направление подготовки/специальности")
+    profile = tables.Column(accessor='group.qualification.name', verbose_name="Профиль")
+    form = "Очная"
+    basis = tables.Column(accessor='education_basis', verbose_name="Вид обучения")
+
+    # Контингент по курсам
+    year_1 = ContingentColumn(accessor='group.year_1_count', verbose_name="1 курс")
+    year_2 = ContingentColumn(accessor='group.year_2_count', verbose_name="2 курс")
+    year_3 = ContingentColumn(accessor='group.year_3_count', verbose_name="3 курс")
+    year_4 = ContingentColumn(accessor='group.year_4_count', verbose_name="4 курс")
+
+    # Академический отпуск
+    academ_1 = ContingentColumn(accessor='group.academ_1_count', verbose_name="1 курс (акад)")
+    academ_2 = ContingentColumn(accessor='group.academ_2_count', verbose_name="2 курс (акад)")
+    academ_3 = ContingentColumn(accessor='group.academ_3_count', verbose_name="3 курс (акад)")
+
+    total = tables.Column(accessor='group.total_students', verbose_name="ИТОГО")
+
+    class Meta:
+        model = Student
+        template_name = "django_tables2/bootstrap.html"
+        fields = ("index", "code", "specialty", "profile", "form", "basis",
+                  "year_1", "year_2", "year_3", "year_4",
+                  "academ_1", "academ_2", "academ_3", "total")
+        attrs = {"class": "table table-striped"}
+
+    def before_render(self, request):
+        for index, row in enumerate(self.rows):
+            row["index"] = index + 1
