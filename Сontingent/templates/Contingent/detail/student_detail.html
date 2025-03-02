@@ -9,7 +9,20 @@
 {% endblock %}
 
 {% block actions-button %}
-    <a class="btn-primary" href="{% url url_update pk=student.pk%}">
+    <a class="btn-primary" href="{% url url_update pk=student.pk %}">
         Изменить
     </a>
+
+    {% if student.is_in_academ %}
+        <!-- Кнопка "Вернуть из академа" с формой подтверждения -->
+        <form method="post" action="{% url 'academ_return' pk=student.pk %}" onsubmit="return confirm('Вы уверены, что хотите вернуть студента из академического отпуска?');">
+            {% csrf_token %}
+            <button type="submit" class="btn-primary">Вернуть из академа</button>
+        </form>
+    {% else %}
+        <!-- Кнопка "Отправить в академ" -->
+        <a class="btn-primary" href="{% url 'academ_leave' pk=student.pk %}">
+            Отправить в академ
+        </a>
+    {% endif %}
 {% endblock %}

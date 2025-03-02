@@ -2,10 +2,11 @@ from cProfile import label
 
 from django import forms
 from django.db.models import Q
+from django.db.models.fields import DateField
 
 from Academhub.models import Qualification, Specialty, GroupStudents, Student, Discipline
-from django_filters import FilterSet, CharFilter, ModelChoiceFilter, ModelMultipleChoiceFilter, ChoiceFilter, MultipleChoiceFilter
-
+from django_filters import FilterSet, CharFilter, ModelChoiceFilter, ModelMultipleChoiceFilter, ChoiceFilter, \
+    MultipleChoiceFilter, DateFilter
 
 __all__ = (
     'GroupFilter',
@@ -112,5 +113,49 @@ class StudentFilter(FilterSet):
             Q(phone__icontains=value) |
             Q(course__icontains=value)
         )
+
+class AcademFilter(FilterSet):
+    search = CharFilter(method='filter_search', label='Поиск')
+
+    COURSE_CHOICES = (
+        ("1", 1),
+        ("2", 2),
+        ("3", 3),
+        ("4", 4)
+    )
+
+    REASONS_OF_ACADEM_CHOICES = (
+        ("с/о", "с/о"),
+    )
+
+    left_course = ChoiceFilter(choices=COURSE_CHOICES, label='Курс, с которого ушел')
+
+    group = ModelMultipleChoiceFilter(
+        widget=forms.CheckboxSelectMultiple,
+        label='Группа',
+        queryset=GroupStudents.objects.all(),
+    )
+
+    education_base = MultipleChoiceFilter(
+        label='База образования',
+        widget=forms.CheckboxSelectMultiple,
+        choices=Student.EDUCATION_BASE_CHOICES
+    )
+
+    reason_of_academ = ChoiceFilter(choices=REASONS_OF_ACADEM_CHOICES, label='Причины ухода в академ')
+
+    # TODO: Add filter for a year
+
+    class Meta:
+        model = Student
+        fields = ['left_course', 'group', 'education_base', 'reason_of_academ']
+
+    def filter_search(self, queryset, name, value):
+        return queryset.filter(
+            Q(full_name__icontains=value) |
+            Q(phone__icontains=value) |
+            Q(course__icontains=value)
+        )
+
 
 

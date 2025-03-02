@@ -70,5 +70,13 @@ class StudentTable2(BaseTable):
         paginate_by=30
         fields = ('full_name', 'course',)
 
+class AcademTable(BaseTable):
+
+    class Meta:
+        model = Student
+        paginate_by = 10
+        table_name = ' Академический отпуск'
+        fields = ('full_name', 'birth_date', 'group', 'left_course', 'academ_leave_date',
+                  'academ_return_date', 'reason_of_academ')
 
 

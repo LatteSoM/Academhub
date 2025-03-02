@@ -1,6 +1,8 @@
 from .views import *
 from django.urls import path
 
+from .views import AcademListView, AcademUpdateView, AcademReturn
+
 urlpatterns = [
 
     #
@@ -58,5 +60,12 @@ urlpatterns = [
     path('qualification/<int:qualification_id>/<int:admission_year>/record-book/save/', save_record_book_template,
          name='save_record_book_template'),
     path('qualification/<int:qualification_id>/<int:admission_year>/record-book/view/', view_record_book, name='view_record_book'),
+
+
+    # Страница академа
+    path('student/<int:pk>/academ-leave/', AcademUpdateView.as_view(), name='academ_leave'),
+    path('academ-list/', AcademListView.as_view(), name='academ_list'),
+
+    path('academ_return/<int:pk>/', AcademReturn.as_view(), name='academ_return'),
 
 ]

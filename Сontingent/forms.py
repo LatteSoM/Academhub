@@ -116,3 +116,48 @@ class SpecialtyForm(forms.ModelForm ):
         model = Specialty
         fields = '__all__'
 
+class AcademLeaveForm(forms.ModelForm):
+
+    class Meta:
+        model = Student
+        fields = [
+            'academ_leave_date',
+            'academ_return_date',
+            'reason_of_academ',
+        ]
+        widgets = {
+            'academ_leave_date': forms.DateInput(
+                attrs={'type': 'date'}, format='%Y-%m-%d'
+            ),
+            'academ_return_date': forms.DateInput(
+                attrs={'type': 'date'}, format='%Y-%m-%d'
+            ),
+        }
+
+    def save(self, commit=True):
+        student = super().save(commit=False)  # Получаем объект студента, но пока не сохраняем
+        student.is_in_academ = True  # Переводим в академ
+        student.left_course = student.group.current_course  # Берем текущий курс группы
+
+        if commit:
+            student.save()  # Сохраняем изменения
+        return student
+
+class AcademReturnForm(forms.ModelForm):
+
+    class Meta:
+        model = Student
+        fields = []
+
+    def save(self, commit=True):
+        student = super().save(commit=False)  # Получаем объект студента, но пока не сохраняем
+        student.is_in_academ = False
+        student.academ_leave_date = None
+        student.academ_return_date = None
+        student.reason_of_academ = None
+        student.left_course = None
+        student.save()
+
+        if commit:
+            student.save()  # Сохраняем изменения
+        return student

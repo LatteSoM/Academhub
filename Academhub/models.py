@@ -474,7 +474,8 @@ class Student(AcademHubModel):
 
     is_in_academ = models.BooleanField(verbose_name="Находится ли студент в академе", default=False, blank=True, null=True)
     reason_of_academ = models.CharField(max_length=255, verbose_name="Причина ухода в академ", blank=True, null=True, choices=REASONS_OF_ACADEM_CHOICES)
-
+    academ_leave_date = models.DateField(null=True, blank=True, verbose_name="Дата ухода в академ")
+    academ_return_date = models.DateField(null=True, blank=True, verbose_name="Дата возвращения из академа")
 
     class Meta:
         verbose_name = "Студент"

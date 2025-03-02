@@ -1,4 +1,10 @@
+from contextlib import nullcontext
+
+from django.views import View
+
+from .filters import AcademFilter
 from .forms import *
+from .forms import AcademLeaveForm, AcademReturnForm
 from .tables import *
 from .filters import *
 from Academhub.models import (
@@ -49,6 +55,9 @@ __all__ = (
     'QualificationDetailView',
     'QualificationUpdateView'
 )
+
+from .tables import AcademTable
+
 
 #
 ## Discipline
@@ -284,6 +293,28 @@ class StudentCreateView(ObjectCreateView):
 #
 ##
 #
+
+class AcademUpdateView(ObjectUpdateView):
+    """
+    Класс для отправки студента в академ.
+    """
+    form_class = AcademLeaveForm
+    queryset = Student.objects.all()
+
+class AcademListView(ObjectTableView):
+    """
+    Класс для просмотра студентов, находящихся в академе
+    """
+    table_class = AcademTable
+    filterset_class = AcademFilter
+    queryset = Student.objects.filter(is_in_academ=True)
+    template_name = 'Contingent/academ_list.html'
+
+class AcademReturn(ObjectUpdateView):
+    form_class = AcademReturnForm
+    queryset = Student.objects.all()
+
+
 
 def qualification_detail(request, qualification_id):
     qualification = get_object_or_404(Qualification, id=qualification_id)

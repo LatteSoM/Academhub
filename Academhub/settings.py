@@ -93,18 +93,18 @@ WSGI_APPLICATION = 'Academhub.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
     # 'default': {
-    #             'ENGINE': 'django.db.backends.postgresql',
-    #             'NAME': 'db_name',
-    #             'USER': 'root',
-    #             'PASSWORD': 'root',
-    #             'HOST': 'localhost',
-    #             'PORT': '5432'
-    #         }
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'db.sqlite3',
+    # }
+    'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': 'Academhub',
+                'USER': 'AcademhubUser',
+                'PASSWORD': '13Academ!16Hub20',
+                'HOST': 'saldaykin1.synology.me',
+                'PORT': '5665'
+            }
 }
 
 # DATABASES = os.getenv("DB")
