@@ -12,4 +12,9 @@
     <a class="btn-primary" href="{% url url_update pk=student.pk%}">
         Изменить
     </a>
+    {% if not student.record_book %}
+        <a class="btn-primary" href="{% url 'generate_record_book' student_id=student.id %}">Сгенерировать зачётку</a>
+    {% else %}
+        <a class="btn-primary" href="{% url 'view_record_book' qualification_id=student.group.qualification.pk admission_year=student.group.year_create student_id=student.pk%}">Просмотреть зачетку</a>
+    {% endif %}
 {% endblock %}

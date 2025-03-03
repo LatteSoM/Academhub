@@ -17,7 +17,9 @@ __all__ = [
     'Curriculum',
     'Practice',
     'ProfessionalModule',
-    'MiddleCertification'
+    'MiddleCertification',
+    'StudentRecordBook',
+    'RecordBookTemplate'
 
 ]
 
@@ -294,7 +296,7 @@ class RecordBookTemplate(models.Model):
     student_name = models.CharField(max_length=255, verbose_name="ФИО студента", blank=True)
     record_book_number = models.CharField(max_length=50, verbose_name="Номер зачетной книжки", blank=True)
     admission_order = models.CharField(max_length=100, verbose_name="Приказ о зачислении", blank=True)
-    # issue_date = models.DateField(verbose_name="Дата выдачи", null=True, blank=True)
+    issue_date = models.DateField(verbose_name="Дата выдачи", null=True, blank=True)
 
     # Связь с учебным планом для дисциплин
     curriculum = models.ForeignKey(
@@ -353,7 +355,7 @@ class GroupStudents(AcademHubModel):
 
     def get_years_choices():
         years = []
-        for i in range(1990, timezone.now().year + 1):
+        for i in range(2020, timezone.now().year + 1):
             years.append((i, i))
         return years
     
@@ -393,12 +395,12 @@ class GroupStudents(AcademHubModel):
         null=False
     )
 
-    disciplines = models.ManyToManyField(
-        Discipline,
-        verbose_name='Дисциплины',
-        blank=True,
-        null=True
-    )
+    # disciplines = models.ManyToManyField(
+    #     Discipline,
+    #     verbose_name='Дисциплины',
+    #     blank=True,
+    #     null=True
+    # )
 
     class Meta:
         verbose_name = "Группа"
@@ -411,7 +413,7 @@ class GroupStudents(AcademHubModel):
         if not self.pk:
             self.number = self.get_default_number_value()
 
-        self.full_name = f"{self.qualification.short_name}-{self.number}-{self.year_create}"
+        self.full_name = f"{self.qualification.short_name}-{self.number}-{str(self.year_create)[-2:]}"
         
         return super().save(*args, **kwargs)
 
@@ -474,6 +476,8 @@ class Student(AcademHubModel):
 
     is_in_academ = models.BooleanField(verbose_name="Находится ли студент в академе", default=False, blank=True, null=True)
     reason_of_academ = models.CharField(max_length=255, verbose_name="Причина ухода в академ", blank=True, null=True, choices=REASONS_OF_ACADEM_CHOICES)
+    record_book = models.OneToOneField('StudentRecordBook', on_delete=models.SET_NULL, null=True, blank=True,
+                                       verbose_name="Зачётная книжка", related_name="student_record_book")
 
 
     class Meta:
@@ -486,6 +490,29 @@ class Student(AcademHubModel):
 
     def __str__(self):
         return self.full_name
+
+
+class StudentRecordBook(models.Model):
+    student = models.OneToOneField(Student, on_delete=models.CASCADE, verbose_name="Студент")
+    qualification = models.ForeignKey('Qualification', on_delete=models.CASCADE, verbose_name="Квалификация")
+    admission_year = models.PositiveIntegerField(verbose_name="Год поступления")
+    student_name = models.CharField(max_length=255, verbose_name="ФИО студента", blank=True)
+    record_book_number = models.CharField(max_length=50, unique=True, verbose_name="Номер зачётной книжки")
+    admission_order = models.CharField(max_length=100, verbose_name="Приказ о зачислении", blank=True)
+    issue_date = models.DateField(verbose_name="Дата выдачи", null=True, blank=True)
+    curriculum = models.ForeignKey('Curriculum', on_delete=models.CASCADE, verbose_name="Учебный план")
+    middle_certifications = models.ManyToManyField('MiddleCertification', verbose_name="Промежуточные аттестации", blank=True)
+    professional_modules = models.ManyToManyField('ProfessionalModule', verbose_name="Профессиональные модули", blank=True)
+    practices = models.ManyToManyField('Practice', verbose_name="Практики", blank=True)
+    term_papers = models.ManyToManyField('TermPaper', verbose_name="Курсовые работы", blank=True)
+
+    class Meta:
+        verbose_name = "Зачётная книжка студента"
+        verbose_name_plural = "Зачётные книжки студентов"
+
+    def __str__(self):
+        return f"Зачётка {self.student_name} ({self.record_book_number})"
+
 
 class GradebookStudents(AcademHubModel):
     ASSESSMENT_CHOICES = (

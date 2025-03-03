@@ -90,11 +90,11 @@ class StudentForm(forms.ModelForm):
         ] 
 
 class GroupForm(forms.ModelForm):
-    disciplines = forms.ModelMultipleChoiceField(
-        queryset=Discipline.objects.all(),
-        label='Дисциплины',
-        widget=forms.CheckboxSelectMultiple()
-    )
+    # disciplines = forms.ModelMultipleChoiceField(
+    #     queryset=Discipline.objects.all(),
+    #     label='Дисциплины',
+    #     widget=forms.CheckboxSelectMultiple()
+    # )
 
     class Meta:
         model = GroupStudents
@@ -103,7 +103,7 @@ class GroupForm(forms.ModelForm):
             'year_create',
             'education_base',
             'current_course',
-            'disciplines',
+            # 'disciplines',
         ]
 
 class QualificationForm(forms.ModelForm):

@@ -14,6 +14,9 @@
     <a class="btn-primary" href="{% url url_update pk=object.pk %}">
         Изменить
     </a>
+    <a class="btn-primary" href="{% url 'group_record_books_generate' group_id=object.pk %}">
+        Сгенерировать ЗК для группы
+    </a>
 {% endblock %}
 
 
@@ -45,19 +48,6 @@
             
             <div class="detail-tab-content">
                {% with table=tables.1 %}
-                    {% render_table table 'inc/table/table.html' %}
-                    {% include 'inc/pagination.html' with page_obj=table.page %}
-                {% endwith %}
-            </div>
-        </div>
-
-        <div class="detail-content" style="margin-top: 20px;">
-            <div class="detail-tabs">
-                <button class="detail-tab active tab-button" data-tab="info">Дисциплины</button>
-            </div>
-            
-            <div class="detail-tab-content">
-               {% with table=tables.2 %}
                     {% render_table table 'inc/table/table.html' %}
                     {% include 'inc/pagination.html' with page_obj=table.page %}
                 {% endwith %}

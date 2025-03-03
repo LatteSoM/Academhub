@@ -72,3 +72,50 @@ class StudentTable2(BaseTable):
 
 
 
+from Academhub.models import MiddleCertification, ProfessionalModule, Practice, TermPaper
+
+
+class MiddleCertificationTable(BaseTable):
+    class Meta:
+        model = MiddleCertification
+        template_name = "django_tables2/bootstrap4.html"  # Или 'inc/table/table.html'
+        fields = ("semester", "discipline.name", "hours", "is_exam")
+        attrs = {"class": "table table-striped"}
+
+    is_exam = tables.Column(verbose_name="Тип", accessor="is_exam", orderable=False,
+                            empty_values=(), attrs={"td": {"class": "text-center"}})
+
+    def render_is_exam(self, value):
+        return "Экзамен" if value else "Зачет"
+
+
+class ProfessionalModuleTable(BaseTable):
+    class Meta:
+        model = ProfessionalModule
+        template_name = "django_tables2/bootstrap4.html"
+        fields = ("module_name", "hours")
+        attrs = {"class": "table table-striped"}
+
+
+class PracticeTable(BaseTable):
+    practice_type = tables.Column(verbose_name="Тип", accessor="practice_type")
+
+    class Meta:
+        model = Practice
+        template_name = "django_tables2/bootstrap4.html"
+        fields = ("practice_name", "hours", "semester", "practice_type")
+        attrs = {"class": "table table-striped"}
+
+    def render_practice_type(self, value):
+        return dict(Practice.PRACTICE_TYPES).get(value, value)
+
+
+class TermPaperTable(BaseTable):
+    class Meta:
+        model = TermPaper
+        template_name = "django_tables2/bootstrap4.html"
+        fields = ("discipline.name", "topic", "grade")
+        attrs = {"class": "table table-striped"}
+
+
+

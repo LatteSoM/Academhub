@@ -1,0 +1,362 @@
+{% extends 'base_detail.html' %}
+
+{% load util %}
+{% load static %}
+
+{% block title %}
+Редактирование зачетной книжки - {{ template.student_name|default:"Не указано" }}
+{% endblock %}
+
+{% block detail-header %}
+<h1>
+    Редактирование зачетной книжки: {{ template.student_name|default:"Не указано" }}
+</h1>
+{% endblock %}
+
+{% block actions-button %}
+    <a class="btn-primary" href="{% url 'view_record_book' qualification.id admission_year %}">
+        Просмотреть
+    </a>
+    <a class="btn-primary" href="{% url 'qualification_detail' pk=qualification.id %}">
+        Назад к квалификации
+    </a>
+{% endblock %}
+
+{% block ditail-content %}
+    <div class="detail-content">
+        <form id="edit-form" method="post" onsubmit="return confirm('Сохранить изменения?');">
+            {% csrf_token %}
+            <div class="detail-tabs">
+                <button type="button" class="detail-tab tab-button active" data-tab="info">Информация</button>
+                <button type="button" class="detail-tab tab-button" data-tab="certifications">Промежуточная аттестация</button>
+                <button type="button" class="detail-tab tab-button" data-tab="modules">Профессиональные модули</button>
+                <button type="button" class="detail-tab tab-button" data-tab="practices">Практики</button>
+                <button type="button" class="detail-tab tab-button" data-tab="term_papers">Курсовые работы</button>
+            </div>
+
+            <div class="detail-tab-content">
+                <!-- Информация о студенте -->
+                <div id="info" class="tab-pane active">
+                    <div class="info-list">
+                        <div class="form-group">
+                            <span class="info-label">ФИО</span>
+                            <input type="text" name="student_name" value="{{ form.student_name.value|default:'' }}" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <span class="info-label">Номер зачетной книжки</span>
+                            <input type="text" name="record_book_number" value="{{ form.record_book_number.value|default:'' }}" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <span class="info-label">Направление подготовки</span>
+                            <input type="text" name="specialty" value="{{ qualification.specialty.name }}" readonly class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <span class="info-label">Приказ о зачислении</span>
+                            <input type="text" name="admission_order" value="{{ form.admission_order.value|default:'' }}" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <span class="info-label">Дата выдачи</span>
+                            <input type="date" name="issue_date" value="{{ form.issue_date.value|date:'Y-m-d'|default:'' }}" class="form-control">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Промежуточная аттестация -->
+                <div id="certifications" class="tab-pane">
+                    <button type="button" class="btn-primary" onclick="addRow('exam-column')">Добавить экзамен</button>
+                    <button type="button" class="btn-primary" onclick="addRow('credit-column')">Добавить зачет</button>
+                    <div class="certification-container">
+                        <div class="certification-header">
+                            <div class="column-header">Экзамены</div>
+                            <div class="column-header">Зачеты</div>
+                        </div>
+                        <div class="certification-subheader">
+                            <div class="column-subheader">Дисциплина</div>
+                            <div class="column-subheader">Дисциплина</div>
+                        </div>
+                        {% regroup object.middle_certifications.all|dictsort:"semester" by semester as semester_groups %}
+                        {% for group in semester_groups %}
+                            <div class="semester-section">
+                                <h4>{{ group.grouper }} семестр</h4>
+                                <div class="certification-grid">
+                                    <div class="exam-column">
+                                        {% for cert in group.list %}
+                                            {% if cert.is_exam %}
+                                                <div class="record-tile">
+                                                    <select name="middle_discipline[]" class="form-control">
+                                                        {% for discipline in curriculum.disciplines.all %}
+                                                            <option value="{{ discipline.id }}" {% if cert.discipline.id == discipline.id %}selected{% endif %}>{{ discipline.name }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                    <div class="form-group" style="margin: 0">
+                                                        <span class="info-label">Семестр</span>
+                                                        <input type="number" name="middle_semester[]" value="{{ cert.semester }}" class="form-control" placeholder="Семестр">
+                                                    </div>
+                                                    <div class="form-group" style="margin: 0">
+                                                        <span class="info-label">Часы</span>
+                                                        <input type="number" name="middle_hours[]" value="{{ cert.hours }}" class="form-control" placeholder="Часы">
+                                                    </div>
+                                                    <input type="hidden" name="middle_is_exam[]" value="True">
+                                                </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <div class="credit-column">
+                                        {% for cert in group.list %}
+                                            {% if not cert.is_exam %}
+                                                <div class="record-tile">
+                                                    <select name="middle_discipline[]" class="form-control">
+                                                        {% for discipline in curriculum.disciplines.all %}
+                                                            <option value="{{ discipline.id }}" {% if cert.discipline.id == discipline.id %}selected{% endif %}>{{ discipline.name }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                    <div class="form-group" style="margin: 0">
+                                                        <span class="info-label">Семестр</span>
+                                                        <input type="number" name="middle_semester[]" value="{{ cert.semester }}" class="form-control" placeholder="Семестр">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <span class="info-label">Часы</span>
+                                                        <input type="number" name="middle_hours[]" value="{{ cert.hours }}" class="form-control" placeholder="Часы">
+                                                    </div>
+                                                    <input type="hidden" name="middle_is_exam[]" value="False">
+                                                </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Профессиональные модули -->
+                <div id="modules" class="tab-pane">
+                    <button type="button" class="btn-primary" onclick="addRow('module-grid')">Добавить модуль</button>
+                    <div class="record-grid" id="module-grid">
+                        {% for module in object.professional_modules.all %}
+                            <div class="record-tile">
+                                <input type="text" name="module_name[]" value="{{ module.module_name }}" class="form-control" placeholder="Название">
+                                <input type="number" name="module_hours[]" value="{{ module.hours }}" class="form-control" placeholder="Часы">
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Практики -->
+                <div id="practices" class="tab-pane">
+                    <button type="button" class="btn-primary" onclick="addRow('practice-grid')">Добавить практику</button>
+                    <div class="record-grid" id="practice-grid">
+                        {% for practice in object.practices.all %}
+                            <div class="record-tile">
+                                <input type="text" name="practice_name[]" value="{{ practice.practice_name }}" class="form-control" placeholder="Название">
+                                <input type="number" name="practice_hours[]" value="{{ practice.hours }}" class="form-control" placeholder="Часы">
+                                <select name="practice_semester[]" class="form-control">
+                                    {% for value, display in practice.SEMESTER_CHOICES %}
+                                        <option value="{{ value }}" {% if practice.semester == value %}selected{% endif %}>{{ display }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Курсовые работы -->
+                <div id="term_papers" class="tab-pane">
+                    <button type="button" class="btn-primary" onclick="addRow('course-grid')">Добавить курсовую</button>
+                    <div class="record-grid" id="course-grid">
+                        {% for paper in object.term_papers.all %}
+                            <div class="record-tile">
+                                <select name="term_discipline[]" class="form-control">
+                                    {% for discipline in curriculum.disciplines.all %}
+                                        <option value="{{ discipline.id }}" {% if paper.discipline.id == discipline.id %}selected{% endif %}>{{ discipline.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn-primary">Сохранить шаблон</button>
+        </form>
+    </div>
+
+    {{ curriculum_disciplines|json_script:"disciplines-data" }}
+
+    <style>
+        .record-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 10px;
+        }
+        .record-tile {
+            {#background-color: #f9f9f9;#}
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .record-tile input, .record-tile select {
+            width: 100%;
+            margin: 5px 0;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        .certification-container {
+            padding: 10px;
+        }
+        .certification-header {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .column-header {
+            font-size: 18px;
+            color: var(--text-color);;
+        }
+        .certification-subheader {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .column-subheader {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--text-color);;
+        }
+        .semester-section {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 20px;
+        }
+        .semester-section:last-child {
+            border-bottom: none;
+        }
+        .semester-section h4 {
+            font-size: 16px;
+            color: var(--text-color);;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .certification-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .exam-column, .credit-column {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-control {
+            width: 100%;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+    </style>
+
+    <script>
+        let disciplines = [];
+        try {
+            const scriptElement = document.getElementById('disciplines-data');
+            const rawData = scriptElement ? scriptElement.textContent : '[]';
+            console.log("Raw disciplines data:", rawData);
+            disciplines = JSON.parse(rawData);
+            console.log("Parsed disciplines:", disciplines);
+        } catch (e) {
+            console.error("Error parsing disciplines:", e);
+        }
+
+        function addRow(columnId) {
+            console.log("Adding row to:", columnId);
+            const disciplineOptions = disciplines.length ? disciplines.map(d => `<option value="${d.id}">${d.name}</option>`).join('') : '<option value="">Нет дисциплин</option>';
+            const semesterOptions = Array.from({length: 8}, (_, i) => i + 1).map(i => `<option value="${i}">${i}</option>`).join('');
+            const isExam = columnId === 'exam-column' ? 'True' : 'False';
+            let container;
+
+            if (columnId === 'exam-column' || columnId === 'credit-column') {
+                container = document.querySelector(`.${columnId}`);
+                if (!container) {
+                    // Если колонка не найдена, создаём новую секцию
+                    const section = document.createElement('div');
+                    section.className = 'semester-section';
+                    section.innerHTML = `
+                        <h4>Новый семестр</h4>
+                        <div class="certification-grid">
+                            <div class="exam-column"></div>
+                            <div class="credit-column"></div>
+                        </div>
+                    `;
+                    document.querySelector('.certification-container').appendChild(section);
+                    container = section.querySelector(`.${columnId}`);
+                }
+                const row = document.createElement('div');
+                row.className = 'record-tile';
+                row.innerHTML = `
+                    <select name="middle_discipline[]" class="form-control">${disciplineOptions}</select>
+                    <input type="number" name="middle_semester[]" class="form-control" placeholder="Семестр">
+                    <input type="number" name="middle_hours[]" class="form-control" placeholder="Часы">
+                    <input type="hidden" name="middle_is_exam[]" value="${isExam}">
+                `;
+                container.appendChild(row);
+            } else if (columnId === 'module-grid') {
+                container = document.getElementById('module-grid');
+                const row = document.createElement('div');
+                row.className = 'record-tile';
+                row.innerHTML = `
+                    <input type="text" name="module_name[]" class="form-control" placeholder="Название">
+                    <input type="number" name="module_hours[]" class="form-control" placeholder="Часы">
+                `;
+                container.appendChild(row);
+            } else if (columnId === 'practice-grid') {
+                container = document.getElementById('practice-grid');
+                const row = document.createElement('div');
+                row.className = 'record-tile';
+                row.innerHTML = `
+                    <input type="text" name="practice_name[]" class="form-control" placeholder="Название">
+                    <input type="number" name="practice_hours[]" class="form-control" placeholder="Часы">
+                    <select name="practice_semester[]" class="form-control">${semesterOptions}</select>
+                `;
+                container.appendChild(row);
+            } else if (columnId === 'course-grid') {
+                container = document.getElementById('course-grid');
+                const row = document.createElement('div');
+                row.className = 'record-tile';
+                row.innerHTML = `
+                    <select name="term_discipline[]" class="form-control">${disciplineOptions}</select>
+                `;
+                container.appendChild(row);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.tab-button');
+            const panes = document.querySelectorAll('.tab-pane');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    tabs.forEach(t => t.classList.remove('active'));
+                    panes.forEach(p => p.classList.remove('active'));
+
+                    tab.classList.add('active');
+                    document.getElementById(tab.dataset.tab).classList.add('active');
+                });
+            });
+        });
+    </script>
+{% endblock %}
