@@ -141,8 +141,8 @@ class CourseTableGenerator:
             worksheet["J1"] = "Переводной приказ на 3 курс"
             worksheet["K1"] = "Переводной приказ на 4 курс"
             worksheet["L1"] = "Отчисление в связи с окончанием обучения"
-            worksheet["M1"] = "Примечание"
-            worksheet["N1"] = "Телефон"
+            worksheet["M1"] = "Телефон"
+            worksheet["N1"] = "Примечание"
 
             # Высота ячеек
             worksheet.row_dimensions[1].height = 40
@@ -160,8 +160,7 @@ class CourseTableGenerator:
             worksheet.column_dimensions['J'].width = max([len(str(i.transfer_to_3rd_year_order)) for i in self.students]) + 3
             worksheet.column_dimensions['K'].width = max([len(str(i.transfer_to_4th_year_order)) for i in self.students]) + 3
             worksheet.column_dimensions['L'].width = max([len(str(i.expelled_due_to_graduation)) for i in self.students]) + 3
-            worksheet.column_dimensions['M'].width = max([len(str(i.note)) for i in self.students]) + 3
-            worksheet.column_dimensions['N'].width = max([len(i.phone) for i in self.students]) + 3
+            worksheet.column_dimensions['M'].width = max([len(i.phone) for i in self.students]) + 3
 
             for i in range(len(self.students)):
                 worksheet.cell(row=i+2, column=1).value = i+1
@@ -176,8 +175,7 @@ class CourseTableGenerator:
                 worksheet.cell(row=i+2, column=10).value = self.students[i].transfer_to_3rd_year_order
                 worksheet.cell(row=i+2, column=11).value = self.students[i].transfer_to_4th_year_order
                 worksheet.cell(row=i+2, column=12).value = self.students[i].expelled_due_to_graduation
-                worksheet.cell(row=i+2, column=13).value = self.students[i].note
-                worksheet.cell(row=i+2, column=14).value = self.students[i].phone
+                worksheet.cell(row=i+2, column=13).value = self.students[i].phone
             
             workbook.save(path)
 
@@ -396,10 +394,92 @@ class StatisticsTableGenerator:
         workbook.save(path)
 
 class VacationTableGenerator:
-    pass
+    def __init__(self, students) -> None:
+        self.students = students
+
+    def generate_document(self, path):
+        workbook = Workbook()
+        worksheet = workbook.active
+
+        if worksheet is not None:
+            # Заголовок
+            worksheet["B1"].fill = PatternFill("solid", fgColor=Color(indexed=3))
+            worksheet["C1"].value = "- вышел"
+            worksheet["E1"].fill = PatternFill("solid", fgColor=Color(indexed=2))
+            worksheet["F1"].value = "- отчислен"
+            worksheet["H1"].fill = PatternFill("solid", fgColor=Color(indexed=5))
+            worksheet["I1"].value = "- подал заявление"
+            
+            worksheet["A2"].value = "№"
+            worksheet["B2"].value = "ФИО"
+            worksheet["C2"].value = "Дата рождения"           
+            worksheet["D2"].value = "Специальность"
+            worksheet["E2"].value = "Курс, с которого ушел"
+            worksheet["F2"].value = "Дата выхода"
+            worksheet["G2"].value = "Период"
+            worksheet["H2"].value = "Причина"
+            worksheet["I2"].value = "Группа"
+            worksheet["J2"].value = "База образования (9 или 11 классов)"
+            worksheet["K2"].value = "Основа образования (бюджет, внебюджет)"
+            worksheet["L2"].value = "Приказ о зачислении"
+            worksheet["M2"].value = "Переводной приказ на 2 курс"
+            worksheet["N2"].value = "Переводной приказ на 3 курс"
+            worksheet["O2"].value = "Переводной приказ на 4 курс"
+            worksheet["P2"].value = "Телефон"
+            worksheet["Q2"].value = "Примечание"
+
+            for i in range(students):
+                worksheet.cell(row=i+1, column=1).value = i+1
+                worksheet.cell(row=i+1, column=2).value = students[i].full_name
+                worksheet.cell(row=i+1, column=3).value = students[i].birth_date
+                worksheet.cell(row=i+1, column=4).value = students[i].group.qualification.specialty.code
+                worksheet.cell(row=i+1, column=5).value = students[i].left_course
+                worksheet.cell(row=i+1, column=6).value = students[i].academ_return_date
+                worksheet.cell(row=i+1, column=7).value = f"{students[i].academ_leave_date} по {students[i].academ_return_date}"
+                worksheet.cell(row=i+1, column=8).value = students[i].reason_of_academ
+                worksheet.cell(row=i+1, column=9).value = students[i].group
+                worksheet.cell(row=i+1, column=10).value = students[i].group.education_base
+                worksheet.cell(row=i+1, column=11).value = students[i].group.education_basis
+                worksheet.cell(row=i+1, column=12).value = students[i].admission_order
+                worksheet.cell(row=i+1, column=13).value = students[i].transfer_to_2nd_year_order
+                worksheet.cell(row=i+1, column=14).value = students[i].transfer_to_3rd_year_order
+                worksheet.cell(row=i+1, column=15).value = students[i].transfer_to_4th_year_order
+                worksheet.cell(row=i+1, column=16).value = students[i].phone
+                # Нужно сделать покрас строки
+
+        workbook.save(path)
 
 class MovementTableGenerator:
-    pass
+    def __init__(self, students) -> None:
+        self.students = students
+    
+    def generate_document(self, path):
+        workbook = Workbook()
+        worksheet = workbook.active
+        
+        if worksheet is not None:
+            # Заголовки
+            worksheet["A1"] = "Номер приказа"
+            worksheet["B1"] = "Дата отчисления"
+            worksheet["C1"] = "Причина отчисления"
+            worksheet["D1"] = "ФИО"
+            worksheet["E1"] = "Дата рождения"
+            worksheet["F1"] = "Специальность"
+            worksheet["G1"] = "Группа"
+            worksheet["H1"] = "База образования (9 или 11 классов)"
+            worksheet["I1"] = "Основа образования (бюджет или внебюджет)"
+            worksheet["J1"] = "Приказ о зачислении"
+            worksheet["K1"] = "Переводной приказ на 2 курс"
+            worksheet["L1"] = "Переводной приказ на 3 курс"
+            worksheet["M1"] = "Переводной приказ на 4 курс"
+            worksheet["N1"] = "Телефон"
+            worksheet["O1"] = "Примечание"
+
+            for i in range(students):
+                pass
+                # worksheet.cell(row=i+1, column=1).value = 
+        
+        workbook.save(path)
 
 # def tableStudentsParse(path):
 #     ext = os.path.splitext(path)[1].lower()
@@ -423,8 +503,8 @@ class MovementTableGenerator:
 #     for student_row in data:
 #        student = Student(full_name=student_row[1], )
 
-# if __name__ == "__main__":
-    # students = Student.objects.all()
+if __name__ == "__main__":
+    students = Student.objects.all()
     # students_course = Student.objects.filter(group__current_course="1")
     # specialties = Specialty.objects.all()
     # qualifications = Qualification.objects.all()
@@ -433,7 +513,9 @@ class MovementTableGenerator:
     # gtg = GroupTableGenerator(groups=groups)
     # ctg = CourseTableGenerator(students=students_course)
     # stg = StatisticsTableGenerator(specialties=specialties, qualifications=qualifications, students=students)
-
+    vtg = VacationTableGenerator(students=students)
     # gtg.generate_document("test_groups.xlsx")
     # ctg.generate_document("test_course.xlsx")
     # stg.generate_document("test_statistics.xlsx")
+    vtg.generate_document("test.xlsx")
+    

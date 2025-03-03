@@ -453,7 +453,7 @@ class Student(AcademHubModel):
     academ_order = models.CharField(max_length=255, verbose_name="Приказ об уходе в академический отпуск", blank=True, null=True) # TODO: Приказ об уходе в академ
     expell_order = models.CharField(max_length=255, verbose_name="Приказ об отчислении", blank=True, null=True) # TODO: Приказ об отчислении
     reinstaitment_order = models.CharField(max_length=255, verbose_name="Приказ об отчислении", blank=True, null=True) # TODO: Приказ о восстановлении
-    expelled_due_to_graduation = models.CharField(max_length=255, verbose_name="Отчислен в связи с окончанием обучения", blank=True, null=True)
+    expelled_due_to_graduation = models.BooleanField(verbose_name="Отчислен в связи с окончанием обучения", blank=True, null=True, default=False)
     education_base = models.CharField(max_length=255, verbose_name="База образования", choices=EDUCATION_BASE_CHOICES, default=EDUCATION_BASE_CHOICES[0][1])
     education_basis = models.CharField(max_length=255, verbose_name="Основа образования", choices=EDUCATION_BASIS_CHOICES, default=EDUCATION_BASIS_CHOICES[0][1])
     registration_address = models.TextField(verbose_name="Адрес прописки")
