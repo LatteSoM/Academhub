@@ -24,7 +24,8 @@ from Academhub.models import (
 )
 from Gradebook.tables import GradebookTable2
 from django.shortcuts import render, get_object_or_404, redirect
-from Academhub.base import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView
+from Academhub.base import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView, ObjectListView, \
+    Navigation
 
 __all__ = (
     'view_record_book',
@@ -175,7 +176,7 @@ class QualificationDetailView(ObjectDetailView):
     }
 
     def get_tables(self):
-        students = GroupStudents.objects.filter(qualification__pk=self.object.pk, is_in_academ=False, is_expelled=False)
+        students = GroupStudents.objects.filter(qualification__pk=self.object.pk)
         table = GroupTable(data=students)
         return [table]
 
@@ -329,6 +330,9 @@ class RecoverStudent(ObjectUpdateView):
     form_class = RecoverStudentForm
     queryset = Student.objects.filter(is_expelled=True)
 
+# class StatisticksView(ObjectListView):
+#     template_name = 'Contingent/statisticks.html'
+
 
 def student_format_to_list():
     students = []
@@ -347,7 +351,19 @@ def student_format_to_list():
     return students
 def statisticks_view(request):
     student_list = student_format_to_list()
+
     specialty_data = defaultdict(lambda: defaultdict(int))
+    all_specialties = list(Specialty.objects.all().values_list())
+    print(all_specialties)
+
+    # Инициализируем все направления заранее
+    for qualification in Qualification.objects.all():
+        specialty_data[(qualification.specialty.code, qualification.specialty.name, qualification.name)]  # Создаем пустые записи
+        all_specialties = [spec for spec in all_specialties if spec[0] != qualification.specialty.id]
+
+    for specialty in all_specialties:
+        specialty_data[(specialty[1], specialty[2], "")]
+
 
     for student in student_list:
         spec_code = student["specialty_code"]
@@ -372,9 +388,42 @@ def statisticks_view(request):
 
     number = 1
     table_data = []
+    total_9_1_ = 0
+    total_9_2_ = 0
+    total_9_3_ = 0
+    total_9_4_ = 0
+
+    total_11_1_ = 0
+    total_11_2_ = 0
+    total_11_3_ = 0
+
+    total_academ_1 = 0
+    total_academ_2 = 0
+    total_academ_3 = 0
+    total_academ_4 = 0
+
+    total_contingent = 0
+
     for (code, name, qualification), counts in specialty_data.items():
         total_budget = sum(counts.get(key, 0) for key in counts if "budget" in key)
         total_paid = sum(counts.get(key, 0) for key in counts if "paid" in key)
+
+        total_9_1_ += sum(counts.get(key, 0) for key in counts if "9_1" in key)
+        total_9_2_ += sum(counts.get(key, 0) for key in counts if "9_2" in key)
+        total_9_3_ += sum(counts.get(key, 0) for key in counts if "9_3" in key)
+        total_9_4_ += sum(counts.get(key, 0) for key in counts if "9_4" in key)
+
+        total_11_1_ += sum(counts.get(key, 0) for key in counts if "11_1" in key)
+        total_11_2_ += sum(counts.get(key, 0) for key in counts if "11_2" in key)
+        total_11_3_ += sum(counts.get(key, 0) for key in counts if "11_3" in key)
+
+        total_academ_1 += sum(counts.get(key, 0) for key in counts if "academic_1" in key)
+        total_academ_2 += sum(counts.get(key, 0) for key in counts if "academic_2" in key)
+        total_academ_3 += sum(counts.get(key, 0) for key in counts if "academic_3" in key)
+        total_academ_4 += sum(counts.get(key, 0) for key in counts if "academic_4" in key)
+
+        total_contingent += total_budget + total_paid
+
         row = [
             number,
             code,  # Код специальности
@@ -408,7 +457,27 @@ def statisticks_view(request):
         table_data.append(row)
         number += 1
 
-    return render(request, 'Contingent/statisticks.html', context={'table_data': table_data})
+    last_row = [total_9_1_, total_9_2_, total_9_3_, total_9_4_, total_11_1_, total_11_2_, total_11_3_, total_academ_1,
+                total_academ_2, total_academ_3, total_academ_4, total_contingent]
+
+    total_09_02_07_budget = sum(
+        counts.get(key, 0)
+        for (code, _, _), counts in specialty_data.items()
+        if code == "09.02.07"
+        for key in counts
+        if "budget" in key and not key.startswith("students_9_1")
+    )
+
+    total_09_02_07_paid = sum(
+        counts.get(key, 0)
+        for (code, _, _), counts in specialty_data.items()
+        if code == "09.02.07"
+        for key in counts
+        if "paid" in key and not key.startswith("students_9_1")
+    )
+
+    return render(request, 'Contingent/statisticks.html', context={'table_data': table_data, 'last_row': last_row, 'total_09_02_07_budget': total_09_02_07_budget,
+                                                                   'total_09_02_07_paid': total_09_02_07_paid})
 
 
 def qualification_detail(request, qualification_id):

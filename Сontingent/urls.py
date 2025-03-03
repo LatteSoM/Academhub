@@ -77,4 +77,6 @@ urlpatterns = [
 
     # Страница статистики
     path('statisticks/', statisticks_view, name='statisticks'),
+    #path('statisticks/', StatisticksView.as_view(), name='statisticks'),
+
 ]

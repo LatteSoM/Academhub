@@ -450,10 +450,13 @@ class Student(AcademHubModel):
     group = models.ForeignKey(
         'GroupStudents', on_delete=models.CASCADE, related_name="students", verbose_name="Группа"
     )
-    admission_order = models.CharField(max_length=255, verbose_name="Приказ о зачислении")
-    transfer_to_2nd_year_order = models.CharField(max_length=255, verbose_name="Переводной приказ на 2 курс", blank=True, null=True)
-    transfer_to_3rd_year_order = models.CharField(max_length=255, verbose_name="Переводной приказ на 3 курс", blank=True, null=True)
-    transfer_to_4th_year_order = models.CharField(max_length=255, verbose_name="Переводной приказ на 4 курс", blank=True, null=True)
+    admission_order = models.CharField(max_length=255, verbose_name="Приказ о зачислении") # TODO: Приказ о приеме
+    transfer_to_2nd_year_order = models.CharField(max_length=255, verbose_name="Переводной приказ на 2 курс", blank=True, null=True) # TODO: Приказ о переводе на 2 курс
+    transfer_to_3rd_year_order = models.CharField(max_length=255, verbose_name="Переводной приказ на 3 курс", blank=True, null=True) # TODO: Приказ о переводе на 3 курс
+    transfer_to_4th_year_order = models.CharField(max_length=255, verbose_name="Переводной приказ на 4 курс", blank=True, null=True) # TODO: Приказ о переводе на 4 курс
+    academ_order = models.CharField(max_length=255, verbose_name="Приказ об уходе в академический отпуск", blank=True, null=True) # TODO: Приказ об уходе в академ
+    expell_order = models.CharField(max_length=255, verbose_name="Приказ об отчислении", blank=True, null=True) # TODO: Приказ об отчислении
+    reinstaitment_order = models.CharField(max_length=255, verbose_name="Приказ об отчислении", blank=True, null=True) # TODO: Приказ о восстановлении
     expelled_due_to_graduation = models.CharField(max_length=255, verbose_name="Отчислен в связи с окончанием обучения", blank=True, null=True)
     education_base = models.CharField(max_length=255, verbose_name="База образования", choices=EDUCATION_BASE_CHOICES, default=EDUCATION_BASE_CHOICES[0][1])
     education_basis = models.CharField(max_length=255, verbose_name="Основа образования", choices=EDUCATION_BASIS_CHOICES, default=EDUCATION_BASIS_CHOICES[0][1])

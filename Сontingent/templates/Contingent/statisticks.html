@@ -1,3 +1,5 @@
+{% extends 'base_view.html' %}
+{% block content %}
 
 <!DOCTYPE html>
 <html lang="ru">
@@ -133,23 +135,27 @@
         {% endfor %}
     </tbody>
     <tfoot>
-        <tr class="highlight-yellow">
+        <tr class="highlight-green">
             <td colspan="6">Итого:</td>
-            <td><b>599</b></td>
-            <td><b>660</b></td>
-            <td><b>619</b></td>
-            <td><b>428</b></td>
-            <td><b>85</b></td>
-            <td><b>76</b></td>
-            <td><b>84</b></td>
-            <td><b>6</b></td>
-            <td><b>13</b></td>
-            <td><b>4</b></td>
-            <td><b>9</b></td>
-            <td><b>2583</b></td>
+            <td><b>{{ last_row.0 }}</b></td>
+            <td><b>{{ last_row.1 }}</b></td>
+            <td><b>{{ last_row.2 }}</b></td>
+            <td><b>{{ last_row.3 }}</b></td>
+            <td><b>{{ last_row.4 }}</b></td>
+            <td><b>{{ last_row.5 }}</b></td>
+            <td><b>{{ last_row.6 }}</b></td>
+            <td><b>{{ last_row.7 }}</b></td>
+            <td><b>{{ last_row.8 }}</b></td>
+            <td><b>{{ last_row.9 }}</b></td>
+            <td><b>{{ last_row.10 }}</b></td>
+            <td><b>{{ last_row.11 }}</b></td>
         </tr>
     </tfoot>
 </table>
 
+<div><b>Бюджет 09.02.07 (без учета первого курса): </b> <b>{{ total_09_02_07_budget }}</b></div>
+<div><b>Внебюджет 09.02.07 (без учета первого курса): </b> <b>{{ total_09_02_07_paid }}</b></div>
+
 </body>
+{% endblock %}
 </html>
