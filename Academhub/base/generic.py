@@ -40,7 +40,10 @@ class BaseContextMixin(NavigationContextMixin):
       return context | self.get_model_urls()
 
   def get_model_name(self):
-      model_class = self.queryset.model
+      # model_class = self.queryset.model
+      # return model_class._meta.model_name
+      model_class = getattr(self, 'model', None) or (
+          self.queryset.model if hasattr(self, 'queryset') and self.queryset is not None else self.object._meta.model)
       return model_class._meta.model_name
 
   def get_model_urls(self):
@@ -153,8 +156,17 @@ class ObjectUpdateView(BaseContextMixin, UpdateView):
         return context
 
     def get_verbose_name(self):
-        model_class = self.queryset.model
-        return model_class._meta.verbose_name
+        # model_class = self.queryset.model
+        # return model_class._meta.verbose_name
+        model_class = getattr(self, 'model', None) or (
+            self.queryset.model if hasattr(self, 'queryset') and self.queryset is not None else self.object._meta.model)
+        return model_class._meta.verbose_nam
+
+    def get_model_urls(self):
+        model = getattr(self, 'model', None) or (
+            self.queryset.model if hasattr(self, 'queryset') and self.queryset is not None else self.object._meta.model)
+        print("Model:", model)
+        return getattr(model, 'get_urls', lambda: {})()
 
 
 class ObjectCreateView(BaseContextMixin, CreateView):

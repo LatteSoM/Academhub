@@ -1,147 +1,270 @@
+{% extends 'base_detail.html' %}
+
+{% load util %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Просмотр зачетной книжки</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .container { width: 80%; margin: 0 auto; }
-        h2, h3 { text-align: center; }
-        .section { margin-top: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { border: 1px solid black; padding: 8px; text-align: center; }
-        th { background-color: #f4f4f4; }
-        .info-block { margin-bottom: 20px; }
-        .info-block p { margin: 5px 0; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h2>Зачетная книжка</h2>
 
-        <div class="info-block">
-            <h3>Информация о студенте</h3>
-            <p><strong>ФИО:</strong> {{ template.student_name|default:"Не указано" }}</p>
-            <p><strong>Номер зачетной книжки:</strong> {{ template.record_book_number|default:"Не указано" }}</p>
-            <p><strong>Направление подготовки:</strong> {{ qualification.specialty.name }}</p>
-            <p><strong>Приказ о зачислении:</strong> {{ template.admission_order|default:"Не указано" }}</p>
-            <p><strong>Дата выдачи:</strong> {{ template.issue_date|date:"d.m.Y"|default:"Не указано" }}</p>
-            <p><strong>Квалификация:</strong> {{ qualification.name }}</p>
-            <p><strong>Год поступления:</strong> {{ admission_year }}</p>
+{% block title %}
+Просмотр зачетной книжки - {{ template.student_name|default:"Не указано" }}
+{% endblock %}
+
+{% block detail-header %}
+<h1>
+    Зачетная книжка: {{ template.student_name|default:"Не указано" }}
+</h1>
+{% endblock %}
+
+{% block actions-button %}
+    {% if is_student_gradebbok %}
+        <a class="btn-primary" href="{% url 'student_detail' pk=student_id %}">
+            К студенту
+        </a>
+    {% else %}
+        <a class="btn-primary" href="{% url 'edit_record_book_template' qualification.id admission_year %}">
+            Редактировать
+        </a>
+        <a class="btn-primary" href="{% url 'qualification_detail' pk=qualification.id %}">
+            Назад к квалификации
+        </a>
+    {% endif %}
+
+{% endblock %}
+
+{% block ditail-content %}
+    <div class="detail-content">
+        <div class="detail-tabs">
+            <button type="button" class="detail-tab tab-button active" data-tab="info">Информация</button>
+            <button type="button" class="detail-tab tab-button" data-tab="certifications">Промежуточная аттестация</button>
+            <button type="button" class="detail-tab tab-button" data-tab="modules">Профессиональные модули</button>
+            <button type="button" class="detail-tab tab-button" data-tab="practices">Практики</button>
+            <button type="button" class="detail-tab tab-button" data-tab="term_papers">Курсовые работы</button>
         </div>
 
-        <div class="section">
-            <h3>Результаты промежуточной аттестации</h3>
-            {% if template.middle_certifications.all %}
-            <table>
-                <thead>
-                    <tr>
-                        <th>Семестр</th>
-                        <th>Дисциплина</th>
-                        <th>Часы</th>
-                        <th>Тип</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for cert in template.middle_certifications.all %}
-                    <tr>
-                        <td>{{ cert.semester }}</td>
-                        <td>{{ cert.discipline.name }}</td>
-                        <td>{{ cert.hours }}</td>
-                        <td>{{ cert.is_exam|yesno:"Экзамен,Зачет" }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            {% else %}
-            <p>Нет данных о промежуточной аттестации.</p>
-            {% endif %}
-        </div>
+        <div class="detail-tab-content">
+            <!-- Информация о студенте -->
+            <div id="info" class="tab-pane active">
+                <div class="info-list">
+                    <div class="info-item">
+                        <span class="info-label">ФИО</span>
+                        <span class="info-value">{{ template.student_name|default:"Не указано" }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Номер зачетной книжки</span>
+                        <span class="info-value">{{ template.record_book_number|default:"Не указано" }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Направление подготовки</span>
+                        <span class="info-value">{{ qualification.specialty.name }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Приказ о зачислении</span>
+                        <span class="info-value">{{ template.admission_order|default:"Не указано" }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Дата выдачи</span>
+                        <span class="info-value">{{ template.issue_date|date:"d.m.Y"|default:"Не указано" }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Квалификация</span>
+                        <span class="info-value">{{ qualification.name }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Год поступления</span>
+                        <span class="info-value">{{ admission_year }}</span>
+                    </div>
+                </div>
+            </div>
 
-        <div class="section">
-            <h3>Профессиональные модули</h3>
-            {% if template.professional_modules.all %}
-            <table>
-                <thead>
-                    <tr>
-                        <th>Название модуля</th>
-                        <th>Часы</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for module in template.professional_modules.all %}
-                    <tr>
-                        <td>{{ module.module_name }}</td>
-                        <td>{{ module.hours }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            {% else %}
-            <p>Нет данных о профессиональных модулях.</p>
-            {% endif %}
-        </div>
+            <!-- Промежуточная аттестация -->
+            <div id="certifications" class="tab-pane">
+                {% if template.middle_certifications.all %}
+                    <div class="certification-container">
+                        <div class="certification-header">
+                            <div class="column-header">Экзамены</div>
+                            <div class="column-header">Зачеты</div>
+                        </div>
+                        <div class="certification-subheader">
+                            <div class="column-subheader">Дисциплина</div>
+                            <div class="column-subheader">Дисциплина</div>
+                        </div>
+                        {% regroup template.middle_certifications.all|dictsort:"semester" by semester as semester_groups %}
+                        {% for group in semester_groups %}
+                            <div class="semester-section">
+                                <h4>{{ group.grouper }} семестр</h4>
+                                <div class="certification-grid">
+                                    <div class="exam-column">
+                                        {% for cert in group.list %}
+                                            {% if cert.is_exam %}
+                                                <div class="record-tile">
+                                                    <p>{{ cert.discipline.name }}</p>
+                                                    <p>Семестр: {{ cert.semester }}</p>
+                                                    <p>Часы: {{ cert.hours }}</p>
+                                                </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <div class="credit-column">
+                                        {% for cert in group.list %}
+                                            {% if not cert.is_exam %}
+                                                <div class="record-tile">
+                                                    <p>{{ cert.discipline.name }}</p>
+                                                    <p>Семестр: {{ cert.semester }}</p>
+                                                    <p>Часы: {{ cert.hours }}</p>
+                                                </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p>Нет данных о промежуточной аттестации.</p>
+                {% endif %}
+            </div>
 
-        <div class="section">
-            <h3>Практики</h3>
-            {% if template.practices.all %}
-            <table>
-                <thead>
-                    <tr>
-                        <th>Название</th>
-                        <th>Часы</th>
-                        <th>Семестр</th>
-                        <th>Тип</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for practice in template.practices.all %}
-                    <tr>
-                        <td>{{ practice.practice_name }}</td>
-                        <td>{{ practice.hours }}</td>
-                        <td>{{ practice.semester }}</td>
-                        <td>{{ practice.get_practice_type_display }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            {% else %}
-            <p>Нет данных о практиках.</p>
-            {% endif %}
-        </div>
+            <!-- Профессиональные модули -->
+            <div id="modules" class="tab-pane">
+                {% if template.professional_modules.all %}
+                    <div class="record-grid">
+                        {% for module in template.professional_modules.all %}
+                            <div class="record-tile">
+                                <p><strong>Название:</strong> {{ module.module_name }}</p>
+                                <p><strong>Часы:</strong> {{ module.hours }}</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p>Нет данных о профессиональных модулях.</p>
+                {% endif %}
+            </div>
 
-        <div class="section">
-            <h3>Курсовые работы</h3>
-            {% if template.term_papers.all %}
-            <table>
-                <thead>
-                    <tr>
-                        <th>Дисциплина</th>
-                        <th>Тема</th>
-                        <th>Оценка</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for paper in template.term_papers.all %}
-                    <tr>
-                        <td>{{ paper.discipline.name }}</td>
-                        <td>{{ paper.topic|default:"Не указано" }}</td>
-                        <td>{{ paper.grade|default:"Не указано" }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            {% else %}
-            <p>Нет данных о курсовых работах.</p>
-            {% endif %}
-        </div>
+            <!-- Практики -->
+            <div id="practices" class="tab-pane">
+                {% if template.practices.all %}
+                    <div class="record-grid">
+                        {% for practice in template.practices.all %}
+                            <div class="record-tile">
+                                <p><strong>Название:</strong> {{ practice.practice_name }}</p>
+                                <p><strong>Часы:</strong> {{ practice.hours }}</p>
+                                <p><strong>Семестр:</strong> {{ practice.semester }}</p>
+                                <p><strong>Тип:</strong> {{ practice.get_practice_type_display }}</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p>Нет данных о практиках.</p>
+                {% endif %}
+            </div>
 
-        <div class="section">
-            <a href="{% url 'create_record_book_template' qualification.id admission_year %}" class="btn">Редактировать</a>
-            <a href="{% url 'qualification_detail' pk=qualification.id %}" class="btn">Назад к квалификации</a>
+            <!-- Курсовые работы -->
+            <div id="term_papers" class="tab-pane">
+                {% if template.term_papers.all %}
+                    <div class="record-grid">
+                        {% for paper in template.term_papers.all %}
+                            <div class="record-tile">
+                                <p><strong>Дисциплина:</strong> {{ paper.discipline.name }}</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p>Нет данных о курсовых работах.</p>
+                {% endif %}
+            </div>
         </div>
     </div>
-</body>
-</html>
+
+    <style>
+        .record-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 10px;
+        }
+        .record-tile {
+            background-color: --ип-сщдщк;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .record-tile p {
+            margin: 5px 0;
+            font-size: 18px;
+            font-weight: 500;
+        }
+        .record-tile p strong {
+            color: --text-color;
+        }
+        .certification-container {
+            padding: 10px;
+        }
+        .certification-header {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .column-header {
+            font-size: 18px;
+            color: --text-color;
+        }
+        .certification-subheader {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .column-subheader {
+            font-size: 16px;
+            font-weight: bold;
+            color: --text-color;
+        }
+        .semester-section {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 20px;
+        }
+        .semester-section:last-child {
+            border-bottom: none;
+        }
+        .semester-section h4 {
+            font-size: 16px;
+            color: --text-color;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .certification-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .exam-column, .credit-column {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.tab-button');
+            const panes = document.querySelectorAll('.tab-pane');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    tabs.forEach(t => t.classList.remove('active'));
+                    panes.forEach(p => p.classList.remove('active'));
+
+                    tab.classList.add('active');
+                    document.getElementById(tab.dataset.tab).classList.add('active');
+                });
+            });
+        });
+    </script>
+{% endblock %}
