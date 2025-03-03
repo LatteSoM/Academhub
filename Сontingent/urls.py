@@ -2,7 +2,7 @@ from .views import *
 from django.urls import path
 
 from .views import AcademListView, AcademUpdateView, AcademReturn, ExpulsionListView, ExpelStudent, RecoverStudent, \
-    statisticks_view
+    statisticks_view, StatisticksView
 
 urlpatterns = [
 
@@ -60,7 +60,7 @@ urlpatterns = [
          name='create_record_book_template'),
     path('qualification/<int:qualification_id>/<int:admission_year>/record-book/save/', save_record_book_template,
          name='save_record_book_template'),
-    path('qualification/<int:qualification_id>/<int:admission_year>/record-book/view/', view_record_book, name='view_record_book'),
+
 
 
     # Страница академа
@@ -76,7 +76,9 @@ urlpatterns = [
     path('student/<int:pk>/recover', RecoverStudent.as_view(), name='student_recover'),
 
     # Страница статистики
-    path('statisticks/', statisticks_view, name='statisticks'),
+    # path('statisticks/', statisticks_view, name='statisticks'),
+
+    path('statisticks/', StatisticksView.as_view(), name='statisticks'),
     path('qualification/<int:qualification_id>/<int:admission_year>/record-book/view/', ViewRecordBookTemplateView.as_view(),
          name='view_record_book_template'),
     path('qualification/<int:qualification_id>/<int:admission_year>/<int:student_id>/record-book-student/view/', ViewRecordBookView.as_view(),
@@ -88,6 +90,6 @@ urlpatterns = [
          name='generate_record_book'),
     # генерация зачетки для группы
     path('group/<int:group_id>/generate-group-record-books/', generate_group_recordbooks, name='group_record_books_generate'),
-    #path('statisticks/', StatisticksView.as_view(), name='statisticks'),
+
 
 ]
