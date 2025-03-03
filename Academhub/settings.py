@@ -92,11 +92,6 @@ WSGI_APPLICATION = 'Academhub.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-print(os.getenv("NAME"))
-print(os.getenv("USER"))
-print(os.getenv("PASSWORD"))
-print(os.getenv("HOST"))
-print(os.getenv("PORT"))
 
 DATABASES = {
     # 'default': {

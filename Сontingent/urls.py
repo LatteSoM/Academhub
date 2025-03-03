@@ -2,7 +2,7 @@ from .views import *
 from django.urls import path
 
 from .views import AcademListView, AcademUpdateView, AcademReturn, ExpulsionListView, ExpelStudent, RecoverStudent, \
-    statisticks_view, StatisticksView
+    statisticks_view, StatisticksView, generate_student_record_book
 
 urlpatterns = [
 
@@ -86,7 +86,7 @@ urlpatterns = [
     path('qualification/<int:qualification_id>/<int:admission_year>/record-book/edit/',
          EditRecordBookTemplateView.as_view(), name='edit_record_book_template'),
     #генерация зачетки для студента
-    path('student/<int:student_id>/generate-record-book/', GenerateRecordBookView.as_view(),
+    path('student/<int:pk>/generate-record-book/', generate_student_record_book,
          name='generate_record_book'),
     # генерация зачетки для группы
     path('group/<int:group_id>/generate-group-record-books/', generate_group_recordbooks, name='group_record_books_generate'),

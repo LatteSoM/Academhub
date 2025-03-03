@@ -37,7 +37,7 @@ __all__ = (
     # 'create_record_book_template',
     'CreateRecordBookTemplateView',
     'EditRecordBookTemplateView',
-    'GenerateRecordBookView',
+    'generate_student_record_book',
     'generate_group_recordbooks',
 
     'DisciplineTableView',
@@ -913,43 +913,48 @@ def generate_unique_record_book_number(admission_year):
             return record_book_number
 
 
-class GenerateRecordBookView(ObjectDetailView):
-    """
-    Генерирует зачетные книжки для студента по шаблону для его специальности
-    """
-    def get(self, request, student_id):
-        student = get_object_or_404(Student, id=student_id)
-        qualification = student.group.qualification
-        admission_year = student.group.year_create
 
+def generate_student_record_book(request, pk):
+    try:
+        student = get_object_or_404(Student, pk=pk)
+    except StudentRecordBook.DoesNotExist as e:
+        print("Студент не найден")
+    qualification = student.group.qualification
+    admission_year = student.group.year_create
+
+    print(qualification, admission_year)
+    try:
         template = get_object_or_404(RecordBookTemplate, qualification=qualification, admission_year=admission_year)
+    except RecordBookTemplate.DoesNotExist as e:
+        print("Шаблон не найден")
 
-        # Генерация уникального номера зачетки
-        record_book_number = generate_unique_record_book_number(admission_year)
 
-        # Создаём новый объект StudentRecordBook для студента
-        new_record_book = StudentRecordBook.objects.create(
-            student=student,
-            qualification=qualification,
-            admission_year=admission_year,
-            student_name=f"{student.full_name}",
-            record_book_number=record_book_number,
-            admission_order=template.admission_order,
-            issue_date=template.issue_date,
-            curriculum=template.curriculum
-        )
+    # Генерация уникального номера зачетки
+    record_book_number = generate_unique_record_book_number(admission_year)
+    print(2)
+    # Создаём новый объект StudentRecordBook для студента
+    new_record_book = StudentRecordBook.objects.create(
+        student=student,
+        qualification=qualification,
+        admission_year=admission_year,
+        student_name=f"{student.full_name}",
+        record_book_number=record_book_number,
+        admission_order=template.admission_order,
+        issue_date=template.issue_date,
+        curriculum=template.curriculum
+    )
+    print(new_record_book)
+    # Копируем ManyToMany-поля из шаблона
+    new_record_book.middle_certifications.set(template.middle_certifications.all())
+    new_record_book.professional_modules.set(template.professional_modules.all())
+    new_record_book.practices.set(template.practices.all())
+    new_record_book.term_papers.set(template.term_papers.all())
 
-        # Копируем ManyToMany-поля из шаблона
-        new_record_book.middle_certifications.set(template.middle_certifications.all())
-        new_record_book.professional_modules.set(template.professional_modules.all())
-        new_record_book.practices.set(template.practices.all())
-        new_record_book.term_papers.set(template.term_papers.all())
+    # Связываем зачётку со студентом
+    student.record_book = new_record_book
+    student.save()
 
-        # Связываем зачётку со студентом
-        student.record_book = new_record_book
-        student.save()
-
-        return redirect('view_record_book', qualification_id=qualification.id, admission_year=admission_year)
+    return redirect('view_record_book', qualification_id=qualification.id, admission_year=admission_year, student_id=pk)
 
 
 
