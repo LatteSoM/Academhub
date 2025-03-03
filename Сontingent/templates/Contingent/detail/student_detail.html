@@ -9,12 +9,35 @@
 {% endblock %}
 
 {% block actions-button %}
-    <a class="btn-primary" href="{% url url_update pk=student.pk%}">
+    <a class="btn-primary" href="{% url url_update pk=student.pk %}">
         Изменить
     </a>
     {% if not student.record_book %}
         <a class="btn-primary" href="{% url 'generate_record_book' student_id=student.id %}">Сгенерировать зачётку</a>
     {% else %}
         <a class="btn-primary" href="{% url 'view_record_book' qualification_id=student.group.qualification.pk admission_year=student.group.year_create student_id=student.pk%}">Просмотреть зачетку</a>
+    {% endif %}
+
+    {% if student.is_in_academ %}
+        <!-- Кнопка "Вернуть из академа" с формой подтверждения -->
+        <form method="post" action="{% url 'academ_return' pk=student.pk %}" onsubmit="return confirm('Вы уверены, что хотите вернуть студента из академического отпуска?');">
+            {% csrf_token %}
+            <button type="submit" class="btn-primary">Вернуть из академа</button>
+        </form>
+    {% else %}
+        <!-- Кнопка "Отправить в академ" -->
+        <a class="btn-primary" href="{% url 'academ_leave' pk=student.pk %}">
+            Отправить в академ
+        </a>
+    {% endif %}
+
+    {% if student.is_expelled %}
+        <a class="btn-primary" role="button" href="{% url 'student_recover' pk=student.pk %}" style="background-color: #10b981">
+        Восстановить
+        </a>
+    {% else %}
+        <a class="btn-primary" role="button" href="{% url 'expel_student' pk=student.pk %}" style="background-color: #dc3545" >
+        Отчислить
+        </a>
     {% endif %}
 {% endblock %}

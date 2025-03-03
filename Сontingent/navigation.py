@@ -9,6 +9,9 @@ navigation = Navigation(
             ChildLink('Группы', 'groupstudents_list'),
             ChildLink('Студенты', 'student_list'),
             ChildLink('Дисциплины', 'discipline_list'),
+            ChildLink('Академический отпуск', 'academ_list'),
+            ChildLink('Движение контингента', 'expelled_students'),
+            ChildLink('Статистика', 'statisticks')
         ]
     )
 )

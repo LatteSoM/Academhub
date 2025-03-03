@@ -1,0 +1,155 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Таблица</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 5px;
+            text-align: center;
+        }
+        .highlight-green {
+            background-color: lime;
+        }
+        .highlight-blue {
+            background-color: cyan;
+        }
+        .highlight-yellow {
+            background-color: yellow;
+        }
+        .divider {
+            width: 100%;
+            height: 1px;
+            background-color: #000;
+            margin: 5px 0;
+        }
+
+    </style>
+</head>
+<body>
+
+<table>
+    <thead>
+        <tr>
+            <th rowspan="2">№ п/п</th>
+            <th rowspan="2">Код</th>
+            <th rowspan="2">Направление подготовки/специальности</th>
+            <th rowspan="2">Профиль (направленность/специализация), квалификация</th>
+            <th rowspan="2">Форма обучения</th>
+            <th rowspan="2">Вид обучения</th>
+            <th colspan="4">9кл</th>
+            <th colspan="3">11кл</th>
+            <th colspan="4">Акад. отпуск</th>
+            <th rowspan="2">ИТОГО</th>
+        </tr>
+        <tr>
+            <th>1 курс</th><th>2 курс</th><th>3 курс</th><th>4 курс</th>
+            <th>1 курс</th><th>2 курс</th><th>3 курс</th>
+            <th>1 курс</th><th>2 курс</th><th>3 курс</th><th>4 курс</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        {% for row in table_data %}
+        <tr>
+            <td>{{ row.0 }}</td>
+            <td>{{ row.1 }}</td>
+            <td style="width: 30%; padding: 0;">{{ row.2 }}</td>
+            <td style="width: 50%; padding: 0;">{{ row.3 }}</td>
+            <td>Очная</td>
+            <td style="width: 100%; padding: 0;">
+                <div>Бюджет</div>
+                <div class="divider"></div>
+                <div>Внебюджет</div>
+            </td>
+            <td style="width: 100%; padding: 0;">
+                <div>{{ row.4 }}</div>
+                <div class="divider"></div>
+                <div>{{ row.5 }}</div>
+            </td>
+            <td style="width: 100%; padding: 0;">
+                <div>{{ row.6 }}</div>
+                <div class="divider"></div>
+                <div>{{ row.7 }}</div>
+            </td>
+            <td style="width: 100%; padding: 0;">
+                <div>{{ row.8 }}</div>
+                <div class="divider"></div>
+                <div>{{ row.9 }}</div>
+            </td>
+            <td style="width: 100%; padding: 0;">
+                <div>{{ row.10 }}</div>
+                <div class="divider"></div>
+                <div>{{ row.11 }}</div>
+            </td>
+            <td style="width: 100%; padding: 0;">
+                <div>{{ row.12 }}</div>
+                <div class="divider"></div>
+                <div>{{ row.13 }}</div>
+            </td>
+            <td style="width: 100%; padding: 0;">
+                <div>{{ row.14 }}</div>
+                <div class="divider"></div>
+                <div>{{ row.15 }}</div>
+            </td>
+            <td style="width: 100%; padding: 0;">
+                <div>{{ row.16 }}</div>
+                <div class="divider"></div>
+                <div>{{ row.17 }}</div>
+            </td>
+            <td style="width: 100%; padding: 0;">
+                <div>{{ row.18 }}</div>
+                <div class="divider"></div>
+                <div>{{ row.19 }}</div>
+            </td>
+            <td style="width: 100%; padding: 0;">
+                <div>{{ row.20 }}</div>
+                <div class="divider"></div>
+                <div>{{ row.21 }}</div>
+            </td>
+            <td style="width: 100%; padding: 0;">
+                <div>{{ row.22 }}</div>
+                <div class="divider"></div>
+                <div>{{ row.23 }}</div>
+            </td>
+            <td style="width: 100%; padding: 0;">
+                <div>{{ row.24 }}</div>
+                <div class="divider"></div>
+                <div>{{ row.25 }}</div>
+            </td>
+            <td style="width: 100%; padding: 0;">
+                <div><b>{{ row.26 }}</b></div>
+                <div class="divider"></div>
+                <div><b>{{ row.27 }}</b></div>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    <tfoot>
+        <tr class="highlight-yellow">
+            <td colspan="6">Итого:</td>
+            <td><b>599</b></td>
+            <td><b>660</b></td>
+            <td><b>619</b></td>
+            <td><b>428</b></td>
+            <td><b>85</b></td>
+            <td><b>76</b></td>
+            <td><b>84</b></td>
+            <td><b>6</b></td>
+            <td><b>13</b></td>
+            <td><b>4</b></td>
+            <td><b>9</b></td>
+            <td><b>2583</b></td>
+        </tr>
+    </tfoot>
+</table>
+
+</body>
+</html>

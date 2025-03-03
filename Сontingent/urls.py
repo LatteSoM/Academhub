@@ -1,8 +1,8 @@
 from .views import *
 from django.urls import path
 
-# from .views import ViewRecordBookView, CreateRecordBookTemplateView, EditRecordBookTemplateView, GenerateRecordBookView, \
-#     ViewRecordBookTemplateView, generate_group_recordbooks
+from .views import AcademListView, AcademUpdateView, AcademReturn, ExpulsionListView, ExpelStudent, RecoverStudent, \
+    statisticks_view
 
 urlpatterns = [
 
@@ -60,6 +60,23 @@ urlpatterns = [
          name='create_record_book_template'),
     path('qualification/<int:qualification_id>/<int:admission_year>/record-book/save/', save_record_book_template,
          name='save_record_book_template'),
+    path('qualification/<int:qualification_id>/<int:admission_year>/record-book/view/', view_record_book, name='view_record_book'),
+
+
+    # Страница академа
+    path('student/<int:pk>/academ-leave/', AcademUpdateView.as_view(), name='academ_leave'),
+    path('academ-list/', AcademListView.as_view(), name='academ_list'),
+
+    path('academ_return/<int:pk>/', AcademReturn.as_view(), name='academ_return'),
+
+    # Страница движений
+    path('expelled_students/', ExpulsionListView.as_view(), name='expelled_students'),
+    path('student/<int:pk>/expell', ExpelStudent.as_view(), name='expel_student'),
+
+    path('student/<int:pk>/recover', RecoverStudent.as_view(), name='student_recover'),
+
+    # Страница статистики
+    path('statisticks/', statisticks_view, name='statisticks'),
     path('qualification/<int:qualification_id>/<int:admission_year>/record-book/view/', ViewRecordBookTemplateView.as_view(),
          name='view_record_book_template'),
     path('qualification/<int:qualification_id>/<int:admission_year>/<int:student_id>/record-book-student/view/', ViewRecordBookView.as_view(),

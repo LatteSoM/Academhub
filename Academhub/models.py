@@ -355,7 +355,7 @@ class GroupStudents(AcademHubModel):
 
     def get_years_choices():
         years = []
-        for i in range(2020, timezone.now().year + 1):
+        for i in range(1990, timezone.now().year + 1):
             years.append((i, i))
         return years
     
@@ -395,12 +395,6 @@ class GroupStudents(AcademHubModel):
         null=False
     )
 
-    # disciplines = models.ManyToManyField(
-    #     Discipline,
-    #     verbose_name='Дисциплины',
-    #     blank=True,
-    #     null=True
-    # )
 
     class Meta:
         verbose_name = "Группа"
@@ -478,8 +472,11 @@ class Student(AcademHubModel):
     reason_of_academ = models.CharField(max_length=255, verbose_name="Причина ухода в академ", blank=True, null=True, choices=REASONS_OF_ACADEM_CHOICES)
     record_book = models.OneToOneField('StudentRecordBook', on_delete=models.SET_NULL, null=True, blank=True,
                                        verbose_name="Зачётная книжка", related_name="student_record_book")
+    academ_leave_date = models.DateField(null=True, blank=True, verbose_name="Дата ухода в академ")
+    academ_return_date = models.DateField(null=True, blank=True, verbose_name="Дата возвращения из академа")
 
-
+    date_of_expelling = models.DateField(null=True, blank=True, verbose_name="Дата отчисления")
+    is_expelled = models.BooleanField(null=True, blank=True, default=False, verbose_name="Отчислен ли студент")
     class Meta:
         verbose_name = "Студент"
         verbose_name_plural = "Студенты"
