@@ -1,5 +1,138 @@
 {% extends 'base.html' %}
 
 {% block content %}
-	<h1>Привет мир!!</h1>
+	<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Послание от разработчиков</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap">
+    <style>
+        /* Основные стили */
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: #0a192f;
+            color: #ccd6f6;
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Занимаем всю высоту экрана */
+        }
+
+        /* Контейнер для контента */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            text-align: center;
+            flex: 1; /* Растягиваем контейнер на всё доступное пространство */
+        }
+
+        /* Заголовок */
+        h1 {
+            font-size: 3rem;
+            color: white;
+            margin-bottom: 20px;
+            animation: fadeIn 2s ease-in-out;
+        }
+
+        /* Текст послания */
+        .message {
+            font-size: 1.2rem;
+            color: #8892b0;
+            margin-bottom: 40px;
+            animation: fadeIn 3s ease-in-out;
+        }
+
+        /* Подпись */
+        .signature {
+            font-size: 1.5rem;
+            {#color: #64ffda;#}
+            color: white;
+            margin-top: 40px;
+            animation: fadeIn 4s ease-in-out;
+        }
+
+        /* Кнопка */
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            font-size: 1rem;
+            color: #0a192f;
+            background-color: #64ffda;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            animation: fadeIn 5s ease-in-out;
+        }
+
+        .btn:hover {
+            background-color: #52d1b2;
+            transform: translateY(-5px);
+        }
+
+        /* Анимации */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Футер */
+        footer {
+            background: #020c1b;
+            padding: 20px;
+            text-align: center;
+            color: #8892b0;
+            width: 100%; /* Ширина на весь экран */
+            margin-top: auto; /* Прилепляем футер к низу */
+        }
+
+        footer a {
+            color: #64ffda;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <!-- Контейнер для контента -->
+    <div class="container">
+        <h1>Послание от разработчиков</h1>
+        <div class="message">
+            <p>Дорогие пользователи,</p>
+            <p>Мы, команда разработчиков, вложили в этот продукт не только свои знания и навыки, но и частичку души. Наша цель — сделать вашу жизнь проще, удобнее и интереснее. Мы верим, что технологии должны служить людям, и стремимся создавать продукты, которые вдохновляют и помогают.</p>
+            <p>Спасибо, что выбрали нас. Ваша поддержка и обратная связь помогают нам становиться лучше каждый день.</p>
+        </div>
+        <div class="signature">
+            <p>© 2025 Команда разработчиков. Создано с ❤️ и кодом.</p>
+            <p><a href="#" style="color: white">Связаться с нами</a></p>
+        </div>
+    </div>
+
+    <script>
+        // Добавляем анимацию для кнопки при прокрутке
+        const btn = document.querySelector('.btn');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = 'slideIn 0.5s ease forwards';
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        observer.observe(btn);
+    </script>
+</body>
+</html>
 {% endblock %}
