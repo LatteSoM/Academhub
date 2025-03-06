@@ -13,6 +13,7 @@ __all__ = [
     'Qualification',
     'Student',
     'Gradebook',
+    'CurriculumItem',
     'TermPaper',
     'Curriculum',
     'Practice',
@@ -195,25 +196,42 @@ class MiddleCertification(AcademHubModel):
         return f"{self.discipline.name} ({'Экзамен' if self.is_exam else 'Зачет'})"
 
 
+# class ProfessionalModule(AcademHubModel):
+#     module_name = models.CharField(max_length=100, verbose_name="Наименование профессионального модуля")
+#     hours = models.PositiveIntegerField(verbose_name='Часы')
+#
+# class Practice(AcademHubModel):
+#     SEMESTER_CHOICES = [(i, str(i)) for i in range(1, 9)]
+#     PRACTICE_TYPES = (
+#         ('УП', 'Учебная практика'),
+#         ('ПП', 'Производственная практика')
+#     )
+#
+#     practice_name = models.CharField(max_length=100, verbose_name='Наименование практики')
+#     practice_type = models.CharField(max_length=255, verbose_name="Тип практики", choices=PRACTICE_TYPES)
+#     # semester = models.PositiveSmallIntegerField(verbose_name='Семестр')
+#     hours = models.PositiveIntegerField(verbose_name='Часы')
+#     semester = models.PositiveSmallIntegerField(
+#         choices=SEMESTER_CHOICES,
+#         verbose_name='Семестр'
+#     )
+
 class ProfessionalModule(AcademHubModel):
     module_name = models.CharField(max_length=100, verbose_name="Наименование профессионального модуля")
-    hours = models.PositiveIntegerField(verbose_name='Часы')
+
+    def __str__(self):
+        return self.module_name
 
 class Practice(AcademHubModel):
-    SEMESTER_CHOICES = [(i, str(i)) for i in range(1, 9)]
     PRACTICE_TYPES = (
         ('УП', 'Учебная практика'),
         ('ПП', 'Производственная практика')
     )
-
     practice_name = models.CharField(max_length=100, verbose_name='Наименование практики')
     practice_type = models.CharField(max_length=255, verbose_name="Тип практики", choices=PRACTICE_TYPES)
-    # semester = models.PositiveSmallIntegerField(verbose_name='Семестр')
-    hours = models.PositiveIntegerField(verbose_name='Часы')
-    semester = models.PositiveSmallIntegerField(
-        choices=SEMESTER_CHOICES,
-        verbose_name='Семестр'
-    )
+
+    def __str__(self):
+        return self.practice_name
 
 class TermPaper(AcademHubModel):
     discipline = models.ForeignKey(
@@ -263,6 +281,97 @@ class Qualification(AcademHubModel):
         return self.name
 
 # Модель для учебного плана (связывает дисциплины с группами по квалификации и году поступления)
+
+class CurriculumItem(models.Model):
+    """
+    Сводная таблица для хранения компонентов учебного плана: дисциплин, практик, модулей и курсовых.
+    """
+    TYPE_CHOICES = (
+        ('discipline', 'Дисциплина'),
+        ('practice', 'Практика'),
+        ('professional_module', 'Профессиональный модуль'),
+        ('term_paper', 'Курсовая работа'),
+    )
+
+    SEMESTER_CHOICES = [(i, str(i)) for i in range(1, 9)]
+    ATTESTATION_CHOICES = (
+        ('exam', 'Экзамен'),
+        ('credit', 'Зачёт'),
+        ('none', 'Без аттестации'),  # Для практик или модулей без формы аттестации
+    )
+
+    curriculum = models.ForeignKey(
+        'Curriculum',
+        on_delete=models.CASCADE,
+        related_name='items',
+        verbose_name="Учебный план"
+    )
+    item_type = models.CharField(
+        max_length=20,
+        choices=TYPE_CHOICES,
+        verbose_name="Тип элемента"
+    )
+    discipline = models.ForeignKey(
+        'Discipline',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name="Дисциплина"
+    )
+    practice = models.ForeignKey(
+        'Practice',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name="Практика"
+    )
+    professional_module = models.ForeignKey(
+        'ProfessionalModule',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name="Профессиональный модуль"
+    )
+    term_paper = models.ForeignKey(
+        'TermPaper',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        verbose_name="Курсовая работа"
+    )
+    semester = models.PositiveSmallIntegerField(
+        choices=SEMESTER_CHOICES,
+        verbose_name="Семестр",
+        null=True,
+        blank=True  # Для курсовых может не быть семестра
+    )
+    hours = models.PositiveIntegerField(
+        verbose_name="Количество часов",
+        null=True,
+        blank=True  # Для курсовых часов может не быть
+    )
+    attestation_form = models.CharField(
+        max_length=10,
+        choices=ATTESTATION_CHOICES,
+        verbose_name="Форма аттестации",
+        default='none'
+    )
+
+    class Meta:
+        verbose_name = "Элемент учебного плана"
+        verbose_name_plural = "Элементы учебного плана"
+
+    def __str__(self):
+        if self.item_type == 'discipline' and self.discipline:
+            return f"{self.discipline.name} ({self.get_attestation_form_display()})"
+        elif self.item_type == 'practice' and self.practice:
+            return f"{self.practice.practice_name}"
+        elif self.item_type == 'professional_module' and self.professional_module:
+            return f"{self.professional_module.module_name}"
+        elif self.item_type == 'term_paper' and self.term_paper:
+            return f"Курсовая по {self.term_paper.discipline.name}"
+        return "Неопределённый элемент"
+
 class Curriculum(models.Model):
     qualification = models.ForeignKey(
         Qualification,
@@ -270,20 +379,36 @@ class Curriculum(models.Model):
         verbose_name="Квалификация"
     )
     admission_year = models.PositiveIntegerField(verbose_name="Год поступления")
-    disciplines = models.ManyToManyField(
-        Discipline,
-        verbose_name="Дисциплины",
-        related_name="curriculums"
-    )
 
     class Meta:
         verbose_name = "Учебный план"
         verbose_name_plural = "Учебные планы"
-        #эта срань гарантирует уникальность учебного пана по сочетанию квалификация+год поступления+курс
         unique_together = ['qualification', 'admission_year']
 
     def __str__(self):
         return f"План для {self.qualification} ({self.admission_year} года)"
+
+# class Curriculum(models.Model):
+#     qualification = models.ForeignKey(
+#         Qualification,
+#         on_delete=models.CASCADE,
+#         verbose_name="Квалификация"
+#     )
+#     admission_year = models.PositiveIntegerField(verbose_name="Год поступления")
+#     disciplines = models.ManyToManyField(
+#         Discipline,
+#         verbose_name="Дисциплины",
+#         related_name="curriculums"
+#     )
+#
+#     class Meta:
+#         verbose_name = "Учебный план"
+#         verbose_name_plural = "Учебные планы"
+#         #эта срань гарантирует уникальность учебного пана по сочетанию квалификация+год поступления
+#         unique_together = ['qualification', 'admission_year']
+#
+#     def __str__(self):
+#         return f"План для {self.qualification} ({self.admission_year} года)"
 
 
 class RecordBookTemplate(models.Model):

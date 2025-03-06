@@ -1,13 +1,11 @@
-from collections import defaultdict
-from contextlib import nullcontext
-
-from django.views import View
-
-from .filters import AcademFilter, ExpulsionFilter
 from .forms import *
-from .forms import AcademLeaveForm, AcademReturnForm, ExpellStudentForm, RecoverStudentForm
 from .tables import *
 from .filters import *
+from datetime import datetime
+from collections import defaultdict
+from django.urls import reverse_lazy
+from .filters import AcademFilter, ExpulsionFilter
+from .forms import AcademLeaveForm, AcademReturnForm, ExpellStudentForm, RecoverStudentForm
 from Academhub.models import (
     Student,
     Practice,
@@ -35,7 +33,7 @@ __all__ = (
     'ViewRecordBookTemplateView',
     'save_record_book_template',
     # 'create_record_book_template',
-    'CreateRecordBookTemplateView',
+    # 'CreateRecordBookTemplateView',
     'EditRecordBookTemplateView',
     'generate_student_record_book',
     'generate_group_recordbooks',
@@ -628,101 +626,6 @@ def qualification_detail(request, qualification_id):
                   {'qualification': qualification, 'admission_year': admission_year})
 
 
-
-from django.views.generic import CreateView
-from django.shortcuts import get_object_or_404
-from django.urls import reverse_lazy
-
-
-class CreateRecordBookTemplateView(CreateView):
-    """
-    Класс для ослздания ШАБОНА зачетной книжки.
-    """
-    model = RecordBookTemplate
-    template_name = 'Contingent/record_book_template.html'
-    fields = ['student_name', 'record_book_number', 'admission_order', 'issue_date']
-
-    def get(self, request, *args, **kwargs):
-        qualification = get_object_or_404(Qualification, id=self.kwargs['qualification_id'])
-        try:
-            RecordBookTemplate.objects.get(
-                qualification=qualification,
-                admission_year=self.kwargs['admission_year']
-            )
-            return redirect('view_record_book', qualification_id=self.kwargs['qualification_id'],
-                            admission_year=self.kwargs['admission_year'])
-        except RecordBookTemplate.DoesNotExist:
-            return super().get(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        qualification = get_object_or_404(Qualification, id=self.kwargs['qualification_id'])
-        curriculum = get_object_or_404(Curriculum, qualification=qualification,
-                                       admission_year=self.kwargs['admission_year'])
-
-        context['qualification'] = qualification
-        context['admission_year'] = self.kwargs['admission_year']
-        context['curriculum'] = curriculum
-        context['curriculum_disciplines'] = [{"id": d.id, "name": d.name} for d in curriculum.disciplines.all()]
-        context['url_list'] = 'qualification_list'
-        context['model_verbose_name'] = 'Зачетная книжка'
-        return context
-
-    def form_valid(self, form):
-        self.object = form.save(commit=False)
-        self.object.qualification = get_object_or_404(Qualification, id=self.kwargs['qualification_id'])
-        self.object.admission_year = self.kwargs['admission_year']
-        self.object.curriculum = get_object_or_404(Curriculum, qualification=self.object.qualification,
-                                                   admission_year=self.kwargs['admission_year'])
-        self.object.save()
-
-        # Обработка промежуточных аттестаций
-        middle_semesters = self.request.POST.getlist('middle_semester[]')
-        middle_disciplines = self.request.POST.getlist('middle_discipline[]')
-        middle_hours = self.request.POST.getlist('middle_hours[]')
-        middle_is_exams = self.request.POST.getlist('middle_is_exam[]')
-        self.object.middle_certifications.clear()
-        for sem, disc, hrs, is_exam in zip(middle_semesters, middle_disciplines, middle_hours, middle_is_exams):
-            cert = MiddleCertification.objects.create(
-                semester=sem,
-                discipline_id=disc,
-                hours=hrs,
-                is_exam=is_exam == 'True'
-            )
-            self.object.middle_certifications.add(cert)
-
-        # Обработка модулей
-        module_names = self.request.POST.getlist('module_name[]')
-        module_hours = self.request.POST.getlist('module_hours[]')
-        self.object.professional_modules.clear()
-        for name, hrs in zip(module_names, module_hours):
-            module = ProfessionalModule.objects.create(module_name=name, hours=hrs)
-            self.object.professional_modules.add(module)
-
-        # Обработка практик
-        practice_names = self.request.POST.getlist('practice_name[]')
-        practice_hours = self.request.POST.getlist('practice_hours[]')
-        practice_semesters = self.request.POST.getlist('practice_semester[]')
-        self.object.practices.clear()
-        for name, hrs, sem in zip(practice_names, practice_hours, practice_semesters):
-            practice = Practice.objects.create(practice_name=name, hours=hrs, semester=sem, practice_type='УП')
-            self.object.practices.add(practice)
-
-        # Обработка курсовых (без topic и grade)
-        term_disciplines = self.request.POST.getlist('term_discipline[]')
-        self.object.term_papers.clear()
-        for disc in term_disciplines:
-            paper = TermPaper.objects.create(discipline_id=disc)
-            self.object.term_papers.add(paper)
-
-        return redirect('view_record_book', qualification_id=self.kwargs['qualification_id'],
-                        admission_year=self.kwargs['admission_year'])
-
-    def get_success_url(self):
-        return reverse_lazy('view_record_book', kwargs={'qualification_id': self.kwargs['qualification_id'],
-                                                        'admission_year': self.kwargs['admission_year']})
-
-
 def save_record_book_template(request, qualification_id, admission_year):
     """
     Функция для сохранения ШАБЛОНА зачетной книжки
@@ -897,22 +800,6 @@ class EditRecordBookTemplateView(ObjectUpdateView):
         return reverse_lazy('view_record_book_template', kwargs={'qualification_id': self.kwargs['qualification_id'], 'admission_year': self.kwargs['admission_year']})
 
 
-def generate_unique_record_book_number(admission_year):
-    """
-    Генерирует уникальный номер зачётной книжки в формате Д1591Б/21/СПО.
-    """
-    while True:
-        letters = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'
-        prefix = random.choice(letters)
-        suffix = random.choice(letters)
-        number = ''.join(random.choices(string.digits, k=4))
-        year_short = str(admission_year)[-2:]
-        record_book_number = f"{prefix}{number}{suffix}/{year_short}/СПО"
-
-        if not StudentRecordBook.objects.filter(record_book_number=record_book_number).exists():
-            return record_book_number
-
-
 
 def generate_student_record_book(request, pk):
     try:
@@ -927,7 +814,6 @@ def generate_student_record_book(request, pk):
         template = get_object_or_404(RecordBookTemplate, qualification=qualification, admission_year=admission_year)
     except RecordBookTemplate.DoesNotExist as e:
         print("Шаблон не найден")
-
 
     # Генерация уникального номера зачетки
     record_book_number = generate_unique_record_book_number(admission_year)
@@ -957,23 +843,66 @@ def generate_student_record_book(request, pk):
     return redirect('view_record_book', qualification_id=qualification.id, admission_year=admission_year, student_id=pk)
 
 
+def create_auto_record_book_template(request, qualification_id, admission_year):
+    qualification = get_object_or_404(Qualification, id=qualification_id)
+    curriculum = get_object_or_404(Curriculum, qualification=qualification, admission_year=admission_year)
 
+    # Проверяем, существует ли шаблон, чтобы не дублировать
+    if RecordBookTemplate.objects.filter(qualification=qualification, admission_year=admission_year).exists():
+        return redirect('view_record_book_template', qualification_id=qualification_id, admission_year=admission_year)
 
+    # Создаём шаблон
+    template = RecordBookTemplate.objects.create(
+        qualification=qualification,
+        admission_year=admission_year,
+        student_name="",  # Пустое, так как это шаблон
+        record_book_number="",  # Пустое для шаблона
+        admission_order="Не указан",  # Можно заполнить позже
+        issue_date=datetime.now().date(),
+        curriculum=curriculum
+    )
+
+    # Автоматически заполняем компоненты зачётки из CurriculumItem
+    for item in curriculum.items.all():
+        if item.item_type == 'discipline' and item.discipline:
+            # Создаём MiddleCertification для дисциплин
+            middle_cert = MiddleCertification.objects.create(
+                semester=item.semester,
+                discipline=item.discipline,
+                hours=item.hours,
+                is_exam=(item.attestation_form == 'exam')
+            )
+            template.middle_certifications.add(middle_cert)
+        elif item.item_type == 'practice' and item.practice:
+            # Связываем существующую практику
+            template.practices.add(item.practice)
+        elif item.item_type == 'professional_module' and item.professional_module:
+            # Связываем существующий модуль
+            template.professional_modules.add(item.professional_module)
+        elif item.item_type == 'term_paper' and item.term_paper:
+            # Связываем существующую курсовую
+            template.term_papers.add(item.term_paper)
+
+    return redirect('view_record_book_template', qualification_id=qualification_id, admission_year=admission_year)
+
+# Обновим GenerateGroupRecordBooks для использования нового шаблона
 def generate_group_recordbooks(request, group_id):
-    """
-    Генерирует зачетки на всю группу
-    """
     group = get_object_or_404(GroupStudents, id=group_id)
     qualification = group.qualification
     admission_year = group.year_create
 
-    template = get_object_or_404(RecordBookTemplate, qualification=qualification, admission_year=admission_year)
+    # проверка на то что шаблон есть
+    if not RecordBookTemplate.objects.filter(qualification=qualification, admission_year=admission_year).exists():
+        create_auto_record_book_template(request, qualification.id, admission_year)
 
-    students = group.students.filter(record_book__isnull=True)
+    template = get_object_or_404(RecordBookTemplate, qualification=qualification, admission_year=admission_year)
+    students = group.students.all()
+
     for student in students:
+        if student.record_book:  # Пропускаем студентов с уже существующей зачёткой
+            continue
 
         record_book_number = generate_unique_record_book_number(admission_year)
-
         new_record_book = StudentRecordBook.objects.create(
             student=student,
             qualification=qualification,
@@ -985,15 +914,28 @@ def generate_group_recordbooks(request, group_id):
             curriculum=template.curriculum
         )
 
-        # Копируем ManyToMany-поля из шаблона
+        # Копируем данные из шаблона
         new_record_book.middle_certifications.set(template.middle_certifications.all())
         new_record_book.professional_modules.set(template.professional_modules.all())
         new_record_book.practices.set(template.practices.all())
         new_record_book.term_papers.set(template.term_papers.all())
 
-        # Связываем зачётку со студентом
         student.record_book = new_record_book
         student.save()
 
     return redirect('groupstudents_detail', pk=group_id)
+
+
+def generate_unique_record_book_number(admission_year):
+    while True:
+        letters = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'
+        prefix = random.choice(letters)
+        suffix = random.choice(letters)
+        number = ''.join(random.choices(string.digits, k=4))
+        year_short = str(admission_year)[-2:]
+        record_book_number = f"{prefix}{number}{suffix}/{year_short}/СПО"
+        if not StudentRecordBook.objects.filter(record_book_number=record_book_number).exists():
+            return record_book_number
+
+
 
