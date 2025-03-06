@@ -2,7 +2,7 @@ from .views import *
 from django.urls import path
 
 from .views import AcademListView, AcademUpdateView, AcademReturn, ExpulsionListView, ExpelStudent, RecoverStudent, \
-    statisticks_view, StatisticksView, generate_student_record_book
+    statisticks_view, StatisticksView, generate_student_record_book, create_auto_record_book_template
 
 urlpatterns = [
 
@@ -55,13 +55,16 @@ urlpatterns = [
     #
     ## Зачетная книжка
     #
-
-    path('qualification/<int:qualification_id>/<int:admission_year>/record-book/', CreateRecordBookTemplateView.as_view(),
-         name='create_record_book_template'),
     path('qualification/<int:qualification_id>/<int:admission_year>/record-book/save/', save_record_book_template,
          name='save_record_book_template'),
-
-
+    #генерация зачетки для студента
+    path('student/<int:pk>/generate-record-book/', generate_student_record_book,
+         name='generate_record_book'),
+    # генерация зачетки для группы
+    path('group/<int:group_id>/generate-group-record-books/', generate_group_recordbooks,
+         name='group_record_books_generate'),
+    path('qualification/<int:qualification_id>/<int:admission_year>/record-book/auto-create/',create_auto_record_book_template,
+         name='create_auto_record_book_template'),
 
     # Страница академа
     path('student/<int:pk>/academ-leave/', AcademUpdateView.as_view(), name='academ_leave'),
@@ -83,13 +86,4 @@ urlpatterns = [
          name='view_record_book_template'),
     path('qualification/<int:qualification_id>/<int:admission_year>/<int:student_id>/record-book-student/view/', ViewRecordBookView.as_view(),
          name='view_record_book'),
-    path('qualification/<int:qualification_id>/<int:admission_year>/record-book/edit/',
-         EditRecordBookTemplateView.as_view(), name='edit_record_book_template'),
-    #генерация зачетки для студента
-    path('student/<int:pk>/generate-record-book/', generate_student_record_book,
-         name='generate_record_book'),
-    # генерация зачетки для группы
-    path('group/<int:group_id>/generate-group-record-books/', generate_group_recordbooks, name='group_record_books_generate'),
-
-
 ]

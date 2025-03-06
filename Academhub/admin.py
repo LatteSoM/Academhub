@@ -5,6 +5,8 @@ from django.contrib.auth.models import Group, Permission
 from Academhub.models import CustomUser, GradebookStudents, Discipline, Specialty, Qualification, GroupStudents, \
     Student, Gradebook, Curriculum, TermPaper, Practice, ProfessionalModule, MiddleCertification, RecordBookTemplate, \
     StudentRecordBook, CalendarGraphicOfLearningProcess
+    Student, Gradebook, Curriculum, TermPaper, Practice, ProfessionalModule, MiddleCertification, RecordBookTemplate, \
+    StudentRecordBook, CurriculumItem
 
 admin.site.register(CustomUser)
 admin.site.register(GroupStudents)
@@ -23,3 +25,4 @@ admin.site.register(MiddleCertification)
 admin.site.register(RecordBookTemplate)
 admin.site.register(StudentRecordBook)
 admin.site.register(CalendarGraphicOfLearningProcess)
+admin.site.register(CurriculumItem)
