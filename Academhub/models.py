@@ -426,6 +426,7 @@ class Student(AcademHubModel):
         ("с/ж", "с/ж"),
         ("Перевод", "Перевод"),
         ("Смерть", "Смерть"),
+        ("Окончание обучения", "Окончание обучения")
         #TODO: Выяснить про другие причины
     )
 
@@ -452,7 +453,7 @@ class Student(AcademHubModel):
     transfer_to_4th_year_order = models.CharField(max_length=255, verbose_name="Переводной приказ на 4 курс", blank=True, null=True) # TODO: Приказ о переводе на 4 курс
     academ_order = models.CharField(max_length=255, verbose_name="Приказ об уходе в академический отпуск", blank=True, null=True) # TODO: Приказ об уходе в академ
     expell_order = models.CharField(max_length=255, verbose_name="Приказ об отчислении", blank=True, null=True) # TODO: Приказ об отчислении
-    reinstaitment_order = models.CharField(max_length=255, verbose_name="Приказ об отчислении", blank=True, null=True) # TODO: Приказ о восстановлении
+    reinstaitment_order = models.CharField(max_length=255, verbose_name="Приказ о восстановлении", blank=True, null=True) # TODO: Приказ о восстановлении
     expelled_due_to_graduation = models.BooleanField(verbose_name="Отчислен в связи с окончанием обучения", blank=True, null=True, default=False)
     education_base = models.CharField(max_length=255, verbose_name="База образования", choices=EDUCATION_BASE_CHOICES, default=EDUCATION_BASE_CHOICES[0][1])
     education_basis = models.CharField(max_length=255, verbose_name="Основа образования", choices=EDUCATION_BASIS_CHOICES, default=EDUCATION_BASIS_CHOICES[0][1])
@@ -516,7 +517,6 @@ class StudentRecordBook(models.Model):
 
 class GradebookStudents(AcademHubModel):
     ASSESSMENT_CHOICES = (
-        ('Не указана', 'Не указана'),
         ('Отлично', '5'),
         ('Хорошо', '4'),
         ('Удовлетворительно', '3'),
@@ -615,6 +615,27 @@ class Gradebook(AcademHubModel):
     class Meta:
         verbose_name = "Ведомость"
         verbose_name_plural = "Ведомости"
+
+    def __str__(self):
+        return self.name
+
+class CalendarGraphicOfLearningProcess(AcademHubModel):
+
+    name = models.CharField(max_length=255, verbose_name="Название")
+
+    group = models.ForeignKey(
+        GroupStudents,
+        on_delete=models.CASCADE,
+        related_name="learning_process_calendars",
+        verbose_name="Группа"
+    )
+
+    start_exam_date_first_semester = models.DateField(null=False, blank=False, verbose_name="Дата начала сессии первого семестра")
+    start_exam_date_second_semester = models.DateField(null=False, blank=False, verbose_name="Дата начала сессии второго семестра")
+
+    class Meta:
+        verbose_name = "Календарный график учебного процесса"
+        verbose_name_plural = "Календарные графики учебного процесса"
 
     def __str__(self):
         return self.name

@@ -9,7 +9,7 @@
                 {% block form_title %}
                     Ведомость
                 {% endblock %}
-                {{ gradebook }} 
+                {{ gradebook }}
                 № {{gradebook.pk}}
             </h2>
             {% block buttons %}
@@ -21,7 +21,7 @@
         <form id="multi-form" class="multi-form" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {% include 'inc/form/form_set.html' %}
-            <button class="btn-primary" type="submit">
+            <button class="btn-primary" id="submit" type="submit">
                 Заполнить
             </button>
         </form>

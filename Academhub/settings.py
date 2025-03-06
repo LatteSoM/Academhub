@@ -32,6 +32,10 @@ DEBUG = os.getenv("DEBUG")
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
 
+TIME_ZONE = "Europe/Moscow"
+USE_TZ = True
+
+
 
 # Application definition
 
@@ -135,7 +139,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
 
 USE_I18N = True
 

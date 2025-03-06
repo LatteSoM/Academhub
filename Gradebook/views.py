@@ -15,7 +15,7 @@ __all__ = (
     'GradebookDetailView',
     'GradebookCreateView',
     'GradebookUpdateView',
-    'GradebookDisciplineCreateView',
+    # 'GradebookDisciplineCreateView',
     'GradebookStudentBulkUpdateView',
 )
 
@@ -82,8 +82,10 @@ class GradebookDetailView(ObjectDetailView):
 
     def get_tables(self):
         table = GradebookStudentsTable(data=self.object.students.all())
+        print(table.student)
 
         table2 = GradebookTeachersTable(data=self.object.teachers.all())
+        print(table2)
         
         return [table, table2]
 
@@ -97,7 +99,8 @@ class GradebookUpdateView(GradeBookMixin, ObjectUpdateView):
     properties = {
         'group_id': ''
     }
-    
+
+
 
 class GradebookCreateView(GradeBookMixin, ObjectCreateView):
     """
@@ -108,11 +111,11 @@ class GradebookCreateView(GradeBookMixin, ObjectCreateView):
     template_name = 'Gradebook/create/grade_book.html'
     properties = ['group_id']
 
-class GradebookDisciplineCreateView(GradeBookMixin, ObjectCreateView):
-    """
-    Класс для создания нового учебного журнала.
-    """
-    model = Gradebook
-    form_class = GradebookForm
-    template_name = 'Gradebook/create/grade_book.html'
-    properties = ['group_id', 'discipile_id']
+# class GradebookDisciplineCreateView(GradeBookMixin, ObjectCreateView):
+#     """
+#     Класс для создания нового учебного журнала.
+#     """
+#     model = Gradebook
+#     form_class = GradebookForm
+#     template_name = 'Gradebook/create/grade_book.html'
+#     properties = ['group_id', 'discipile_id']

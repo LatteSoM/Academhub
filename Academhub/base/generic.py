@@ -160,7 +160,7 @@ class ObjectUpdateView(BaseContextMixin, UpdateView):
         # return model_class._meta.verbose_name
         model_class = getattr(self, 'model', None) or (
             self.queryset.model if hasattr(self, 'queryset') and self.queryset is not None else self.object._meta.model)
-        return model_class._meta.verbose_nam
+        return model_class._meta.verbose_name
 
     def get_model_urls(self):
         model = getattr(self, 'model', None) or (

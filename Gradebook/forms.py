@@ -62,12 +62,15 @@ class GradebookForm(forms.ModelForm):
 
             if  group.exists():
                 group = group.first()
-                self.fields['discipline'].queryset = group.disciplines.all()
+
+                specialty = group.qualification.specialty
+                self.fields['discipline'].queryset = specialty.disciplines.all()
+
 
         elif self.instance.pk:
             self.initial['group'] = self.group_id
             self.fields['students'].queryset = Student.objects.filter(group__id=self.group_id)
-            self.fields['discipline'].queryset = self.instance.group.disciplines.all()
+            self.fields['discipline'].queryset = self.instance.group.qualification.specialty.disciplines.all()
 
 class GradebookStudentsForm(forms.ModelForm):
     ticket_number = forms.IntegerField(

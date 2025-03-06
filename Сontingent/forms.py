@@ -124,7 +124,7 @@ class AcademLeaveForm(forms.ModelForm):
             'academ_leave_date',
             'academ_return_date',
             'reason_of_academ',
-            'note'
+            'academ_order'
         ]
         widgets = {
             'academ_leave_date': forms.DateInput(
@@ -138,6 +138,7 @@ class AcademLeaveForm(forms.ModelForm):
     def save(self, commit=True):
         student = super().save(commit=False)  # Получаем объект студента, но пока не сохраняем
         student.is_in_academ = True  # Переводим в академ
+        student.expelled_due_to_graduation = False
         student.left_course = student.group.current_course  # Берем текущий курс группы
 
         if commit:
@@ -157,6 +158,8 @@ class AcademReturnForm(forms.ModelForm):
         student.academ_return_date = None
         student.reason_of_academ = None
         student.left_course = None
+        student.expelled_due_to_graduation = False
+        student.academ_order = ""
         student.save()
 
         if commit:
@@ -169,7 +172,7 @@ class ExpellStudentForm(forms.ModelForm):
         fields = [
             'date_of_expelling',
             'reason_of_expelling',
-            'note',
+            'expell_order',
         ]
 
         widgets = {
@@ -186,7 +189,7 @@ class ExpellStudentForm(forms.ModelForm):
         student.academ_return_date = None
         student.reason_of_academ = None
         student.is_in_academ = False
-
+        student.expelled_due_to_graduation = False
         if commit:
             student.save()  # Сохраняем изменения
         return student
@@ -195,7 +198,7 @@ class RecoverStudentForm(forms.ModelForm):
     class Meta:
         model = Student
         fields = ['group',
-                  'note']
+                  'reinstaitment_order']
 
     def save(self, commit=True):
         student = super().save(commit=False)
@@ -203,7 +206,7 @@ class RecoverStudentForm(forms.ModelForm):
         student.date_of_expelling = None
         student.reason_of_expelling = None
         student.left_course = None
-
+        student.expelled_due_to_graduation = False
         if commit:
             student.save()
         return student
