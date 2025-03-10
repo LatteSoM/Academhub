@@ -1,11 +1,11 @@
 from django.db import models
-from Academhub.validators import *
-from django.shortcuts import reverse
 from django.utils import timezone
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, Permission, Group
+from Academhub.validators import *
+from base.models import AcademHubModel
+from .permissions_mixin import ObjectPermissionsMixin
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
 __all__ = [
-    'AcademHubModel',
     'CustomUser',
     'GroupStudents',
     'Discipline',
@@ -21,53 +21,9 @@ __all__ = [
     'MiddleCertification',
     'StudentRecordBook',
     'RecordBookTemplate'
-
 ]
 
-
-url_attrs = [
-    'list',
-    'delete',
-    'create',
-    'update',
-    'detail',
-]
-
-class UrlGenerateMixin:
-    _urls = None
-
-    @classmethod
-    def _generate_url(cls):
-        cls._urls = {}
-        
-        for attr in url_attrs:
-            prefix_name = 'url_' + attr
-            cls._urls[prefix_name] = f'{cls.__name__.lower()}_{attr}'
-
-        return cls._urls
     
-    @classmethod
-    def _check_urls(cls):
-        if not cls._urls:
-            cls._generate_url()
-
-    @classmethod
-    def get_urls(cls):
-        cls._check_urls()
-        return cls._urls
-
-    @classmethod
-    def set_url(cls, name):
-        cls._check_urls()
-        cls._urls[name] = name
-
-class AcademHubModel(UrlGenerateMixin, models.Model):
-    def get_absolute_url(self):
-        url = self.get_urls()['url_detail']
-        return reverse(url, kwargs={'pk': self.pk})
-    
-    class Meta:
-        abstract = True
 
 class CustomUserManager(BaseUserManager):
     '''
@@ -79,8 +35,8 @@ class CustomUserManager(BaseUserManager):
             raise ValueError('The Email field must be set')
         
         email = self.normalize_email(email)
-
-        user = self.model(email=email, **extra_fields)
+        full_name = "Admin Admin Admin"
+        user = self.model(email=email,full_name=full_name, **extra_fields)
 
         user.set_password(password)
         user.save(using=self._db)
@@ -97,7 +53,7 @@ class CustomUserManager(BaseUserManager):
 
         return self.create_user(email, password, **extra_fields)
 
-class CustomUser(AcademHubModel, AbstractBaseUser, PermissionsMixin):
+class CustomUser(AcademHubModel, AbstractBaseUser, ObjectPermissionsMixin):
     '''
     Пользовательская модель, представляющая пользователей системы. 
     Наследует от AbstractBaseUser и PermissionsMixin для поддержки аутентификации и управления правами доступа.
@@ -107,10 +63,10 @@ class CustomUser(AcademHubModel, AbstractBaseUser, PermissionsMixin):
         max_length=255,
         verbose_name='ФИО'
     )
+
     is_active = models.BooleanField(default=True, verbose_name='Активный?')
     is_staff = models.BooleanField(default=False, verbose_name='Персонал?')
     is_teacher = models.BooleanField(default=False, verbose_name='Учитель?')
-    is_superuser = models.BooleanField(default=False, verbose_name='Суперпользователь?')
 
     objects = CustomUserManager()
 
@@ -120,41 +76,37 @@ class CustomUser(AcademHubModel, AbstractBaseUser, PermissionsMixin):
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
 
-    def has_perm(self, perm, obj = ...):
-        print(perm)
-        return super().has_perm(perm, obj)
-
     def __str__(self):
         return self.full_name
 
-class PermissionProxy(Permission, UrlGenerateMixin):
-    '''
-        Расширение для модели Permissions. Поддерживает навигацию
-    '''
+# class PermissionProxy(Permission, UrlGenerateMixin):
+#     '''
+#         Расширение для модели Permissions. Поддерживает навигацию
+#     '''
     
-    def get_absolute_url(self):
-        url = self.get_urls()['url_detail']
-        return reverse(url, kwargs={'pk': self.pk})
+#     def get_absolute_url(self):
+#         url = self.get_urls()['url_detail']
+#         return reverse(url, kwargs={'pk': self.pk})
 
-    class Meta:
-        proxy = True
-        ordering = ['pk']
-        verbose_name = 'Право'
-        verbose_name_plural = 'Права'
+#     class Meta:
+#         proxy = True
+#         ordering = ['pk']
+#         verbose_name = 'Право'
+#         verbose_name_plural = 'Права'
 
-class GroupProxy(Group, UrlGenerateMixin):
-    '''
-        Расширение для модели Group. Поддерживает навигацию
-    '''
+# class GroupProxy(Group, UrlGenerateMixin):
+#     '''
+#         Расширение для модели Group. Поддерживает навигацию
+#     '''
     
-    def get_absolute_url(self):
-        url = self.get_urls()['url_detail']
-        return reverse(url, kwargs={'pk': self.pk})
+#     def get_absolute_url(self):
+#         url = self.get_urls()['url_detail']
+#         return reverse(url, kwargs={'pk': self.pk})
 
-    class Meta:
-        proxy = True
-        verbose_name = 'Группа прав'
-        verbose_name_plural = 'Группы прав'
+#     class Meta:
+#         proxy = True
+#         verbose_name = 'Группа прав'
+#         verbose_name_plural = 'Группы прав'
 
 class Discipline(AcademHubModel):
     code = models.CharField(max_length=50, unique=True, verbose_name="Код", blank=True ,null=True)
