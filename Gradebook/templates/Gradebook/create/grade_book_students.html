@@ -3,6 +3,9 @@
 {% load util %}
 
 {% block content %}
+
+    {% include 'Gradebook/inc/grade_book_students_popup.html' %}
+
     <div class="page-container">
         <div class="page-header">
             <h2>
@@ -10,7 +13,7 @@
                     Ведомость
                 {% endblock %}
                 {{ gradebook }}
-                № {{gradebook.pk}}
+                № {{ gradebook.pk }}
             </h2>
             {% block buttons %}
                 <a class="btn-primary" style="display: inline-block; margin: 10px 0;" href="{% url gradebook|get_url:'url_detail' gradebook.pk %}">
@@ -21,7 +24,7 @@
         <form id="multi-form" class="multi-form" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {% include 'inc/form/form_set.html' %}
-            <button class="btn-primary" id="submit" type="submit">
+            <button class="btn-primary" type="submit">
                 Заполнить
             </button>
         </form>
@@ -32,16 +35,42 @@
     {{ block.super }}
     <script>
         const selects = document.querySelectorAll("select[handshakable='un']");
-        const form = document.getElementById('multi-form');
+        const multi_form = document.getElementById('multi-form');
 
-        form.addEventListener('submit' , function(e){
+        const popup = document.getElementById('popupOverlay');
+
+        const _close_button = document.getElementById('closePopup');
+        const save_button = document.getElementById('save_button');
+        const cansel_button = document.getElementById('cancel_button');
+
+        multi_form.addEventListener('submit' , function(e) {
             e.preventDefault();
 
             selects.forEach(element => {
                 element.disabled = false;
             });
 
-            this.submit();
+            popup.classList.add('active')
+        });
+
+        cansel_button.addEventListener('click', ()=>{
+            selects.forEach(element => {
+                element.disabled = true;
+            });
+
+            popup.classList.remove('active');
+        });
+
+        _close_button.addEventListener('click', () => {
+            selects.forEach(element => {
+                element.disabled = true;
+            });
+
+            popup.classList.remove('active');
+        });
+
+        save_button.addEventListener('click', () => {
+            multi_form.submit();
         });
     </script>
 {% endblock %}

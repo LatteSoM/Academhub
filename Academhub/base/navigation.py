@@ -8,11 +8,11 @@ class Navigation:
     __app_nav = []
 
     def __init__(self, links=None):
-            if links:
-                if isinstance(links, list):
-                    self.__app_nav.extend(links)
-                else: 
-                    self.__app_nav.append(links)
+        if links:
+            if isinstance(links, list):
+                self.__app_nav.extend(links)
+            else: 
+                self.__app_nav.append(links)
 
     def get(self):
         return self.__app_nav
