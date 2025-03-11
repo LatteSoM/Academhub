@@ -24,10 +24,12 @@ class UserFilter(FilterSet):
         fields = ['is_staff', 'is_teacher']
 
     def filter_search(self, queryset, name, value):
-        return queryset.filter(
-            Q(email__icontains=value) |
-            Q(full_name__icontains=value)
-        )
+        if value:
+            return queryset.filter(
+                Q(email__icontains=value) |
+                Q(full_name__icontains=value)
+            )
+        return queryset.all()
 
 class PermissionFilter(FilterSet):
     search = CharFilter(method='filter_search', label='Поиск')
@@ -39,7 +41,7 @@ class PermissionFilter(FilterSet):
 
     class Meta:
         model = PermissionProxy
-        fields = []
+        fields = ['content_type']
 
     def filter_search(self, queryset, name, value):
         return queryset.filter(

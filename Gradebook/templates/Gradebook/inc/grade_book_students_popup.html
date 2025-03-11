@@ -1,0 +1,18 @@
+{% extends 'inc/popup.html' %}
+
+{% block popup-header %}
+    Сохранение ведомости
+{% endblock %}
+
+{% block popup-content %}
+    Вы уверены что хотите закрыть ведомость? Потом ее изменить будет нельзя
+{% endblock %}
+
+{% block popup-button %}
+    <button class="btn-primary" id="save_button">
+        Сохранить
+    </button>
+    <button class="btn-primary" id="cancel_button">
+        Отмена
+    </button>
+{% endblock %}

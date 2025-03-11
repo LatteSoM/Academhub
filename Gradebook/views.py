@@ -2,7 +2,7 @@ from Gradebook.forms import *
 from Gradebook.tables import *
 from Gradebook.filters import *
 from Gradebook.mixins import GradeBookMixin
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from Academhub.models import GradebookStudents, Gradebook
 from Academhub.base import BulkUpdateView, ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView
 
@@ -49,6 +49,13 @@ class GradebookStudentBulkUpdateView(BulkUpdateView):
             gradebook.save()
 
         return form
+    
+    def post(self, request, *args, **kwargs):
+        formset = self.save_form(request)
+
+        if formset.is_valid():
+            return redirect('gradebook_detail', pk=self.gradebook_pk)
+        return super().post(request, *args, **kwargs)
 
 #
 ## Gradebook
@@ -82,10 +89,8 @@ class GradebookDetailView(ObjectDetailView):
 
     def get_tables(self):
         table = GradebookStudentsTable(data=self.object.students.all())
-        print(table.student)
 
         table2 = GradebookTeachersTable(data=self.object.teachers.all())
-        print(table2)
         
         return [table, table2]
 
