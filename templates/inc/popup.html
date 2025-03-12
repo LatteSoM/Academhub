@@ -1,0 +1,39 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'Academhub/css/popup.css' %}">
+<div class="popup-overlay" id="popupOverlay">
+    <!-- Popup Container -->
+    <div class="popup">
+        <!-- Popup Header -->
+        <div class="popup-header">
+            <h2>
+                {% block popup-header %}
+                {% endblock %}
+            </h2>
+            <button class="popup-close" id="closePopup">
+                <span class="material-icons">close</span>
+            </button>
+        </div>
+        
+        <!-- Popup Content -->
+        <div class="popup-content">
+            {% block popup-content %}
+                <p>This is the message content that will be displayed in the popup. It can contain important information or notifications for the user.</p>
+            {% endblock %}
+        </div>
+        
+        <!-- Popup Footer -->
+        <div class="popup-footer">
+            {% block popup-button %}
+                <button class="btn-secondary" id="cancelButton">Cancel</button>
+                <button class="btn-primary" id="confirmButton">Confirm</button>
+            {% endblock %}
+        </div>
+    </div>
+</div>
+<script>
+    const popupOverlay = document.getElementById('popupOverlay')
+    const close_button = document.getElementById('closePopup');
+    close_button.addEventListener("click", (e)=>{
+        popupOverlay.classList.remove('active');
+    });
+</script>

@@ -1,3 +1,10 @@
+import os
+from django.conf import settings
+from django.http import HttpResponse
+
+from Academhub.modules.documentGenPars import StatisticsTableGenerator, CourseDifferenceError, \
+    EducationBaseDifferenceError, CourseTableGenerator, GroupTableGenerator, VacationTableGenerator, \
+    MovementTableGenerator
 from .forms import *
 from .tables import *
 from .filters import *
@@ -5,8 +12,8 @@ from datetime import datetime
 from contextlib import nullcontext
 from collections import defaultdict
 from django.urls import reverse_lazy
-from .filters import AcademFilter, ExpulsionFilter
-from .forms import AcademLeaveForm, AcademReturnForm, ExpellStudentForm, RecoverStudentForm
+from .filters import AcademFilter, ExpulsionFilter, ContingentMovementFilter
+from .forms import AcademLeaveForm, AcademReturnForm, ExpellStudentForm, RecoverStudentForm, StudentImportForm
 from Academhub.models import (
     Student,
     Practice,
@@ -20,7 +27,7 @@ from Academhub.models import (
     StudentRecordBook,
     RecordBookTemplate,
     ProfessionalModule,
-    MiddleCertification,
+    MiddleCertification, ContingentMovement,
 )
 import random
 import string
@@ -65,7 +72,7 @@ __all__ = (
     'QualificationUpdateView'
 )
 
-from .tables import AcademTable, ExpulsionTable
+from .tables import AcademTable, ExpulsionTable, ContingentMovementTable
 
 
 #
@@ -822,3 +829,195 @@ def generate_unique_record_book_number(admission_year):
 
 
 
+class ContingentMovementTableView(ObjectTableView):
+    """
+    Класс для отображения таблицы движений контингента.
+    """
+    table_class = ContingentMovementTable
+    filterset_class = ContingentMovementFilter
+    queryset = ContingentMovement.objects.all()
+    # template_name = 'base_view.html'
+    template_name = 'Contingent/contingent_movement_list.html'
+    paginate_by = 10
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['table_name'] = "Движения контингента"
+        return context
+
+
+#########
+#######Обработка генерации доков
+###########
+
+
+def generate_group_table(request):
+    groups = GroupStudents.objects.all()
+    generator = GroupTableGenerator(groups)
+    file_path = os.path.join(settings.MEDIA_ROOT, 'group_table.xlsx')
+
+    # Создаём директорию, если она не существует
+    os.makedirs(settings.MEDIA_ROOT, exist_ok=True)
+
+    generator.generate_document(file_path)
+
+    with open(file_path, 'rb') as f:
+        response = HttpResponse(f.read(),
+                                content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename="group_table.xlsx"'
+
+    os.remove(file_path)  # Удаляем временный файл после отправки
+    return response
+
+
+def generate_course_table(request, course):
+    students = Student.objects.filter(group__current_course=course)
+    try:
+        generator = CourseTableGenerator(students)
+        file_path = os.path.join(settings.MEDIA_ROOT, f'course_{course}_table.xlsx')
+
+        os.makedirs(settings.MEDIA_ROOT, exist_ok=True)
+
+        generator.generate_document(file_path)
+
+        with open(file_path, 'rb') as f:
+            response = HttpResponse(f.read(),
+                                    content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            response['Content-Disposition'] = f'attachment; filename="course_{course}_table.xlsx"'
+        os.remove(file_path)
+        return response
+    except (CourseDifferenceError, EducationBaseDifferenceError) as e:
+        return HttpResponse(f"Ошибка: {e.message}", status=400)
+
+
+def generate_statistics_table(request):
+    specialties = Specialty.objects.all()
+    qualifications = Qualification.objects.all()
+    students = Student.objects.all()
+    generator = StatisticsTableGenerator(specialties, qualifications, students)
+    file_path = os.path.join(settings.MEDIA_ROOT, 'statistics_table.xlsx')
+
+    os.makedirs(settings.MEDIA_ROOT, exist_ok=True)
+
+    generator.generate_document(file_path)
+
+    with open(file_path, 'rb') as f:
+        response = HttpResponse(f.read(),
+                                content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename="statistics_table.xlsx"'
+    os.remove(file_path)
+    return response
+
+
+def generate_vacation_table(request):
+    students = Student.objects.filter(is_in_academ=True)
+    generator = VacationTableGenerator(students)
+    file_path = os.path.join(settings.MEDIA_ROOT, 'vacation_table.xlsx')
+
+    os.makedirs(settings.MEDIA_ROOT, exist_ok=True)
+
+    generator.generate_document(file_path)
+
+    with open(file_path, 'rb') as f:
+        response = HttpResponse(f.read(),
+                                content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename="vacation_table.xlsx"'
+    os.remove(file_path)
+    return response
+
+
+def generate_movement_table(request):
+    movements = ContingentMovement.objects.all()  # Получаем все записи о движениях
+    generator = MovementTableGenerator(movements)
+    file_path = os.path.join(settings.MEDIA_ROOT, 'movement_table.xlsx')
+
+    os.makedirs(settings.MEDIA_ROOT, exist_ok=True)
+
+    generator.generate_document(file_path)
+
+    with open(file_path, 'rb') as f:
+        response = HttpResponse(f.read(),
+                                content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename="movement_table.xlsx"'
+    os.remove(file_path)
+    return response
+
+
+import os
+from django.shortcuts import render
+from django.http import HttpResponse
+from openpyxl import load_workbook
+from Academhub.models import Student, GroupStudents
+from django.utils.dateparse import parse_date
+
+
+def import_students(request):
+    if request.method == 'POST':
+        form = StudentImportForm(request.POST, request.FILES)
+        if form.is_valid():
+            excel_file = request.FILES['excel_file']
+            wb = load_workbook(excel_file)
+            ws = wb.active
+
+            # Сопоставление заголовков с индексами столбцов
+            headers = {cell.value: idx for idx, cell in enumerate(ws[1]) if cell.value}
+
+            # Пропускаем строку заголовков и начинаем с данных
+            for row in ws.iter_rows(min_row=2, values_only=True):
+                try:
+                    # Извлекаем данные из строки
+                    last_name = row[headers.get("Фамилия")]
+                    first_name = row[headers.get("Имя")]
+                    middle_name = row[headers.get("Отчество")]
+                    full_name = f"{last_name} {first_name} {middle_name}".strip() if last_name and first_name else None
+
+                    group_number = row[headers.get("Академическая группа")]
+                    course_str = row[headers.get("Курс")]
+                    course = int(course_str[0]) if course_str and course_str[0].isdigit() else None
+                    # course = int(row[headers.get("Курс")]) if row[headers.get("Курс")] else None
+                    education_basis = row[headers.get("Основы обучения")]
+                    # birth_date = parse_date(str(row[headers.get("Дата рождения")])) if row[
+                    #     headers.get("Дата рождения")] else None
+                    birth_date = (
+                        row[headers.get("Дата рождения")].date() if isinstance(row[headers.get("Дата рождения")],datetime)
+                        else datetime.strptime(row[headers.get("Дата рождения")], "%d.%m.%Y").date()) if row[
+                        headers.get("Дата рождения")] else None
+
+                    phone = row[headers.get("Телефон мобильный")]
+                    admission_order = row[headers.get("Приказ о зачислении")]
+                    expell_order = row[headers.get("Приказ об отчислении")]
+                    date_of_expelling = parse_date(str(row[headers.get("Дата отчисления")])) if row[
+                        headers.get("Дата отчисления")] else None
+                    academ_leave_date = parse_date(str(row[headers.get("Дата начала последнего академ отпуска")])) if \
+                    row[headers.get("Дата начала последнего академ отпуска")] else None
+                    academ_return_date = parse_date(
+                        str(row[headers.get("Дата окончания последнего академ отпуска")])) if row[
+                        headers.get("Дата окончания последнего академ отпуска")] else None
+
+                    # Проверяем и создаём группу, если её нет
+                    group = GroupStudents.objects.get(full_name=group_number)
+
+                    # Создаём или обновляем студента
+                    student, created = Student.objects.update_or_create(
+                        full_name=full_name,
+                        defaults={
+                            'birth_date': birth_date,
+                            'group': group,
+                            'education_basis': education_basis,
+                            'phone': phone,
+                            'admission_order': admission_order,
+                            'expell_order': expell_order,
+                            'date_of_expelling': date_of_expelling,
+                            'is_in_academ': bool(academ_leave_date and not academ_return_date),
+                            'academ_leave_date': academ_leave_date,
+                            'academ_return_date': academ_return_date,
+                        }
+                    )
+                except Exception as e:
+                    return HttpResponse(f"Ошибка при импорте строки: {str(e)}", status=400)
+
+            return HttpResponse("Импорт студентов успешно завершён!")
+    else:
+        form = StudentImportForm()
+
+    return render(request, 'Contingent/import_students.html', {'form': form})

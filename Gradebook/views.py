@@ -14,6 +14,8 @@ from Gradebook.filters import *
 from Gradebook.mixins import GradeBookMixin
 from django.shortcuts import get_object_or_404, redirect
 from Academhub.models import GradebookStudents, Gradebook, CustomUser
+from django.shortcuts import get_object_or_404, redirect
+from Academhub.models import GradebookStudents, Gradebook
 from Academhub.base import BulkUpdateView, ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView
 
 #
@@ -40,7 +42,7 @@ class GradebookStudentBulkUpdateView(BulkUpdateView):
     def dispatch(self, request, *args, **kwargs):
         self.gradebook_pk = self.kwargs.get('pk', None)
         return super().dispatch(request, *args, **kwargs)
-
+    
     def get_queryset(self):
         return self.model.objects.filter(gradebook__pk = self.gradebook_pk)
 
@@ -49,22 +51,26 @@ class GradebookStudentBulkUpdateView(BulkUpdateView):
         self.gradebook = get_object_or_404(Gradebook, pk=self.gradebook_pk)
         context['gradebook'] = self.gradebook
         return context
-
+    
     def save_form(self, request):
         form = super().save_form(request)
 
         if form.is_valid():
             gradebook = get_object_or_404(
-                Gradebook,
+                Gradebook, 
                 pk=self.gradebook_pk
             )
             gradebook.status = Gradebook.STATUS_CHOICE[1][1]
             gradebook.save()
 
-        return redirect('GradebookTableView', pk=self.gradebook_pk)
+        return form
 
+    def post(self, request, *args, **kwargs):
+        formset = self.save_form(request)
 
-
+        if formset.is_valid():
+            return redirect('gradebook_detail', pk=self.gradebook_pk)
+        return super().post(request, *args, **kwargs)
 
 #
 ## Gradebook
@@ -100,8 +106,8 @@ class GradebookDetailView(ObjectDetailView):
     """
     Класс для отображения детальной информации об учебном журнале.
     """
-    model = Gradebook
-    paginate_by = 30
+    model= Gradebook
+    paginate_by   = 30
     template_name = 'Gradebook/detail/gradebook_student.html'
 
     fieldset = {
@@ -131,6 +137,7 @@ class GradebookDetailView(ObjectDetailView):
         table = GradebookStudentsTable(data=GradebookStudents.objects.filter(gradebook=self.object.pk))
 
         table2 = GradebookTeachersTable(data=self.object.teachers.all())
+
         
         return [table, table2]
 
