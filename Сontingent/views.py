@@ -2,8 +2,8 @@ import os
 from django.conf import settings
 from django.http import HttpResponse
 
-from Academhub.modules.documentGenPars import StatisticsTableGenerator, CourseDifferenceError, \
-    EducationBaseDifferenceError, CourseTableGenerator, GroupTableGenerator, VacationTableGenerator, \
+from Academhub.modules.documentGenPars import StatisticsTableGenerator, \
+    CourseTableGenerator, GroupTableGenerator, VacationTableGenerator, \
     MovementTableGenerator
 from .forms import *
 from .tables import *
@@ -886,7 +886,7 @@ def generate_course_table(request, course):
             response['Content-Disposition'] = f'attachment; filename="course_{course}_table.xlsx"'
         os.remove(file_path)
         return response
-    except (CourseDifferenceError, EducationBaseDifferenceError) as e:
+    except Exception as e:
         return HttpResponse(f"Ошибка: {e.message}", status=400)
 
 
