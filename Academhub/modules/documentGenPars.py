@@ -85,37 +85,33 @@ class GroupTableGenerator:
             
             workbook.save(path)
 
-class CourseDifferenceError(Exception):
-    def __init__(self, message="Для формирования таблицы, студенты должны быть с одного курса"):
-        self.message = message
-        super().__init__(self.message)
-
-class EducationBaseDifferenceError(Exception):
-    def __init__(self, message="Для формирования таблицы, студенты должны быть с одинаковой базой образования"):
-        self.message = message
-        super().__init__(self.message)
+# class CourseDiffereeError(Exception):
+#     def __init__(self, message="Для формирования таблицы, студенты должны быть с одного курса"):
+#         self.message = message
+#         super().__init__(self.message)
+#
+# class EducationBaseDifferenceError(Exception):
+#     def __init__(self, message="Для формирования таблицы, студенты должны быть с одинаковой базой образования"):
+#         self.message = message
+#         super().__init__(self.message)
 
 class CourseTableGenerator:
     """
     Класс для генерации таблицы курса
     """
-    def __init__(self, students) -> None:
+    def __init__(self, students, course="1", education_base="Основное общее") -> None:
         """
-        Принимает на вход список со студентами у которых
-        указан одинаковый курс
-
+        Принимает на вход список со студентами
         students: list[Student]
         """
-        if not all(student.group.current_course == students[0].group.current_course for student in students):
-            raise CourseDifferenceError
-        if not all(student.group.education_base == students[0].group.education_base for student in students):
-            raise EducationBaseDifferenceError
-        
-        self.students = students
-        self.course = students[0].group.current_course
-        if students[0].group.education_base == "Основное общее":
+
+
+        self.students = students.filter(group__current_course=course).filter(group__education_base=education_base)
+        self.course = course
+
+        if education_base == "Основное общее":
             self.education_base = "9 кл."
-        elif students[0].group.education_base == "Среднее общее":
+        elif education_base == "Среднее общее":
             self.education_base = "11 кл."
 
     def generate_document(self, path: str) -> None:
@@ -180,7 +176,6 @@ class CourseTableGenerator:
             workbook.save(path)
 
 class StatisticsTableGenerator:
-    # сломалось, надо починить
     def __init__(self, specialties, qualifications, students) -> None:
         self.specialties = specialties
         self.qualifications = qualifications
@@ -250,7 +245,6 @@ class StatisticsTableGenerator:
             
             entry_count = 1 # порядковый номер квалификации
             entry_index = 5 # индекс последней заполненной строки, вынесен отдельно,
-            # т.к. значение его увеличения изменчиво в зависимости от объединения строк
             isip_done = False
 
             # Проходимся по каждой специальности каждой квалификации
@@ -263,23 +257,23 @@ class StatisticsTableGenerator:
                         worksheet.merge_cells(f"G{entry_index}:G{entry_index+(len(qualifications_specialty)-2)}")
                         worksheet.cell(row=entry_index, column=7).fill = PatternFill("solid", fgColor=Color(indexed=3))
                         worksheet.cell(row=entry_index, column=7).value = len(self.students.filter(group__qualification__name="Информационные системы и программирование")
-                                                                              .filter(education_basis="Бюджет").filter(is_in_academ=False))
+                                                                              .filter(education_basis="Бюджет").filter(is_in_academ=False).filter(is_expelled=False))
 
-                        worksheet.merge_cells(f"G{entry_index+(len(qualifications_specialty) - 1)}:G{entry_index+(len(qualifications_specialty)*2 - 3)}")
+                        worksheet.merge_cells(f"G{entry_index+(len(qualifications_specialty))-1}:G{entry_index+(len(qualifications_specialty)*2) - 3}")
                         worksheet.cell(row=entry_index+len(qualifications_specialty)-1, column=7).fill = PatternFill("solid", fgColor=Color(indexed=7))
                         worksheet.cell(row=entry_index+len(qualifications_specialty)-1, column=7).value = len(self.students.filter(group__qualification__name="Информационные системы и программирование")
-                                                                                                              .filter(education_basis="Внебюджет").filter(is_in_academ=False))
-                        
+                                                                                                              .filter(education_basis="Внебюджет").filter(is_in_academ=False).filter(is_expelled=False))
+
                         # Академ отпуск
                         worksheet.merge_cells(f"N{entry_index}:N{entry_index+(len(qualifications_specialty)-2)}")
                         worksheet.cell(row=entry_index, column=14).fill = PatternFill("solid", fgColor=Color(indexed=3))
                         worksheet.cell(row=entry_index, column=14).value = len(self.students.filter(group__qualification__name="Информационные системы и программирование")
-                                                                               .filter(education_basis="Бюджет").filter(is_in_academ=True))
+                                                                               .filter(education_basis="Бюджет").filter(is_in_academ=True).filter(is_expelled=False))
 
                         worksheet.merge_cells(f"N{entry_index+len(qualifications_specialty) - 1}:N{entry_index+(len(qualifications_specialty)*2 - 3)}")
                         worksheet.cell(row=entry_index+len(qualifications_specialty)-1, column=14).fill = PatternFill("solid", fgColor=Color(indexed=7))
                         worksheet.cell(row=entry_index+len(qualifications_specialty)-1, column=14).value = len(self.students.filter(group__qualification__name="Информационные системы и программирование")
-                                                                                                               .filter(education_basis="Внебюджет").filter(is_in_academ=True))
+                                                                                                               .filter(education_basis="Внебюджет").filter(is_in_academ=True).filter(is_expelled=False))
 
                         worksheet.merge_cells(f"S{entry_index}:S{entry_index+(len(qualifications_specialty)*2 - 3)}")
                         worksheet.cell(row=entry_index, column=19).value = "Итог без учета 1-го курса специальности 09.02.07"
@@ -298,61 +292,42 @@ class StatisticsTableGenerator:
                     worksheet.cell(row=entry_index,column=5).value = "Очная"
 
                     students_qualification = self.students.filter(group__qualification__name=qualification.name)
-                    # Здесь у меня два варианта развитий в зависимости от того присутствуют ли на квалификации
-                    # бюджетники или нет. Это влияет на объединение строк и последующую логику их заполнения
-                    if len(students_qualification.filter(education_basis="Бюджет")) > 0:
-                        worksheet.merge_cells(f"A{entry_index}:A{entry_index+1}")
-                        worksheet.merge_cells(f"B{entry_index}:B{entry_index+1}")
-                        worksheet.merge_cells(f"C{entry_index}:C{entry_index+1}")
-                        worksheet.merge_cells(f"D{entry_index}:D{entry_index+1}")
-                        worksheet.merge_cells(f"E{entry_index}:E{entry_index+1}")
-                        
-                        worksheet.cell(row=entry_index, column=6).value = "Бюджет"
-                        worksheet.cell(row=entry_index+1, column=6).value = "Договор"
-
-                        # Суммарное количество всех студентов на квалификации (Бюджет и договор)
-                        worksheet.cell(row=entry_index, column=18).value = len(students_qualification.filter(education_basis="Бюджет"))
-                        worksheet.cell(row=entry_index+1, column=18).value = len(students_qualification.filter(education_basis="Внебюджет"))
-
-                        # 9 классники
-                        for course in range(1, 5):
-                            if not(course == 1 and specialty.name == "Информационные системы и программирование"): 
-                                worksheet.cell(row=entry_index, column=6+course).value = len(students_qualification.filter(group__current_course=course).filter(education_basis="Бюджет")
-                                                                                             .filter(education_base="Основное общее").filter(is_in_academ=False))
-                                worksheet.cell(row=entry_index+1, column=6+course).value = len(students_qualification.filter(group__current_course=course).filter(education_basis="Внебюджет")
-                                                                                               .filter(education_base="Основное общее").filter(is_in_academ=False))
-                                # Академ отпуска (и для 9 и для 11)
-                                worksheet.cell(row=entry_index, column=13+course).value = len(students_qualification.filter(group__current_course=course).filter(education_basis="Бюджет")
-                                                                                              .filter(is_in_academ=True))
-                                worksheet.cell(row=entry_index+1, column=13+course).value = len(students_qualification.filter(group__current_course=course).filter(education_basis="Внебюджет")
-                                                                                              .filter(is_in_academ=True))
-                        # 11 классники
-                        for course in range(1, 4):
-                             worksheet.cell(row=entry_index, column=10+course).value = len(students_qualification.filter(group__current_course=course).filter(education_basis="Бюджет")
-                                                                                             .filter(education_base="Среднее общее").filter(is_in_academ=False))
-                             worksheet.cell(row=entry_index+1, column=10+course).value = len(students_qualification.filter(group__current_course=course).filter(education_basis="Внебюджет")
-                                                                                             .filter(education_base="Среднее общее").filter(is_in_academ=False))
-                        entry_index += 2
-
-                    else:
-                        worksheet.cell(row=entry_index, column=6).value = "Договор"
-
-                        # Суммарное количество всех студентов на квалификации (Договор)
-                        worksheet.cell(row=entry_index, column=18).value = len(students_qualification.filter(education_basis="Внебюджет"))
-                        
-                        # 9 классники
-                        for course in range(1, 5):
-                            worksheet.cell(row=entry_index, column=6+course).value = len(students_qualification.filter(group__current_course=course).filter(education_base="Основное общее")
-                                                                                         .filter(is_in_academ=False))
-                            # Академ отпуска (для 9 и 11)
-                            worksheet.cell(row=entry_index, column=13+course).value = len(students_qualification.filter(group__current_course=course).filter(is_in_academ=True))
-                        # 11 классники
-                        for course in range(1, 4):
-                            worksheet.cell(row=entry_index, column=10+course).value = len(students_qualification.filter(group__current_course=course).filter(education_base="Среднее общее")
-                                                                                          .filter(is_in_academ=False))
-                        entry_index += 1
+                    worksheet.merge_cells(f"A{entry_index}:A{entry_index+1}")
+                    worksheet.merge_cells(f"B{entry_index}:B{entry_index+1}")
+                    worksheet.merge_cells(f"C{entry_index}:C{entry_index+1}")
+                    worksheet.merge_cells(f"D{entry_index}:D{entry_index+1}")
+                    worksheet.merge_cells(f"E{entry_index}:E{entry_index+1}")
                     
-                    
+                    worksheet.cell(row=entry_index, column=6).value = "Бюджет"
+                    worksheet.cell(row=entry_index+1, column=6).value = "Договор"
+
+                    # Суммарное количество всех студентов на квалификации (Бюджет и договор)
+                    worksheet.cell(row=entry_index, column=18).value = len(students_qualification.filter(education_basis="Бюджет"))
+                    worksheet.cell(row=entry_index+1, column=18).value = len(students_qualification.filter(education_basis="Внебюджет"))
+
+                    # 9 классники
+                    for course in range(1, 5):
+                        if not(course == 1 and specialty.name == "Информационные системы и программирование"): 
+                            worksheet.cell(row=entry_index, column=6+course).value = len(students_qualification.filter(group__current_course=course).filter(education_basis="Бюджет")
+                                                                                         .filter(education_base="Основное общее").filter(is_in_academ=False).filter(is_expelled=False))
+                            worksheet.cell(row=entry_index+1, column=6+course).value = len(students_qualification.filter(group__current_course=course).filter(education_basis="Внебюджет")
+                                                                                           .filter(education_base="Основное общее").filter(is_in_academ=False).filter(is_expelled=False))
+                            # Академ отпуска (и для 9 и для 11)
+                            worksheet.cell(row=entry_index, column=13+course).value = len(students_qualification.filter(group__current_course=course).filter(education_basis="Бюджет")
+                                                                                          .filter(is_in_academ=True).filter(is_expelled=False))
+                            worksheet.cell(row=entry_index+1, column=13+course).value = len(students_qualification.filter(group__current_course=course).filter(education_basis="Внебюджет")
+                                                                                          .filter(is_in_academ=True).filter(is_expelled=False))
+                    # 11 классники
+                    for course in range(1, 4):
+                         worksheet.cell(row=entry_index, column=10+course).value = len(students_qualification.filter(group__current_course=course).filter(education_basis="Бюджет")
+                                                                                         .filter(education_base="Среднее общее").filter(is_in_academ=False).filter(is_expelled=False))
+                         worksheet.cell(row=entry_index+1, column=10+course).value = len(students_qualification.filter(group__current_course=course).filter(education_basis="Внебюджет")
+                                                                                         .filter(education_base="Среднее общее").filter(is_in_academ=False).filter(is_expelled=False))
+                    entry_index += 2
+
+                    # elif len(students_qualification) == 0:
+                    #     continue
+
                     entry_count += 1
             
             # Итог под каждый курс
@@ -360,36 +335,36 @@ class StatisticsTableGenerator:
                 worksheet.cell(row=entry_index, column=column_num).fill = PatternFill("solid", fgColor=Color(indexed=5))
 
             worksheet.cell(row=entry_index, column=7).value = len(self.students.filter(education_base="Основное общее").filter(group__current_course=1)
-                                                                   .filter(is_in_academ=False))
+                                                                   .filter(is_in_academ=False).filter(is_expelled=False))
             worksheet.cell(row=entry_index, column=8).value = len(self.students.filter(education_base="Основное общее").filter(group__current_course=2)
-                                                                   .filter(is_in_academ=False))
+                                                                   .filter(is_in_academ=False).filter(is_expelled=False))
             worksheet.cell(row=entry_index, column=9).value = len(self.students.filter(education_base="Основное общее").filter(group__current_course=3)
-                                                                   .filter(is_in_academ=False))
+                                                                   .filter(is_in_academ=False).filter(is_expelled=False))
             worksheet.cell(row=entry_index, column=10).value = len(self.students.filter(education_base="Основное общее").filter(group__current_course=4)
-                                                                   .filter(is_in_academ=False))
+                                                                   .filter(is_in_academ=False).filter(is_expelled=False))
             worksheet.cell(row=entry_index, column=11).value = len(self.students.filter(education_base="Среднее общее").filter(group__current_course=1)
-                                                                   .filter(is_in_academ=False))
+                                                                   .filter(is_in_academ=False).filter(is_expelled=False))
             worksheet.cell(row=entry_index, column=12).value = len(self.students.filter(education_base="Среднее общее").filter(group__current_course=2)
-                                                                   .filter(is_in_academ=False))
+                                                                   .filter(is_in_academ=False).filter(is_expelled=False))
             worksheet.cell(row=entry_index, column=13).value = len(self.students.filter(education_base="Среднее общее").filter(group__current_course=3)
-                                                                   .filter(is_in_academ=False))
-            worksheet.cell(row=entry_index, column=14).value = len(self.students.filter(group__current_course=1).filter(is_in_academ=True))
-            worksheet.cell(row=entry_index, column=15).value = len(self.students.filter(group__current_course=2).filter(is_in_academ=True))
-            worksheet.cell(row=entry_index, column=16).value = len(self.students.filter(group__current_course=3).filter(is_in_academ=True))
-            worksheet.cell(row=entry_index, column=17).value = len(self.students.filter(group__current_course=4).filter(is_in_academ=True))
+                                                                   .filter(is_in_academ=False).filter(is_expelled=False))
+            worksheet.cell(row=entry_index, column=14).value = len(self.students.filter(group__current_course=1).filter(is_in_academ=True).filter(is_expelled=False))
+            worksheet.cell(row=entry_index, column=15).value = len(self.students.filter(group__current_course=2).filter(is_in_academ=True).filter(is_expelled=False))
+            worksheet.cell(row=entry_index, column=16).value = len(self.students.filter(group__current_course=3).filter(is_in_academ=True).filter(is_expelled=False))
+            worksheet.cell(row=entry_index, column=17).value = len(self.students.filter(group__current_course=4).filter(is_in_academ=True).filter(is_expelled=False))
 
             # Итог со всеми студентами
-            worksheet.cell(row=entry_index, column=18).value = len(self.students)
+            worksheet.cell(row=entry_index, column=18).value = len(self.students.filter(is_expelled=False))
             worksheet.cell(row=entry_index+2, column=17).value = "Итого:"
-            worksheet.cell(row=entry_index+2, column=18).value = len(self.students)
+            worksheet.cell(row=entry_index+2, column=18).value = len(self.students.filter(is_expelled=False))
             
             # Итог с ИСИП
             worksheet.cell(row=entry_index+5, column=2).fill = PatternFill("solid", fgColor=Color(indexed=3))
             worksheet.cell(row=entry_index+5, column=2).value = len(self.students.filter(group__qualification__name="Информационные системы и программирование")
-                                                                  .filter(education_basis="Бюджет").filter(is_in_academ=False))
+                                                                  .filter(education_basis="Бюджет").filter(is_in_academ=False).filter(is_expelled=False))
             worksheet.cell(row=entry_index+6, column=2).fill = PatternFill("solid", fgColor=Color(indexed=7))
             worksheet.cell(row=entry_index+6, column=2).value = len(self.students.filter(group__qualification__name="Информационные системы и программирование")
-                                                                  .filter(education_basis="Внебюджет").filter(is_in_academ=False))
+                                                                  .filter(education_basis="Внебюджет").filter(is_in_academ=False).filter(is_expelled=False))
             worksheet.cell(row=entry_index+5, column=3).value = "- бюджет"
             worksheet.cell(row=entry_index+6, column=3).value = "- договор"
         workbook.save(path)
@@ -401,7 +376,6 @@ class VacationTableGenerator:
     def generate_document(self, path):
         workbook = Workbook()
         worksheet = workbook.active
-
         if worksheet is not None:
             # Заголовок
             worksheet["A1"].value = "№"
@@ -421,25 +395,28 @@ class VacationTableGenerator:
             worksheet["O1"].value = "Переводной приказ на 4 курс"
             worksheet["P1"].value = "Телефон"
             worksheet["Q1"].value = "Примечание"
+            
+            entry_index = 2
+            for student in students:
+                if student.is_in_academ and not student.is_expelled:
+                    worksheet.cell(row=entry_index, column=1).value = entry_index - 1
+                    worksheet.cell(row=entry_index, column=2).value = student.full_name
+                    worksheet.cell(row=entry_index, column=3).value = student.birth_date
+                    worksheet.cell(row=entry_index, column=4).value = student.group.qualification.specialty.code
+                    worksheet.cell(row=entry_index, column=5).value = student.left_course
+                    worksheet.cell(row=entry_index, column=6).value = student.academ_return_date
+                    worksheet.cell(row=entry_index, column=7).value = f"{student.academ_leave_date} по {student.academ_return_date}"
+                    worksheet.cell(row=entry_index, column=8).value = student.reason_of_academ
+                    worksheet.cell(row=entry_index, column=9).value = student.group.full_name
+                    worksheet.cell(row=entry_index, column=10).value = student.education_base
+                    worksheet.cell(row=entry_index, column=11).value = student.education_basis
+                    worksheet.cell(row=entry_index, column=12).value = student.admission_order
+                    worksheet.cell(row=entry_index, column=13).value = student.transfer_to_2nd_year_order
+                    worksheet.cell(row=entry_index, column=14).value = student.transfer_to_3rd_year_order
+                    worksheet.cell(row=entry_index, column=15).value = student.transfer_to_4th_year_order
+                    worksheet.cell(row=entry_index, column=16).value = student.phone
 
-            for i in range(len(students)):
-                if students[i].is_in_academ and not students[i].is_expelled:
-                    worksheet.cell(row=i+2, column=1).value = i+1
-                    worksheet.cell(row=i+2, column=2).value = students[i].full_name
-                    worksheet.cell(row=i+2, column=3).value = students[i].birth_date
-                    worksheet.cell(row=i+2, column=4).value = students[i].group.qualification.specialty.code
-                    worksheet.cell(row=i+2, column=5).value = students[i].left_course
-                    worksheet.cell(row=i+2, column=6).value = students[i].academ_return_date
-                    worksheet.cell(row=i+2, column=7).value = f"{students[i].academ_leave_date} по {students[i].academ_return_date}"
-                    worksheet.cell(row=i+2, column=8).value = students[i].reason_of_academ
-                    worksheet.cell(row=i+2, column=9).value = students[i].group.full_name
-                    worksheet.cell(row=i+2, column=10).value = students[i].education_base
-                    worksheet.cell(row=i+2, column=11).value = students[i].education_basis
-                    worksheet.cell(row=i+2, column=12).value = students[i].admission_order
-                    worksheet.cell(row=i+2, column=13).value = students[i].transfer_to_2nd_year_order
-                    worksheet.cell(row=i+2, column=14).value = students[i].transfer_to_3rd_year_order
-                    worksheet.cell(row=i+2, column=15).value = students[i].transfer_to_4th_year_order
-                    worksheet.cell(row=i+2, column=16).value = students[i].phone
+                    entry_index += 1
         workbook.save(path)
 
 class MovementTableGenerator:
@@ -468,22 +445,24 @@ class MovementTableGenerator:
             worksheet["N1"] = "Телефон"
             worksheet["O1"] = "Примечание"
 
-            for i in range(len(students)):
-                if students[i].is_expelled and not students[i].expelled_due_to_graduation:
-                    worksheet.cell(row=i+2, column=1).value = students[i].expell_order
-                    worksheet.cell(row=i+2, column=2).value = students[i].date_of_expelling
-                    worksheet.cell(row=i+2, column=3).value = students[i].birth_date
-                    worksheet.cell(row=i+2, column=4).value = students[i].reason_of_expelling
-                    worksheet.cell(row=i+2, column=5).value = students[i].birth_date
-                    worksheet.cell(row=i+2, column=6).value = students[i].group.qualification.specialty.name
-                    worksheet.cell(row=i+2, column=7).value = students[i].group.full_name
-                    worksheet.cell(row=i+2, column=8).value = students[i].education_base
-                    worksheet.cell(row=i+2, column=9).value = students[i].education_basis
-                    worksheet.cell(row=i+2, column=10).value = students[i].admission_order
-                    worksheet.cell(row=i+2, column=11).value = students[i].transfer_to_2nd_year_order
-                    worksheet.cell(row=i+2, column=12).value = students[i].transfer_to_3rd_year_order
-                    worksheet.cell(row=i+2, column=13).value = students[i].transfer_to_4nd_year_order
-                    worksheet.cell(row=i+2, column=14).value = students[i].phone
+            entry_index = 2
+
+            for student in students:
+                if student.is_expelled and not student.expelled_due_to_graduation:
+                    worksheet.cell(row=entry_index, column=1).value = student.expell_order
+                    worksheet.cell(row=entry_index, column=2).value = student.date_of_expelling
+                    worksheet.cell(row=entry_index, column=3).value = student.birth_date
+                    worksheet.cell(row=entry_index, column=4).value = student.reason_of_expelling
+                    worksheet.cell(row=entry_index, column=5).value = student.birth_date
+                    worksheet.cell(row=entry_index, column=6).value = student.group.qualification.specialty.name
+                    worksheet.cell(row=entry_index, column=7).value = student.group.full_name
+                    worksheet.cell(row=entry_index, column=8).value = student.education_base
+                    worksheet.cell(row=entry_index, column=9).value = student.education_basis
+                    worksheet.cell(row=entry_index, column=10).value = student.admission_order
+                    worksheet.cell(row=entry_index, column=11).value = student.transfer_to_2nd_year_order
+                    worksheet.cell(row=entry_index, column=12).value = student.transfer_to_3rd_year_order
+                    worksheet.cell(row=entry_index, column=13).value = student.transfer_to_4th_year_order
+                    worksheet.cell(row=entry_index, column=14).value = student.phone
 
         workbook.save(path)
 
@@ -511,17 +490,19 @@ class MovementTableGenerator:
 
 if __name__ == "__main__":
     students = Student.objects.all()
-    students_course = Student.objects.filter(group__current_course="1")
     specialties = Specialty.objects.all()
     qualifications = Qualification.objects.all()
     groups = GroupStudents.objects.all()
 
     gtg = GroupTableGenerator(groups=groups)
-    # ctg = CourseTableGenerator(students=students_course)
-    # stg = StatisticsTableGenerator(specialties=specialties, qualifications=qualifications, students=students)
+    ctg = CourseTableGenerator(students=students, education_base="Основное общее", course="2")
+    stg = StatisticsTableGenerator(specialties=specialties, qualifications=qualifications, students=students)
     vtg = VacationTableGenerator(students=students)
+    mtg = MovementTableGenerator(students=students)
+
     gtg.generate_document("test_groups.xlsx")
-    # ctg.generate_document("test_course.xlsx")
-    # stg.generate_document("test_statistics.xlsx")
+    ctg.generate_document("test_course.xlsx")
+    stg.generate_document("test_statistics.xlsx")
     vtg.generate_document("test_vacation.xlsx")
+    mtg.generate_document("test_movement.xlsx")
     
