@@ -80,7 +80,9 @@ class CustomUserManager(BaseUserManager):
         
         email = self.normalize_email(email)
 
-        user = self.model(email=email, **extra_fields)
+        full_name = "Admin Admin Admin"
+
+        user = self.model(email=email, full_name=full_name, **extra_fields)
 
         user.set_password(password)
         user.save(using=self._db)
@@ -119,10 +121,6 @@ class CustomUser(AcademHubModel, AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
-
-    def has_perm(self, perm, obj = ...):
-        print(perm)
-        return super().has_perm(perm, obj)
 
     def __str__(self):
         return self.full_name

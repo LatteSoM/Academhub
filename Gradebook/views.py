@@ -2,7 +2,7 @@ from Gradebook.forms import *
 from Gradebook.tables import *
 from Gradebook.filters import *
 from Gradebook.mixins import GradeBookMixin
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from Academhub.models import GradebookStudents, Gradebook
 from Academhub.base import BulkUpdateView, ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView
 
@@ -19,7 +19,6 @@ __all__ = (
     'GradebookStudentBulkUpdateView',
 )
 
-from django.forms import modelformset_factory
 
 
 class GradebookStudentBulkUpdateView(BulkUpdateView):
@@ -34,21 +33,10 @@ class GradebookStudentBulkUpdateView(BulkUpdateView):
     def get_queryset(self):
         return self.model.objects.filter(gradebook__pk = self.gradebook_pk)
 
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     self.gradebook = get_object_or_404(Gradebook, pk=self.gradebook_pk)
-    #     context['gradebook'] = self.gradebook
-    #     return context
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         self.gradebook = get_object_or_404(Gradebook, pk=self.gradebook_pk)
         context['gradebook'] = self.gradebook
-
-        # Создаем формсет для редактирования нескольких записей
-        GradebookStudentFormSet = modelformset_factory(GradebookStudents, form=GradebookStudentsForm, extra=0)
-        context['formset'] = GradebookStudentFormSet(queryset=self.get_queryset())
-
         return context
     
     def save_form(self, request):
@@ -63,6 +51,13 @@ class GradebookStudentBulkUpdateView(BulkUpdateView):
             gradebook.save()
 
         return form
+
+    def post(self, request, *args, **kwargs):
+        formset = self.save_form(request)
+
+        if formset.is_valid():
+            return redirect('gradebook_detail', pk=self.gradebook_pk)
+        return super().post(request, *args, **kwargs)
 
 #
 ## Gradebook

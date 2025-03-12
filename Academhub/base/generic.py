@@ -1,8 +1,9 @@
-from django.http import JsonResponse, Http404
 from django_tables2 import RequestConfig
 from django_tables2 import SingleTableView
 from django_filters.views import FilterView
+from django.http import JsonResponse, Http404
 from Academhub.base.navigation import Navigation
+from django.utils.translation import gettext as _
 from django.views.generic.base import ContextMixin
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic import TemplateView, ListView, DetailView, UpdateView, CreateView, DeleteView, View
@@ -40,11 +41,10 @@ class BaseContextMixin(NavigationContextMixin):
       return context | self.get_model_urls()
 
   def get_model_name(self):
-      # model_class = self.queryset.model
-      # return model_class._meta.model_name
-      model_class = getattr(self, 'model', None) or (
-          self.queryset.model if hasattr(self, 'queryset') and self.queryset is not None else self.object._meta.model)
-      return model_class._meta.model_name
+        model_class = getattr(self, 'model', None) or (
+            getattr(self, 'queryset', None) and self.queryset.model
+        ) or self.object._meta.model
+        return model_class._meta.model_name
 
   def get_model_urls(self):
       if getattr(self, 'model'):
@@ -62,7 +62,6 @@ class ObjectTemplateView(NavigationContextMixin, TemplateView):
 
 
 
-from django.utils.translation import gettext as _
 
 class BaseObjectTableView(BaseContextMixin, SingleTableView):
     '''
@@ -80,22 +79,22 @@ class BaseObjectTableView(BaseContextMixin, SingleTableView):
         return self.get_table_class()._meta.model._meta.verbose_name_plural
 
 class ObjectTableView(FilterView, BaseObjectTableView):
-  '''
+    '''
       Базовый класс для представлений с таблицами.
       Наследуется от BaseContextMixin и SingleTableView (из django-tables2) и FilterView (из django-filter).
       Используется для отображения данных в виде таблиц с фильтрации и поддержкой навигации.
-  '''
-  template_name = 'base_view.html'
-  paginate_by = 10
+    '''
+    template_name = 'base_view.html'
+    paginate_by = 10
 
 
 class ObjectListView(BaseContextMixin, ListView):
-  '''
-  Базовый класс для представлений со списками объектов.
-  Наследуется от BaseContextMixin и ListView.
-  Используется для отображения списка объектов с поддержкой навигации.
-  '''
-  pass
+    '''
+    Базовый класс для представлений со списками объектов.
+    Наследуется от BaseContextMixin и ListView.
+    Используется для отображения списка объектов с поддержкой навигации.
+    '''
+    pass
 
 
 class ObjectDetailView(BaseContextMixin, DetailView):
@@ -156,18 +155,8 @@ class ObjectUpdateView(BaseContextMixin, UpdateView):
         return context
 
     def get_verbose_name(self):
-        # model_class = self.queryset.model
-        # return model_class._meta.verbose_name
-        model_class = getattr(self, 'model', None) or (
-            self.queryset.model if hasattr(self, 'queryset') and self.queryset is not None else self.object._meta.model)
+        model_class = self.queryset.model
         return model_class._meta.verbose_name
-
-    def get_model_urls(self):
-        model = getattr(self, 'model', None) or (
-            self.queryset.model if hasattr(self, 'queryset') and self.queryset is not None else self.object._meta.model)
-        print("Model:", model)
-        return getattr(model, 'get_urls', lambda: {})()
-
 
 class ObjectCreateView(BaseContextMixin, CreateView):
     '''

@@ -15,6 +15,11 @@ class UserTableView(ObjectTableView):
     filterset_class = UserFilter
     queryset = CustomUser.objects.all()
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        return context
+
 class UserDetailView(ObjectDetailView):
     model = CustomUser
 
