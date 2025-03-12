@@ -1,0 +1,24 @@
+{% extends 'base_view.html' %}
+
+{% load static %}
+
+{% block extra_js %}
+    {{ block.super }}
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const mobileParam = urlParams.get("mobile");
+    
+        if (window.innerWidth <= 768 && mobileParam !== "1") {
+            urlParams.set("mobile", "1");
+            window.location.search = urlParams.toString();
+        }
+        else if (window.innerWidth > 768 && mobileParam !== "2") {
+            urlParams.set("mobile", "2");
+            window.location.search = urlParams.toString();
+        }
+
+        window.location.reload();
+    </script>
+
+{% endblock %}

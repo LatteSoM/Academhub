@@ -93,7 +93,6 @@ class TeachersGradeBookTableView(ObjectTableView):
     table_class = TeacherGradeBookTable
     filterset_class = GradeBookTeachersFilter
     queryset = Gradebook.objects.filter(status=Gradebook.STATUS_CHOICE[1][1])
-    template_name = 'Gradebook/detail/grade_books.html'
 
     def get_table_class(self):
         if self.request.GET.get("mobile") == "1":
@@ -112,26 +111,44 @@ class GradebookDetailView(ObjectDetailView):
 
     fieldset = {
         'Основная информация': ['name', 'status'],
-        'is_admin': "false"  # Значение по умолчанию (строка)
     }
 
-    def get_context_data(self, **kwargs):
-        # Получаем контекст от родительского класса
-        context = super().get_context_data(**kwargs)
+    def get(self, request, *args, **kwargs):
+        gradebook = self.get_object()
 
-        # Получаем текущего пользователя
-        user = self.request.user
+        is_active = request.GET.get('is_active',None)
 
-        # Проверяем, является ли пользователь учителем
-        if user.is_authenticated and hasattr(user, 'is_teacher'):
-            # Если пользователь учитель, is_admin = "false"
-            # Иначе is_admin = "true"
-            self.fieldset['is_admin'] = str(not user.is_teacher).lower()
+        # Проверка основных полей
+        required_fields = [
+            gradebook.group_id,  # Проверка ForeignKey через id
+            gradebook.name,  # Проверка CharField
+            gradebook.discipline_id,  # Проверка ForeignKey дисциплины
+            gradebook.semester_number,  # Проверка IntegerField
+            gradebook.status,  # Проверка CharField статуса
+        ]
 
-        # Добавляем fieldset в контекст
-        context['fieldset'] = self.fieldset
+        # Проверка текстовых полей на непустые значения
+        text_fields_valid = all([
+            gradebook.name and gradebook.name.strip(),
+            gradebook.status and gradebook.status.strip(),
+        ])
 
-        return context
+        relations_valid = all([
+            gradebook.teachers.exists(),  # Проверка наличия преподавателей
+            gradebook.students.exists(),  # Проверка наличия студентов
+        ])
+
+        # Комплексная проверка всех условий
+        if not all(required_fields) or not text_fields_valid or not relations_valid:
+            messages.error(request,
+                        "Невозможно открыть ведомость! Заполните все обязательные поля: "
+                        "группа, дисциплина, название, статус, семестр, преподаватели и студенты."
+                        )
+        else:
+            if is_active:
+                messages.success(request, "Ведомость успешно открыта!")
+
+        return super().get(request, *args, **kwargs)
 
     def get_tables(self):
         table = GradebookStudentsTable(data=GradebookStudents.objects.filter(gradebook=self.object.pk))
@@ -208,10 +225,6 @@ def check_and_open_gradebook(request, pk):
 
     # Комплексная проверка всех условий
     if not all(required_fields) or not text_fields_valid or not relations_valid:
-        messages.error(request,
-                       "Невозможно открыть ведомость! Заполните все обязательные поля: "
-                       "группа, дисциплина, название, статус, семестр, преподаватели и студенты."
-                       )
         return redirect('gradebook_detail', pk=pk)
 
     # Обновление статуса и даты
@@ -219,6 +232,7 @@ def check_and_open_gradebook(request, pk):
     gradebook.date_of_opening = timezone.now().date()
     gradebook.save()
 
-    messages.success(request, "Ведомость успешно открыта!")
-    return redirect('gradebook_detail', pk=pk)
+    response = redirect('gradebook_detail', pk=pk)
+    response['Location'] += '?is_active=true'
+    return response
 

@@ -29,10 +29,13 @@ class UserForm(forms.ModelForm):
 
     groups = forms.ModelMultipleChoiceField(
         widget=forms.CheckboxSelectMultiple(),
-        queryset=GroupProxy.objects.all()
+        queryset=GroupProxy.objects.all(),
+        required=False
     )
 
-    user_permissions = PermissionSelectField()
+    user_permissions = PermissionSelectField(
+        required=False
+    )
 
     class Meta:
         model = CustomUser

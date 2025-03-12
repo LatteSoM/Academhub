@@ -41,9 +41,7 @@ class BaseContextMixin(NavigationContextMixin):
       return context | self.get_model_urls()
 
   def get_model_name(self):
-        model_class = getattr(self, 'model', None) or (
-            getattr(self, 'queryset', None) and self.queryset.model
-        ) or self.object._meta.model
+        model_class = self.queryset.model
         return model_class._meta.model_name
 
   def get_model_urls(self):
