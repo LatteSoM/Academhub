@@ -18,6 +18,7 @@ __all__ = [
     'Curriculum',
     'Practice',
     'ProfessionalModule',
+    'CalendarGraphicOfLearningProcess',
     'MiddleCertification',
     'StudentRecordBook',
     'RecordBookTemplate'
@@ -80,7 +81,9 @@ class CustomUserManager(BaseUserManager):
         
         email = self.normalize_email(email)
 
-        user = self.model(email=email, **extra_fields)
+        full_name = "Admin Admin Admin"
+
+        user = self.model(email=email, full_name=full_name, **extra_fields)
 
         user.set_password(password)
         user.save(using=self._db)
@@ -120,10 +123,6 @@ class CustomUser(AcademHubModel, AbstractBaseUser, PermissionsMixin):
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
 
-    def has_perm(self, perm, obj = ...):
-        print(perm)
-        return super().has_perm(perm, obj)
-
     def __str__(self):
         return self.full_name
 
@@ -157,7 +156,16 @@ class GroupProxy(Group, UrlGenerateMixin):
         verbose_name_plural = 'Группы прав'
 
 class Discipline(AcademHubModel):
-    code = models.CharField(max_length=50, unique=True, verbose_name="Код", blank=True ,null=True)
+
+    # TYPE_CHOICES = [
+    #     ("Профессиональный модуль", "Профессиональный модуль"),
+    #     ("Учебная практика", "Учебная практика"),
+    #     ("Производственная практика", "Производственная практика"),
+    #     ("Курсовая работа", "Курсовая работа")
+    # ]
+    #
+    # type = models.CharField(verbose_name="Тип дисциплины", max_length=255, choices=TYPE_CHOICES)
+    code = models.CharField(max_length=50, unique=False, verbose_name="Код", blank=True ,null=True)
     name = models.CharField(max_length=255, verbose_name="Наименование")
     specialty = models.ForeignKey(
         'Specialty', on_delete=models.CASCADE, related_name="disciplines", verbose_name="Специальность"
@@ -173,7 +181,7 @@ class Discipline(AcademHubModel):
 
 class MiddleCertification(AcademHubModel):
     # semester = models.PositiveSmallIntegerField(verbose_name='Семестр')
-    SEMESTER_CHOICES = [(i, str(i)) for i in range(1, 9)]
+    SEMESTER_CHOICES = [(i, str(i)) for i in range(1, 8)]
 
     semester = models.PositiveSmallIntegerField(
         choices=SEMESTER_CHOICES,
@@ -217,7 +225,14 @@ class MiddleCertification(AcademHubModel):
 #     )
 
 class ProfessionalModule(AcademHubModel):
+
     module_name = models.CharField(max_length=100, verbose_name="Наименование профессионального модуля")
+    discipline = models.OneToOneField(
+        'Discipline',
+        on_delete=models.CASCADE,
+        related_name='prof_modules',
+        verbose_name='Дисциплина'
+    )
 
     def __str__(self):
         return self.module_name
@@ -230,11 +245,21 @@ class Practice(AcademHubModel):
     practice_name = models.CharField(max_length=100, verbose_name='Наименование практики')
     practice_type = models.CharField(max_length=255, verbose_name="Тип практики", choices=PRACTICE_TYPES)
 
+    discipline = models.OneToOneField(
+        'Discipline',
+        on_delete=models.CASCADE,
+        related_name='practices',
+        verbose_name='Дисциплина'
+    )
+
     def __str__(self):
         return self.practice_name
 
 class TermPaper(AcademHubModel):
-    discipline = models.ForeignKey(
+
+    name = models.CharField(max_length=255, verbose_name="Название курсового проекта", default="Курсовой проект")
+
+    discipline = models.OneToOneField(
         'Discipline',
         on_delete=models.CASCADE,
         related_name='term_papers',
@@ -293,11 +318,14 @@ class CurriculumItem(models.Model):
         ('term_paper', 'Курсовая работа'),
     )
 
-    SEMESTER_CHOICES = [(i, str(i)) for i in range(1, 9)]
+    SEMESTER_CHOICES = [(i, str(i)) for i in range(1, 8)]
     ATTESTATION_CHOICES = (
         ('exam', 'Экзамен'),
         ('credit', 'Зачёт'),
         ('none', 'Без аттестации'),  # Для практик или модулей без формы аттестации
+        ('learning_practice', 'Учебная практика'),
+        ('profession_practice', 'Производственная практика'),
+        ('course_pr', 'Защита курсового проекта')
     )
 
     curriculum = models.ForeignKey(
@@ -351,7 +379,7 @@ class CurriculumItem(models.Model):
         blank=True  # Для курсовых часов может не быть
     )
     attestation_form = models.CharField(
-        max_length=10,
+        max_length=50,
         choices=ATTESTATION_CHOICES,
         verbose_name="Форма аттестации",
         default='none'
@@ -364,12 +392,12 @@ class CurriculumItem(models.Model):
     def __str__(self):
         if self.item_type == 'discipline' and self.discipline:
             return f"{self.discipline.name} ({self.get_attestation_form_display()})"
-        elif self.item_type == 'practice' and self.practice:
-            return f"{self.practice.practice_name}"
-        elif self.item_type == 'professional_module' and self.professional_module:
-            return f"{self.professional_module.module_name}"
-        elif self.item_type == 'term_paper' and self.term_paper:
-            return f"Курсовая по {self.term_paper.discipline.name}"
+        elif self.item_type == 'practice' and self.discipline:
+            return f"{self.discipline.name} ({self.get_attestation_form_display()})"
+        elif self.item_type == 'professional_module' and self.discipline:
+            return f"{self.discipline.name} ({self.get_attestation_form_display()})"
+        elif self.item_type == 'term_paper' and self.discipline:
+            return f"Курсовая по {self.discipline.name} ({self.get_attestation_form_display()})"
         return "Неопределённый элемент"
 
 class Curriculum(models.Model):
@@ -610,12 +638,90 @@ class Student(AcademHubModel):
         verbose_name = "Студент"
         verbose_name_plural = "Студенты"
 
+    def save(self, *args, **kwargs):
+        from django.utils import timezone  # Импортируем внутри метода, чтобы избежать проблем с импортом
+
+        # Сохраняем старые значения перед обновлением
+        if self.pk:  # Если это обновление существующего объекта
+            old_student = Student.objects.get(pk=self.pk)
+            old_group = old_student.group.full_name if old_student.group else None
+            old_is_in_academ = old_student.is_in_academ
+            old_is_expelled = old_student.is_expelled
+        else:
+            old_group = None
+            old_is_in_academ = False
+            old_is_expelled = False
+
+        # Сохраняем объект
+        super().save(*args, **kwargs)
+
+        # Проверяем изменения и создаём записи в ContingentMovement
+        current_group = self.group.full_name if self.group else None
+
+        # 1. Перевод в другую группу
+        if old_group and old_group != current_group:
+            ContingentMovement.objects.create(
+                order_number=self.reinstaitment_order if self.reinstaitment_order else f"TR-{self.pk}-{timezone.now().strftime('%Y%m%d')}",
+                action_type='transfer',
+                action_date=timezone.now().date(),
+                previous_group=old_group,
+                new_group=current_group,
+                student=self
+            )
+
+        # 2. Уход в академический отпуск
+        if not old_is_in_academ and self.is_in_academ:
+            ContingentMovement.objects.create(
+                order_number=self.academ_order if self.academ_order else f"AL-{self.pk}-{timezone.now().strftime('%Y%m%d')}",
+                action_type='academic_leave',
+                action_date=self.academ_leave_date or timezone.now().date(),
+                previous_group=current_group,
+                new_group=current_group,  # Сохраняем текущую группу как возможную для возвращения
+                student=self
+            )
+
+        # 3. Выход из академического отпуска
+        if old_is_in_academ and not self.is_in_academ and self.academ_return_date:
+            ContingentMovement.objects.create(
+                order_number=self.reinstaitment_order if self.reinstaitment_order else f"AR-{self.pk}-{timezone.now().strftime('%Y%m%d')}",
+                action_type='academic_return',
+                action_date=self.academ_return_date,
+                previous_group=old_group,
+                new_group=current_group,
+                student=self
+            )
+
+        # 4. Отчисление
+        if not old_is_expelled and self.is_expelled:
+            ContingentMovement.objects.create(
+                order_number=self.expell_order if self.expell_order else f"EX-{self.pk}-{timezone.now().strftime('%Y%m%d')}",
+                action_type='expulsion',
+                action_date=self.date_of_expelling or timezone.now().date(),
+                previous_group=current_group,
+                new_group=None,  # Новая группа не указывается при отчислении
+                student=self
+            )
+
+        # 5. Восстановление
+        if old_is_expelled and not self.is_expelled and self.reinstaitment_order:
+            ContingentMovement.objects.create(
+                order_number=self.reinstaitment_order,
+                action_type='reinstatement',
+                action_date=timezone.now().date(),
+                previous_group=None,  # Предыдущая группа не указывается при восстановлении
+                new_group=current_group,
+                student=self
+            )
+
+
     @property
     def course(self):
         return self.group.current_course
 
     def __str__(self):
         return self.full_name
+
+
 
 
 class StudentRecordBook(models.Model):
@@ -681,9 +787,11 @@ class GradebookStudents(AcademHubModel):
 
 class Gradebook(AcademHubModel):
     STATUS_CHOICE = (
-        ('Не заполнен', 'Не заполнен'),
-        ('Заполнен', 'Заполнен'),
+        ('Не заполнена', 'Не заполнена'),
+        ('Открыта', 'Открыта'),
+        ('Заполнена', "Заполнена"),
         ('Закрыта', 'Закрыта'),
+        ('Просрочена', "Просрочена")
     )
 
     SEMESTER_CHOICES = (
@@ -700,17 +808,28 @@ class Gradebook(AcademHubModel):
     NAME_CHOICES = (
         ("Экзаменационная ведомость", "Экзаменационная ведомость"),
         ("Ведомость защиты курсового проекта", "Ведомость защиты курсового проекта"),
-        ("Ведомость защиты курсовой работы", "Ведомость защиты курсовой работы"),
-        ("Зачетная ведомость", "Зачетная ведомость"),
-        ("Ведомость результатов демонстрационного экзамена", "Ведомость результатов демонстрационного экзамена"),
         ("Ведомость дифференцированного зачета", "Ведомость дифференцированного зачета"),
+        ("Ведомость результатов демонстрационного экзамена", "Ведомость результатов демонстрационного экзамена"),
         ("Ведомость успеваемости", "Ведомость успеваемости")
+    )
+
+    TYPE_CHOICES = (
+        ("Первичная сдача", "Первичная сдача"),
+        ("Пересдача", "Пересдача"),
+        ("Комиссия", "Комиссия")
     )
 
     number = models.CharField(
         max_length=255,
         verbose_name='Номер ведомости'
     )
+
+    date_of_opening = models.DateField(verbose_name="Дата открытия ведомости", blank=True, null=True)
+    date_of_filling = models.DateField(blank=True, null=True, verbose_name="Дата заполнения ведомости")
+    date_of_closing = models.DateField(blank=True, null=True, verbose_name="Дата закрытия ведомости")
+    amount_of_days_for_closing = models.PositiveIntegerField(verbose_name="Сколько дней дается на закрытие ведомости с момента открытия", blank=True, null=True)
+
+    type_of_grade_book = models.CharField(blank=True, null=True, verbose_name="Тип ведомости", choices=TYPE_CHOICES, max_length=255)
 
     teachers = models.ManyToManyField(
         'CustomUser', 
@@ -756,7 +875,9 @@ class CalendarGraphicOfLearningProcess(AcademHubModel):
     )
 
     start_exam_date_first_semester = models.DateField(null=False, blank=False, verbose_name="Дата начала сессии первого семестра")
+    date_of_pm_first_semester = models.DateField(null=True, blank=True, verbose_name="Дата экзамена по профессиональному модулю первого семестра")
     start_exam_date_second_semester = models.DateField(null=False, blank=False, verbose_name="Дата начала сессии второго семестра")
+    date_of_pm_second_semester = models.DateField(null=True, blank=True, verbose_name="Дата экзамена по профессиональному модулю второго семестра")
 
     class Meta:
         verbose_name = "Календарный график учебного процесса"
@@ -764,3 +885,56 @@ class CalendarGraphicOfLearningProcess(AcademHubModel):
 
     def __str__(self):
         return self.name
+
+
+class ContingentMovement(AcademHubModel):
+    """
+    Модель для отслеживания движения контингента: переводы, отчисления, академические отпуска.
+    """
+    ACTION_TYPES = (
+        ('transfer', 'Перевод'),
+        ('expulsion', 'Отчисление'),
+        ('academic_leave', 'Уход в академический отпуск'),
+        ('academic_return', 'Выход из академического отпуска'),
+        ('reinstatement', 'Восстановление'),
+    )
+
+    order_number = models.CharField(
+        max_length=50,
+        unique=True,
+        verbose_name="Номер приказа"
+    )
+    action_type = models.CharField(
+        max_length=20,
+        choices=ACTION_TYPES,
+        verbose_name="Тип действия"
+    )
+    action_date = models.DateField(
+        verbose_name="Дата действия"
+    )
+    previous_group = models.CharField(
+        max_length=1000,
+        blank=True,
+        null=True,
+        verbose_name="Предыдущая группа"
+    )
+    new_group = models.CharField(
+        max_length=1000,
+        blank=True,
+        null=True,
+        verbose_name="Новая группа"
+    )
+    student = models.ForeignKey(
+        'Student',
+        on_delete=models.CASCADE,
+        related_name="movements",
+        verbose_name="Студент"
+    )
+
+    class Meta:
+        verbose_name = "Движение контингента"
+        verbose_name_plural = "Движения контингента"
+        ordering = ['-action_date']  # Сортировка по убыванию даты действия
+
+    def __str__(self):
+        return f"{self.get_action_type_display()} - {self.student.full_name} ({self.action_date})"

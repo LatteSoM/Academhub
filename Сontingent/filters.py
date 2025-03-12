@@ -4,7 +4,7 @@ from django import forms
 from django.db.models import Q
 from django.db.models.fields import DateField
 
-from Academhub.models import Qualification, Specialty, GroupStudents, Student, Discipline
+from Academhub.models import Qualification, Specialty, GroupStudents, Student, Discipline, ContingentMovement
 from django_filters import FilterSet, CharFilter, ModelChoiceFilter, ModelMultipleChoiceFilter, ChoiceFilter, \
     MultipleChoiceFilter, DateFilter
 
@@ -201,4 +201,14 @@ class ExpulsionFilter(FilterSet):
 
     qualification = ModelChoiceFilter(queryset=Qualification.objects.all(), label='Квалификация')
     specialty = ModelChoiceFilter(queryset=Specialty.objects.all(), label='Специальность')
+
+
+class ContingentMovementFilter(FilterSet):
+    action_type = ChoiceFilter(choices=ContingentMovement.ACTION_TYPES, label="Тип действия")
+    # action_date = DateFromToRangeFilter(label="Диапазон дат")
+
+    class Meta:
+        model = ContingentMovement
+        fields = ['action_type']
+        # fields = ['action_type', 'action_date']
 

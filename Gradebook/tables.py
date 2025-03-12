@@ -1,6 +1,6 @@
 import django_tables2 as table
 from django_tables2 import tables
-from Academhub.base import BaseTable
+from Academhub.base import BaseTable, BaseTable2
 from Academhub.models import Gradebook, GradebookStudents, CustomUser
 
 __all__ = (
@@ -29,6 +29,22 @@ class GradebookTable(BaseTable):
         model = Gradebook
         paginate_by=30
         fields = ('name', 'teachers', 'group', 'discipline', 'status')
+
+
+
+class TeacherGradeBookTable(BaseTable2):
+    group = tables.Column(
+        verbose_name='Группа'
+    )
+
+    discipline = tables.Column(
+        verbose_name='Дисциплина'
+    )
+    class Meta:
+        model = Gradebook
+        fields = ('name', 'group', 'discipline')
+
+
 
 class GradebookTable2(BaseTable):
     teachers = table.ManyToManyColumn(

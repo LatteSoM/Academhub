@@ -34,7 +34,7 @@ class GradebookForm(forms.ModelForm):
         Метакласс для настройки формы.
         """
         model = Gradebook
-        fields = ["number", 'name', 'semester_number', 'teachers', 'group', 'discipline', 'students']
+        fields = ['name', 'semester_number', 'type_of_grade_book', 'amount_of_days_for_closing', 'teachers', 'group', 'discipline', 'students']
 
     def __init__(self, *args, **kwargs):
         """
@@ -90,10 +90,10 @@ class GradebookStudentsForm(forms.ModelForm):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
-        self.fields['student'].widget.attrs['disabled'] = True 
-        self.fields['student'].widget.attrs['handshakable'] = 'un'
+        if self.instance and self.instance.pk:
+            self.fields['student'].initial = self.instance.student
+            self.fields['ticket_number'].initial = self.instance.ticket_number
+            self.fields['grade'].initial = self.instance.grade
 
-        if 'instance' in kwargs:
-            self.fields['student'].initial = kwargs['instance'].student
+
             

@@ -1,3 +1,10 @@
+import os
+from django.conf import settings
+from django.http import HttpResponse
+
+from Academhub.modules.documentGenPars import StatisticsTableGenerator, CourseDifferenceError, \
+    EducationBaseDifferenceError, CourseTableGenerator, GroupTableGenerator, VacationTableGenerator, \
+    MovementTableGenerator
 from .forms import *
 from .tables import *
 from .filters import *
@@ -5,8 +12,8 @@ from datetime import datetime
 from contextlib import nullcontext
 from collections import defaultdict
 from django.urls import reverse_lazy
-from .filters import AcademFilter, ExpulsionFilter
-from .forms import AcademLeaveForm, AcademReturnForm, ExpellStudentForm, RecoverStudentForm
+from .filters import AcademFilter, ExpulsionFilter, ContingentMovementFilter
+from .forms import AcademLeaveForm, AcademReturnForm, ExpellStudentForm, RecoverStudentForm, StudentImportForm
 from Academhub.models import (
     Student,
     Practice,
@@ -20,7 +27,7 @@ from Academhub.models import (
     StudentRecordBook,
     RecordBookTemplate,
     ProfessionalModule,
-    MiddleCertification,
+    MiddleCertification, ContingentMovement,
 )
 import random
 import string
@@ -65,7 +72,7 @@ __all__ = (
     'QualificationUpdateView'
 )
 
-from .tables import AcademTable, ExpulsionTable
+from .tables import AcademTable, ExpulsionTable, ContingentMovementTable
 
 
 #
@@ -362,11 +369,20 @@ class StatisticksView(ObjectTemplateView):
             base = student["base"]  # Основное общее или Среднее общее
             budget = student["budget"]  # Бюджет или Внебюджет
             academic = student["academic_leave"]  # True - в академе, False - нет
+            expelled = student["is_expelled"]
+
+            if expelled:
+                continue
 
             if base == "Основное общее":
                 base = 9
             else:
                 base = 11
+
+            if budget == "Бюджет":
+                budget = True
+            else:
+                budget = False
 
             if academic:
                 key = f"students_academic_{course}_{'budget' if budget else 'paid'}"
@@ -450,26 +466,26 @@ class StatisticksView(ObjectTemplateView):
                     total_academ_1,
                     total_academ_2, total_academ_3, total_academ_4, total_contingent]
 
-        total_09_02_07_budget = sum(
+        total_1_09_02_07_budget = sum(
             counts.get(key, 0)
             for (code, _, _), counts in specialty_data.items()
             if code == "09.02.07"
             for key in counts
-            if "budget" in key and not key.startswith("students_9_1")
+            if "budget" in key and key.startswith("students_9_1")
         )
 
-        total_09_02_07_paid = sum(
+        total_1_09_02_07_paid = sum(
             counts.get(key, 0)
             for (code, _, _), counts in specialty_data.items()
             if code == "09.02.07"
             for key in counts
-            if "paid" in key and not key.startswith("students_9_1")
+            if "paid" in key and key.startswith("students_9_1")
         )
 
         context = super().get_context_data(**kwargs)
         context = context|{'table_data': table_data, 'last_row': last_row,
-                   'total_09_02_07_budget': total_09_02_07_budget,
-                   'total_09_02_07_paid': total_09_02_07_paid}
+                   'total_09_02_07_budget': total_1_09_02_07_budget,
+                   'total_09_02_07_paid': total_1_09_02_07_paid}
 
         return context
 
@@ -483,140 +499,13 @@ def student_format_to_list():
         student_education_base = student.education_base
         student_education_basis = student.education_basis
         student_is_in_academ = student.is_in_academ
+        student_is_expelled = student.is_expelled
 
         students.append({"specialty_code": student_specialty.code, "specialty_name": student_specialty.name,
                          "qualification": student_qualification,
                          "course": student_current_course, "base": student_education_base, "budget": student_education_basis,
-                         "academic_leave": student_is_in_academ})
+                         "academic_leave": student_is_in_academ, "is_expelled": student_is_expelled})
     return students
-def statisticks_view(request):
-    student_list = student_format_to_list()
-    specialty_data = defaultdict(lambda: defaultdict(int))
-    all_specialties = list(Specialty.objects.all().values_list())
-    print(all_specialties)
-
-    # Инициализируем все направления заранее
-    for qualification in Qualification.objects.all():
-        specialty_data[(qualification.specialty.code, qualification.specialty.name, qualification.name)]  # Создаем пустые записи
-        all_specialties = [spec for spec in all_specialties if spec[0] != qualification.specialty.id]
-
-    for specialty in all_specialties:
-        specialty_data[(specialty[1], specialty[2], "")]
-
-
-    for student in student_list:
-        spec_code = student["specialty_code"]
-        spec_name = student["specialty_name"]
-        qualification = student["qualification"]
-        course = student["course"]
-        base = student["base"]  # Основное общее или Среднее общее
-        budget = student["budget"]  # Бюджет или Внебюджет
-        academic = student["academic_leave"]  # True - в академе, False - нет
-
-        if base == "Основное общее":
-            base = 9
-        else:
-            base = 11
-
-        if academic:
-            key = f"students_academic_{course}_{'budget' if budget else 'paid'}"
-        else:
-            key = f"students_{base}_{course}_{'budget' if budget else 'paid'}"
-
-        specialty_data[(spec_code, spec_name, qualification)][key] += 1
-
-    number = 1
-    table_data = []
-    total_9_1_ = 0
-    total_9_2_ = 0
-    total_9_3_ = 0
-    total_9_4_ = 0
-
-    total_11_1_ = 0
-    total_11_2_ = 0
-    total_11_3_ = 0
-
-    total_academ_1 = 0
-    total_academ_2 = 0
-    total_academ_3 = 0
-    total_academ_4 = 0
-
-    total_contingent = 0
-
-    for (code, name, qualification), counts in specialty_data.items():
-        total_budget = sum(counts.get(key, 0) for key in counts if "budget" in key)
-        total_paid = sum(counts.get(key, 0) for key in counts if "paid" in key)
-
-        total_9_1_ += sum(counts.get(key, 0) for key in counts if "9_1" in key)
-        total_9_2_ += sum(counts.get(key, 0) for key in counts if "9_2" in key)
-        total_9_3_ += sum(counts.get(key, 0) for key in counts if "9_3" in key)
-        total_9_4_ += sum(counts.get(key, 0) for key in counts if "9_4" in key)
-
-        total_11_1_ += sum(counts.get(key, 0) for key in counts if "11_1" in key)
-        total_11_2_ += sum(counts.get(key, 0) for key in counts if "11_2" in key)
-        total_11_3_ += sum(counts.get(key, 0) for key in counts if "11_3" in key)
-
-        total_academ_1 += sum(counts.get(key, 0) for key in counts if "academic_1" in key)
-        total_academ_2 += sum(counts.get(key, 0) for key in counts if "academic_2" in key)
-        total_academ_3 += sum(counts.get(key, 0) for key in counts if "academic_3" in key)
-        total_academ_4 += sum(counts.get(key, 0) for key in counts if "academic_4" in key)
-
-        total_contingent += total_budget + total_paid
-
-        row = [
-            number,
-            code,  # Код специальности
-            name,  # Название специальности
-            qualification,  # Квалификация
-            counts.get("students_9_1_budget", 0),
-            counts.get("students_9_1_paid", 0),
-            counts.get("students_9_2_budget", 0),
-            counts.get("students_9_2_paid", 0),
-            counts.get("students_9_3_budget", 0),
-            counts.get("students_9_3_paid", 0),
-            counts.get("students_9_4_budget", 0),
-            counts.get("students_9_4_paid", 0),
-            counts.get("students_11_1_budget", 0),
-            counts.get("students_11_1_paid", 0),
-            counts.get("students_11_2_budget", 0),
-            counts.get("students_11_2_paid", 0),
-            counts.get("students_11_3_budget", 0),
-            counts.get("students_11_3_paid", 0),
-            counts.get("students_academic_1_budget", 0),
-            counts.get("students_academic_1_paid", 0),
-            counts.get("students_academic_2_budget", 0),
-            counts.get("students_academic_2_paid", 0),
-            counts.get("students_academic_3_budget", 0),
-            counts.get("students_academic_3_paid", 0),
-            counts.get("students_academic_4_budget", 0),
-            counts.get("students_academic_4_paid", 0),
-            total_budget,  # Итого бюджет
-            total_paid,  # Итого внебюджет
-        ]
-        table_data.append(row)
-        number += 1
-
-    last_row = [total_9_1_, total_9_2_, total_9_3_, total_9_4_, total_11_1_, total_11_2_, total_11_3_, total_academ_1,
-                total_academ_2, total_academ_3, total_academ_4, total_contingent]
-
-    total_09_02_07_budget = sum(
-        counts.get(key, 0)
-        for (code, _, _), counts in specialty_data.items()
-        if code == "09.02.07"
-        for key in counts
-        if "budget" in key and not key.startswith("students_9_1")
-    )
-
-    total_09_02_07_paid = sum(
-        counts.get(key, 0)
-        for (code, _, _), counts in specialty_data.items()
-        if code == "09.02.07"
-        for key in counts
-        if "paid" in key and not key.startswith("students_9_1")
-    )
-
-    return render(request, 'Contingent/statisticks.html', context={'table_data': table_data, 'last_row': last_row, 'total_09_02_07_budget': total_09_02_07_budget,
-                                                                   'total_09_02_07_paid': total_09_02_07_paid})
 
 
 def qualification_detail(request, qualification_id):
@@ -940,3 +829,195 @@ def generate_unique_record_book_number(admission_year):
 
 
 
+class ContingentMovementTableView(ObjectTableView):
+    """
+    Класс для отображения таблицы движений контингента.
+    """
+    table_class = ContingentMovementTable
+    filterset_class = ContingentMovementFilter
+    queryset = ContingentMovement.objects.all()
+    # template_name = 'base_view.html'
+    template_name = 'Contingent/contingent_movement_list.html'
+    paginate_by = 10
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['table_name'] = "Движения контингента"
+        return context
+
+
+#########
+#######Обработка генерации доков
+###########
+
+
+def generate_group_table(request):
+    groups = GroupStudents.objects.all()
+    generator = GroupTableGenerator(groups)
+    file_path = os.path.join(settings.MEDIA_ROOT, 'group_table.xlsx')
+
+    # Создаём директорию, если она не существует
+    os.makedirs(settings.MEDIA_ROOT, exist_ok=True)
+
+    generator.generate_document(file_path)
+
+    with open(file_path, 'rb') as f:
+        response = HttpResponse(f.read(),
+                                content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename="group_table.xlsx"'
+
+    os.remove(file_path)  # Удаляем временный файл после отправки
+    return response
+
+
+def generate_course_table(request, course):
+    students = Student.objects.filter(group__current_course=course)
+    try:
+        generator = CourseTableGenerator(students)
+        file_path = os.path.join(settings.MEDIA_ROOT, f'course_{course}_table.xlsx')
+
+        os.makedirs(settings.MEDIA_ROOT, exist_ok=True)
+
+        generator.generate_document(file_path)
+
+        with open(file_path, 'rb') as f:
+            response = HttpResponse(f.read(),
+                                    content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            response['Content-Disposition'] = f'attachment; filename="course_{course}_table.xlsx"'
+        os.remove(file_path)
+        return response
+    except (CourseDifferenceError, EducationBaseDifferenceError) as e:
+        return HttpResponse(f"Ошибка: {e.message}", status=400)
+
+
+def generate_statistics_table(request):
+    specialties = Specialty.objects.all()
+    qualifications = Qualification.objects.all()
+    students = Student.objects.all()
+    generator = StatisticsTableGenerator(specialties, qualifications, students)
+    file_path = os.path.join(settings.MEDIA_ROOT, 'statistics_table.xlsx')
+
+    os.makedirs(settings.MEDIA_ROOT, exist_ok=True)
+
+    generator.generate_document(file_path)
+
+    with open(file_path, 'rb') as f:
+        response = HttpResponse(f.read(),
+                                content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename="statistics_table.xlsx"'
+    os.remove(file_path)
+    return response
+
+
+def generate_vacation_table(request):
+    students = Student.objects.filter(is_in_academ=True)
+    generator = VacationTableGenerator(students)
+    file_path = os.path.join(settings.MEDIA_ROOT, 'vacation_table.xlsx')
+
+    os.makedirs(settings.MEDIA_ROOT, exist_ok=True)
+
+    generator.generate_document(file_path)
+
+    with open(file_path, 'rb') as f:
+        response = HttpResponse(f.read(),
+                                content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename="vacation_table.xlsx"'
+    os.remove(file_path)
+    return response
+
+
+def generate_movement_table(request):
+    movements = ContingentMovement.objects.all()  # Получаем все записи о движениях
+    generator = MovementTableGenerator(movements)
+    file_path = os.path.join(settings.MEDIA_ROOT, 'movement_table.xlsx')
+
+    os.makedirs(settings.MEDIA_ROOT, exist_ok=True)
+
+    generator.generate_document(file_path)
+
+    with open(file_path, 'rb') as f:
+        response = HttpResponse(f.read(),
+                                content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename="movement_table.xlsx"'
+    os.remove(file_path)
+    return response
+
+
+import os
+from django.shortcuts import render
+from django.http import HttpResponse
+from openpyxl import load_workbook
+from Academhub.models import Student, GroupStudents
+from django.utils.dateparse import parse_date
+
+
+def import_students(request):
+    if request.method == 'POST':
+        form = StudentImportForm(request.POST, request.FILES)
+        if form.is_valid():
+            excel_file = request.FILES['excel_file']
+            wb = load_workbook(excel_file)
+            ws = wb.active
+
+            # Сопоставление заголовков с индексами столбцов
+            headers = {cell.value: idx for idx, cell in enumerate(ws[1]) if cell.value}
+
+            # Пропускаем строку заголовков и начинаем с данных
+            for row in ws.iter_rows(min_row=2, values_only=True):
+                try:
+                    # Извлекаем данные из строки
+                    last_name = row[headers.get("Фамилия")]
+                    first_name = row[headers.get("Имя")]
+                    middle_name = row[headers.get("Отчество")]
+                    full_name = f"{last_name} {first_name} {middle_name}".strip() if last_name and first_name else None
+
+                    group_number = row[headers.get("Академическая группа")]
+                    course_str = row[headers.get("Курс")]
+                    course = int(course_str[0]) if course_str and course_str[0].isdigit() else None
+                    # course = int(row[headers.get("Курс")]) if row[headers.get("Курс")] else None
+                    education_basis = row[headers.get("Основы обучения")]
+                    # birth_date = parse_date(str(row[headers.get("Дата рождения")])) if row[
+                    #     headers.get("Дата рождения")] else None
+                    birth_date = (
+                        row[headers.get("Дата рождения")].date() if isinstance(row[headers.get("Дата рождения")],datetime)
+                        else datetime.strptime(row[headers.get("Дата рождения")], "%d.%m.%Y").date()) if row[
+                        headers.get("Дата рождения")] else None
+
+                    phone = row[headers.get("Телефон мобильный")]
+                    admission_order = row[headers.get("Приказ о зачислении")]
+                    expell_order = row[headers.get("Приказ об отчислении")]
+                    date_of_expelling = parse_date(str(row[headers.get("Дата отчисления")])) if row[
+                        headers.get("Дата отчисления")] else None
+                    academ_leave_date = parse_date(str(row[headers.get("Дата начала последнего академ отпуска")])) if \
+                    row[headers.get("Дата начала последнего академ отпуска")] else None
+                    academ_return_date = parse_date(
+                        str(row[headers.get("Дата окончания последнего академ отпуска")])) if row[
+                        headers.get("Дата окончания последнего академ отпуска")] else None
+
+                    # Проверяем и создаём группу, если её нет
+                    group = GroupStudents.objects.get(full_name=group_number)
+
+                    # Создаём или обновляем студента
+                    student, created = Student.objects.update_or_create(
+                        full_name=full_name,
+                        defaults={
+                            'birth_date': birth_date,
+                            'group': group,
+                            'education_basis': education_basis,
+                            'phone': phone,
+                            'admission_order': admission_order,
+                            'expell_order': expell_order,
+                            'date_of_expelling': date_of_expelling,
+                            'is_in_academ': bool(academ_leave_date and not academ_return_date),
+                            'academ_leave_date': academ_leave_date,
+                            'academ_return_date': academ_return_date,
+                        }
+                    )
+                except Exception as e:
+                    return HttpResponse(f"Ошибка при импорте строки: {str(e)}", status=400)
+
+            return HttpResponse("Импорт студентов успешно завершён!")
+    else:
+        form = StudentImportForm()
+
+    return render(request, 'Contingent/import_students.html', {'form': form})

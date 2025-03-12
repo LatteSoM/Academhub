@@ -5,6 +5,7 @@ navigation = Navigation(
         'Ведомости',
         sub_links=[
             ChildLink('Все ведомости', 'gradebook_list'),
+            ChildLink('Ваши ведомости', "gradebookteacher_list")
         ]
     )
 )

@@ -2,7 +2,10 @@ from .views import *
 from django.urls import path
 
 from .views import AcademListView, AcademUpdateView, AcademReturn, ExpulsionListView, ExpelStudent, RecoverStudent, \
-    statisticks_view, StatisticksView, generate_student_record_book, create_auto_record_book_template
+    StatisticksView, generate_student_record_book, create_auto_record_book_template, \
+    ContingentMovementTableView, generate_group_table, generate_course_table, generate_statistics_table, \
+    generate_vacation_table, generate_movement_table, import_students,\
+    generate_student_record_book, create_auto_record_book_template
 
 urlpatterns = [
 
@@ -73,6 +76,7 @@ urlpatterns = [
     path('academ_return/<int:pk>/', AcademReturn.as_view(), name='academ_return'),
 
     # Страница движений
+    path('contingent-movements/', ContingentMovementTableView.as_view(), name='contingent_movement_list'),
     path('expelled_students/', ExpulsionListView.as_view(), name='expelled_students'),
     path('student/<int:pk>/expell', ExpelStudent.as_view(), name='expel_student'),
 
@@ -86,4 +90,17 @@ urlpatterns = [
          name='view_record_book_template'),
     path('qualification/<int:qualification_id>/<int:admission_year>/<int:student_id>/record-book-student/view/', ViewRecordBookView.as_view(),
          name='view_record_book'),
+
+    ##
+    #Маршруты для генерации
+    ##
+
+    # path('contingent-movements/', ContingentMovementTableView.as_view(), name='contingent_movement_list'),
+    path('generate/group-table/', generate_group_table, name='generate_group_table'),
+    path('generate/course-table/<int:course>/', generate_course_table, name='generate_course_table'),
+    path('generate/statistics-table/', generate_statistics_table, name='generate_statistics_table'),
+    path('generate/vacation-table/', generate_vacation_table, name='generate_vacation_table'),
+    path('generate/movement-table/', generate_movement_table, name='generate_movement_table'),
+
+    path('import-students/', import_students, name='import_students'),
 ]

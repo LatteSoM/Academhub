@@ -1,8 +1,8 @@
 import django_tables2 as table
 from django_tables2 import tables
 from Academhub.base import BaseTable
-from Academhub.models import Qualification, Specialty, GroupStudents, Student, Discipline, MiddleCertification, ProfessionalModule, Practice, TermPaper
-
+from Academhub.models import Qualification, Specialty, GroupStudents, Student, Discipline, MiddleCertification, \
+    ProfessionalModule, Practice, TermPaper, ContingentMovement
 
 __all__ = (
     'GroupTable',
@@ -173,4 +173,13 @@ class TermPaperTable(BaseTable):
     def before_render(self, request):
         for index, row in enumerate(self.rows):
             row["index"] = index + 1
+
+
+
+class ContingentMovementTable(tables.Table):
+    class Meta:
+        model = ContingentMovement
+        template_name = "django_tables2/bootstrap4.html"
+        fields = ("order_number", "action_type", "action_date", "previous_group", "new_group", "student")
+        attrs = {"class": "table table-striped"}
 

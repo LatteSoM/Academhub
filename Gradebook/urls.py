@@ -1,6 +1,8 @@
 from .views import *
 from django.urls import path
 
+from .views import TeachersGradeBookTableView, download_report, check_and_open_gradebook
+
 urlpatterns = [
     #
     ## Gradebook
@@ -16,5 +18,9 @@ urlpatterns = [
     ## GradebookStudents
     #
 
-    path('gradebook/update/<int:pk>/students/', GradebookStudentBulkUpdateView.as_view(), name='gradebookstudents_bulk_create')
+    path('gradebook/update/<int:pk>/students/', GradebookStudentBulkUpdateView.as_view(), name='gradebookstudents_bulk_create'),
+
+    path('gradebook/teacher/list', TeachersGradeBookTableView.as_view(), name='gradebookteacher_list'),
+    path("download_report/<int:pk>/", download_report, name="download_report"),
+    path('gradebook/<int:pk>/check_open/', check_and_open_gradebook, name='check_open_gradebook'),
 ]
