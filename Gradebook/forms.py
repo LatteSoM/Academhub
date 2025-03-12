@@ -29,12 +29,14 @@ class GradebookForm(forms.ModelForm):
         widget=forms.CheckboxSelectMultiple
     )
 
+
+
     class Meta:
         """
         Метакласс для настройки формы.
         """
         model = Gradebook
-        fields = ["number", 'name', 'semester_number', 'teachers', 'group', 'discipline', 'students']
+        fields = ['name', 'semester_number', 'type_of_grade_book', 'amount_of_days_for_closing', 'teachers', 'group', 'discipline', 'students']
 
     def __init__(self, *args, **kwargs):
         """
@@ -96,4 +98,5 @@ class GradebookStudentsForm(forms.ModelForm):
 
         if 'instance' in kwargs:
             self.fields['student'].initial = kwargs['instance'].student
+
             

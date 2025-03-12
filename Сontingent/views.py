@@ -362,11 +362,20 @@ class StatisticksView(ObjectTemplateView):
             base = student["base"]  # Основное общее или Среднее общее
             budget = student["budget"]  # Бюджет или Внебюджет
             academic = student["academic_leave"]  # True - в академе, False - нет
+            expelled = student["is_expelled"]
+
+            if expelled:
+                continue
 
             if base == "Основное общее":
                 base = 9
             else:
                 base = 11
+
+            if budget == "Бюджет":
+                budget = True
+            else:
+                budget = False
 
             if academic:
                 key = f"students_academic_{course}_{'budget' if budget else 'paid'}"
@@ -450,26 +459,26 @@ class StatisticksView(ObjectTemplateView):
                     total_academ_1,
                     total_academ_2, total_academ_3, total_academ_4, total_contingent]
 
-        total_09_02_07_budget = sum(
+        total_1_09_02_07_budget = sum(
             counts.get(key, 0)
             for (code, _, _), counts in specialty_data.items()
             if code == "09.02.07"
             for key in counts
-            if "budget" in key and not key.startswith("students_9_1")
+            if "budget" in key and key.startswith("students_9_1")
         )
 
-        total_09_02_07_paid = sum(
+        total_1_09_02_07_paid = sum(
             counts.get(key, 0)
             for (code, _, _), counts in specialty_data.items()
             if code == "09.02.07"
             for key in counts
-            if "paid" in key and not key.startswith("students_9_1")
+            if "paid" in key and key.startswith("students_9_1")
         )
 
         context = super().get_context_data(**kwargs)
         context = context|{'table_data': table_data, 'last_row': last_row,
-                   'total_09_02_07_budget': total_09_02_07_budget,
-                   'total_09_02_07_paid': total_09_02_07_paid}
+                   'total_09_02_07_budget': total_1_09_02_07_budget,
+                   'total_09_02_07_paid': total_1_09_02_07_paid}
 
         return context
 
@@ -483,140 +492,13 @@ def student_format_to_list():
         student_education_base = student.education_base
         student_education_basis = student.education_basis
         student_is_in_academ = student.is_in_academ
+        student_is_expelled = student.is_expelled
 
         students.append({"specialty_code": student_specialty.code, "specialty_name": student_specialty.name,
                          "qualification": student_qualification,
                          "course": student_current_course, "base": student_education_base, "budget": student_education_basis,
-                         "academic_leave": student_is_in_academ})
+                         "academic_leave": student_is_in_academ, "is_expelled": student_is_expelled})
     return students
-def statisticks_view(request):
-    student_list = student_format_to_list()
-    specialty_data = defaultdict(lambda: defaultdict(int))
-    all_specialties = list(Specialty.objects.all().values_list())
-    print(all_specialties)
-
-    # Инициализируем все направления заранее
-    for qualification in Qualification.objects.all():
-        specialty_data[(qualification.specialty.code, qualification.specialty.name, qualification.name)]  # Создаем пустые записи
-        all_specialties = [spec for spec in all_specialties if spec[0] != qualification.specialty.id]
-
-    for specialty in all_specialties:
-        specialty_data[(specialty[1], specialty[2], "")]
-
-
-    for student in student_list:
-        spec_code = student["specialty_code"]
-        spec_name = student["specialty_name"]
-        qualification = student["qualification"]
-        course = student["course"]
-        base = student["base"]  # Основное общее или Среднее общее
-        budget = student["budget"]  # Бюджет или Внебюджет
-        academic = student["academic_leave"]  # True - в академе, False - нет
-
-        if base == "Основное общее":
-            base = 9
-        else:
-            base = 11
-
-        if academic:
-            key = f"students_academic_{course}_{'budget' if budget else 'paid'}"
-        else:
-            key = f"students_{base}_{course}_{'budget' if budget else 'paid'}"
-
-        specialty_data[(spec_code, spec_name, qualification)][key] += 1
-
-    number = 1
-    table_data = []
-    total_9_1_ = 0
-    total_9_2_ = 0
-    total_9_3_ = 0
-    total_9_4_ = 0
-
-    total_11_1_ = 0
-    total_11_2_ = 0
-    total_11_3_ = 0
-
-    total_academ_1 = 0
-    total_academ_2 = 0
-    total_academ_3 = 0
-    total_academ_4 = 0
-
-    total_contingent = 0
-
-    for (code, name, qualification), counts in specialty_data.items():
-        total_budget = sum(counts.get(key, 0) for key in counts if "budget" in key)
-        total_paid = sum(counts.get(key, 0) for key in counts if "paid" in key)
-
-        total_9_1_ += sum(counts.get(key, 0) for key in counts if "9_1" in key)
-        total_9_2_ += sum(counts.get(key, 0) for key in counts if "9_2" in key)
-        total_9_3_ += sum(counts.get(key, 0) for key in counts if "9_3" in key)
-        total_9_4_ += sum(counts.get(key, 0) for key in counts if "9_4" in key)
-
-        total_11_1_ += sum(counts.get(key, 0) for key in counts if "11_1" in key)
-        total_11_2_ += sum(counts.get(key, 0) for key in counts if "11_2" in key)
-        total_11_3_ += sum(counts.get(key, 0) for key in counts if "11_3" in key)
-
-        total_academ_1 += sum(counts.get(key, 0) for key in counts if "academic_1" in key)
-        total_academ_2 += sum(counts.get(key, 0) for key in counts if "academic_2" in key)
-        total_academ_3 += sum(counts.get(key, 0) for key in counts if "academic_3" in key)
-        total_academ_4 += sum(counts.get(key, 0) for key in counts if "academic_4" in key)
-
-        total_contingent += total_budget + total_paid
-
-        row = [
-            number,
-            code,  # Код специальности
-            name,  # Название специальности
-            qualification,  # Квалификация
-            counts.get("students_9_1_budget", 0),
-            counts.get("students_9_1_paid", 0),
-            counts.get("students_9_2_budget", 0),
-            counts.get("students_9_2_paid", 0),
-            counts.get("students_9_3_budget", 0),
-            counts.get("students_9_3_paid", 0),
-            counts.get("students_9_4_budget", 0),
-            counts.get("students_9_4_paid", 0),
-            counts.get("students_11_1_budget", 0),
-            counts.get("students_11_1_paid", 0),
-            counts.get("students_11_2_budget", 0),
-            counts.get("students_11_2_paid", 0),
-            counts.get("students_11_3_budget", 0),
-            counts.get("students_11_3_paid", 0),
-            counts.get("students_academic_1_budget", 0),
-            counts.get("students_academic_1_paid", 0),
-            counts.get("students_academic_2_budget", 0),
-            counts.get("students_academic_2_paid", 0),
-            counts.get("students_academic_3_budget", 0),
-            counts.get("students_academic_3_paid", 0),
-            counts.get("students_academic_4_budget", 0),
-            counts.get("students_academic_4_paid", 0),
-            total_budget,  # Итого бюджет
-            total_paid,  # Итого внебюджет
-        ]
-        table_data.append(row)
-        number += 1
-
-    last_row = [total_9_1_, total_9_2_, total_9_3_, total_9_4_, total_11_1_, total_11_2_, total_11_3_, total_academ_1,
-                total_academ_2, total_academ_3, total_academ_4, total_contingent]
-
-    total_09_02_07_budget = sum(
-        counts.get(key, 0)
-        for (code, _, _), counts in specialty_data.items()
-        if code == "09.02.07"
-        for key in counts
-        if "budget" in key and not key.startswith("students_9_1")
-    )
-
-    total_09_02_07_paid = sum(
-        counts.get(key, 0)
-        for (code, _, _), counts in specialty_data.items()
-        if code == "09.02.07"
-        for key in counts
-        if "paid" in key and not key.startswith("students_9_1")
-    )
-
-    return render(request, 'Contingent/statisticks.html', context={'table_data': table_data, 'last_row': last_row, 'total_09_02_07_budget': total_09_02_07_budget,
-                                                                   'total_09_02_07_paid': total_09_02_07_paid})
 
 
 def qualification_detail(request, qualification_id):

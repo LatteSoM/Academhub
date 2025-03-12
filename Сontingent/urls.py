@@ -2,7 +2,7 @@ from .views import *
 from django.urls import path
 
 from .views import AcademListView, AcademUpdateView, AcademReturn, ExpulsionListView, ExpelStudent, RecoverStudent, \
-    statisticks_view, StatisticksView, generate_student_record_book, create_auto_record_book_template
+    StatisticksView, generate_student_record_book, create_auto_record_book_template
 
 urlpatterns = [
 

@@ -1,9 +1,19 @@
+from datetime import datetime
+
+from django.contrib import messages
+from django.utils import timezone
+from django.utils.timezone import localtime  # Импортируем localtime
+
+from django.http import HttpResponse, JsonResponse
+from django.urls import reverse
+
+from Gradebook.filters import GradeBookTeachersFilter
 from Gradebook.forms import *
 from Gradebook.tables import *
 from Gradebook.filters import *
 from Gradebook.mixins import GradeBookMixin
-from django.shortcuts import get_object_or_404
-from Academhub.models import GradebookStudents, Gradebook
+from django.shortcuts import get_object_or_404, redirect
+from Academhub.models import GradebookStudents, Gradebook, CustomUser
 from Academhub.base import BulkUpdateView, ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView
 
 #
@@ -19,6 +29,9 @@ __all__ = (
     'GradebookStudentBulkUpdateView',
 )
 
+from Gradebook.tables import TeacherGradeBookTable
+
+
 class GradebookStudentBulkUpdateView(BulkUpdateView):
     model = GradebookStudents
     form_class = GradebookStudentsForm
@@ -27,7 +40,7 @@ class GradebookStudentBulkUpdateView(BulkUpdateView):
     def dispatch(self, request, *args, **kwargs):
         self.gradebook_pk = self.kwargs.get('pk', None)
         return super().dispatch(request, *args, **kwargs)
-    
+
     def get_queryset(self):
         return self.model.objects.filter(gradebook__pk = self.gradebook_pk)
 
@@ -36,19 +49,22 @@ class GradebookStudentBulkUpdateView(BulkUpdateView):
         self.gradebook = get_object_or_404(Gradebook, pk=self.gradebook_pk)
         context['gradebook'] = self.gradebook
         return context
-    
+
     def save_form(self, request):
         form = super().save_form(request)
 
         if form.is_valid():
             gradebook = get_object_or_404(
-                Gradebook, 
+                Gradebook,
                 pk=self.gradebook_pk
             )
             gradebook.status = Gradebook.STATUS_CHOICE[1][1]
             gradebook.save()
 
-        return form
+        return redirect('GradebookTableView', pk=self.gradebook_pk)
+
+
+
 
 #
 ## Gradebook
@@ -67,25 +83,54 @@ class GradebookTableView(ObjectTableView):
             return GradebookMobileTable
         return GradebookTable
 
+class TeachersGradeBookTableView(ObjectTableView):
+    table_class = TeacherGradeBookTable
+    filterset_class = GradeBookTeachersFilter
+    queryset = Gradebook.objects.filter(status=Gradebook.STATUS_CHOICE[1][1])
+    template_name = 'Gradebook/detail/grade_books.html'
+
+    def get_table_class(self):
+        if self.request.GET.get("mobile") == "1":
+            return GradebookMobileTable
+        return TeacherGradeBookTable
+
+
+
 class GradebookDetailView(ObjectDetailView):
     """
     Класс для отображения детальной информации об учебном журнале.
     """
-    model= Gradebook
-    paginate_by   = 30
+    model = Gradebook
+    paginate_by = 30
     template_name = 'Gradebook/detail/gradebook_student.html'
 
     fieldset = {
-        'Основная информация':
-            ['name', 'status', ]
+        'Основная информация': ['name', 'status'],
+        'is_admin': "false"  # Значение по умолчанию (строка)
     }
 
+    def get_context_data(self, **kwargs):
+        # Получаем контекст от родительского класса
+        context = super().get_context_data(**kwargs)
+
+        # Получаем текущего пользователя
+        user = self.request.user
+
+        # Проверяем, является ли пользователь учителем
+        if user.is_authenticated and hasattr(user, 'is_teacher'):
+            # Если пользователь учитель, is_admin = "false"
+            # Иначе is_admin = "true"
+            self.fieldset['is_admin'] = str(not user.is_teacher).lower()
+
+        # Добавляем fieldset в контекст
+        context['fieldset'] = self.fieldset
+
+        return context
+
     def get_tables(self):
-        table = GradebookStudentsTable(data=self.object.students.all())
-        print(table.student)
+        table = GradebookStudentsTable(data=GradebookStudents.objects.filter(gradebook=self.object.pk))
 
         table2 = GradebookTeachersTable(data=self.object.teachers.all())
-        print(table2)
         
         return [table, table2]
 
@@ -111,11 +156,62 @@ class GradebookCreateView(GradeBookMixin, ObjectCreateView):
     template_name = 'Gradebook/create/grade_book.html'
     properties = ['group_id']
 
-# class GradebookDisciplineCreateView(GradeBookMixin, ObjectCreateView):
-#     """
-#     Класс для создания нового учебного журнала.
-#     """
-#     model = Gradebook
-#     form_class = GradebookForm
-#     template_name = 'Gradebook/create/grade_book.html'
-#     properties = ['group_id', 'discipile_id']
+
+def download_report(request, pk):
+    gradebook = get_object_or_404(Gradebook, pk=pk)
+    gradebook.status = Gradebook.STATUS_CHOICE[3][1]
+    gradebook.save()
+    # Пример содержимого файла
+    file_content = "Это содержимое вашей ведомости."
+
+    # Создаём HTTP-ответ с файлом
+    response = HttpResponse(file_content, content_type="text/plain")
+    response["Content-Disposition"] = 'attachment; filename="report.txt"'
+
+    return response
+
+
+def check_and_open_gradebook(request, pk):
+    """
+    Проверяет заполненность всех обязательных полей ведомости,
+    включая наличие связанных преподавателей и студентов.
+    """
+    gradebook = get_object_or_404(Gradebook, id=pk)
+
+    # Проверка основных полей
+    required_fields = [
+        gradebook.group_id,  # Проверка ForeignKey через id
+        gradebook.name,  # Проверка CharField
+        gradebook.discipline_id,  # Проверка ForeignKey дисциплины
+        gradebook.semester_number,  # Проверка IntegerField
+        gradebook.status,  # Проверка CharField статуса
+    ]
+
+    # Проверка текстовых полей на непустые значения
+    text_fields_valid = all([
+        gradebook.name and gradebook.name.strip(),
+        gradebook.status and gradebook.status.strip(),
+    ])
+
+    # Проверка связей ManyToMany и ForeignKey
+    relations_valid = all([
+        gradebook.teachers.exists(),  # Проверка наличия преподавателей
+        gradebook.students.exists(),  # Проверка наличия студентов
+    ])
+
+    # Комплексная проверка всех условий
+    if not all(required_fields) or not text_fields_valid or not relations_valid:
+        messages.error(request,
+                       "Невозможно открыть ведомость! Заполните все обязательные поля: "
+                       "группа, дисциплина, название, статус, семестр, преподаватели и студенты."
+                       )
+        return redirect('gradebook_detail', pk=pk)
+
+    # Обновление статуса и даты
+    gradebook.status = "Открыта"
+    gradebook.date_of_opening = timezone.now().date()
+    gradebook.save()
+
+    messages.success(request, "Ведомость успешно открыта!")
+    return redirect('gradebook_detail', pk=pk)
+
