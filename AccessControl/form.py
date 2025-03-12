@@ -1,4 +1,5 @@
 from django import forms
+from Academhub.base.forms import PermissionSelectField
 from django.contrib.contenttypes.models import ContentType
 from Academhub.models import CustomUser, PermissionProxy, GroupProxy
 
@@ -26,6 +27,13 @@ class UserForm(forms.ModelForm):
         label='Пароль'
     )
 
+    groups = forms.ModelMultipleChoiceField(
+        widget=forms.CheckboxSelectMultiple(),
+        queryset=GroupProxy.objects.all()
+    )
+
+    user_permissions = PermissionSelectField()
+
     class Meta:
         model = CustomUser
         fields = ['email', 'full_name', 'password', 'user_permissions', 'groups', 'is_staff', 'is_teacher']
@@ -34,16 +42,13 @@ class GroupForm(forms.ModelForm):
     name = forms.CharField(
         label='Название'
     )
-    permissions = forms.ModelMultipleChoiceField(
-        queryset=PermissionProxy.objects.all(),
-        label='Права',
-        widget=forms.CheckboxSelectMultiple(),
-    )
+
+    permissions = PermissionSelectField()
+
     users = forms.ModelMultipleChoiceField(
         queryset=CustomUser.objects.all(),
         label='Пользователи',
         widget=forms.CheckboxSelectMultiple(),
-
     )
 
     class Meta:
@@ -61,10 +66,9 @@ class PermissionForm(forms.ModelForm):
     name = forms.CharField(
         label='Название'
     )
-    content_type = forms.ModelMultipleChoiceField(
+    content_type = forms.ModelChoiceField(
         queryset=ContentType.objects.all(),
         label = 'Модели',
-        widget=forms.CheckboxSelectMultiple(),
     )
 
     class Meta:

@@ -1,11 +1,10 @@
 from django.db import models
-from Academhub.validators import *
-from django.shortcuts import reverse
 from django.utils import timezone
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, Permission, Group
+from Academhub.validators import *
+from .base.models import AcademHubModel, UrlGenerateMixin
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permission, Group, PermissionsMixin
 
 __all__ = [
-    'AcademHubModel',
     'CustomUser',
     'GroupStudents',
     'Discipline',
@@ -17,58 +16,16 @@ __all__ = [
     'TermPaper',
     'Curriculum',
     'Practice',
+    'Permission',
+    'Group',
     'ProfessionalModule',
     'CalendarGraphicOfLearningProcess',
     'MiddleCertification',
     'StudentRecordBook',
     'RecordBookTemplate'
-
 ]
 
-
-url_attrs = [
-    'list',
-    'delete',
-    'create',
-    'update',
-    'detail',
-]
-
-class UrlGenerateMixin:
-    _urls = None
-
-    @classmethod
-    def _generate_url(cls):
-        cls._urls = {}
-        
-        for attr in url_attrs:
-            prefix_name = 'url_' + attr
-            cls._urls[prefix_name] = f'{cls.__name__.lower()}_{attr}'
-
-        return cls._urls
     
-    @classmethod
-    def _check_urls(cls):
-        if not cls._urls:
-            cls._generate_url()
-
-    @classmethod
-    def get_urls(cls):
-        cls._check_urls()
-        return cls._urls
-
-    @classmethod
-    def set_url(cls, name):
-        cls._check_urls()
-        cls._urls[name] = name
-
-class AcademHubModel(UrlGenerateMixin, models.Model):
-    def get_absolute_url(self):
-        url = self.get_urls()['url_detail']
-        return reverse(url, kwargs={'pk': self.pk})
-    
-    class Meta:
-        abstract = True
 
 class CustomUserManager(BaseUserManager):
     '''
@@ -110,10 +67,10 @@ class CustomUser(AcademHubModel, AbstractBaseUser, PermissionsMixin):
         max_length=255,
         verbose_name='ФИО'
     )
+
     is_active = models.BooleanField(default=True, verbose_name='Активный?')
     is_staff = models.BooleanField(default=False, verbose_name='Персонал?')
     is_teacher = models.BooleanField(default=False, verbose_name='Учитель?')
-    is_superuser = models.BooleanField(default=False, verbose_name='Суперпользователь?')
 
     objects = CustomUserManager()
 
@@ -126,14 +83,10 @@ class CustomUser(AcademHubModel, AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.full_name
 
-class PermissionProxy(Permission, UrlGenerateMixin):
+class PermissionProxy(AcademHubModel, Permission):
     '''
         Расширение для модели Permissions. Поддерживает навигацию
     '''
-    
-    def get_absolute_url(self):
-        url = self.get_urls()['url_detail']
-        return reverse(url, kwargs={'pk': self.pk})
 
     class Meta:
         proxy = True
@@ -141,14 +94,10 @@ class PermissionProxy(Permission, UrlGenerateMixin):
         verbose_name = 'Право'
         verbose_name_plural = 'Права'
 
-class GroupProxy(Group, UrlGenerateMixin):
+class GroupProxy(AcademHubModel, Group):
     '''
         Расширение для модели Group. Поддерживает навигацию
     '''
-    
-    def get_absolute_url(self):
-        url = self.get_urls()['url_detail']
-        return reverse(url, kwargs={'pk': self.pk})
 
     class Meta:
         proxy = True

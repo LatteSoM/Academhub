@@ -1,5 +1,5 @@
 from django import forms
-from Academhub.base import widgets
+from Academhub.base.forms import *
 
 from Academhub.models import Student, Discipline, GroupStudents, Specialty, Qualification
 
@@ -51,13 +51,13 @@ class StudentForm(forms.ModelForm):
 
     phone = forms.CharField(
         label='Телефон',
-        widget=widgets.Phone(attrs={'class': 'phone-input'})
+        widget=Phone(attrs={'class': 'phone-input'})
     )
 
     snils = forms.CharField(
         label='Снилс',
         max_length=14,
-        widget=widgets.Snils(attrs={
+        widget=Snils(attrs={
             'class': 'delete-arrow-input-number'
         })
     )

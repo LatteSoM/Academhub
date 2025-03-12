@@ -15,11 +15,6 @@ class UserTableView(ObjectTableView):
     filterset_class = UserFilter
     queryset = CustomUser.objects.all()
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        return context
-
 class UserDetailView(ObjectDetailView):
     model = CustomUser
 
@@ -40,12 +35,18 @@ class PermissionTableView(ObjectTableView):
     filterset_class = PermissionFilter
     queryset = PermissionProxy.objects.all()
 
+    def get_model_name(self):
+        return 'Права'
+
 class PermissionDetailView(ObjectDetailView):
     model = PermissionProxy
 
 class PermissionUpdateView(ObjectUpdateView):
     form_class = PermissionForm
     queryset = PermissionProxy.objects.all()
+
+    def get_model_name(self):
+        return 'Права'
 
 class PermissionCreateView(ObjectCreateView):
     model = PermissionProxy
@@ -60,7 +61,10 @@ class GroupTableView(ObjectTableView):
     filterset_class = GroupFilter
     queryset = GroupProxy.objects.all()
 
-class  GroupDetailView(ObjectDetailView):
+    def get_model_name(self):
+        return 'Группы прав'
+
+class GroupDetailView(ObjectDetailView):
     model = GroupProxy
 
 class  GroupUpdateView(ObjectUpdateView):
