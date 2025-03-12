@@ -155,11 +155,8 @@ class ObjectUpdateView(BaseContextMixin, UpdateView):
         return context
 
     def get_verbose_name(self):
-        return self._get_model_class()._meta.verbose_name
-
-    def get_model_urls(self):
-        model = self._get_model_class()
-        return getattr(model, 'get_urls', lambda: {})()
+        model_class = self.queryset.model
+        return model_class._meta.verbose_name
 
 
 class ObjectCreateView(BaseContextMixin, CreateView):

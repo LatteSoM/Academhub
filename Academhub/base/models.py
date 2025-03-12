@@ -3,7 +3,8 @@ from .mixin import UrlGenerateMixin
 from django.shortcuts import reverse
 
 __all__ = (
-    'AcademHubModel'
+    'AcademHubModel',
+    'UrlGenerateMixin'
 )
 
 class AcademHubModel(UrlGenerateMixin, models.Model):

@@ -1,9 +1,8 @@
 from django.db import models
 from django.utils import timezone
 from Academhub.validators import *
-from base.models import AcademHubModel
-from .permissions_mixin import ObjectPermissionsMixin
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from .base.models import AcademHubModel, UrlGenerateMixin
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permission, Group, PermissionsMixin
 
 __all__ = [
     'CustomUser',
@@ -17,6 +16,8 @@ __all__ = [
     'TermPaper',
     'Curriculum',
     'Practice',
+    'Permission',
+    'Group',
     'ProfessionalModule',
     'MiddleCertification',
     'StudentRecordBook',
@@ -55,7 +56,7 @@ class CustomUserManager(BaseUserManager):
 
         return self.create_user(email, password, **extra_fields)
 
-class CustomUser(AcademHubModel, AbstractBaseUser, ObjectPermissionsMixin):
+class CustomUser(AcademHubModel, AbstractBaseUser, PermissionsMixin):
     '''
     Пользовательская модель, представляющая пользователей системы. 
     Наследует от AbstractBaseUser и PermissionsMixin для поддержки аутентификации и управления правами доступа.
@@ -81,34 +82,26 @@ class CustomUser(AcademHubModel, AbstractBaseUser, ObjectPermissionsMixin):
     def __str__(self):
         return self.full_name
 
-# class PermissionProxy(Permission, UrlGenerateMixin):
-#     '''
-#         Расширение для модели Permissions. Поддерживает навигацию
-#     '''
-    
-#     def get_absolute_url(self):
-#         url = self.get_urls()['url_detail']
-#         return reverse(url, kwargs={'pk': self.pk})
+class PermissionProxy(AcademHubModel, Permission):
+    '''
+        Расширение для модели Permissions. Поддерживает навигацию
+    '''
 
-#     class Meta:
-#         proxy = True
-#         ordering = ['pk']
-#         verbose_name = 'Право'
-#         verbose_name_plural = 'Права'
+    class Meta:
+        proxy = True
+        ordering = ['pk']
+        verbose_name = 'Право'
+        verbose_name_plural = 'Права'
 
-# class GroupProxy(Group, UrlGenerateMixin):
-#     '''
-#         Расширение для модели Group. Поддерживает навигацию
-#     '''
-    
-#     def get_absolute_url(self):
-#         url = self.get_urls()['url_detail']
-#         return reverse(url, kwargs={'pk': self.pk})
+class GroupProxy(AcademHubModel, Group):
+    '''
+        Расширение для модели Group. Поддерживает навигацию
+    '''
 
-#     class Meta:
-#         proxy = True
-#         verbose_name = 'Группа прав'
-#         verbose_name_plural = 'Группы прав'
+    class Meta:
+        proxy = True
+        verbose_name = 'Группа прав'
+        verbose_name_plural = 'Группы прав'
 
 class Discipline(AcademHubModel):
     code = models.CharField(max_length=50, unique=True, verbose_name="Код", blank=True ,null=True)

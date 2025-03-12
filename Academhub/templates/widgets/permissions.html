@@ -1,0 +1,48 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'Academhub/css/permissions.css' %}">
+
+<div class="permissions-widget">
+    <!-- Первый блок: список моделей -->
+    <div class="models-list">
+        <h4>Модели</h4>
+        {% for model_name, perms in models.items %}
+            <div class="model_item_block" style="display: flex; align-items: center; justify-content: start;">
+                <input data-model="{{ model_name }}"
+                    type="checkbox">
+                <div class="model-item" style="padding-left: 5px;"  data-model="{{ model_name }}">{{ model_name }}</div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Второй блок: действия для всех моделей (скрытые) -->
+    <div class="permissions-list">
+        <h4>Действия</h4>
+        <div class="permissions-items">
+            {% for model_name, actions in models.items %}
+                <div class="permissions-block permission_block_deactivate" data-model="{{ model_name }}">
+                    {% for action in actions %}
+                        <div class="permission-item">
+                            <input
+                                action_name="{{ action.name }}"
+                                data-model="{{ model_name }}"
+                                type="checkbox" 
+                                id="perm-{{ action.id }}" 
+                                value="{{ action.id }}">
+                            <label for="perm-{{ action.id }}" style="padding-left: 20px;"> {{ action.name }} </label>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Третий блок: сводка выбранных прав (пустой) -->
+    <div class="summary-list">
+    </div>
+
+    <!-- Скрытый input для передачи данных -->
+    <input class="hidden_permissions" type="hidden" name="{{ name }}" value="{{ value }}" id="id_{{ name }}">
+</div>
+
+<script src="{% static 'Academhub/js/widgets/permission.js' %}"></script>
