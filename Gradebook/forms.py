@@ -88,12 +88,22 @@ class GradebookStudentsForm(forms.ModelForm):
         model = GradebookStudents
         fields = ['student', 'ticket_number', 'grade']
     
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
+    #
+    #     self.fields['student'].widget.attrs['disabled'] = True
+    #     self.fields['student'].widget.attrs['handshakable'] = 'un'
+    #
+    #     if 'instance' in kwargs:
+    #         self.fields['student'].initial = kwargs['instance'].student
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
-        self.fields['student'].widget.attrs['disabled'] = True 
-        self.fields['student'].widget.attrs['handshakable'] = 'un'
+        if self.instance and self.instance.pk:
+            self.fields['student'].initial = self.instance.student
+            self.fields['ticket_number'].initial = self.instance.ticket_number
+            self.fields['grade'].initial = self.instance.grade
 
-        if 'instance' in kwargs:
-            self.fields['student'].initial = kwargs['instance'].student
+
+
             

@@ -33,5 +33,4 @@ urlpatterns = [
     path('ContingentApp/', include('Сontingent.urls')),
     path('AccessControl/', include('AccessControl.urls')),
     path('GradeBookApp/', include('Gradebook.urls')),
-
 ]

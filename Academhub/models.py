@@ -610,12 +610,90 @@ class Student(AcademHubModel):
         verbose_name = "Студент"
         verbose_name_plural = "Студенты"
 
+    def save(self, *args, **kwargs):
+        from django.utils import timezone  # Импортируем внутри метода, чтобы избежать проблем с импортом
+
+        # Сохраняем старые значения перед обновлением
+        if self.pk:  # Если это обновление существующего объекта
+            old_student = Student.objects.get(pk=self.pk)
+            old_group = old_student.group.full_name if old_student.group else None
+            old_is_in_academ = old_student.is_in_academ
+            old_is_expelled = old_student.is_expelled
+        else:
+            old_group = None
+            old_is_in_academ = False
+            old_is_expelled = False
+
+        # Сохраняем объект
+        super().save(*args, **kwargs)
+
+        # Проверяем изменения и создаём записи в ContingentMovement
+        current_group = self.group.full_name if self.group else None
+
+        # 1. Перевод в другую группу
+        if old_group and old_group != current_group:
+            ContingentMovement.objects.create(
+                order_number=self.reinstaitment_order if self.reinstaitment_order else f"TR-{self.pk}-{timezone.now().strftime('%Y%m%d')}",
+                action_type='transfer',
+                action_date=timezone.now().date(),
+                previous_group=old_group,
+                new_group=current_group,
+                student=self
+            )
+
+        # 2. Уход в академический отпуск
+        if not old_is_in_academ and self.is_in_academ:
+            ContingentMovement.objects.create(
+                order_number=self.academ_order if self.academ_order else f"AL-{self.pk}-{timezone.now().strftime('%Y%m%d')}",
+                action_type='academic_leave',
+                action_date=self.academ_leave_date or timezone.now().date(),
+                previous_group=current_group,
+                new_group=current_group,  # Сохраняем текущую группу как возможную для возвращения
+                student=self
+            )
+
+        # 3. Выход из академического отпуска
+        if old_is_in_academ and not self.is_in_academ and self.academ_return_date:
+            ContingentMovement.objects.create(
+                order_number=self.reinstaitment_order if self.reinstaitment_order else f"AR-{self.pk}-{timezone.now().strftime('%Y%m%d')}",
+                action_type='academic_return',
+                action_date=self.academ_return_date,
+                previous_group=old_group,
+                new_group=current_group,
+                student=self
+            )
+
+        # 4. Отчисление
+        if not old_is_expelled and self.is_expelled:
+            ContingentMovement.objects.create(
+                order_number=self.expell_order if self.expell_order else f"EX-{self.pk}-{timezone.now().strftime('%Y%m%d')}",
+                action_type='expulsion',
+                action_date=self.date_of_expelling or timezone.now().date(),
+                previous_group=current_group,
+                new_group=None,  # Новая группа не указывается при отчислении
+                student=self
+            )
+
+        # 5. Восстановление
+        if old_is_expelled and not self.is_expelled and self.reinstaitment_order:
+            ContingentMovement.objects.create(
+                order_number=self.reinstaitment_order,
+                action_type='reinstatement',
+                action_date=timezone.now().date(),
+                previous_group=None,  # Предыдущая группа не указывается при восстановлении
+                new_group=current_group,
+                student=self
+            )
+
+
     @property
     def course(self):
         return self.group.current_course
 
     def __str__(self):
         return self.full_name
+
+
 
 
 class StudentRecordBook(models.Model):
@@ -764,3 +842,56 @@ class CalendarGraphicOfLearningProcess(AcademHubModel):
 
     def __str__(self):
         return self.name
+
+
+class ContingentMovement(AcademHubModel):
+    """
+    Модель для отслеживания движения контингента: переводы, отчисления, академические отпуска.
+    """
+    ACTION_TYPES = (
+        ('transfer', 'Перевод'),
+        ('expulsion', 'Отчисление'),
+        ('academic_leave', 'Уход в академический отпуск'),
+        ('academic_return', 'Выход из академического отпуска'),
+        ('reinstatement', 'Восстановление'),
+    )
+
+    order_number = models.CharField(
+        max_length=50,
+        unique=True,
+        verbose_name="Номер приказа"
+    )
+    action_type = models.CharField(
+        max_length=20,
+        choices=ACTION_TYPES,
+        verbose_name="Тип действия"
+    )
+    action_date = models.DateField(
+        verbose_name="Дата действия"
+    )
+    previous_group = models.CharField(
+        max_length=1000,
+        blank=True,
+        null=True,
+        verbose_name="Предыдущая группа"
+    )
+    new_group = models.CharField(
+        max_length=1000,
+        blank=True,
+        null=True,
+        verbose_name="Новая группа"
+    )
+    student = models.ForeignKey(
+        'Student',
+        on_delete=models.CASCADE,
+        related_name="movements",
+        verbose_name="Студент"
+    )
+
+    class Meta:
+        verbose_name = "Движение контингента"
+        verbose_name_plural = "Движения контингента"
+        ordering = ['-action_date']  # Сортировка по убыванию даты действия
+
+    def __str__(self):
+        return f"{self.get_action_type_display()} - {self.student.full_name} ({self.action_date})"

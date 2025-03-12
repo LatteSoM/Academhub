@@ -31,17 +31,38 @@
 {% block extra_js %}
     {{ block.super }}
     <script>
-        const selects = document.querySelectorAll("select[handshakable='un']");
-        const form = document.getElementById('multi-form');
+        {#const selects = document.querySelectorAll("select[handshakable='un']");#}
+        {#const form = document.getElementById('multi-form');#}
 
-        form.addEventListener('submit' , function(e){
-            e.preventDefault();
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById('multi-form');
 
-            selects.forEach(element => {
-                element.disabled = false;
-            });
+            if (form) {
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault();
 
-            this.submit();
-        });
+                    const selects = document.querySelectorAll("select[handshakable='un']");
+                    selects.forEach(element => {
+                        element.disabled = false;
+                    });
+
+                    // Используем стандартную функцию `submit`
+                    setTimeout(() => {
+                        form.submit();
+                    }, 10);
+                });
+            }
+        })
+
+
+        {#form.addEventListener('submit' , function(e){#}
+        {#    e.preventDefault();#}
+        {##}
+        {#    selects.forEach(element => {#}
+        {#        element.disabled = false;#}
+        {#    });#}
+        {##}
+        {#    this.submit();#}
+        {#});#}
     </script>
 {% endblock %}

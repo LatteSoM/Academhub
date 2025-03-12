@@ -1,0 +1,95 @@
+{% extends 'base_view.html' %}
+
+{% load django_tables2 %}
+{% load static %}
+{% load util %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <h2>Движения контингента</h2>
+    </div>
+
+    <br/>
+
+    <div class="tabs">
+        <button class="tab-button active" data-tab="table">Таблица</button>
+        <button class="tab-button" data-tab="filters">Фильтры</button>
+    </div>
+
+    <div class="tab-content">
+        <div id="table" class="tab-pane active">
+            {% block buttons %}
+                {# Кнопка "Добавить" не нужна, так как движения создаются автоматически #}
+                <div style="margin: 10px 0; display: flex; justify-content: space-between">
+                    <a href="{% url 'generate_group_table' %}" class="btn-primary" style="display: inline-block; margin-right: 10px;">
+                        Скачать таблицу групп
+                    </a>
+                    <a href="{% url 'generate_course_table' course=1 %}" class="btn-primary" style="display: inline-block; margin-right: 10px;">
+                        Скачать таблицу 1 курса
+                    </a>
+                    <a href="{% url 'generate_course_table' course=2 %}" class="btn-primary" style="display: inline-block; margin-right: 10px;">
+                        Скачать таблицу 2 курса
+                    </a>
+                    <a href="{% url 'generate_course_table' course=3 %}" class="btn-primary" style="display: inline-block; margin-right: 10px;">
+                        Скачать таблицу 3 курса
+                    </a>
+                    <a href="{% url 'generate_course_table' course=4 %}" class="btn-primary" style="display: inline-block; margin-right: 10px;">
+                        Скачать таблицу 4 курса
+                    </a>
+                    <a href="{% url 'generate_statistics_table' %}" class="btn-primary" style="display: inline-block; margin-right: 10px;">
+                        Скачать статистику
+                    </a>
+                    <a href="{% url 'generate_vacation_table' %}" class="btn-primary" style="display: inline-block; margin-right: 10px;">
+                        Скачать таблицу отпусков
+                    </a>
+                    <a href="{% url 'generate_movement_table' %}" class="btn-primary" style="display: inline-block; margin-right: 10px;">
+                        Скачать таблицу движений
+                    </a>
+                </div>
+            {% endblock %}
+
+            {% if filter.form.search %}
+                <form class="search-form" style="width: 70%; display: flex;">
+                    {% with search_field=filter.form.search %}
+                        <div class="form-group">
+                            {{ search_field.errors }}
+                            {{ search_field.label_tag }}
+                            {{ search_field }}
+                            {% if search_field.help_text %}
+                                <p class="help" id="{{ search_field.auto_id }}_helptext">
+                                    {{ search_field.help_text|safe }}
+                                </p>
+                            {% endif %}
+                        </div>
+                    {% endwith %}
+                    <button class="btn-primary">Поиск</button>
+                </form>
+            {% endif %}
+
+            <br/>
+
+            <div class="active-filters">
+                {% include 'inc/table/active_filters.html' %}
+            </div>
+
+            {% render_table table 'inc/table/table.html' %}
+
+            {% include 'inc/pagination.html' with page_obj=table.page %}
+        </div>
+
+        <div id="filters" class="tab-pane">
+            <form method="get" class="form">
+                {% include 'inc/form/form.html' with form=filter.form|exclude_field:"search" %}
+                <button type="submit" class="btn-primary">Применить фильтры</button>
+                <a href="?" class="btn-secondary">Сбросить фильтры</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+    {{ block.super }}
+    <script type="module" src="{% static 'Academhub/js/switchTab.js' %}"></script>
+{% endblock %}

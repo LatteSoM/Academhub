@@ -19,6 +19,9 @@ __all__ = (
     'GradebookStudentBulkUpdateView',
 )
 
+from django.forms import modelformset_factory
+
+
 class GradebookStudentBulkUpdateView(BulkUpdateView):
     model = GradebookStudents
     form_class = GradebookStudentsForm
@@ -31,10 +34,21 @@ class GradebookStudentBulkUpdateView(BulkUpdateView):
     def get_queryset(self):
         return self.model.objects.filter(gradebook__pk = self.gradebook_pk)
 
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     self.gradebook = get_object_or_404(Gradebook, pk=self.gradebook_pk)
+    #     context['gradebook'] = self.gradebook
+    #     return context
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         self.gradebook = get_object_or_404(Gradebook, pk=self.gradebook_pk)
         context['gradebook'] = self.gradebook
+
+        # Создаем формсет для редактирования нескольких записей
+        GradebookStudentFormSet = modelformset_factory(GradebookStudents, form=GradebookStudentsForm, extra=0)
+        context['formset'] = GradebookStudentFormSet(queryset=self.get_queryset())
+
         return context
     
     def save_form(self, request):
@@ -82,10 +96,10 @@ class GradebookDetailView(ObjectDetailView):
 
     def get_tables(self):
         table = GradebookStudentsTable(data=self.object.students.all())
-        print(table.student)
+        # print(table.student)
 
         table2 = GradebookTeachersTable(data=self.object.teachers.all())
-        print(table2)
+        # print(table2)
         
         return [table, table2]
 

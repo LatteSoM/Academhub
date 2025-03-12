@@ -210,3 +210,7 @@ class RecoverStudentForm(forms.ModelForm):
         if commit:
             student.save()
         return student
+
+
+class StudentImportForm(forms.Form):
+    excel_file = forms.FileField(label="Выберите файл Excel (.xlsx)")
