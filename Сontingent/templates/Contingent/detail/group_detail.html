@@ -25,33 +25,33 @@
     {{ block.super }}
 
 
-        <div class="detail-content" style="margin-top: 20px;">
-            <div class="detail-tabs">
-                <button class="detail-tab active tab-button" data-tab="info">Студенты</button>
-            </div>
-            
-            <div class="detail-tab-content">
-                <a class="btn-primary" style="display: inline-block;">
-                    Создать сессионный документ
-                </a>
-                {% with table=tables.0 %}
-                    {% render_table table 'inc/table/table.html' %}
-                    {% include 'inc/pagination.html' with page_obj=table.page %}
-                {% endwith %}
-            </div>
+    <div class="detail-content" style="margin-top: 20px;">
+        <div class="detail-tabs">
+            <button class="detail-tab active tab-button" data-tab="info">Студенты</button>
         </div>
+        
+        <div class="detail-tab-content">
+            <a class="btn-primary" style="display: inline-block;">
+                Создать сессионный документ
+            </a>
+            {% with table=tables.0 %}
+                {% render_table table 'inc/table/table.html' %}
+                {% include 'inc/pagination.html' with page_obj=table.page %}
+            {% endwith %}
+        </div>
+    </div>
 
-        <div class="detail-content" style="margin-top: 20px;">
-            <div class="detail-tabs">
-                <button class="detail-tab active tab-button" data-tab="info">Ведомости группы</button>
-            </div>
-            
-            <div class="detail-tab-content">
-               {% with table=tables.1 %}
-                    {% render_table table 'inc/table/table.html' %}
-                    {% include 'inc/pagination.html' with page_obj=table.page %}
-                {% endwith %}
-            </div>
+    <div class="detail-content" style="margin-top: 20px;">
+        <div class="detail-tabs">
+            <button class="detail-tab active tab-button" data-tab="info">Ведомости группы</button>
         </div>
+        
+        <div class="detail-tab-content">
+            {% with table=tables.1 %}
+                {% render_table table 'inc/table/table.html' %}
+                {% include 'inc/pagination.html' with page_obj=table.page %}
+            {% endwith %}
+        </div>
+    </div>
 
 {% endblock %}

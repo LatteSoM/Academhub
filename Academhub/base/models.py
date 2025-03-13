@@ -4,7 +4,6 @@ from django.shortcuts import reverse
 
 __all__ = (
     'AcademHubModel',
-    'UrlGenerateMixin'
 )
 
 class AcademHubModel(UrlGenerateMixin, models.Model):

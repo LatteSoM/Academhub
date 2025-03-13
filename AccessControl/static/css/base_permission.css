@@ -1,0 +1,87 @@
+.detail-content-container
+{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.ditail-content-main
+{
+    width: 74%;
+}
+
+.permissions-list {
+    padding: 1rem;
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 0.375rem;
+    width: 25%;
+}
+
+.permissions-list h4 {
+    margin-bottom: 1rem;
+    color: var(--text-color);
+    font-weight: 500;
+    padding-bottom: 0.5rem;
+}
+
+.summary-items {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.summary-item {
+    padding: 0.75rem;
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 0.375rem;
+    color: var(--text-color);
+}
+
+.model-name {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.toggle-icon {
+    font-size: 0.8rem;
+    transition: transform 0.2s ease;
+}
+
+.action-list {
+    list-style: none;
+    padding-left: 1rem;
+    margin: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+    max-height: 500px; /* Максимальная высота для анимации */
+    opacity: 1;
+}
+
+.action-list.collapsed {
+    max-height: 0;
+    opacity: 0;
+}
+
+.action-item {
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    margin-bottom: 0.25rem;
+    color: var(--text-color);
+    transition: all 0.2s ease;
+}
+
+.action-item:last-child {
+    margin-bottom: 0;
+}
+
+.action-item:hover {
+    background-color: var(--primary-color);
+    color: white;
+}

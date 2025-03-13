@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.models import Permission
+from Academhub.models import PermissionProxy
 from django.template.loader import render_to_string
 
 __all__ = (
@@ -10,21 +10,7 @@ class PermissionSelectWidget(forms.Widget):
     template_name = 'widgets/permissions.html'
 
     def render(self, name, value, attrs=None, renderer=None):
-        permissions = Permission.objects.select_related('content_type').all()
-
-        models = {}
-
-        for permission in permissions:
-            model_name = permission.content_type.name
-            codename = permission.codename.split('_')[0]
-            
-            if not models.get(model_name, None):
-                models[model_name] = []
-
-            models[model_name].append({
-                'id': permission.pk,
-                'name': codename
-            })
+        permissions = PermissionProxy.objects.select_related('content_type').all()
         
         selected_ids = set(str(v) for v in value or [])
         selected_permissions = []
@@ -41,7 +27,7 @@ class PermissionSelectWidget(forms.Widget):
 
         context = {
             'name': name,
-            'models': models,
+            'models': permissions.as_context(),
             'selected_permissions': selected_permissions,
             'value': ','.join(selected_ids),
         }

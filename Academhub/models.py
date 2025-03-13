@@ -1,10 +1,12 @@
 from django.db import models
 from django.utils import timezone
-from Academhub.validators import *
-from .base.models import AcademHubModel, UrlGenerateMixin
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permission, Group, PermissionsMixin
+from .validators import *
+from  Academhub.base import AcademHubModel
+from .utils import UnifiedPermissionQyerySet
+from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permission, Group, PermissionsMixin, PermissionManager
 
-__all__ = [
+__all__ = (
     'CustomUser',
     'GroupStudents',
     'Discipline',
@@ -16,17 +18,49 @@ __all__ = [
     'TermPaper',
     'Curriculum',
     'Practice',
-    'Permission',
-    'Group',
+    'PermissionProxy',
+    'GroupProxy',
     'ProfessionalModule',
     'CalendarGraphicOfLearningProcess',
     'MiddleCertification',
     'StudentRecordBook',
     'RecordBookTemplate'
-]
+)
 
+class UnifiedPermissionsManager(PermissionManager):
+    '''
+        Расширение менеджера модели Permisision
+    '''
+
+    def get_queryset(self):
+        '''
+            Добавление новых функция для работы с Queryset Permission
+        '''
+        return UnifiedPermissionQyerySet(self.model, using=self._db)
+
+class PermissionProxy(AcademHubModel, Permission):
+    '''
+        Расширение для модели Permissions. Поддерживает навигацию
+    '''
+
+    objects = UnifiedPermissionsManager()
+
+    class Meta:
+        proxy = True
+        ordering = ['pk']
+        verbose_name = 'Право'
+        verbose_name_plural = 'Права'
+
+class GroupProxy(AcademHubModel, Group):
+    '''
+        Расширение для модели Group. Поддерживает навигацию
+    '''
+
+    class Meta:
+        proxy = True
+        verbose_name = 'Группа прав'
+        verbose_name_plural = 'Группы прав'
     
-
 class CustomUserManager(BaseUserManager):
     '''
     Менеджер для пользовательской модели, который управляет созданием пользователей.
@@ -62,7 +96,7 @@ class CustomUser(AcademHubModel, AbstractBaseUser, PermissionsMixin):
     Пользовательская модель, представляющая пользователей системы. 
     Наследует от AbstractBaseUser и PermissionsMixin для поддержки аутентификации и управления правами доступа.
     '''
-    email = models.EmailField(unique=True)
+    email = models.EmailField(unique=True, verbose_name='Почта')
     full_name = models.CharField(
         max_length=255,
         verbose_name='ФИО'
@@ -71,6 +105,26 @@ class CustomUser(AcademHubModel, AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True, verbose_name='Активный?')
     is_staff = models.BooleanField(default=False, verbose_name='Персонал?')
     is_teacher = models.BooleanField(default=False, verbose_name='Учитель?')
+
+    groups = models.ManyToManyField(
+        GroupProxy,
+        verbose_name=_("groups"),
+        blank=True,
+        help_text=_(
+            "The groups this user belongs to. A user will get all permissions "
+            "granted to each of their groups."
+        ),
+        related_name="user_set",
+        related_query_name="user",
+    )
+    user_permissions = models.ManyToManyField(
+        PermissionProxy,
+        verbose_name=_("user permissions"),
+        blank=True,
+        help_text=_("Specific permissions for this user."),
+        related_name="user_set",
+        related_query_name="user",
+    )
 
     objects = CustomUserManager()
 
@@ -83,26 +137,6 @@ class CustomUser(AcademHubModel, AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.full_name
 
-class PermissionProxy(AcademHubModel, Permission):
-    '''
-        Расширение для модели Permissions. Поддерживает навигацию
-    '''
-
-    class Meta:
-        proxy = True
-        ordering = ['pk']
-        verbose_name = 'Право'
-        verbose_name_plural = 'Права'
-
-class GroupProxy(AcademHubModel, Group):
-    '''
-        Расширение для модели Group. Поддерживает навигацию
-    '''
-
-    class Meta:
-        proxy = True
-        verbose_name = 'Группа прав'
-        verbose_name_plural = 'Группы прав'
 
 class Discipline(AcademHubModel):
 
