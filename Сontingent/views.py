@@ -1,6 +1,7 @@
 import os
 from django.conf import settings
 from django.http import HttpResponse
+from django.utils.text import normalize_newlines
 
 from Academhub.modules.documentGenPars import StatisticsTableGenerator, \
     CourseTableGenerator, GroupTableGenerator, VacationTableGenerator, \
@@ -985,14 +986,32 @@ def import_students(request):
 
                     phone = row[headers.get("Телефон мобильный")]
                     admission_order = row[headers.get("Приказ о зачислении")]
-                    expell_order = row[headers.get("Приказ об отчислении")]
-                    date_of_expelling = parse_date(str(row[headers.get("Дата отчисления")])) if row[
-                        headers.get("Дата отчисления")] else None
+                    expell_order = row[headers.get("Приказ об отчислении")] if row[
+                        headers.get("Приказ об отчислении")] else None
+                    date_of_expelling = (
+                        row[headers.get("Приказ об отчислении дата ОТ")].date() if isinstance(row[headers.get("Приказ об отчислении дата ОТ")], datetime)
+                        else datetime.strptime(row[headers.get("Приказ об отчислении дата ОТ")], "%d.%m.%Y").date()) if row[
+                        headers.get("Приказ об отчислении дата ОТ")] else None
                     academ_leave_date = parse_date(str(row[headers.get("Дата начала последнего академ отпуска")])) if \
                     row[headers.get("Дата начала последнего академ отпуска")] else None
                     academ_return_date = parse_date(
                         str(row[headers.get("Дата окончания последнего академ отпуска")])) if row[
                         headers.get("Дата окончания последнего академ отпуска")] else None
+                    registration_addres = row[headers.get("Адрес по прописке")] if row[headers.get("Адрес по прописке")] else None
+                    actual_addres = row[headers.get("Адрес проживания")] if row[headers.get("Адрес проживания")] else None
+                    snils = row[headers.get("СПС")] if row[headers.get("СПС")] else None
+                    expelled_due_to_graduation = False
+                    is_expelled = False
+                    reason_of_expelling = None
+                    note = None
+                    if expell_order:
+                        is_expelled = True
+                        if 'окончании' in expell_order:
+                            expelled_due_to_graduation = True
+                            reason_of_expelling = "Окончание обучения"
+                            note = 'Отчислен в связи с окончанием обучения'
+
+
 
                     # Проверяем и создаём группу, если её нет
                     group = GroupStudents.objects.get(full_name=group_number)
@@ -1011,6 +1030,14 @@ def import_students(request):
                             'is_in_academ': bool(academ_leave_date and not academ_return_date),
                             'academ_leave_date': academ_leave_date,
                             'academ_return_date': academ_return_date,
+                            'registration_address': registration_addres,
+                            'actual_address': actual_addres,
+                            'snils': snils,
+                            'expelled_due_to_graduation': expelled_due_to_graduation,
+                            'reason_of_expelling': reason_of_expelling,
+                            'is_expelled': is_expelled,
+                            'note': note,
+
                         }
                     )
                 except Exception as e:
