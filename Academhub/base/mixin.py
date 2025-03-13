@@ -25,7 +25,7 @@ class UrlGenerateMixin:
     def _generate_url(cls):
         cls._urls = {}
         
-        for attr in self.url_attrs:
+        for attr in cls.url_attrs:
             prefix_name = 'url_' + attr
             cls._urls[prefix_name] = f'{cls.__name__.lower()}_{attr}'
 

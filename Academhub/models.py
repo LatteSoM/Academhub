@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from .validators import *
-from  Academhub.base import AcademHubModel
+from  Academhub.base.models import AcademHubModel
 from .utils import UnifiedPermissionQyerySet
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permission, Group, PermissionsMixin, PermissionManager
