@@ -1,4 +1,6 @@
 import os
+import re
+
 from django.conf import settings
 from django.http import HttpResponse
 from django.utils.text import normalize_newlines
@@ -509,12 +511,12 @@ def student_format_to_list():
     return students
 
 
-def qualification_detail(request, qualification_id):
-    qualification = get_object_or_404(Qualification, id=qualification_id)
-    # Предположим, что admission_year выбирается пользователем или берется текущий год
-    admission_year = 2023  # Замените на логику выбора года
-    return render(request, 'qualification_detail.html',
-                  {'qualification': qualification, 'admission_year': admission_year})
+# def qualification_detail(request, qualification_id):
+#     qualification = get_object_or_404(Qualification, id=qualification_id)
+#     # Предположим, что admission_year выбирается пользователем или берется текущий год
+#     admission_year = 2023  # Замените на логику выбора года
+#     return render(request, 'qualification_detail.html',
+#                   {'qualification': qualification, 'admission_year': admission_year})
 
 
 def save_record_book_template(request, qualification_id, admission_year):
@@ -693,6 +695,9 @@ class EditRecordBookTemplateView(ObjectUpdateView):
 
 
 def generate_student_record_book(request, pk):
+    """
+    Функция для генерации зачетной книжки для конкретного студента
+    """
     try:
         student = get_object_or_404(Student, pk=pk)
     except StudentRecordBook.DoesNotExist as e:
@@ -707,7 +712,7 @@ def generate_student_record_book(request, pk):
         print("Шаблон не найден")
 
     # Генерация уникального номера зачетки
-    record_book_number = generate_unique_record_book_number(admission_year)
+    record_book_number = generate_unique_record_book_number(admission_year, student)
     print(2)
     # Создаём новый объект StudentRecordBook для студента
     new_record_book = StudentRecordBook.objects.create(
@@ -735,6 +740,10 @@ def generate_student_record_book(request, pk):
 
 
 def create_auto_record_book_template(request, qualification_id, admission_year):
+    """
+    Функция для генерации Шаблона зачетной книжки  шаблон генерируется на квалификацию и год поступления,
+    Например для всех групп П 2021 года поступления
+    """
     qualification = get_object_or_404(Qualification, id=qualification_id)
     curriculum = get_object_or_404(Curriculum, qualification=qualification, admission_year=admission_year)
 
@@ -778,6 +787,9 @@ def create_auto_record_book_template(request, qualification_id, admission_year):
 
 # Обновим GenerateGroupRecordBooks для использования нового шаблона
 def generate_group_recordbooks(request, group_id):
+    """
+    Функция для генерации зачетных книжек на всю группу
+    """
     group = get_object_or_404(GroupStudents, id=group_id)
     qualification = group.qualification
     admission_year = group.year_create
@@ -793,7 +805,7 @@ def generate_group_recordbooks(request, group_id):
         if student.record_book:  # Пропускаем студентов с уже существующей зачёткой
             continue
 
-        record_book_number = generate_unique_record_book_number(admission_year)
+        record_book_number = generate_unique_record_book_number(admission_year, student)
         new_record_book = StudentRecordBook.objects.create(
             student=student,
             qualification=qualification,
@@ -817,12 +829,19 @@ def generate_group_recordbooks(request, group_id):
     return redirect('groupstudents_detail', pk=group_id)
 
 
-def generate_unique_record_book_number(admission_year):
+def generate_unique_record_book_number(admission_year, student):
+    """
+    Функция для генерации уникального номера зачетной книжки
+    prefix: 'Д' - ('Д' означает "Дневная форма обучения", этот префикс в номере зачетной книжки не меняется)
+    suffix - 'Б' или'В' - ('Б' если у студента основа обучения "Бюджет", 'В' если основа обучения "Внебюджет")
+    number - цифры в номере зачетной книжки подтягивается из анкеты на поступление
+    year_short - короткое отображение года поступления (пример: 2025 станет 25)
+    record_book_number - итоговый номер зачетной книжки  если функция отработала правильно, бедт иметь вид: "Д1593Б/21/СПО"
+    """
     while True:
-        letters = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'
-        prefix = random.choice(letters)
-        suffix = random.choice(letters)
-        number = ''.join(random.choices(string.digits, k=4))
+        prefix = 'Д'
+        suffix = 'Б' if student.education == 'Бюджет' else 'В'
+        number = student.ancete_number if student.ancete_number else ''
         year_short = str(admission_year)[-2:]
         record_book_number = f"{prefix}{number}{suffix}/{year_short}/СПО"
         if not StudentRecordBook.objects.filter(record_book_number=record_book_number).exists():
@@ -853,6 +872,9 @@ class ContingentMovementTableView(ObjectTableView):
 
 
 def generate_group_table(request):
+    """
+    Функция для генерации файла .xslx для всех групп
+    """
     groups = GroupStudents.objects.all()
     generator = GroupTableGenerator(groups)
     file_path = os.path.join(settings.MEDIA_ROOT, 'group_table.xlsx')
@@ -872,6 +894,9 @@ def generate_group_table(request):
 
 
 def generate_course_table(request, course):
+    """
+    Функция для генерации файла .xslx для статистики по определенному курсу
+    """
     students = Student.objects.filter(group__current_course=course)
     try:
         generator = CourseTableGenerator(students)
@@ -892,6 +917,9 @@ def generate_course_table(request, course):
 
 
 def generate_statistics_table(request):
+    """
+    Функция для генерации файла .xslx для статистики
+    """
     specialties = Specialty.objects.all()
     qualifications = Qualification.objects.all()
     students = Student.objects.all()
@@ -911,6 +939,9 @@ def generate_statistics_table(request):
 
 
 def generate_vacation_table(request):
+    """
+    Функция для генерации файла .xslx для студентов находящихся в академическом отпуске
+    """
     students = Student.objects.filter(is_in_academ=True)
     generator = VacationTableGenerator(students)
     file_path = os.path.join(settings.MEDIA_ROOT, 'vacation_table.xlsx')
@@ -952,7 +983,24 @@ from Academhub.models import Student, GroupStudents
 from django.utils.dateparse import parse_date
 
 
+
+def extract_application_number(text):
+    """
+    Функция для извлечения номера анкеты из колонки "Анкета абитуриента"
+    """
+    match = re.search(r"Заявление о поступлении (\d+)-?(\d*) от", text)
+    if match:
+        if match.group(2):  # Если есть вторая часть (пример: "427-696")
+            return match.group(1) + "-" + match.group(2)
+        return match.group(1).lstrip("0")  # Убираем нули, если одинарный номер
+
+    return None  # Если не найдено возвращается Ноне
+
+
 def import_students(request):
+    """
+    Функция для импорта контингентов из файла форматат .xlsx, выгруженного из 1с приемной комиссией
+    """
     if request.method == 'POST':
         form = StudentImportForm(request.POST, request.FILES)
         if form.is_valid():
@@ -1000,6 +1048,7 @@ def import_students(request):
                     registration_addres = row[headers.get("Адрес по прописке")] if row[headers.get("Адрес по прописке")] else None
                     actual_addres = row[headers.get("Адрес проживания")] if row[headers.get("Адрес проживания")] else None
                     snils = row[headers.get("СПС")] if row[headers.get("СПС")] else None
+                    ancete_number = extract_application_number(row[headers.get("Анкета абитуриента")])
                     expelled_due_to_graduation = False
                     is_expelled = False
                     reason_of_expelling = None
@@ -1037,7 +1086,7 @@ def import_students(request):
                             'reason_of_expelling': reason_of_expelling,
                             'is_expelled': is_expelled,
                             'note': note,
-
+                            'ancete_number': ancete_number,
                         }
                     )
                 except Exception as e:
