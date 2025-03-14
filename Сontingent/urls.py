@@ -4,7 +4,7 @@ from django.urls import path
 from .views import AcademListView, AcademUpdateView, AcademReturn, ExpulsionListView, ExpelStudent, RecoverStudent, \
     StatisticksView, generate_student_record_book, create_auto_record_book_template, \
     ContingentMovementTableView, generate_group_table, generate_course_table, generate_statistics_table, \
-    generate_vacation_table, generate_movement_table, import_students,\
+    generate_vacation_table, generate_movement_table, \
     generate_student_record_book, create_auto_record_book_template
 
 urlpatterns = [
@@ -54,7 +54,6 @@ urlpatterns = [
     path('student/create', StudentCreateView.as_view(), name='student_create'),
     path('student/<int:pk>', StudentDetailView.as_view(), name='student_detail'),
     path('student/update/<int:pk>', StudentUpdateView.as_view(), name='student_update'),
-    path('student/import-students/', import_students, name='import_students'),
 
     #
     ## Зачетная книжка

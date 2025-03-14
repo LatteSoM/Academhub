@@ -1,4 +1,6 @@
 from .navigation import Navigation
+from django.shortcuts import render
+from django.contrib import messages
 from django_tables2 import RequestConfig
 from django.views.generic.base import ContextMixin
 # from django.contrib.auth.mixins import PermissionRequiredMixin
@@ -106,3 +108,54 @@ class SubTablesMixin:
             table.generate_table(self.object)
             RequestConfig(request, paginate={"per_page": self.paginate_by}).configure(table.table)
             context['tables'].append(table)
+
+
+class ImportViewMixin:
+    form_import = None
+    _form = None
+
+    def generate_form_import(self, *args, **kwargs):
+        return self.form_import(*args, **kwargs)
+
+    def save_from_import(self, *args, **kwargs):
+        form = self.generate_form_import(*args, **kwargs)
+        if form.is_valid():
+            form.save()
+        return form
+
+    def get(self, request, *args, **kwargs):
+        """
+            Обработка get запроса
+        """
+        self._form = self.generate_form_import()
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        """Обрабатывает POST-запрос, валидирует и сохраняет form."""
+
+        self._form =  self.save_from_import(request.POST, request.FILES)
+
+        if self._form.is_valid():
+            messages.success(
+                request,
+                "Студенты импортированы"
+            )
+            
+            self._form = self.generate_form_import()
+        else:
+            error_message = "Импорт не удался: \n"
+            for field, errors in self._form.errors.items():
+                error_message += f"{', '.join(errors)}\n"
+
+            messages.error(
+                request,
+                error_message
+            )
+        
+        return super().get(request, *args, **kwargs)
+        
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form_import'] = self._form
+        return context

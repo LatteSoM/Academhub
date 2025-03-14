@@ -1,0 +1,33 @@
+
+{% if messages %}
+<div class="notification-wrapper">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} notification">
+        <span class="close-btn" onclick="this.parentElement.classList.add('hide')">&times;</span>
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Автоматическое скрытие уведомлений через 7 секунд
+        const notifications = document.querySelectorAll('.notification');
+
+        notifications.forEach(notification => {
+            // Запуск анимации исчезновения через 7 секунд
+            setTimeout(() => {
+                notification.classList.add('hide');
+                // Полное удаление из DOM после анимации
+                setTimeout(() => notification.remove(), 500);
+            }, 7000);
+
+            // Закрытие по клику
+            notification.querySelector('.close-btn').addEventListener('click', () => {
+                notification.classList.add('hide');
+                setTimeout(() => notification.remove(), 500);
+            });
+        });
+    });
+</script>

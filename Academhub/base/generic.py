@@ -24,8 +24,6 @@ class ObjectTemplateView(NavigationContextMixin, TemplateView):
   '''
 
 
-
-
 class BaseObjectTableView(BaseContextMixin, SingleTableView):
     '''
     Базовый класс для представлений с таблицами.
