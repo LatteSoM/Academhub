@@ -5,6 +5,7 @@ from Academhub.models import CustomUser, GroupProxy, PermissionProxy
 __all__ = (
     'UserTable',
     'GroupTable',
+    'UserGroupTable',
     'PermissionTable',
 )
 
@@ -23,7 +24,7 @@ class UserTable(BaseTable):
 
     class Meta:
         model = CustomUser
-        fields = ('pk', 'email', 'full_name', 'user_permissions', 'groups', 'is_active', 'is_staff', 'is_teacher')
+        fields = ('email', 'full_name', 'user_permissions', 'groups', 'is_active', 'is_staff', 'is_teacher')
 
 
 class GroupTable(BaseTable):
@@ -33,7 +34,18 @@ class GroupTable(BaseTable):
 
     class Meta:
         model = GroupProxy
-        fields = ('pk', 'name', 'permissions')
+        fields = ('name', 'permissions')
+
+
+class GroupUserTable(BaseTable):
+    
+    email = EmailColumn(
+        verbose_name='Почта'
+    )
+
+    class Meta:
+        model = CustomUser
+        fields = ('email', 'full_name',)
 
 
 class PermissionTable(BaseTable):
@@ -45,4 +57,4 @@ class PermissionTable(BaseTable):
 
     class Meta:
         model = PermissionProxy
-        fields = ('pk', 'name', 'content_type', 'codename')
+        fields = ('name', 'content_type', 'codename')

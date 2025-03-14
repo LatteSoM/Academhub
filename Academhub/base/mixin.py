@@ -55,35 +55,17 @@ class SubTablesMixin:
                 SubTable (
                     name='Название таблицы',
                     queryset=Model.objects.all(),
-                    table_class=ModelTable,
-                    buttons = [
-                        ButtonTable (
-                            name = 'Название кнопки',
-                            link = 'home'
-                        )
-                    ]
+                    table=Model,
+                    filter_key='pk',
                 )
             ]
-
-            tables = {
-                'Название таблицы': {
-                    'queryset': Model.objects.all(),
-                    'table_class': ModelTable,
-                    'buttons': [
-                        'Название кнопки': {
-                            'link': 'home'
-                        }
-                    ]
-                }
-            }
     '''
     tables = []
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['tables'] = self.tables
-        return context
+    def get_tables(self, request, context):
+        context['tables'] = []
 
-    def get_tables(self, request):
         for table in self.tables:
-            RequestConfig(request, paginate={"per_page": self.paginate_by }).configure(table)
+            table.generate_table(self.object)
+            RequestConfig(request, paginate={"per_page": self.paginate_by}).configure(table.table)
+            context['tables'].append(table)

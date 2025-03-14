@@ -109,11 +109,7 @@ class ObjectDetailView(BaseContextMixin, SubTablesMixin, DetailView):
                     ['field3', 'field4'],
             }
         
-        Поддерживает вывод дополнительных таблиц с помощью:
-            tables = {
-                'Дополинтельная таблица': {
-                }
-            }
+        Поддерживает вывод дополнительных таблиц благодаря SubTablesMixin.
     '''
     paginate_by  = 10
     template_name = 'base_detail.html'
@@ -134,15 +130,9 @@ class ObjectDetailView(BaseContextMixin, SubTablesMixin, DetailView):
         self.object = self.get_object()
         context = self.get_context_data(object=self.object)
 
-        self.get_tables(request)
+        self.get_tables(request, context)
 
         return self.render_to_response(context)
-
-    def get_tables(self):
-        '''
-            Отрисовка допонительных таблиц
-        '''
-        return []
 
 
 class ObjectUpdateView(BaseContextMixin, UpdateView):

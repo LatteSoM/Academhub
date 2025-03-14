@@ -106,26 +106,6 @@ class CustomUser(AcademHubModel, AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False, verbose_name='Персонал?')
     is_teacher = models.BooleanField(default=False, verbose_name='Учитель?')
 
-    groups = models.ManyToManyField(
-        GroupProxy,
-        verbose_name=_("groups"),
-        blank=True,
-        help_text=_(
-            "The groups this user belongs to. A user will get all permissions "
-            "granted to each of their groups."
-        ),
-        related_name="user_set",
-        related_query_name="user",
-    )
-    user_permissions = models.ManyToManyField(
-        PermissionProxy,
-        verbose_name=_("user permissions"),
-        blank=True,
-        help_text=_("Specific permissions for this user."),
-        related_name="user_set",
-        related_query_name="user",
-    )
-
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'email'

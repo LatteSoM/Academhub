@@ -1,19 +1,10 @@
 import os
-from django.conf import settings
-from django.http import HttpResponse
-
-from Academhub.modules.documentGenPars import StatisticsTableGenerator, \
-    CourseTableGenerator, GroupTableGenerator, VacationTableGenerator, \
-    MovementTableGenerator
+import random
+import string
 from .forms import *
 from .tables import *
 from .filters import *
 from datetime import datetime
-from contextlib import nullcontext
-from collections import defaultdict
-from django.urls import reverse_lazy
-from .filters import AcademFilter, ExpulsionFilter, ContingentMovementFilter
-from .forms import AcademLeaveForm, AcademReturnForm, ExpellStudentForm, RecoverStudentForm, StudentImportForm
 from Academhub.models import (
     Student,
     Practice,
@@ -25,15 +16,24 @@ from Academhub.models import (
     GroupStudents,
     Qualification,
     StudentRecordBook,
+    ContingentMovement,
     RecordBookTemplate,
     ProfessionalModule,
-    MiddleCertification, ContingentMovement,
+    MiddleCertification, 
 )
-import random
-import string
+from django.conf import settings
+from contextlib import nullcontext
+from collections import defaultdict
+from Academhub.base import SubTable
+from django.http import HttpResponse
+from django.urls import reverse_lazy
 from Gradebook.tables import GradebookTable2
 from django.shortcuts import render, get_object_or_404, redirect
+from .tables import AcademTable, ExpulsionTable, ContingentMovementTable
+from .filters import AcademFilter, ExpulsionFilter, ContingentMovementFilter
+from .forms import AcademLeaveForm, AcademReturnForm, ExpellStudentForm, RecoverStudentForm, StudentImportForm
 from Academhub.base import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView, ObjectTemplateView
+from Academhub.modules.documentGenPars import StatisticsTableGenerator, CourseTableGenerator, GroupTableGenerator, VacationTableGenerator, MovementTableGenerator
 
 __all__ = (
     # 'view_record_book',
@@ -72,7 +72,6 @@ __all__ = (
     'QualificationUpdateView'
 )
 
-from .tables import AcademTable, ExpulsionTable, ContingentMovementTable
 
 
 #
@@ -93,6 +92,7 @@ class DisciplineDetailView(ObjectDetailView):
     """
     model= Discipline
     paginate_by  = 30
+
     fieldset = {
         'Основная информация':
             ['name', 'code', 'specialty',]
@@ -137,10 +137,14 @@ class SpecialtyDetailView(ObjectDetailView):
             ['code', 'name'],
     }
 
-    def get_tables(self):
-        students = Qualification.objects.filter(specialty__pk=self.object.pk)
-        table = QualificationTable(data=students)
-        return [table]
+    tables = [
+        SubTable(
+            name='Квалификации',
+            filter_key='specialty',
+            table=QualificationTable,
+            queryset=Qualification.objects.all(),
+        )
+    ]
 
 class SpecialtyUpdateView(ObjectUpdateView):
     """
@@ -189,10 +193,14 @@ class QualificationDetailView(ObjectDetailView):
             ['short_name', 'name', 'specialty']
     }
 
-    def get_tables(self):
-        students = GroupStudents.objects.filter(qualification__pk=self.object.pk)
-        table = GroupTable(data=students)
-        return [table]
+    tables = [
+        SubTable(
+            name='Студенты',
+            table=GroupTable,
+            filter_key='qualification',
+            queryset=GroupStudents.objects.all(),
+        )
+    ]
 
 class QualificationUpdateView(ObjectUpdateView):
     """
@@ -234,15 +242,14 @@ class GroupDetailView(ObjectDetailView):
             ['number', 'qualification']
     }
 
-    def get_tables(self):
-        students = Student.objects.filter(group__pk=self.object.pk, is_expelled=False, is_in_academ=False)
-        table = StudentTable2(data=students)
-
-        gradebooks = Gradebook.objects.filter(group__pk=self.object.pk)
-        table2 = GradebookTable2(data=gradebooks)
-
-
-        return [table, table2]
+    tables = [
+        SubTable (
+            name='Студенты',
+            filter_key='group',
+            table=StudentTable2,
+            queryset=Student.objects.filter(is_expelled=False, is_in_academ=False),
+        ),
+    ]
 
 class GroupUpdateView(ObjectUpdateView):
     """
