@@ -6,6 +6,7 @@ urlpatterns = [
     path('user/create', UserCreateView.as_view(), name='customuser_create'),
     path('user/<int:pk>', UserDetailView.as_view(), name='customuser_detail'),
     path('user/update/<int:pk>', UserUpdateView.as_view(), name='customuser_update'),
+    path('user/change_password/', UserPasswordChangeView.as_view(), name='password_change'),
 
     path('permission/list', PermissionTableView.as_view(), name='permissionproxy_list'),
     path('permission/create', PermissionCreateView.as_view(), name='permissionproxy_create'),

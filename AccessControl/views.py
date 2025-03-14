@@ -1,5 +1,7 @@
 from .form import *
 from Academhub.base import SubTable
+from django.contrib.auth.views import PasswordChangeView
+from django.contrib.messages.views import SuccessMessageMixin
 from .filter import UserFilter, GroupFilter, PermissionFilter
 from Academhub.models import CustomUser, PermissionProxy, GroupProxy
 from .table import UserTable, PermissionTable, GroupTable, GroupUserTable
@@ -61,6 +63,14 @@ class UserDetailView(PermissionMixin, ObjectDetailView):
 
     def get_permissions(self):
         return PermissionProxy.objects.filter(user__id=self.object.pk)
+
+class UserPasswordChangeView(SuccessMessageMixin, PasswordChangeView):
+    """
+    Изменение пароля пользователя
+    """
+    form_class = UserPasswordChangeForm
+    template_name = 'AccessControl/update/change_password.html'
+    success_message = 'Ваш пароль был успешно изменён!'
 
 class UserUpdateView(ObjectUpdateView):
     form_class = UserUpdateForm
