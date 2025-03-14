@@ -1,0 +1,20 @@
+<div class="permissions-widget">
+    {% for group in widget.optgroups %}
+        <div class="permissions-group">
+            <h5>{{ group.0 }}</h5>
+            <ul>
+                {% for option in group.1 %}
+                    <li>
+                        <label>
+                            <input type="checkbox" name="{{ widget.name }}" value="{{ option.value }}"
+                                   {% if option.attrs.id %}id="{{ option.attrs.id }}"{% endif %}
+                                   {% if option.attrs.data-content-type %}data-content-type="{{ option.attrs.data-content-type }}"{% endif %}
+                                   {% if option.selected %}checked{% endif %}>
+                            {{ option.label }}
+                        </label>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endfor %}
+</div>
