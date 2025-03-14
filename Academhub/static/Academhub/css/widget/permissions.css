@@ -80,16 +80,6 @@
     accent-color: var(--primary-color);
 }
 
-/* Summary Items */
-.summary-item {
-    padding: 0.5rem;
-    background-color: var(--bg-color);
-    border: 1px solid var(--border-color);
-    border-radius: 0.375rem;
-    margin-bottom: 0.5rem;
-    color: var(--text-color);
-}
-
 /* Responsive Design */
 @media (max-width: 768px) {
     .permissions-widget {

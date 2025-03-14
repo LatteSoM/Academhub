@@ -1,14 +1,12 @@
 {% extends 'base_detail.html' %}
 
-
-
 {% load django_tables2 %}
 {% load util %}
 
 {% block extra_css %}
     {{ block.super }}
         <!-- Добавьте этот код в ваш базовый шаблон (например, base.html) -->
-<style>
+    <style>
     /* Стили для уведомлений */
     .notification-wrapper {
         position: fixed;
@@ -117,51 +115,20 @@
 
 {% endblock %}
 
-{% block ditail-content %}
-
-    {{ block.super }}
-    
-    <div class="detail-content" style="margin-top: 20px;">
-        <div class="detail-tabs">
-            <button class="detail-tab active tab-button" data-tab="info">Квалификации</button>
-        </div>
-        
-        <div class="detail-tab-content">
-            <a class="btn-primary" href="{% url 'gradebookstudents_bulk_create' pk=object.pk %}">
-                Заполнить ведомость
-            </a>
-            {% with table=tables.0 %}
-                {% render_table table 'inc/table/table.html' %}
-                {% include 'inc/pagination.html' with page_obj=table.page %}
-            {% endwith %}
-        </div>
-    </div>
-
-    <div class="detail-content" style="margin-top: 20px;">
-        <div class="detail-tabs">
-            <button class="detail-tab active tab-button" data-tab="info">Преподаватели</button>
-        </div>
-        
-        <div class="detail-tab-content">
-            {% with table=tables.1 %}
-                {% render_table table 'inc/table/table.html' %}
-                {% include 'inc/pagination.html' with page_obj=table.page %}
-            {% endwith %}
-        </div>
-    </div>
+{% block extra-detail-content %}
 
     {% block messages %}
-    <!-- HTML для отображения уведомлений -->
-    {% if messages %}
-    <div class="notification-wrapper">
-        {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} notification">
-            <span class="close-btn" onclick="this.parentElement.classList.add('hide')">&times;</span>
-            {{ message }}
+        <!-- HTML для отображения уведомлений -->
+        {% if messages %}
+        <div class="notification-wrapper">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} notification">
+                <span class="close-btn" onclick="this.parentElement.classList.add('hide')">&times;</span>
+                {{ message }}
+            </div>
+            {% endfor %}
         </div>
-        {% endfor %}
-    </div>
-    {% endif %}
+        {% endif %}
 
     {% endblock %}
     

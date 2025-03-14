@@ -24,7 +24,6 @@ class BaseTable(tables.Table):
         self.columns['edition'].column._set_url_name(url['url_update'])
         self.columns['view_detail'].column._set_url_name(url['url_detail'])
 
-
 class BaseTable2(tables.Table):
     edition = ButtonLinkColumn(accessor='pk', text='Изменить', verbose_name='')
     view_detail = ButtonLinkColumn(accessor='pk', text='Просмотреть', verbose_name='')

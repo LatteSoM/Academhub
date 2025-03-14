@@ -1,0 +1,20 @@
+{% extends 'AccessControl/detail/base/permission.html' %}
+
+{% block detail-header %}
+    <h3>
+        Детальный просмотр пользователя {{ object }}
+    </h3>
+{% endblock %}
+
+{% block actions-button %}
+    <a class="btn-primary" href="{% url 'password_change' %}">
+        Изменить пароль
+    </a>
+    <a class="btn-primary" href="{% url url_update pk=object.pk %}">
+        Обновить
+    </a>
+{% endblock %}
+
+{% block permissions-list-header %}
+    Права пользователя
+{% endblock %}

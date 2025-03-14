@@ -1,0 +1,54 @@
+{% extends 'base_detail.html' %}
+
+{% load static %}
+
+{% block extra_css %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'AccessControl/css/base_permission.css' %}">
+{% endblock %}
+
+{% block ditail-content %}
+    <div class="detail-content-container">
+        <div class="ditail-content-main">
+            {{ block.super }}
+        </div>
+
+        <div class="permissions-list">
+            <h4>
+                {% block permissions-list-header %}
+                {% endblock %}
+            </h4>
+            {% for model_name, actions in permissions.items %}
+                <div class="summary-item">
+                    <div class="model-name">
+                        {{ model_name }}
+                        <span class="toggle-icon">▼</span>
+                    </div>
+                    <ul class="action-list">
+                        {% for action in actions %}
+                            <li class="action-item">
+                                {{ action.name }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    {{ block.super }}
+    <script>
+        const items = document.querySelectorAll('.model-name');
+        items.forEach(item => {
+            item.addEventListener("click", function () {
+                const toggleIcon = item.querySelector('.toggle-icon');
+                const actionList = this.nextElementSibling;
+
+                actionList.classList.toggle('collapsed');
+                toggleIcon.textContent = actionList.classList.contains('collapsed') ? '▶' : '▼';
+            });
+        });
+    </script>
+{% endblock %}

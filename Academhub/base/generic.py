@@ -1,8 +1,8 @@
-from django_tables2 import RequestConfig
+from .mixin import SubTablesMixin
+from .navigation import Navigation
+from django.http import JsonResponse
 from django_tables2 import SingleTableView
 from django_filters.views import FilterView
-from django.http import JsonResponse, Http404
-from Academhub.base.navigation import Navigation
 from django.utils.translation import gettext as _
 from django.views.generic.base import ContextMixin
 from django.core.exceptions import ObjectDoesNotExist
@@ -95,21 +95,28 @@ class ObjectListView(BaseContextMixin, ListView):
     pass
 
 
-class ObjectDetailView(BaseContextMixin, DetailView):
+class ObjectDetailView(BaseContextMixin, SubTablesMixin, DetailView):
     '''
-    Базовый класс для представлений с деталями объекта.
-    Наследуется от BaseContextMixin и DetailView.
-    Используется для отображения деталей одного объекта с поддержкой навигации.
+        Базовый класс для представлений с деталями объекта.
+        Наследуется от BaseContextMixin и DetailView.
+        Используется для отображения деталей одного объекта с поддержкой навигации.
 
-    fieldset = {
-        'Основная информация': ['field1', 'field2'],
-        'Дополнительная информация': ['field3', 'field4'],
-    }
+        Поддерживаем вывод и группировки полей с помощью:
+            fieldset = {
+                'Основная информация': - название группировки полей
+                    ['field1', 'field2'], - поля
+                'Дополнительная информация': 
+                    ['field3', 'field4'],
+            }
+        
+        Поддерживает вывод дополнительных таблиц благодаря SubTablesMixin.
     '''
     paginate_by  = 10
     template_name = 'base_detail.html'
 
     fieldset = {}
+
+    tables = []
 
     def get_model_name(self):
         return self.model._meta.model_name
@@ -122,21 +129,10 @@ class ObjectDetailView(BaseContextMixin, DetailView):
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         context = self.get_context_data(object=self.object)
-        tables = self.get_tables()
 
-        context['tables'] = []
-
-        for table in tables:
-            RequestConfig(request, paginate={"per_page": self.paginate_by }).configure(table)
-            context['tables'].append(table)
+        self.get_tables(request, context)
 
         return self.render_to_response(context)
-
-    def get_tables(self):
-        '''
-            Отрисовка допонительных таблиц
-        '''
-        return []
 
 
 class ObjectUpdateView(BaseContextMixin, UpdateView):
