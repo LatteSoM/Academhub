@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 
-
+# TODO: Review this form after model changes.
 class CustomAuthenticationForm(AuthenticationForm):
     username = forms.CharField(label='Email', widget=forms.TextInput(attrs={'autofocus': True, 'class': 'form-control'}))
     password = forms.CharField(

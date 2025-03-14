@@ -2,7 +2,7 @@ from django.contrib.auth.views import LoginView
 from django.shortcuts import render
 from django.views.generic import TemplateView
 
-from Academhub.base.generic import ObjectTemplateView
+from Curriculum.base.generic import ObjectTemplateView
 
 
 # Create your views here.

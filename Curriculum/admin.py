@@ -1,24 +1,32 @@
 from django.contrib import admin
-from Curriculum.models import *
+from .models import StudyPlan, Category, StudyCycle, Module, Disipline, ClockCell, WhitelistWord
 
-# Register your models here.
-admin.site.register(CustomUser)
-admin.site.register(Discipline)
-admin.site.register(MiddleCertification)
-admin.site.register(ProfessionalModule)
-admin.site.register(Practice)
-admin.site.register(TermPaper)
-admin.site.register(Specialty)
-admin.site.register(Qualification)
-admin.site.register(CurriculumItem)
-admin.site.register(Curriculum)
-admin.site.register(RecordBookTemplate)
-admin.site.register(GroupStudents)
-admin.site.register(Student)
-admin.site.register(StudentRecordBook)
-admin.site.register(GradebookStudents)
-admin.site.register(Gradebook)
-admin.site.register(CalendarGraphicOfLearningProcess)
-admin.site.register(ContingentMovement)
-admin.site.register(PermissionProxy)
-admin.site.register(GroupProxy)
+
+class StudyPlanAdmin(admin.ModelAdmin):
+    list_display = ('id', 'qualification', 'admission_year', 'create_date')
+
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('id', 'identificator', 'cycles', 'study_plan')
+
+class StudyCycleAdmin(admin.ModelAdmin):
+    list_display = ('id', 'identificator', 'cycles', 'category')
+
+class ModuleAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'studey_cycle')
+
+class DisiplineAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'index', 'module')
+
+class ClockCellAdmin(admin.ModelAdmin):
+    list_display = ('id', 'code_of_type_work', 'code_of_type_hours', 'course', 'semestr', 'count_of_clocks', 'plan_string', 'module_plan_string')
+
+class WhitelistWordAdmin(admin.ModelAdmin):
+    list_display = ('word',)
+
+admin.site.register(StudyPlan, StudyPlanAdmin)
+admin.site.register(Category, CategoryAdmin)
+admin.site.register(StudyCycle, StudyCycleAdmin)
+admin.site.register(Module, ModuleAdmin)
+admin.site.register(Disipline, DisiplineAdmin)
+admin.site.register(ClockCell, ClockCellAdmin)
+admin.site.register(WhitelistWord, WhitelistWordAdmin)
