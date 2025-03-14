@@ -2,7 +2,13 @@ import os
 import random
 import re
 import string
+
+from django.utils.dateparse import parse_date
+from openpyxl.reader.excel import load_workbook
+
+from Academhub.base.mixin import ImportViewMixin
 from .forms import *
+from .utils import *
 from .tables import *
 from .filters import *
 from datetime import datetime
@@ -270,13 +276,20 @@ class GroupCreateView(ObjectCreateView):
 ## Student
 #
 
-class StudentTableView(ObjectTableView):
+class StudentTableView(ImportViewMixin, ObjectTableView):
     """
     Класс для отображения таблицы студентов.
     """
     table_class = StudentTable
     filterset_class = StudentFilter
     queryset = Student.objects.filter(is_expelled=False, is_in_academ=False)
+    template_name = 'Contingent/list/student_list.html'
+    form_import = StudentImportForm
+
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+
 
 class StudentDetailView(ObjectDetailView):
     """
@@ -498,24 +511,6 @@ class StatisticksView(ObjectTemplateView):
         return context
 
 
-def student_format_to_list():
-    students = []
-    for student in Student.objects.all():
-        student_specialty = student.group.qualification.specialty
-        student_qualification = student.group.qualification.name
-        student_current_course = student.group.current_course
-        student_education_base = student.education_base
-        student_education_basis = student.education_basis
-        student_is_in_academ = student.is_in_academ
-        student_is_expelled = student.is_expelled
-
-        students.append({"specialty_code": student_specialty.code, "specialty_name": student_specialty.name,
-                         "qualification": student_qualification,
-                         "course": student_current_course, "base": student_education_base, "budget": student_education_basis,
-                         "academic_leave": student_is_in_academ, "is_expelled": student_is_expelled})
-    return students
-
-
 def save_record_book_template(request, qualification_id, admission_year):
     """
     Функция для сохранения ШАБЛОНА зачетной книжки
@@ -690,7 +685,6 @@ class EditRecordBookTemplateView(ObjectUpdateView):
         return reverse_lazy('view_record_book_template', kwargs={'qualification_id': self.kwargs['qualification_id'], 'admission_year': self.kwargs['admission_year']})
 
 
-
 def generate_student_record_book(request, pk):
     """
     Функция для генерации зачетной книжки для конкретного студента
@@ -782,7 +776,7 @@ def create_auto_record_book_template(request, qualification_id, admission_year):
 
     return redirect('view_record_book_template', qualification_id=qualification_id, admission_year=admission_year)
 
-# Обновим GenerateGroupRecordBooks для использования нового шаблона
+
 def generate_group_recordbooks(request, group_id):
     """
     Функция для генерации зачетных книжек на всю группу
@@ -826,26 +820,6 @@ def generate_group_recordbooks(request, group_id):
     return redirect('groupstudents_detail', pk=group_id)
 
 
-def generate_unique_record_book_number(admission_year, student):
-    """
-    Функция для генерации уникального номера зачетной книжки
-    prefix: 'Д' - ('Д' означает "Дневная форма обучения", этот префикс в номере зачетной книжки не меняется)
-    suffix - 'Б' или'В' - ('Б' если у студента основа обучения "Бюджет", 'В' если основа обучения "Внебюджет")
-    number - цифры в номере зачетной книжки подтягивается из анкеты на поступление
-    year_short - короткое отображение года поступления (пример: 2025 станет 25)
-    record_book_number - итоговый номер зачетной книжки  если функция отработала правильно, бедт иметь вид: "Д1593Б/21/СПО"
-    """
-    while True:
-        prefix = 'Д'
-        suffix = 'Б' if student.education == 'Бюджет' else 'В'
-        number = student.ancete_number if student.ancete_number else ''
-        year_short = str(admission_year)[-2:]
-        record_book_number = f"{prefix}{number}{suffix}/{year_short}/СПО"
-        if not StudentRecordBook.objects.filter(record_book_number=record_book_number).exists():
-            return record_book_number
-
-
-
 class ContingentMovementTableView(ObjectTableView):
     """
     Класс для отображения таблицы движений контингента.
@@ -865,7 +839,7 @@ class ContingentMovementTableView(ObjectTableView):
 
 #########
 #######Обработка генерации доков
-###########
+#########
 
 
 def generate_group_table(request):
@@ -972,28 +946,6 @@ def generate_movement_table(request):
     return response
 
 
-import os
-from django.shortcuts import render
-from django.http import HttpResponse
-from openpyxl import load_workbook
-from Academhub.models import Student, GroupStudents
-from django.utils.dateparse import parse_date
-
-
-
-def extract_application_number(text):
-    """
-    Функция для извлечения номера анкеты из колонки "Анкета абитуриента"
-    """
-    match = re.search(r"Заявление о поступлении (\d+)-?(\d*) от", text)
-    if match:
-        if match.group(2):  # Если есть вторая часть (пример: "427-696")
-            return match.group(1) + "-" + match.group(2)
-        return match.group(1).lstrip("0")  # Убираем нули, если одинарный номер
-
-    return None  # Если не найдено возвращается Ноне
-
-
 def import_students(request):
     """
     Функция для импорта контингентов из файла форматат .xlsx, выгруженного из 1с приемной комиссией
@@ -1016,14 +968,10 @@ def import_students(request):
                     first_name = row[headers.get("Имя")]
                     middle_name = row[headers.get("Отчество")]
                     full_name = f"{last_name} {first_name} {middle_name}".strip() if last_name and first_name else None
-
                     group_number = row[headers.get("Академическая группа")]
                     course_str = row[headers.get("Курс")]
                     course = int(course_str[0]) if course_str and course_str[0].isdigit() else None
-                    # course = int(row[headers.get("Курс")]) if row[headers.get("Курс")] else None
                     education_basis = row[headers.get("Основы обучения")]
-                    # birth_date = parse_date(str(row[headers.get("Дата рождения")])) if row[
-                    #     headers.get("Дата рождения")] else None
                     birth_date = (
                         row[headers.get("Дата рождения")].date() if isinstance(row[headers.get("Дата рождения")],datetime)
                         else datetime.strptime(row[headers.get("Дата рождения")], "%d.%m.%Y").date()) if row[

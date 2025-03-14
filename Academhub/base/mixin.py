@@ -69,3 +69,36 @@ class SubTablesMixin:
             table.generate_table(self.object)
             RequestConfig(request, paginate={"per_page": self.paginate_by}).configure(table.table)
             context['tables'].append(table)
+
+
+class ImportViewMixin:
+    form_import = None
+    _form = None
+
+    def generate_form_import(self,*args, **kwargs):
+        return self.form_import(**kwargs)
+
+    def save_from_import(self, *args, **kwargs):
+        form = self.generate_form_import(**kwargs)
+        if form.is_valid():
+            form.save()
+        return form
+
+    def get(self, request, *args, **kwargs):
+        """
+            Обработка get запроса
+        """
+        self._form = self.generate_form_import()
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        """Обрабатывает POST-запрос, валидирует и сохраняет form."""
+        self._form =  self.save_from_import(request.POST, request.FILES)
+        return super().post(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form_import'] = self._form
+        return context
+
+
