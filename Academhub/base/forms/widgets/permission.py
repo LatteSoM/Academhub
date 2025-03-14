@@ -16,7 +16,8 @@ class PermissionSelectWidget(forms.Widget):
 
         for permission in permissions:
             model_name = permission.content_type.name
-            codename = permission.codename.split('_')[0]
+            codename = permission.codename.split('_')[:-1]
+            codename = '_'.join(codename)
             
             if not models.get(model_name, None):
                 models[model_name] = []

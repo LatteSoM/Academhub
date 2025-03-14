@@ -54,6 +54,7 @@ urlpatterns = [
     path('student/create', StudentCreateView.as_view(), name='student_create'),
     path('student/<int:pk>', StudentDetailView.as_view(), name='student_detail'),
     path('student/update/<int:pk>', StudentUpdateView.as_view(), name='student_update'),
+    path('student/import-students/', import_students, name='import_students'),
 
     #
     ## Зачетная книжка
@@ -102,5 +103,4 @@ urlpatterns = [
     path('generate/vacation-table/', generate_vacation_table, name='generate_vacation_table'),
     path('generate/movement-table/', generate_movement_table, name='generate_movement_table'),
 
-    path('import-students/', import_students, name='import_students'),
 ]

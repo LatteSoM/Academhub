@@ -41,8 +41,8 @@ USE_TZ = True
 
 # Приложения которые пойдут в навигационную панель
 ACTIVE_APPS = [
-    'Сontingent',
     'Academhub',
+    'Сontingent',
     'AccessControl',
     'Gradebook',
 ]
@@ -58,7 +58,6 @@ INSTALLED_APPS = [
     'django_filters',
     'bootstrap3',
     'bootstrap4',
-
 ] + ACTIVE_APPS
 
 MIDDLEWARE = [

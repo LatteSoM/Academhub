@@ -10,7 +10,6 @@ from Academhub.models import (
     Practice,
     TermPaper,
     Specialty,
-    Gradebook,
     Discipline,
     Curriculum,
     GroupStudents,
@@ -22,12 +21,13 @@ from Academhub.models import (
     MiddleCertification, 
 )
 from django.conf import settings
-from contextlib import nullcontext
+from openpyxl import load_workbook
 from collections import defaultdict
 from Academhub.base import SubTable
 from django.http import HttpResponse
 from django.urls import reverse_lazy
-from Gradebook.tables import GradebookTable2
+from django.http import HttpResponse
+from django.utils.dateparse import parse_date
 from django.shortcuts import render, get_object_or_404, redirect
 from .tables import AcademTable, ExpulsionTable, ContingentMovementTable
 from .filters import AcademFilter, ExpulsionFilter, ContingentMovementFilter
@@ -950,14 +950,9 @@ def generate_movement_table(request):
     return response
 
 
-import os
-from django.shortcuts import render
-from django.http import HttpResponse
-from openpyxl import load_workbook
-from Academhub.models import Student, GroupStudents
-from django.utils.dateparse import parse_date
 
 
+# class StudentImportView(ObjectTemplateView):
 def import_students(request):
     if request.method == 'POST':
         form = StudentImportForm(request.POST, request.FILES)

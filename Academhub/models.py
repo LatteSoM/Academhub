@@ -597,9 +597,17 @@ class Student(AcademHubModel):
 
     date_of_expelling = models.DateField(null=True, blank=True, verbose_name="Дата отчисления")
     is_expelled = models.BooleanField(null=True, blank=True, default=False, verbose_name="Отчислен ли студент")
+
     class Meta:
         verbose_name = "Студент"
         verbose_name_plural = "Студенты"
+        permissions = [
+            ('import_student', 'Import student'),
+            ('academic_come_back_student', 'Come back student from academic'),
+            ('academic_leave_student', 'May send academic leave'),
+            ('expel_student', 'Expel student'),
+            ('generate_record_book,student', 'Generate record book')
+        ]
 
     def save(self, *args, **kwargs):
         from django.utils import timezone  # Импортируем внутри метода, чтобы избежать проблем с импортом
