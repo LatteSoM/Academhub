@@ -16,18 +16,21 @@ class PermissionBaseMixin(PermissionRequiredMixin):
         Базовый mixin для реализации прав доступа
     '''
 
-    def get_class_name(self):
-        if getattr(self, 'model'):
+    def __get_class_name(self):
+        try:
             return self.model.__name__.lower()
-        
-        elif getattr(self, 'queryset'):
+        except AttributeError:
+            pass
+
+        try:
             return self.queryset.model.__name__.lower()
-        
-        else:
-            raise ImproperlyConfigured(
-                f"{self.__class__.__name__} is missing both 'model' and 'queryset' attributes. "
-                f"Define either {self.__class__.__name__}.model or {self.__class__.__name__}.queryset."
-            )
+        except AttributeError:
+            pass
+
+        raise ImproperlyConfigured(
+            f"{self.__class__.__name__} is missing both 'model' and 'queryset' attributes. "
+            f"Define either {self.__class__.__name__}.model or {self.__class__.__name__}.queryset."
+        )
 
     def get_permission_required(self):
         if self.permission_required is None:
@@ -38,7 +41,7 @@ class PermissionBaseMixin(PermissionRequiredMixin):
                 f"{self.__class__.__name__}.get_permission_required()."
             )
 
-        perm = f'{self.permission_required}_{self.get_class_name()}'
+        perm = f'{self.permission_required}_{self.__get_class_name()}'
 
         return [perm, ]
 

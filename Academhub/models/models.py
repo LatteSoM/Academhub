@@ -18,6 +18,7 @@ __all__ = (
     'Discipline',
     'CustomUser',
     'GroupProxy',
+    'PracticeDate',
     'GroupStudents',
     'Qualification',
     'AcademHubModel',
@@ -29,10 +30,10 @@ __all__ = (
     'RecordBookTemplate',
     'ContingentMovement',
     'MiddleCertification',
-    'CalendarGraphicOfLearningProcess',
     'MiddleCertification',
     'StudentRecordBook',
     'RecordBookTemplate',
+    'CalendarGraphicOfLearningProcess',
 )
 
 class AcademHubModel(UrlGenerateMixin, models.Model):

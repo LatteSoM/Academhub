@@ -118,9 +118,10 @@ class SpecialtyTableView(ObjectTableView):
     """
     Класс для отображения таблицы специальностей.
     """
+    queryset = Specialty.objects.all()
     table_class = SpecialtyTable
     filterset_class = SpecialtyFilter
-    queryset = Specialty.objects.all()
+
 
 class SpecialtyDetailView(ObjectDetailView):
     """
