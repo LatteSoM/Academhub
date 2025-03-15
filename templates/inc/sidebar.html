@@ -8,6 +8,11 @@
     </div>
     <nav class="sidebar-nav">
         <ul id="nav-menu">
+            
+            <a href="{% url 'admin:index' %}" class="nav-item">
+                Панель администратора
+            </a>
+
             {% for link in navigation %}
                 {% include "inc/navigation_item.html" with link=link %}
             {% endfor %}

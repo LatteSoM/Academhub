@@ -31,7 +31,7 @@ from django.shortcuts import get_object_or_404, redirect
 from .tables import AcademTable, ExpulsionTable, ContingentMovementTable
 from .filters import AcademFilter, ExpulsionFilter, ContingentMovementFilter
 from .forms import AcademLeaveForm, AcademReturnForm, ExpellStudentForm, RecoverStudentForm, StudentImportForm
-from Academhub.generic import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView, ObjectTemplateView
+from Academhub.generic import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView, ObjectTemplateView, ObjectTableImportView
 from Academhub.modules.documentGenPars import StatisticsTableGenerator, CourseTableGenerator, GroupTableGenerator, VacationTableGenerator, MovementTableGenerator
 
 __all__ = (
@@ -267,7 +267,7 @@ class GroupCreateView(ObjectCreateView):
 ## Student
 #
 
-class StudentTableView(ImportViewMixin, ObjectTableView):
+class StudentTableView(ObjectTableImportView):
     """
     Класс для отображения таблицы студентов.
     """
@@ -275,7 +275,6 @@ class StudentTableView(ImportViewMixin, ObjectTableView):
     form_import = StudentImportForm
     filterset_class = StudentFilter
     queryset = Student.objects.filter(is_expelled=False, is_in_academ=False)
-    template_name = 'Contingent/list/student_list.html'
 
 
 class StudentDetailView(ObjectDetailView):

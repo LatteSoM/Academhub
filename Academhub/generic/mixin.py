@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django_tables2 import RequestConfig
 from django.views.generic.base import ContextMixin
+from django.core.exceptions import ImproperlyConfigured
 from django.contrib.auth.mixins import PermissionRequiredMixin
 
 __all__ = (
@@ -13,9 +14,34 @@ class PermissionBaseMixin(PermissionRequiredMixin):
     '''
         Базовый mixin для реализации прав доступа
     '''
-    pass
 
-class BaseContextMixin(ContextMixin):
+    def get_class_name(self):
+        if getattr(self, 'model'):
+            return self.model.__name__.lower()
+        
+        elif getattr(self, 'queryset'):
+            return self.queryset.model.__name__.lower()
+        
+        else:
+            raise ImproperlyConfigured(
+                f"{self.__class__.__name__} is missing both 'model' and 'queryset' attributes. "
+                f"Define either {self.__class__.__name__}.model or {self.__class__.__name__}.queryset."
+            )
+
+    def get_permission_required(self):
+        if self.permission_required is None:
+            raise ImproperlyConfigured(
+                f"{self.__class__.__name__} is missing the "
+                f"permission_required attribute. Define "
+                f"{self.__class__.__name__}.permission_required, or override "
+                f"{self.__class__.__name__}.get_permission_required()."
+            )
+
+        perm = f'{self.permission_required}_{self.get_class_name()}'
+
+        return [perm, ]
+
+class BaseContextMixin(PermissionBaseMixin, ContextMixin):
   """
   Базовый миксин для добавления навигации в контекст всех представлений и прав доступа.
   Наследуется от ContextMixin и добавляет ключ 'navigation' в контекст шаблона.
@@ -95,7 +121,7 @@ class ImportViewMixin:
         if self._form.is_valid():
             messages.success(
                 request,
-                "Студенты импортированы"
+                "Успешный импорт"
             )
             
             self._form = self.generate_form_import()
@@ -108,7 +134,7 @@ class ImportViewMixin:
                 request,
                 error_message
             )
-        
+            
         return super().get(request, *args, **kwargs)
         
 

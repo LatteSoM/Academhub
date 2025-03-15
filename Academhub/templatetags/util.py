@@ -28,10 +28,10 @@ def check_url_exists(url):
    Проверяет, существует ли URL.
    """
    try:
-       resolve(url)
-       return True
+      resolve(url)
+      return True
    except Resolver404:
-       return False
+      return False
 
 @register.filter
 def exclude_field(form, field):

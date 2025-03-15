@@ -3,7 +3,7 @@ from django_tables2 import SingleTableView
 from django_filters.views import FilterView
 from django.utils.translation import gettext as _
 from django.core.exceptions import ObjectDoesNotExist
-from .mixin import SubTablesMixin, BaseContextMixin
+from .mixin import SubTablesMixin, BaseContextMixin, ImportViewMixin
 from django.views.generic import TemplateView, ListView, DetailView, UpdateView, CreateView, DeleteView, View
 
 __all__  = [
@@ -14,6 +14,7 @@ __all__  = [
   'ObjectCreateView',
   'ObjectDeleteView',
   'ObjectTemplateView',
+  'ObjectTableImportView',
 ]
 
 
@@ -32,6 +33,8 @@ class BaseObjectTableView(BaseContextMixin, SingleTableView):
     Используется для отображения данных в виде таблиц с поддержкой навигации.
     '''
 
+    permission_required = 'view'
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['table_name'] = self.get_table_name()
@@ -49,6 +52,14 @@ class ObjectTableView(FilterView, BaseObjectTableView):
     template_name = 'base_view.html'
     paginate_by = 10
 
+class ObjectTableImportView(ImportViewMixin, FilterView, BaseObjectTableView):
+    '''
+      Базовый класс для представлений с таблицами и поддержкой импорта.
+      Наследуется от BaseContextMixin и SingleTableView (из django-tables2) и FilterView (из django-filter).
+      Используется для отображения данных в виде таблиц с фильтрации и поддержкой навигации.
+    '''
+    template_name = 'base_view_import.html'
+    paginate_by = 10
 
 class ObjectListView(BaseContextMixin, ListView):
     '''
@@ -75,6 +86,9 @@ class ObjectDetailView(BaseContextMixin, SubTablesMixin, DetailView):
         
         Поддерживает вывод дополнительных таблиц благодаря SubTablesMixin.
     '''
+
+    permission_required = 'view'
+
     paginate_by  = 10
     template_name = 'base_detail.html'
 
@@ -105,6 +119,9 @@ class ObjectUpdateView(BaseContextMixin, UpdateView):
     Наследуется от BaseContextMixin и UpdateView.
     Используется для редактирования существующего объекта с поддержкой навигации.
     '''
+
+    permission_required = 'change'
+
     template_name = 'base_update.html'
 
     def get_context_data(self, **kwargs):
@@ -122,6 +139,9 @@ class ObjectCreateView(BaseContextMixin, CreateView):
     Наследуется от BaseContextMixin и CreateView.
     Используется для создания нового объекта с поддержкой навигации.
     '''
+
+    permission_required = 'add'
+
     template_name = 'base_create.html'
 
     def get_context_data(self, **kwargs):

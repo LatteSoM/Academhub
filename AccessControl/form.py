@@ -1,5 +1,6 @@
 from django import forms
 from Academhub.forms import PermissionSelectField
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.contenttypes.models import ContentType
 from Academhub.models import CustomUser, PermissionProxy, GroupProxy
@@ -64,6 +65,15 @@ class UserCreateForm(forms.ModelForm):
     class Meta:
         model = CustomUser
         fields = ['email', 'full_name', 'password', 'user_permissions', 'groups', 'is_staff', 'is_teacher']
+    
+    def clean(self):
+        cleaned_data = super().clean()
+
+        password = cleaned_data['password']
+
+        password = make_password(password)
+
+        cleaned_data['password'] = password
 
 class UserUpdateForm(forms.ModelForm):
     email = forms.EmailField(

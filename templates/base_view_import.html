@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% load django_tables2 %}
+{% load static %}
+{% load util %}
+
+{% block content %}
+<div class="page-container">
+
+    <div class="page-header">
+        <h2>Таблица {{table_name}}</h2>
+    </div>
+
+    <br/>
+
+    <div class="tabs">
+        {% block tabs %}
+            <button class="tab-button active" data-tab="table">Таблица</button>
+            <button class="tab-button" data-tab="filters">Фильтры</button>
+            <button class="tab-button" data-tab="import">Импорт</button>
+        {% endblock %}
+    </div>
+
+    <div class="tab-content">
+        {% block tab-content %}
+            <div id="table" class="tab-pane active">
+
+            {% block buttons %}
+                {% if url_create|check_url_name_exists %}
+                    <a id="add-new" class="btn-primary" style="margin: 10px 0; display: inline-block;" href="{% url url_create %}">
+                        Добавить
+                    </a>
+                {% endif %}
+            {% endblock %}
+
+                {% if filter.form.search %}
+                    <form class="search-form" style="width: 70%; display: flex;">
+
+                        {% with search_field=filter.form.search %}
+                            <div class="form-group">
+                                {{ search_field.errors }}
+                                {{ search_field.label_tag }}
+                                {{ search_field }}
+                                {% if search_field.help_text %}
+                                    <p class="help" id="{{ search_field.auto_id }}_helptext">
+                                        {{ search_field.help_text|safe }}
+                                    </p>
+                                {% endif %}
+                            </div>
+                        {% endwith %}
+
+                        <button class="btn-primary">
+                            Поиск
+                        </button>
+
+                    </form>
+                {% endif %}
+
+                <br/>
+
+                <div class="active-filters">
+                    {% include 'inc/table/active_filters.html' %}
+                </div>
+
+                {% render_table table 'inc/table/table.html' %}
+
+                {% include 'inc/pagination.html' with page_obj=table.page %}
+
+
+            </div>
+
+            <div id="filters" class="tab-pane">
+                <form method="get" class="form">
+                    {% include 'inc/form/form.html' with form=filter.form|exclude_field:"search" %}
+                    <button type="submit" class="btn-primary">Применить фильтры</button>
+                    <a href="?" class="btn-secondary">Сбросить фильтры</a>
+                </form>
+            </div>
+            
+            <div id="import" class="tab-pane">
+                <div class="page-header">
+                    <h2>
+                        {% block import_header %}
+                            Импорт {{ table_name }}
+                        {% endblock %}
+                    </h2>
+                </div>
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {% with form=form_import %}
+                        {% include 'inc/form/form.html' %}
+                    {% endwith %}
+                <br>
+                    <button type="submit" class="btn-primary">Сохранить</button>
+                </form>
+            </div>
+
+        {% endblock %}
+
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    {{ block.super }}
+    <script type="module" src="{% static 'Academhub/js/switchTab.js' %}"></script>
+{% endblock %}
+
+</div>
