@@ -916,6 +916,9 @@ def generate_vacation_table(request):
 
 
 def generate_movement_table(request):
+    """
+    Функция для генерации файла .xslx для движения кнтингента
+    """
     movements = ContingentMovement.objects.all()  # Получаем все записи о движениях
     generator = MovementTableGenerator(movements)
     file_path = os.path.join(settings.MEDIA_ROOT, 'movement_table.xlsx')
