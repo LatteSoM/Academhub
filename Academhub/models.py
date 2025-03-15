@@ -364,6 +364,12 @@ class CurriculumItem(models.Model):
         return "Неопределённый элемент"
 
 class Curriculum(models.Model):
+    id = models.CharField(primary_key=True, max_length=255)
+    qualification = models.CharField(max_length=255, null=True)
+    create_date = models.DateField(null=True)
+    warnings = models.BooleanField(default=False)
+    warning_description = models.JSONField(null=True, blank=True)
+
     qualification = models.ForeignKey(
         Qualification,
         on_delete=models.CASCADE,
@@ -377,29 +383,7 @@ class Curriculum(models.Model):
         unique_together = ['qualification', 'admission_year']
 
     def __str__(self):
-        return f"План для {self.qualification} ({self.admission_year} года)"
-
-# class Curriculum(models.Model):
-#     qualification = models.ForeignKey(
-#         Qualification,
-#         on_delete=models.CASCADE,
-#         verbose_name="Квалификация"
-#     )
-#     admission_year = models.PositiveIntegerField(verbose_name="Год поступления")
-#     disciplines = models.ManyToManyField(
-#         Discipline,
-#         verbose_name="Дисциплины",
-#         related_name="curriculums"
-#     )
-#
-#     class Meta:
-#         verbose_name = "Учебный план"
-#         verbose_name_plural = "Учебные планы"
-#         #эта срань гарантирует уникальность учебного пана по сочетанию квалификация+год поступления
-#         unique_together = ['qualification', 'admission_year']
-#
-#     def __str__(self):
-#         return f"План для {self.qualification} ({self.admission_year} года)"
+        return f"REFACTORED StudyPlan: {self.qualification} ({self.admission_year})"
 
 
 class RecordBookTemplate(models.Model):

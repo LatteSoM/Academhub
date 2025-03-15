@@ -45,6 +45,7 @@ ACTIVE_APPS = [
     'Academhub',
     'AccessControl',
     'Gradebook',
+    'Curriculum',
 ]
 
 INSTALLED_APPS = [
