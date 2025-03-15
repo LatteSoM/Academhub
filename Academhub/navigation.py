@@ -1,7 +1,5 @@
 # Пример навигации
 
-# from Academhub.base import Navigation, ParentLink, ChildLink
-
 # navigation = Navigation(
 #     ParentLink(
 #         'Test',

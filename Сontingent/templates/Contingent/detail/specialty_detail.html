@@ -14,23 +14,3 @@
         Изменить
     </a>
 {% endblock %}
-
-{% block ditail-content %}
-
-    {{ block.super }}
-
-
-    <div class="detail-content" style="margin-top: 20px;">
-        <div class="detail-tabs">
-            <button class="detail-tab active tab-button" data-tab="info">Квалификации</button>
-        </div>
-        
-        <div class="detail-tab-content">
-        {% with table=tables.0 %}
-            {% render_table table 'inc/table/table.html' %}
-            {% include 'inc/pagination.html' with page_obj=table.page %}
-        {% endwith %}
-        </div>
-    </div>
-
-{% endblock %}

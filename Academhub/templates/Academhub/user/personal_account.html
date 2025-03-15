@@ -1,0 +1,32 @@
+{% extends 'AccessControl/detail/base/permission.html' %}
+
+{% block detail-header %}
+    <h3>
+        Личный кабинет {{ user }}
+    </h3>
+{% endblock %}
+
+{% block actions-button %}
+    <a class="btn-primary" href="{% url 'user_password_change' %}">
+        Изменить пароль
+    </a>
+    <a class="btn-primary" href="{% url 'user_email_change' %}">
+        Изменить почту
+    </a>
+{% endblock %}
+
+{% block permissions-list-header %}
+    Права пользователя
+{% endblock %}
+
+{% block extra_js %}
+	{{ block.super }}
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var button = document.getElementById("back_to_table_button");
+            if (button) {
+                button.remove(); 
+            }
+        });
+    </script>
+{% endblock %}

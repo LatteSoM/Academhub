@@ -1,10 +1,32 @@
 from .form import *
-from .table import UserTable, PermissionTable, GroupTable
+from Academhub.models import SubTable
+from django.contrib.auth.views import PasswordChangeView
 from .filter import UserFilter, GroupFilter, PermissionFilter
+from django.contrib.messages.views import SuccessMessageMixin
 from Academhub.models import CustomUser, PermissionProxy, GroupProxy
-from Academhub.base import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView
+from .table import UserTable, PermissionTable, GroupTable, GroupUserTable
+from Academhub.generic import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView
 
 # Create your views here.
+
+class PermissionMixin:
+    '''
+        Расширение для объектоа имеющие права доступа
+    '''
+    def get_permissions(self):
+        '''
+            Получение объекта прав
+        '''
+        pass
+    
+    def get_context_data(self, **kwargs):
+        '''
+            Добавляем в контекст права доступа
+        '''
+        context = super().get_context_data(**kwargs)
+        permissions = self.get_permissions()
+        context['permissions'] = permissions.as_context()
+        return context
 
 #
 ## User
@@ -15,16 +37,93 @@ class UserTableView(ObjectTableView):
     filterset_class = UserFilter
     queryset = CustomUser.objects.all()
 
-class UserDetailView(ObjectDetailView):
+class UserDetailView(PermissionMixin, ObjectDetailView):
     model = CustomUser
+    template_name = 'AccessControl/detail/user_detail.html'
+
+    fieldset = {
+        'Пользовательская информация': [
+            'email', 
+            'full_name',
+            'is_staff', 
+            'is_teacher', 
+            'is_active', 
+            'last_login'
+        ],
+    }
+
+    tables = [
+        SubTable (
+            name='Группы прав',
+            queryset=GroupProxy.objects.all(),
+            table=GroupTable,
+            filter_key='user',
+        )
+    ]
+
+    def get_permissions(self):
+        return PermissionProxy.objects.filter(user__id=self.object.pk)
+
+class UserPasswordChangeView(SuccessMessageMixin, PasswordChangeView):
+    """
+    Изменение пароля пользователя
+    """
+    form_class = UserPasswordChangeForm
+    template_name = 'AccessControl/update/change_password.html'
+    success_message = 'Ваш пароль был успешно изменён!'
 
 class UserUpdateView(ObjectUpdateView):
-    form_class = UserForm
+    form_class = UserUpdateForm
     queryset = CustomUser.objects.all()
 
 class UserCreateView(ObjectCreateView):
     model = CustomUser
-    form_class = UserForm
+    form_class = UserCreateForm
+
+#
+## Group
+#
+
+class GroupTableView(ObjectTableView):
+    table_class = GroupTable
+    filterset_class = GroupFilter
+    queryset = GroupProxy.objects.all()
+
+    def get_model_name(self):
+        return 'Группы прав'
+
+class GroupDetailView(PermissionMixin, ObjectDetailView):
+    model = GroupProxy
+    template_name = 'AccessControl/detail/group_detail.html'
+
+    fieldset = {
+        'Основная информация': [
+            'name'
+        ]
+    }
+
+    def custom_user_filter(object, queryset):
+        return object.user_set.all()
+
+    tables = [
+        SubTable (
+            name='Пользователи',
+            queryset=CustomUser.objects.all(),
+            table=GroupUserTable,
+            filter_func=custom_user_filter
+        )
+    ]
+
+    def get_permissions(self):
+        return PermissionProxy.objects.filter(group__pk=self.object.pk)
+
+class  GroupUpdateView(ObjectUpdateView):
+    form_class = GroupForm
+    queryset = GroupProxy.objects.all()
+
+class  GroupCreateView(ObjectCreateView):
+    model = GroupProxy
+    form_class = GroupForm
 
 #
 ## Permission
@@ -51,26 +150,3 @@ class PermissionUpdateView(ObjectUpdateView):
 class PermissionCreateView(ObjectCreateView):
     model = PermissionProxy
     form_class = PermissionForm
-
-#
-## Group
-#
-
-class GroupTableView(ObjectTableView):
-    table_class = GroupTable
-    filterset_class = GroupFilter
-    queryset = GroupProxy.objects.all()
-
-    def get_model_name(self):
-        return 'Группы прав'
-
-class GroupDetailView(ObjectDetailView):
-    model = GroupProxy
-
-class  GroupUpdateView(ObjectUpdateView):
-    form_class = GroupForm
-    queryset = GroupProxy.objects.all()
-
-class  GroupCreateView(ObjectCreateView):
-    model = GroupProxy
-    form_class = GroupForm

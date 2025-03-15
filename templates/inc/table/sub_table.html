@@ -1,0 +1,27 @@
+{% load django_tables2 %}
+
+{% load util %}
+
+{% for table in tables %}
+    <div class="detail-content" style="margin-top: 20px;">
+        <div class="detail-tabs">
+            <p class="detail-tab active tab-button" data-tab="info">
+                {{ table.name }}
+            </p>
+        </div>
+        
+        <div class="detail-tab-content">
+
+            {% for button in table.buttons %}
+                <a class="btn-primary" href="{{ button.url }}">
+                    {{ button.name }}
+                </a>
+            {% endfor %}
+
+            {% with table=table.table %}
+                {% render_table table 'inc/table/table.html' %}
+                {% include 'inc/pagination.html' with page_obj=table.page %}
+            {% endwith %}
+        </div>
+    </div>
+{% endfor %}

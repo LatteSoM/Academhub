@@ -1,4 +1,4 @@
-from Academhub.base import Navigation, ParentLink, ChildLink
+from Academhub.models import Navigation, ParentLink, ChildLink
 
 navigation = Navigation(
     ParentLink(

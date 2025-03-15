@@ -12,10 +12,10 @@
 <div class="detail-container">
     <div class="detail-header">
         {% block detail-header %}
-
+            
         {% endblock %}
         <div class="header-actions">
-            <a class="btn-primary" href="{% url url_list %}">
+            <a class="btn-primary" id="back_to_table_button" href="{% url url_list %}">
                 Назад к таблице
             </a>
             {% block actions-button %}
@@ -23,7 +23,7 @@
         </div>
     </div>
     
-    {% block ditail-content %}
+    {% block detail-content %}
 
         <div class="detail-content">
             <div class="detail-tabs">
@@ -84,6 +84,13 @@
                 {% endblock %}
             </div>
         </div>
+
+        {% include 'inc/table/sub_table.html' %}
+
+        {% block extra-detail-content %}
+
+        {% endblock %}
+        
 
     {% endblock %}
 {% endblock %}

@@ -1,22 +1,14 @@
-from datetime import datetime
-
-from django.contrib import messages
-from django.utils import timezone
-from django.utils.timezone import localtime  # Импортируем localtime
-
-from django.http import HttpResponse, JsonResponse
-from django.urls import reverse
-
-from Gradebook.filters import GradeBookTeachersFilter
 from Gradebook.forms import *
 from Gradebook.tables import *
 from Gradebook.filters import *
+from django.utils import timezone
+from django.contrib import messages
+from django.http import HttpResponse
 from Gradebook.mixins import GradeBookMixin
+from Gradebook.filters import GradeBookTeachersFilter
 from django.shortcuts import get_object_or_404, redirect
-from Academhub.models import GradebookStudents, Gradebook, CustomUser
-from django.shortcuts import get_object_or_404, redirect
-from Academhub.models import GradebookStudents, Gradebook
-from Academhub.base import BulkUpdateView, ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView
+from Academhub.models import GradebookStudents, Gradebook, CustomUser, SubTable, ButtonTable
+from Academhub.generic import BulkUpdateView, ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView
 
 #
 # Create your views here.
@@ -111,8 +103,38 @@ class GradebookDetailView(ObjectDetailView):
     template_name = 'Gradebook/detail/gradebook_student.html'
 
     fieldset = {
-        'Основная информация': ['name', 'status'],
+        'Основная информация': [
+            'name', 'status'
+        ],
     }
+
+    def grade_book_student_filter(object, queryset):
+        return queryset.filter(gradebook__pk=object.pk)
+
+    def grade_book_teacher_filter(object, queryset):
+        return object.teachers.all()
+
+    tables = [
+        SubTable (
+            name='Студенты',
+            table=GradebookStudentsTable,
+            filter_func=grade_book_student_filter,
+            queryset=GradebookStudents.objects.all(),
+            buttons=[
+                ButtonTable (
+                    name = 'Заполнить ведомость',
+                    link_name = 'gradebookstudents_bulk_create',
+                    link_params = ['pk']
+                )
+            ]
+        ),
+        SubTable(
+            name='Учителя',
+            queryset=CustomUser.objects.all(),
+            table=GradebookTeachersTable,
+            filter_func=grade_book_teacher_filter
+        )
+    ]
 
     def get(self, request, *args, **kwargs):
         gradebook = self.get_object()
@@ -150,14 +172,6 @@ class GradebookDetailView(ObjectDetailView):
                 messages.success(request, "Ведомость успешно открыта!")
 
         return super().get(request, *args, **kwargs)
-
-    def get_tables(self):
-        table = GradebookStudentsTable(data=GradebookStudents.objects.filter(gradebook=self.object.pk))
-
-        table2 = GradebookTeachersTable(data=self.object.teachers.all())
-
-        
-        return [table, table2]
 
 class GradebookUpdateView(GradeBookMixin, ObjectUpdateView):
     """

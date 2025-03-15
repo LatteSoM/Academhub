@@ -1,6 +1,6 @@
 from django import template
-from django.urls import reverse, NoReverseMatch
 from django.urls import resolve, Resolver404
+from django.urls import reverse, NoReverseMatch
 
 register = template.Library()
 
@@ -28,10 +28,10 @@ def check_url_exists(url):
    Проверяет, существует ли URL.
    """
    try:
-       resolve(url)
-       return True
+      resolve(url)
+      return True
    except Resolver404:
-       return False
+      return False
 
 @register.filter
 def exclude_field(form, field):

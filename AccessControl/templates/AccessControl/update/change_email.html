@@ -1,0 +1,13 @@
+{% extends 'base_create.html' %}
+
+{% load util %}
+
+{% block form_title %}
+    Изменить почту у {{ user }}
+{% endblock %}
+
+{% block buttons %}
+  <a class="btn-primary" style="display: inline-block; margin: 10px 0;" href="{% url 'personal_account' %}">
+    В личный кабинет
+  </a>
+{% endblock %}

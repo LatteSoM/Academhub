@@ -1,39 +1,38 @@
 import os
-from django.conf import settings
-from django.http import HttpResponse
 
-from Academhub.modules.documentGenPars import StatisticsTableGenerator, \
-    CourseTableGenerator, GroupTableGenerator, VacationTableGenerator, \
-    MovementTableGenerator
 from .forms import *
+from .utils import *
 from .tables import *
 from .filters import *
 from datetime import datetime
-from contextlib import nullcontext
-from collections import defaultdict
-from django.urls import reverse_lazy
-from .filters import AcademFilter, ExpulsionFilter, ContingentMovementFilter
-from .forms import AcademLeaveForm, AcademReturnForm, ExpellStudentForm, RecoverStudentForm, StudentImportForm
 from Academhub.models import (
     Student,
     Practice,
     TermPaper,
     Specialty,
-    Gradebook,
     Discipline,
     Curriculum,
     GroupStudents,
     Qualification,
     StudentRecordBook,
+    ContingentMovement,
     RecordBookTemplate,
     ProfessionalModule,
-    MiddleCertification, ContingentMovement,
+    MiddleCertification,
 )
-import random
-import string
-from Gradebook.tables import GradebookTable2
-from django.shortcuts import render, get_object_or_404, redirect
-from Academhub.base import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView, ObjectTemplateView
+from django.conf import settings 
+from collections import defaultdict
+from django.http import HttpResponse
+from django.urls import reverse_lazy
+from django.http import HttpResponse
+from Academhub.models import SubTable
+from Academhub.generic import ImportViewMixin
+from django.shortcuts import get_object_or_404, redirect
+from .tables import AcademTable, ExpulsionTable, ContingentMovementTable
+from .filters import AcademFilter, ExpulsionFilter, ContingentMovementFilter
+from .forms import AcademLeaveForm, AcademReturnForm, ExpellStudentForm, RecoverStudentForm, StudentImportForm
+from Academhub.generic import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView, ObjectTemplateView, ObjectTableImportView
+from Academhub.modules.documentGenPars import StatisticsTableGenerator, CourseTableGenerator, GroupTableGenerator, VacationTableGenerator, MovementTableGenerator
 
 __all__ = (
     # 'view_record_book',
@@ -72,8 +71,6 @@ __all__ = (
     'QualificationUpdateView'
 )
 
-from .tables import AcademTable, ExpulsionTable, ContingentMovementTable
-
 
 #
 ## Discipline
@@ -93,6 +90,7 @@ class DisciplineDetailView(ObjectDetailView):
     """
     model= Discipline
     paginate_by  = 30
+
     fieldset = {
         'Основная информация':
             ['name', 'code', 'specialty',]
@@ -137,10 +135,14 @@ class SpecialtyDetailView(ObjectDetailView):
             ['code', 'name'],
     }
 
-    def get_tables(self):
-        students = Qualification.objects.filter(specialty__pk=self.object.pk)
-        table = QualificationTable(data=students)
-        return [table]
+    tables = [
+        SubTable(
+            name='Квалификации',
+            filter_key='specialty',
+            table=QualificationTable,
+            queryset=Qualification.objects.all(),
+        )
+    ]
 
 class SpecialtyUpdateView(ObjectUpdateView):
     """
@@ -189,10 +191,14 @@ class QualificationDetailView(ObjectDetailView):
             ['short_name', 'name', 'specialty']
     }
 
-    def get_tables(self):
-        students = GroupStudents.objects.filter(qualification__pk=self.object.pk)
-        table = GroupTable(data=students)
-        return [table]
+    tables = [
+        SubTable(
+            name='Студенты',
+            table=GroupTable,
+            filter_key='qualification',
+            queryset=GroupStudents.objects.all(),
+        )
+    ]
 
 class QualificationUpdateView(ObjectUpdateView):
     """
@@ -234,15 +240,14 @@ class GroupDetailView(ObjectDetailView):
             ['number', 'qualification']
     }
 
-    def get_tables(self):
-        students = Student.objects.filter(group__pk=self.object.pk, is_expelled=False, is_in_academ=False)
-        table = StudentTable2(data=students)
-
-        gradebooks = Gradebook.objects.filter(group__pk=self.object.pk)
-        table2 = GradebookTable2(data=gradebooks)
-
-
-        return [table, table2]
+    tables = [
+        SubTable (
+            name='Студенты',
+            filter_key='group',
+            table=StudentTable2,
+            queryset=Student.objects.filter(is_expelled=False, is_in_academ=False),
+        ),
+    ]
 
 class GroupUpdateView(ObjectUpdateView):
     """
@@ -262,13 +267,15 @@ class GroupCreateView(ObjectCreateView):
 ## Student
 #
 
-class StudentTableView(ObjectTableView):
+class StudentTableView(ObjectTableImportView):
     """
     Класс для отображения таблицы студентов.
     """
     table_class = StudentTable
+    form_import = StudentImportForm
     filterset_class = StudentFilter
     queryset = Student.objects.filter(is_expelled=False, is_in_academ=False)
+
 
 class StudentDetailView(ObjectDetailView):
     """
@@ -490,32 +497,6 @@ class StatisticksView(ObjectTemplateView):
         return context
 
 
-def student_format_to_list():
-    students = []
-    for student in Student.objects.all():
-        student_specialty = student.group.qualification.specialty
-        student_qualification = student.group.qualification.name
-        student_current_course = student.group.current_course
-        student_education_base = student.education_base
-        student_education_basis = student.education_basis
-        student_is_in_academ = student.is_in_academ
-        student_is_expelled = student.is_expelled
-
-        students.append({"specialty_code": student_specialty.code, "specialty_name": student_specialty.name,
-                         "qualification": student_qualification,
-                         "course": student_current_course, "base": student_education_base, "budget": student_education_basis,
-                         "academic_leave": student_is_in_academ, "is_expelled": student_is_expelled})
-    return students
-
-
-def qualification_detail(request, qualification_id):
-    qualification = get_object_or_404(Qualification, id=qualification_id)
-    # Предположим, что admission_year выбирается пользователем или берется текущий год
-    admission_year = 2023  # Замените на логику выбора года
-    return render(request, 'qualification_detail.html',
-                  {'qualification': qualification, 'admission_year': admission_year})
-
-
 def save_record_book_template(request, qualification_id, admission_year):
     """
     Функция для сохранения ШАБЛОНА зачетной книжки
@@ -690,8 +671,10 @@ class EditRecordBookTemplateView(ObjectUpdateView):
         return reverse_lazy('view_record_book_template', kwargs={'qualification_id': self.kwargs['qualification_id'], 'admission_year': self.kwargs['admission_year']})
 
 
-
 def generate_student_record_book(request, pk):
+    """
+    Функция для генерации зачетной книжки для конкретного студента
+    """
     try:
         student = get_object_or_404(Student, pk=pk)
     except StudentRecordBook.DoesNotExist as e:
@@ -706,7 +689,7 @@ def generate_student_record_book(request, pk):
         print("Шаблон не найден")
 
     # Генерация уникального номера зачетки
-    record_book_number = generate_unique_record_book_number(admission_year)
+    record_book_number = generate_unique_record_book_number(admission_year, student)
     print(2)
     # Создаём новый объект StudentRecordBook для студента
     new_record_book = StudentRecordBook.objects.create(
@@ -734,6 +717,10 @@ def generate_student_record_book(request, pk):
 
 
 def create_auto_record_book_template(request, qualification_id, admission_year):
+    """
+    Функция для генерации Шаблона зачетной книжки  шаблон генерируется на квалификацию и год поступления,
+    Например для всех групп П 2021 года поступления
+    """
     qualification = get_object_or_404(Qualification, id=qualification_id)
     curriculum = get_object_or_404(Curriculum, qualification=qualification, admission_year=admission_year)
 
@@ -775,8 +762,11 @@ def create_auto_record_book_template(request, qualification_id, admission_year):
 
     return redirect('view_record_book_template', qualification_id=qualification_id, admission_year=admission_year)
 
-# Обновим GenerateGroupRecordBooks для использования нового шаблона
+
 def generate_group_recordbooks(request, group_id):
+    """
+    Функция для генерации зачетных книжек на всю группу
+    """
     group = get_object_or_404(GroupStudents, id=group_id)
     qualification = group.qualification
     admission_year = group.year_create
@@ -792,7 +782,7 @@ def generate_group_recordbooks(request, group_id):
         if student.record_book:  # Пропускаем студентов с уже существующей зачёткой
             continue
 
-        record_book_number = generate_unique_record_book_number(admission_year)
+        record_book_number = generate_unique_record_book_number(admission_year, student)
         new_record_book = StudentRecordBook.objects.create(
             student=student,
             qualification=qualification,
@@ -816,19 +806,6 @@ def generate_group_recordbooks(request, group_id):
     return redirect('groupstudents_detail', pk=group_id)
 
 
-def generate_unique_record_book_number(admission_year):
-    while True:
-        letters = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'
-        prefix = random.choice(letters)
-        suffix = random.choice(letters)
-        number = ''.join(random.choices(string.digits, k=4))
-        year_short = str(admission_year)[-2:]
-        record_book_number = f"{prefix}{number}{suffix}/{year_short}/СПО"
-        if not StudentRecordBook.objects.filter(record_book_number=record_book_number).exists():
-            return record_book_number
-
-
-
 class ContingentMovementTableView(ObjectTableView):
     """
     Класс для отображения таблицы движений контингента.
@@ -848,10 +825,13 @@ class ContingentMovementTableView(ObjectTableView):
 
 #########
 #######Обработка генерации доков
-###########
+#########
 
 
 def generate_group_table(request):
+    """
+    Функция для генерации файла .xslx для всех групп
+    """
     groups = GroupStudents.objects.all()
     generator = GroupTableGenerator(groups)
     file_path = os.path.join(settings.MEDIA_ROOT, 'group_table.xlsx')
@@ -871,6 +851,9 @@ def generate_group_table(request):
 
 
 def generate_course_table(request, course):
+    """
+    Функция для генерации файла .xslx для статистики по определенному курсу
+    """
     students = Student.objects.filter(group__current_course=course)
     try:
         generator = CourseTableGenerator(students)
@@ -891,6 +874,9 @@ def generate_course_table(request, course):
 
 
 def generate_statistics_table(request):
+    """
+    Функция для генерации файла .xslx для статистики
+    """
     specialties = Specialty.objects.all()
     qualifications = Qualification.objects.all()
     students = Student.objects.all()
@@ -910,6 +896,9 @@ def generate_statistics_table(request):
 
 
 def generate_vacation_table(request):
+    """
+    Функция для генерации файла .xslx для студентов находящихся в академическом отпуске
+    """
     students = Student.objects.filter(is_in_academ=True)
     generator = VacationTableGenerator(students)
     file_path = os.path.join(settings.MEDIA_ROOT, 'vacation_table.xlsx')
@@ -927,6 +916,9 @@ def generate_vacation_table(request):
 
 
 def generate_movement_table(request):
+    """
+    Функция для генерации файла .xslx для движения кнтингента
+    """
     movements = ContingentMovement.objects.all()  # Получаем все записи о движениях
     generator = MovementTableGenerator(movements)
     file_path = os.path.join(settings.MEDIA_ROOT, 'movement_table.xlsx')
@@ -941,83 +933,3 @@ def generate_movement_table(request):
         response['Content-Disposition'] = 'attachment; filename="movement_table.xlsx"'
     os.remove(file_path)
     return response
-
-
-import os
-from django.shortcuts import render
-from django.http import HttpResponse
-from openpyxl import load_workbook
-from Academhub.models import Student, GroupStudents
-from django.utils.dateparse import parse_date
-
-
-def import_students(request):
-    if request.method == 'POST':
-        form = StudentImportForm(request.POST, request.FILES)
-        if form.is_valid():
-            excel_file = request.FILES['excel_file']
-            wb = load_workbook(excel_file)
-            ws = wb.active
-
-            # Сопоставление заголовков с индексами столбцов
-            headers = {cell.value: idx for idx, cell in enumerate(ws[1]) if cell.value}
-
-            # Пропускаем строку заголовков и начинаем с данных
-            for row in ws.iter_rows(min_row=2, values_only=True):
-                try:
-                    # Извлекаем данные из строки
-                    last_name = row[headers.get("Фамилия")]
-                    first_name = row[headers.get("Имя")]
-                    middle_name = row[headers.get("Отчество")]
-                    full_name = f"{last_name} {first_name} {middle_name}".strip() if last_name and first_name else None
-
-                    group_number = row[headers.get("Академическая группа")]
-                    course_str = row[headers.get("Курс")]
-                    course = int(course_str[0]) if course_str and course_str[0].isdigit() else None
-                    # course = int(row[headers.get("Курс")]) if row[headers.get("Курс")] else None
-                    education_basis = row[headers.get("Основы обучения")]
-                    # birth_date = parse_date(str(row[headers.get("Дата рождения")])) if row[
-                    #     headers.get("Дата рождения")] else None
-                    birth_date = (
-                        row[headers.get("Дата рождения")].date() if isinstance(row[headers.get("Дата рождения")],datetime)
-                        else datetime.strptime(row[headers.get("Дата рождения")], "%d.%m.%Y").date()) if row[
-                        headers.get("Дата рождения")] else None
-
-                    phone = row[headers.get("Телефон мобильный")]
-                    admission_order = row[headers.get("Приказ о зачислении")]
-                    expell_order = row[headers.get("Приказ об отчислении")]
-                    date_of_expelling = parse_date(str(row[headers.get("Дата отчисления")])) if row[
-                        headers.get("Дата отчисления")] else None
-                    academ_leave_date = parse_date(str(row[headers.get("Дата начала последнего академ отпуска")])) if \
-                    row[headers.get("Дата начала последнего академ отпуска")] else None
-                    academ_return_date = parse_date(
-                        str(row[headers.get("Дата окончания последнего академ отпуска")])) if row[
-                        headers.get("Дата окончания последнего академ отпуска")] else None
-
-                    # Проверяем и создаём группу, если её нет
-                    group = GroupStudents.objects.get(full_name=group_number)
-
-                    # Создаём или обновляем студента
-                    student, created = Student.objects.update_or_create(
-                        full_name=full_name,
-                        defaults={
-                            'birth_date': birth_date,
-                            'group': group,
-                            'education_basis': education_basis,
-                            'phone': phone,
-                            'admission_order': admission_order,
-                            'expell_order': expell_order,
-                            'date_of_expelling': date_of_expelling,
-                            'is_in_academ': bool(academ_leave_date and not academ_return_date),
-                            'academ_leave_date': academ_leave_date,
-                            'academ_return_date': academ_return_date,
-                        }
-                    )
-                except Exception as e:
-                    return HttpResponse(f"Ошибка при импорте строки: {str(e)}", status=400)
-
-            return HttpResponse("Импорт студентов успешно завершён!")
-    else:
-        form = StudentImportForm()
-
-    return render(request, 'Contingent/import_students.html', {'form': form})

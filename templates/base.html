@@ -5,6 +5,7 @@
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'Academhub/css/sidebar.css' %}">
     <link rel="stylesheet" href="{% static 'Academhub/css/responsive.css' %}">
+    <link rel="stylesheet" href="{% static 'Academhub/css/messages.css' %}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 {% endblock %}
 
@@ -20,6 +21,8 @@
         {% include 'inc/sidebar.html' %}
 
         <main class="main-content">
+            {% include 'inc/messages.html' %}
+            
             {% block content %}
 
             {% endblock %}
