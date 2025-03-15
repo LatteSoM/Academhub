@@ -1,6 +1,6 @@
-from Academhub.views import UserEmailChangeView
 from .views import *
 from django.urls import path
+from Academhub.views import UserEmailChangeView
 
 urlpatterns = [
     path('user/list', UserTableView.as_view(), name='customuser_list'),
@@ -8,8 +8,6 @@ urlpatterns = [
     path('user/<int:pk>', UserDetailView.as_view(), name='customuser_detail'),
     path('user/update/<int:pk>', UserUpdateView.as_view(), name='customuser_update'),
     path('user/change_password/', UserPasswordChangeView.as_view(), name='password_change'),
-    path('change-email/', UserEmailChangeView.as_view(), name='change_email'),
-
 
     path('permission/list', PermissionTableView.as_view(), name='permissionproxy_list'),
     path('permission/create', PermissionCreateView.as_view(), name='permissionproxy_create'),

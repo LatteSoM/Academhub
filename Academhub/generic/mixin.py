@@ -8,6 +8,7 @@ __all__ = (
     'SubTablesMixin',
     'ImportViewMixin',
     'BaseContextMixin',
+    'PermissionBaseMixin',
 )
 
 class PermissionBaseMixin(PermissionRequiredMixin):

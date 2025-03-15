@@ -6,18 +6,17 @@
             </a>
         </h1>
     </div>
-    <div class="sidebar-header">
-        <h3 style="text-align: center;">
-            <a href="{% url 'settings'  user.pk  %}" style="text-decoration: none; color: var(--text-color);">
-                Личный кабинет
-            </a>
-        </h3>
-    </div>
     <nav class="sidebar-nav">
         <ul id="nav-menu">
             
-            <a href="{% url 'admin:index' %}" class="nav-item">
-                Панель администратора
+            {% if user.is_superuser %}
+                <a href="{% url 'admin:index' %}" class="nav-item">
+                    Панель администратора
+                </a>
+            {% endif %}
+            
+            <a href="{% url 'personal_account'  %}" class="nav-item">
+                Личный кабинет
             </a>
 
             {% for link in navigation %}
