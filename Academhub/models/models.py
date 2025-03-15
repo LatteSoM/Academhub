@@ -1,31 +1,43 @@
+from ..validators import *
 from django.db import models
+from django.urls import reverse
 from django.utils import timezone
-from .validators import *
-from  Academhub.base.models import AcademHubModel
+from .mixin import UrlGenerateMixin
 from .utils import UnifiedPermissionQyerySet
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permission, Group, PermissionsMixin, PermissionManager
 
 __all__ = (
-    'CustomUser',
-    'GroupStudents',
-    'Discipline',
-    'Specialty',
-    'Qualification',
     'Student',
+    'Practice',
     'Gradebook',
-    'CurriculumItem',
+    'Specialty',
     'TermPaper',
     'Curriculum',
-    'Practice',
-    'PermissionProxy',
+    'Discipline',
+    'CustomUser',
     'GroupProxy',
-    'ProfessionalModule',
-    'CalendarGraphicOfLearningProcess',
-    'MiddleCertification',
+    'GroupStudents',
+    'Qualification',
+    'AcademHubModel',
+    'CurriculumItem',
+    'PermissionProxy',
     'StudentRecordBook',
-    'RecordBookTemplate'
+    'GradebookStudents',
+    'ProfessionalModule',
+    'RecordBookTemplate',
+    'ContingentMovement',
+    'MiddleCertification',
+    'CalendarGraphicOfLearningProcess',
 )
+
+class AcademHubModel(UrlGenerateMixin, models.Model):
+    def get_absolute_url(self):
+        url = self.get_urls()['url_detail']
+        return reverse(url, kwargs={'pk': self.pk})
+    
+    class Meta:
+        abstract = True
 
 class UnifiedPermissionsManager(PermissionManager):
     '''

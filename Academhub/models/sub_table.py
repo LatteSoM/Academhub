@@ -1,7 +1,3 @@
-from typing import Any
-from dataclasses import dataclass
-from django.db.models import QuerySet
-
 __all__ = (
     'SubTable',
 )

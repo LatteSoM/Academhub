@@ -8,6 +8,7 @@ from django.views.generic import TemplateView, ListView, DetailView, UpdateView,
 
 __all__  = [
   'ObjectListView',
+  'ObjectTableView',
   'ObjectDetailView',
   'ObjectUpdateView',
   'ObjectCreateView',

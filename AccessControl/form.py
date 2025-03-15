@@ -1,6 +1,6 @@
 from django import forms
+from Academhub.forms import PermissionSelectField
 from django.contrib.auth.forms import SetPasswordForm
-from Academhub.base.forms import PermissionSelectField
 from django.contrib.contenttypes.models import ContentType
 from Academhub.models import CustomUser, PermissionProxy, GroupProxy
 

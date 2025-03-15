@@ -1,12 +1,5 @@
 import os
-import random
-import re
-import string
 
-from django.utils.dateparse import parse_date
-from openpyxl.reader.excel import load_workbook
-
-from Academhub.base.mixin import ImportViewMixin
 from .forms import *
 from .utils import *
 from .tables import *
@@ -27,20 +20,18 @@ from Academhub.models import (
     ProfessionalModule,
     MiddleCertification,
 )
-from django.conf import settings
-from openpyxl import load_workbook
+from django.conf import settings 
 from collections import defaultdict
-from Academhub.base import SubTable
 from django.http import HttpResponse
-from django.utils.text import normalize_newlines
 from django.urls import reverse_lazy
 from django.http import HttpResponse
-from django.utils.dateparse import parse_date
-from django.shortcuts import render, get_object_or_404, redirect
+from Academhub.models import SubTable
+from Academhub.generic import ImportViewMixin
+from django.shortcuts import get_object_or_404, redirect
 from .tables import AcademTable, ExpulsionTable, ContingentMovementTable
 from .filters import AcademFilter, ExpulsionFilter, ContingentMovementFilter
 from .forms import AcademLeaveForm, AcademReturnForm, ExpellStudentForm, RecoverStudentForm, StudentImportForm
-from Academhub.base import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView, ObjectTemplateView
+from Academhub.generic import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView, ObjectTemplateView
 from Academhub.modules.documentGenPars import StatisticsTableGenerator, CourseTableGenerator, GroupTableGenerator, VacationTableGenerator, MovementTableGenerator
 
 __all__ = (

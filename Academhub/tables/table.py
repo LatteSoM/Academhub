@@ -1,4 +1,10 @@
 from .column import *
+from django_tables2 import tables
+
+__all__ = (
+    'BaseTable',
+    'BaseTable2'
+)
 
 class BaseTable(tables.Table):
     # selection = CheckBoxColumn(accessor='pk', orderable=False, verbose_name='')

@@ -1,5 +1,5 @@
 import django_tables2 as table
-from Academhub.base import BaseTable, EmailColumn
+from Academhub.tables import BaseTable, EmailColumn
 from Academhub.models import CustomUser, GroupProxy, PermissionProxy
 
 __all__ = (

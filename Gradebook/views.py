@@ -2,16 +2,13 @@ from Gradebook.forms import *
 from Gradebook.tables import *
 from Gradebook.filters import *
 from django.utils import timezone
-from Academhub.base import SubTable
 from django.contrib import messages
 from django.http import HttpResponse
 from Gradebook.mixins import GradeBookMixin
 from Gradebook.filters import GradeBookTeachersFilter
 from django.shortcuts import get_object_or_404, redirect
-from django.shortcuts import get_object_or_404, redirect
-from Academhub.models import GradebookStudents, Gradebook
-from Academhub.models import GradebookStudents, Gradebook, CustomUser
-from Academhub.base import BulkUpdateView, ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView
+from Academhub.models import GradebookStudents, Gradebook, CustomUser, SubTable
+from Academhub.generic import BulkUpdateView, ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView
 
 #
 # Create your views here.

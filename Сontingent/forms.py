@@ -2,7 +2,7 @@ import os
 from .utils import *
 from django import forms
 from datetime import datetime
-from Academhub.base.forms import *
+from Academhub.forms import *
 from django.utils.dateparse import parse_date
 from openpyxl.reader.excel import load_workbook
 from django.core.exceptions import ValidationError
