@@ -60,7 +60,8 @@ class GradebookStudentBulkUpdateView(BulkUpdateView):
                 Gradebook, 
                 pk=self.gradebook_pk
             )
-            gradebook.status = Gradebook.STATUS_CHOICE[1][1]
+            gradebook.status = Gradebook.STATUS_CHOICE[2][1]
+            gradebook.date_of_filling = timezone.now()
             gradebook.save()
 
         return form

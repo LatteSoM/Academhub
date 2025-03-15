@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import ManyToManyField
 from django.utils import timezone
 from Academhub.validators import *
 from .base.models import AcademHubModel, UrlGenerateMixin
@@ -22,7 +23,7 @@ __all__ = [
     'CalendarGraphicOfLearningProcess',
     'MiddleCertification',
     'StudentRecordBook',
-    'RecordBookTemplate'
+    'RecordBookTemplate',
 ]
 
     
@@ -215,6 +216,9 @@ class TermPaper(AcademHubModel):
         verbose_name='Дисциплина'
     )
 
+    def __str__(self):
+        return self.name
+
 
 
 class Specialty(AcademHubModel):
@@ -254,8 +258,129 @@ class Qualification(AcademHubModel):
     def __str__(self):
         return self.name
 
-# Модель для учебного плана (связывает дисциплины с группами по квалификации и году поступления)
 
+class Curriculum(models.Model):
+    qualification = models.ForeignKey(
+        Qualification,
+        on_delete=models.CASCADE,
+        verbose_name="Квалификация"
+    )
+    admission_year = models.PositiveIntegerField(verbose_name="Год поступления")
+
+    class Meta:
+        verbose_name = "Учебный план"
+        verbose_name_plural = "Учебные планы"
+        unique_together = ['qualification', 'admission_year']
+
+    def __str__(self):
+        return f"План для {self.qualification} ({self.admission_year} года)"
+
+
+class GroupStudents(AcademHubModel):
+    '''
+        П50-9-21
+    '''
+
+    EDUCATION_BASE_CHOICES = (
+        ("Основное общее", "Основное общее"),
+        ("Среднее общее", "Среднее общее"),
+    )
+
+    COURCE_CHOICES = (
+        (1, '1'),
+        (2, '2'),
+        (3, '3'),
+        (4, '4')
+    )
+
+    def get_years_choices():
+        years = []
+        for i in range(1990, timezone.now().year + 1):
+            years.append((i, i))
+        return years
+
+    def get_default_number_value(self):
+        return GroupStudents.objects.filter(
+            year_create=self.year_create,
+            qualification=self.qualification,
+        ).count() + 1
+
+    full_name = models.CharField(blank=True, null=True, verbose_name='Полное название группы', max_length=1000,
+                                 unique=True)
+
+    qualification = models.ForeignKey(
+        Qualification, on_delete=models.CASCADE, related_name="groups", verbose_name="Квалификация"
+    )
+
+    number = models.PositiveIntegerField(
+        verbose_name='Порядковый номер группы в потоке',
+    )
+
+    education_base = models.CharField(
+        max_length=255,
+        verbose_name="База образования",
+        choices=EDUCATION_BASE_CHOICES,
+        default=EDUCATION_BASE_CHOICES[0][1]
+    )
+
+    year_create = models.PositiveIntegerField(
+        verbose_name='Год создания',
+        choices=get_years_choices(),
+        default=timezone.now().year
+    )
+
+    current_course = models.IntegerField(
+        verbose_name="Курс",
+        choices=COURCE_CHOICES,
+        default=COURCE_CHOICES[0][1],
+        null=False
+    )
+
+    class Meta:
+        verbose_name = "Группа"
+        verbose_name_plural = "Группы"
+
+    def __str__(self):
+        return self.full_name
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.number = self.get_default_number_value()
+
+        self.full_name = f"{self.qualification.short_name}-{self.number}-{str(self.year_create)[-2:]}"
+
+        return super().save(*args, **kwargs)
+
+
+class CalendarGraphicOfLearningProcess(AcademHubModel):
+
+    name = models.CharField(max_length=255, verbose_name="Название")
+
+    group = models.ForeignKey(
+        GroupStudents,
+        on_delete=models.CASCADE,
+        related_name="learning_process_calendars",
+        verbose_name="Группа"
+    )
+
+    start_exam_date_first_semester = models.DateField(null=False, blank=False, verbose_name="Дата начала сессии первого семестра")
+    date_of_pm_first_semester = models.DateField(null=True, blank=True, verbose_name="Дата экзамена по профессиональному модулю первого семестра")
+    start_exam_date_second_semester = models.DateField(null=False, blank=False, verbose_name="Дата начала сессии второго семестра")
+    date_of_pm_second_semester = models.DateField(null=True, blank=True, verbose_name="Дата экзамена по профессиональному модулю второго семестра")
+
+    @property
+    def all_practice_dates(self):
+        return self.practice_dates.select_related('curriculum_item__practice')
+
+    class Meta:
+        verbose_name = "Календарный график учебного процесса"
+        verbose_name_plural = "Календарные графики учебного процесса"
+
+    def __str__(self):
+        return self.name
+
+
+# Модель для учебного плана (связывает дисциплины с группами по квалификации и году поступления)
 class CurriculumItem(models.Model):
     """
     Сводная таблица для хранения компонентов учебного плана: дисциплин, практик, модулей и курсовых.
@@ -272,8 +397,6 @@ class CurriculumItem(models.Model):
         ('exam', 'Экзамен'),
         ('credit', 'Зачёт'),
         ('none', 'Без аттестации'),  # Для практик или модулей без формы аттестации
-        ('learning_practice', 'Учебная практика'),
-        ('profession_practice', 'Производственная практика'),
         ('course_pr', 'Защита курсового проекта')
     )
 
@@ -334,6 +457,13 @@ class CurriculumItem(models.Model):
         default='none'
     )
 
+    practice_dates = models.ManyToManyField(
+        CalendarGraphicOfLearningProcess,
+        through='PracticeDate',
+        related_name='related_practices',
+        verbose_name="Календарные графики"
+    )
+
     class Meta:
         verbose_name = "Элемент учебного плана"
         verbose_name_plural = "Элементы учебного плана"
@@ -341,51 +471,13 @@ class CurriculumItem(models.Model):
     def __str__(self):
         if self.item_type == 'discipline' and self.discipline:
             return f"{self.discipline.name} ({self.get_attestation_form_display()})"
-        elif self.item_type == 'practice' and self.discipline:
-            return f"{self.discipline.name} ({self.get_attestation_form_display()})"
-        elif self.item_type == 'professional_module' and self.discipline:
-            return f"{self.discipline.name} ({self.get_attestation_form_display()})"
-        elif self.item_type == 'term_paper' and self.discipline:
-            return f"Курсовая по {self.discipline.name} ({self.get_attestation_form_display()})"
+        elif self.item_type == 'practice' and self.practice:
+            return f"{self.practice.practice_name} ({self.get_attestation_form_display()})"
+        elif self.item_type == 'professional_module' and self.professional_module:
+            return f"{self.professional_module.module_name} ({self.get_attestation_form_display()})"
+        elif self.item_type == 'term_paper' and self.term_paper:
+            return f"Курсовая по {self.term_paper.name} ({self.get_attestation_form_display()})"
         return "Неопределённый элемент"
-
-class Curriculum(models.Model):
-    qualification = models.ForeignKey(
-        Qualification,
-        on_delete=models.CASCADE,
-        verbose_name="Квалификация"
-    )
-    admission_year = models.PositiveIntegerField(verbose_name="Год поступления")
-
-    class Meta:
-        verbose_name = "Учебный план"
-        verbose_name_plural = "Учебные планы"
-        unique_together = ['qualification', 'admission_year']
-
-    def __str__(self):
-        return f"План для {self.qualification} ({self.admission_year} года)"
-
-# class Curriculum(models.Model):
-#     qualification = models.ForeignKey(
-#         Qualification,
-#         on_delete=models.CASCADE,
-#         verbose_name="Квалификация"
-#     )
-#     admission_year = models.PositiveIntegerField(verbose_name="Год поступления")
-#     disciplines = models.ManyToManyField(
-#         Discipline,
-#         verbose_name="Дисциплины",
-#         related_name="curriculums"
-#     )
-#
-#     class Meta:
-#         verbose_name = "Учебный план"
-#         verbose_name_plural = "Учебные планы"
-#         #эта срань гарантирует уникальность учебного пана по сочетанию квалификация+год поступления
-#         unique_together = ['qualification', 'admission_year']
-#
-#     def __str__(self):
-#         return f"План для {self.qualification} ({self.admission_year} года)"
 
 
 class RecordBookTemplate(models.Model):
@@ -438,80 +530,6 @@ class RecordBookTemplate(models.Model):
         return f"Шаблон для {self.qualification} ({self.admission_year})"
 
 
-class GroupStudents(AcademHubModel):
-    '''
-        П50-9-21
-    '''
-
-    EDUCATION_BASE_CHOICES = (
-        ("Основное общее", "Основное общее"),
-        ("Среднее общее", "Среднее общее"),
-    )
-
-    COURCE_CHOICES = (
-        (1,'1'),
-        (2,'2'),
-        (3,'3'),
-        (4,'4')
-    )
-
-    def get_years_choices():
-        years = []
-        for i in range(1990, timezone.now().year + 1):
-            years.append((i, i))
-        return years
-    
-    def get_default_number_value(self):
-        return GroupStudents.objects.filter(
-            year_create = self.year_create,
-            qualification = self.qualification,
-        ).count() + 1
-
-    full_name = models.CharField(blank=True, null=True, verbose_name='Полное название группы', max_length=1000, unique=True)
-
-    qualification = models.ForeignKey(
-        Qualification, on_delete=models.CASCADE, related_name="groups", verbose_name="Квалификация"
-    )
-
-    number = models.PositiveIntegerField(
-        verbose_name='Порядковый номер группы в потоке',
-    )
-
-    education_base = models.CharField(
-        max_length=255,
-        verbose_name="База образования",
-        choices=EDUCATION_BASE_CHOICES,
-        default=EDUCATION_BASE_CHOICES[0][1]
-    )
-
-    year_create = models.PositiveIntegerField(
-        verbose_name='Год создания',
-        choices=get_years_choices(),
-        default=timezone.now().year
-    )
-
-    current_course = models.IntegerField(
-        verbose_name="Курс",
-        choices=COURCE_CHOICES,
-        default=COURCE_CHOICES[0][1],
-        null=False
-    )
-
-
-    class Meta:
-        verbose_name = "Группа"
-        verbose_name_plural = "Группы"
-
-    def __str__(self):
-        return self.full_name
-    
-    def save(self, *args, **kwargs):
-        if not self.pk:
-            self.number = self.get_default_number_value()
-
-        self.full_name = f"{self.qualification.short_name}-{self.number}-{str(self.year_create)[-2:]}"
-        
-        return super().save(*args, **kwargs)
 
 class Student(AcademHubModel):
     EDUCATION_BASE_CHOICES = (
@@ -812,28 +830,18 @@ class Gradebook(AcademHubModel):
     def __str__(self):
         return self.name
 
-class CalendarGraphicOfLearningProcess(AcademHubModel):
+    def save(self, *args, **kwargs):
+        """
+        Автоматически генерирует номер ведомости при создании.
+        """
+        if not self.number:  # Если номер не задан
+            settings = ProgramSettings.get_current_settings()
+            settings.reset_counter_if_august()  # Проверяем, нужно ли сбросить счетчик
+            settings.reset_year_if_new() # Проверяем, нужно ли обновить год
+            settings.increment_counter()
+            self.number = settings.generate_gradebook_number()
+        super().save(*args, **kwargs)
 
-    name = models.CharField(max_length=255, verbose_name="Название")
-
-    group = models.ForeignKey(
-        GroupStudents,
-        on_delete=models.CASCADE,
-        related_name="learning_process_calendars",
-        verbose_name="Группа"
-    )
-
-    start_exam_date_first_semester = models.DateField(null=False, blank=False, verbose_name="Дата начала сессии первого семестра")
-    date_of_pm_first_semester = models.DateField(null=True, blank=True, verbose_name="Дата экзамена по профессиональному модулю первого семестра")
-    start_exam_date_second_semester = models.DateField(null=False, blank=False, verbose_name="Дата начала сессии второго семестра")
-    date_of_pm_second_semester = models.DateField(null=True, blank=True, verbose_name="Дата экзамена по профессиональному модулю второго семестра")
-
-    class Meta:
-        verbose_name = "Календарный график учебного процесса"
-        verbose_name_plural = "Календарные графики учебного процесса"
-
-    def __str__(self):
-        return self.name
 
 
 class ContingentMovement(AcademHubModel):
@@ -887,3 +895,129 @@ class ContingentMovement(AcademHubModel):
 
     def __str__(self):
         return f"{self.get_action_type_display()} - {self.student.full_name} ({self.action_date})"
+
+def validate_practice_dates(value):
+    if value.start_date > value.end_date:
+        raise ValidationError("Дата окончания не может быть раньше даты начала")
+
+class PracticeDate(AcademHubModel):
+    calendar_graphic = models.ForeignKey(
+        CalendarGraphicOfLearningProcess,
+        on_delete=models.CASCADE,
+        related_name='practice_dates',
+        verbose_name="Календарный график"
+    )
+
+    curriculum_item = models.ForeignKey(
+        CurriculumItem,
+        on_delete=models.CASCADE,
+        limit_choices_to={'item_type': 'practice'},
+        verbose_name="Практика из учебного плана"
+    )
+
+    start_date = models.DateField(verbose_name="Дата начала практики")
+    end_date = models.DateField(verbose_name="Дата окончания практики")
+
+    class Meta:
+        verbose_name = "Дата практики"
+        verbose_name_plural = "Даты практик"
+        unique_together = [['calendar_graphic', 'curriculum_item']]
+
+    def __str__(self):
+        return f"{self.curriculum_item} ({self.start_date} - {self.end_date})"
+
+    def clean(self):
+        validate_practice_dates(self)
+
+from django.db import models
+from django.utils import timezone
+
+def get_current_year():
+    return timezone.now().year
+
+class ProgramSettings(models.Model):
+    """
+    Модель для хранения настроек программы.
+    """
+    gradebook_prefix = models.CharField(
+        max_length=50,
+        verbose_name="Префикс номера ведомости",
+        default="18.01",  # По умолчанию "ВДМ"
+        help_text="Префикс, с которого начинается номер ведомости."
+    )
+    current_year = models.PositiveIntegerField(
+        verbose_name="Текущий год",
+        default=get_current_year,  # Используем функцию вместо лямбды
+        help_text="Текущий год для формирования номера ведомости."
+    )
+    gradebook_counter = models.PositiveIntegerField(
+        verbose_name="Счетчик ведомостей",
+        default=0,  # Начинаем с нуля
+        help_text="Счетчик ведомостей, который сбрасывается каждый август."
+    )
+
+    class Meta:
+        verbose_name = "Настройки программы"
+        verbose_name_plural = "Настройки программы"
+
+    def __str__(self):
+        return f"Настройки: {self.gradebook_prefix}-{self.current_year % 100}/XXXX"
+
+    def reset_counter(self):
+        """
+        Сбрасывает счетчик ведомостей.
+        """
+        self.gradebook_counter = 0
+        self.save()
+
+    def reset_year(self):
+        """
+        Обновляет год
+        """
+        self.year = timezone.now().year
+        self.save()
+
+    def increment_counter(self):
+        """
+        Увеличивает счетчик ведомостей на 1.
+        """
+        self.gradebook_counter += 1
+        self.save()
+
+    def generate_gradebook_number(self):
+        """
+        Генерирует номер ведомости по шаблону: <префикс><год>/<счетчик>.
+        """
+        year_short = self.current_year % 100  # Последние две цифры года
+        return f"{self.gradebook_prefix}-{year_short:02d}/{self.gradebook_counter:04d}"
+
+    @classmethod
+    def get_current_settings(cls):
+        """
+        Возвращает текущие настройки программы.
+        Если настройки отсутствуют, создает новую запись.
+        """
+        settings, created = cls.objects.get_or_create(pk=1)  # Единая запись с ID=1
+        return settings
+
+    @classmethod
+    def reset_counter_if_august(cls):
+        """
+        Сбрасывает счетчик ведомостей, если начался август.
+        """
+        current_month = timezone.now().month
+        settings = cls.get_current_settings()
+
+        if current_month == 8:
+            settings.reset_counter()
+
+
+    @classmethod
+    def reset_year_if_new(cls):
+        """
+        Обновляет год, если сейчас уже новый год
+        """
+        current_year = timezone.now().year
+        settings = cls.get_current_settings()
+        if current_year != settings.current_year:
+            settings.reset_counter()
