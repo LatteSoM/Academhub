@@ -1,8 +1,11 @@
-from django import forms
 import os
+from django import forms
+from .parser_for_plx import RUP_parser
 
 class GetPlxForm(forms.Form):
     file = forms.FileField(label="Перетащите файл")
+
+    parser = RUP_parser()
 
     def clean(self):
         super().clean()
@@ -14,9 +17,15 @@ class GetPlxForm(forms.Form):
 
             if file_extension.lower() != '.plx':
                 raise forms.ValidationError("Файл должен быть в формате .plx")
+        
+            self.get_file_data(result)
     
-    def save(self, commit=True):
-        instance = super().save(commit=False)
-        instance.file.save(instance.name, self.cleaned_data.get('file'))
+    def get_file_data(self, file):
 
+        self.parser.add_file(file)
+        self.parser.get_plan()
+    
+    def save(self):
+        pass
+    
         

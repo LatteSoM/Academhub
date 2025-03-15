@@ -1,13 +1,14 @@
 from .views import *
 from django.urls import path
 
-from .views import curriculum_list
+from .views import CurriculumTableView, CurricullumAddView
 
 urlpatterns = [
     #
     ## Curriculum
     #
 
-    path('curriculum/list', curriculum_list, name='curriculums_list'),
+    path('curriculum/list', CurriculumTableView.as_view(), name='curriculum_list'),
+    path('curriculum/add', CurricullumAddView.as_view(), name='curriculum_create')
 
 ]

@@ -1,15 +1,23 @@
-{% extends 'base.html' %}
+{% extends 'base_view.html' %}
 
-{% load static %}
+{% block tabs %}
+    {{ block.super }}
+    <button class="tab-button" data-tab="import">Импорт</button>
+{% endblock %}
 
-<h1>Загрузите файл</h1>
-
-<form method="post" enctype="multipart/form-data">
-
-  {% csrf_token %}
-
-  {{ form.as_form }}
-
-  <button type="submit">Загрузить файл</button>
-
-</form>
+{% block tab-content %}
+    {{ block.super }}
+    <div id="import" class="tab-pane">
+        <div class="page-header">
+            <h2>Импорт учебных план из .plx</h2>
+        </div>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% with form=form_import %}
+                {% include 'inc/form/form.html' %}
+            {% endwith %}
+        <br>
+            <button type="submit" class="btn-primary">Загрузить</button>
+        </form>
+    </div>
+{% endblock %}

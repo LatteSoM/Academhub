@@ -3,12 +3,17 @@ from xml.etree.ElementTree import Element
 from typing import List
 import json
 import uuid
+import _io
 
+
+__all__ = (
+    'RUP_parser'
+)
 
 class RUP_parser:
-    def __init__(self, filename: str = "rup.xml"):
 
-        self.tree = et.parse(filename)
+    def add_file(self, file):
+        self.tree = et.parse(file)
         self.root = self.tree.getroot()
         self.root_child = self.root[0][0]
 
@@ -22,7 +27,7 @@ class RUP_parser:
         self.plany_stroky_childs: List[Element] = []
         self.spravochnik_vidy_rabot: dict = {}
         self.spravochnik_tipa_chasov: dict = {}
-    
+
     def get_elements_from_file(self):
         for child in self.root_child:
             tag_name = child.tag.replace("{http://tempuri.org/dsMMISDB.xsd}", '')
@@ -175,7 +180,7 @@ class RUP_parser:
 
         self.rup['stady_plan'] = self.plan_dict
 
-        with open("plan.json", "w", encoding="utf-8") as file:
+        with open(f"./Curriculum/media/plan_{self.rup['id']}.json", "w", encoding="utf-8") as file:
             json.dump(self.rup, file, ensure_ascii=False, indent=4)
         print("=== JSON data (from XML) ===")
         return self.plan_dict
