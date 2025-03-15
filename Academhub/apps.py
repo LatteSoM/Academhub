@@ -4,7 +4,6 @@ from django.apps import AppConfig
 
 
 
-
 class AcademhubAppConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "Academhub"
@@ -21,6 +20,7 @@ class AcademhubAppConfig(AppConfig):
         from Academhub.models import CurriculumItem
         from Academhub.models import Student
         from Academhub.models import PracticeDate
+        from django.db.models import Q
         from Academhub.models import ProfessionalModule
 
         from Academhub.models import TermPaper
@@ -36,9 +36,12 @@ class AcademhubAppConfig(AppConfig):
             grades = GradebookStudents.objects.filter(
                 student=student,
                 gradebook__discipline__code=code,
-                gradebook__semester_number=current_semester,
-                gradebook__status="Заполнена"
-            ).exclude(grade__in=['Неявка', 'Неудовлетворительно', ''])
+                gradebook__semester_number=current_semester
+            ).filter(
+                Q(gradebook__status="Заполнена") | Q(gradebook__status="Закрыта")  # Включаем оба статуса
+            ).exclude(
+                grade__in=['Неявка', 'Неудовлетворительно', '']
+            )
 
             # 2. Получить все уникальные дисциплины по которым есть оценки
             graded_disciplines = set(grades.values_list('gradebook__discipline', flat=True))
