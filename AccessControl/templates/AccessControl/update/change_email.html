@@ -1,0 +1,23 @@
+{% extends 'base_create.html' %}
+
+{% load util %}
+
+{% block form_title %}
+    Изменить почту у {{ user }}
+{% endblock %}
+
+{% block content %}
+	<h1>Изменение email</h1>
+    <br>
+      <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+          <br>
+        <button class="btn-primary" type="submit">Сохранить изменения</button>
+      </form>
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-success">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+{% endblock %}

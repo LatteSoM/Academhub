@@ -6,6 +6,13 @@
             </a>
         </h1>
     </div>
+    <div class="sidebar-header">
+        <h3 style="text-align: center;">
+            <a href="{% url 'settings'  user.pk  %}" style="text-decoration: none; color: var(--text-color);">
+                Личный кабинет
+            </a>
+        </h3>
+    </div>
     <nav class="sidebar-nav">
         <ul id="nav-menu">
             {% for link in navigation %}

@@ -19,6 +19,8 @@ from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth.views import LogoutView
 
+from .views import SettingsView, UserSettingsDetailView
+
 urlpatterns = [
     # path("prometheus/", include("django_prometheus.urls")),
     
@@ -29,6 +31,8 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path('auth/', CustomLoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
+
+    path('settings/<int:pk>', UserSettingsDetailView.as_view(), name='settings'),
 
     path('ContingentApp/', include('Сontingent.urls')),
     path('AccessControl/', include('AccessControl.urls')),

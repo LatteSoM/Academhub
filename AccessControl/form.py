@@ -128,3 +128,24 @@ class PermissionForm(forms.ModelForm):
     class Meta:
         model = PermissionProxy
         fields = '__all__'
+
+
+class UserEmailChangeForm(forms.ModelForm):
+    """
+    Форма изменения email
+    """
+    class Meta:
+        model = CustomUser  # Используем вашу кастомную модель
+        fields = ['email']
+
+    def __init__(self, *args, **kwargs):
+        """
+        Обновление стилей формы
+        """
+        super().__init__(*args, **kwargs)
+        for field in self.fields:
+            self.fields[field].widget.attrs.update({
+                'class': 'form-control',
+                'autocomplete': 'off'
+            })
+
