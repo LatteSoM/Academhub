@@ -42,7 +42,6 @@ USE_TZ = True
 # Приложения которые пойдут в навигационную панель
 ACTIVE_APPS = [
     'Сontingent',
-    'Academhub',
     'AccessControl',
     'Gradebook',
     'Curriculum',
@@ -59,7 +58,7 @@ INSTALLED_APPS = [
     'django_filters',
     'bootstrap3',
     'bootstrap4',
-
+    'Academhub',
 ] + ACTIVE_APPS
 
 MIDDLEWARE = [
@@ -86,6 +85,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'Academhub.context_processors.navigation',
             ],
         },
     },
@@ -174,8 +174,8 @@ AUTH_USER_MODEL = 'Academhub.CustomUser'
 
 # Navigation
 
-for app in ACTIVE_APPS:
-    try:
-        module = importlib.import_module(f"{app}.navigation")
-    except ModuleNotFoundError as e:
-        pass
+# for app in ACTIVE_APPS:
+#     try:
+#         module = importlib.import_module(f"{app}.navigation")
+#     except ModuleNotFoundError as e:
+#         pass

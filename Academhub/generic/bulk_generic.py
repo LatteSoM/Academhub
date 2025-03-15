@@ -1,5 +1,4 @@
 from django.views.generic import View
-from .generic import NavigationContextMixin
 from django.forms import modelformset_factory
 from django.shortcuts import render, redirect
 
@@ -7,7 +6,7 @@ __all__ = (
     'BulkUpdateView',
 )
 
-class BulkUpdateView(NavigationContextMixin, View):
+class BulkUpdateView(View):
     """
         Класс для обработки можественного обновления объектов
     """

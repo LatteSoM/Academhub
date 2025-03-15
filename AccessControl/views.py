@@ -1,11 +1,11 @@
 from .form import *
-from Academhub.base import SubTable
+from Academhub.models import SubTable
 from django.contrib.auth.views import PasswordChangeView
-from django.contrib.messages.views import SuccessMessageMixin
 from .filter import UserFilter, GroupFilter, PermissionFilter
+from django.contrib.messages.views import SuccessMessageMixin
 from Academhub.models import CustomUser, PermissionProxy, GroupProxy
 from .table import UserTable, PermissionTable, GroupTable, GroupUserTable
-from Academhub.base import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView
+from Academhub.generic import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView
 
 # Create your views here.
 

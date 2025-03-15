@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import Permission
-from Academhub.base.forms.widgets import PermissionSelectWidget
+from Academhub.forms.widgets import PermissionSelectWidget
 
 __all__ = (
     'PermissionSelectField',

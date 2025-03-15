@@ -1,6 +1,10 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UsernameField
 
+__all__ = (
+    'CustomAuthenticationForm',
+)
+
 class CustomAuthenticationForm(AuthenticationForm):
     username = UsernameField(
         widget=forms.TextInput(attrs={"autofocus": True}),

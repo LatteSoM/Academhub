@@ -1,20 +1,14 @@
-from datetime import datetime
 from Gradebook.forms import *
 from Gradebook.tables import *
 from Gradebook.filters import *
-from django.urls import reverse
 from django.utils import timezone
-from Academhub.base import SubTable
 from django.contrib import messages
+from django.http import HttpResponse
 from Gradebook.mixins import GradeBookMixin
-from django.http import HttpResponse, JsonResponse
 from Gradebook.filters import GradeBookTeachersFilter
 from django.shortcuts import get_object_or_404, redirect
-from django.shortcuts import get_object_or_404, redirect
-from Academhub.models import GradebookStudents, Gradebook
-from django.utils.timezone import localtime  # Импортируем localtime
-from Academhub.models import GradebookStudents, Gradebook, CustomUser
-from Academhub.base import BulkUpdateView, ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView
+from Academhub.models import GradebookStudents, Gradebook, CustomUser, SubTable, ButtonTable
+from Academhub.generic import BulkUpdateView, ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView
 
 #
 # Create your views here.
@@ -125,6 +119,13 @@ class GradebookDetailView(ObjectDetailView):
             table=GradebookStudentsTable,
             filter_func=grade_book_student_filter,
             queryset=GradebookStudents.objects.all(),
+            buttons=[
+                ButtonTable (
+                    name = 'Заполнить ведомость',
+                    link_name = 'gradebookstudents_bulk_create',
+                    link_params = ['pk']
+                )
+            ]
         ),
         SubTable(
             name='Учителя',

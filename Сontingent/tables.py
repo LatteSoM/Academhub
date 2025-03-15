@@ -1,6 +1,6 @@
 import django_tables2 as table
 from django_tables2 import tables
-from Academhub.base import BaseTable
+from Academhub.tables import BaseTable
 from Academhub.models import Qualification, Specialty, GroupStudents, Student, Discipline, MiddleCertification, \
     ProfessionalModule, Practice, TermPaper, ContingentMovement
 

@@ -1,5 +1,6 @@
-from .widgets import *
 from .fields import *
+from .widgets import *
+from .form import *
 
 __all__ = (
     'Phone',

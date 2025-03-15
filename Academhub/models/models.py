@@ -1,31 +1,43 @@
+from ..validators import *
 from django.db import models
+from django.urls import reverse
 from django.utils import timezone
-from .validators import *
-from  Academhub.base.models import AcademHubModel
+from .mixin import UrlGenerateMixin
 from .utils import UnifiedPermissionQyerySet
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permission, Group, PermissionsMixin, PermissionManager
 
 __all__ = (
-    'CustomUser',
-    'GroupStudents',
-    'Discipline',
-    'Specialty',
-    'Qualification',
     'Student',
+    'Practice',
     'Gradebook',
-    'CurriculumItem',
+    'Specialty',
     'TermPaper',
     'Curriculum',
-    'Practice',
-    'PermissionProxy',
+    'Discipline',
+    'CustomUser',
     'GroupProxy',
-    'ProfessionalModule',
-    'CalendarGraphicOfLearningProcess',
-    'MiddleCertification',
+    'GroupStudents',
+    'Qualification',
+    'AcademHubModel',
+    'CurriculumItem',
+    'PermissionProxy',
     'StudentRecordBook',
-    'RecordBookTemplate'
+    'GradebookStudents',
+    'ProfessionalModule',
+    'RecordBookTemplate',
+    'ContingentMovement',
+    'MiddleCertification',
+    'CalendarGraphicOfLearningProcess',
 )
+
+class AcademHubModel(UrlGenerateMixin, models.Model):
+    def get_absolute_url(self):
+        url = self.get_urls()['url_detail']
+        return reverse(url, kwargs={'pk': self.pk})
+    
+    class Meta:
+        abstract = True
 
 class UnifiedPermissionsManager(PermissionManager):
     '''
@@ -585,6 +597,13 @@ class Student(AcademHubModel):
     class Meta:
         verbose_name = "Студент"
         verbose_name_plural = "Студенты"
+        permissions = [
+            ('import_student', 'Import student'),
+            ('academic_come_back_student', 'Come back student from academic'),
+            ('academic_leave_student', 'May send academic leave'),
+            ('expel_student', 'Expel student'),
+            ('generate_record_book,student', 'Generate record book')
+        ]
 
     def save(self, *args, **kwargs):
         from django.utils import timezone  # Импортируем внутри метода, чтобы избежать проблем с импортом

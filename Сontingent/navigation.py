@@ -1,4 +1,4 @@
-from Academhub.base import Navigation, ParentLink, ChildLink
+from Academhub.models import Navigation, ParentLink, ChildLink
 
 navigation = Navigation(
     ParentLink(
@@ -12,8 +12,7 @@ navigation = Navigation(
             ChildLink('Академический отпуск', 'academ_list'),
             ChildLink('Движение контингента', 'expelled_students'),
             ChildLink('Статистика', 'statisticks'),
-            ChildLink('Логи движений', 'contingent_movement_list'),
-            ChildLink('Импорт студентов', 'import_students')
+            ChildLink('Логи движений', 'contingent_movement_list')
         ]
     )
 )

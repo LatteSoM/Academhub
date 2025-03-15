@@ -1,12 +1,5 @@
 import os
-import random
-import re
-import string
 
-from django.utils.dateparse import parse_date
-from openpyxl.reader.excel import load_workbook
-
-from Academhub.base.mixin import ImportViewMixin
 from .forms import *
 from .utils import *
 from .tables import *
@@ -17,7 +10,6 @@ from Academhub.models import (
     Practice,
     TermPaper,
     Specialty,
-    Gradebook,
     Discipline,
     Curriculum,
     GroupStudents,
@@ -28,19 +20,18 @@ from Academhub.models import (
     ProfessionalModule,
     MiddleCertification,
 )
-from django.conf import settings
-from contextlib import nullcontext
+from django.conf import settings 
 from collections import defaultdict
-from Academhub.base import SubTable
 from django.http import HttpResponse
-from django.utils.text import normalize_newlines
 from django.urls import reverse_lazy
-from Gradebook.tables import GradebookTable2
-from django.shortcuts import render, get_object_or_404, redirect
+from django.http import HttpResponse
+from Academhub.models import SubTable
+from Academhub.generic import ImportViewMixin
+from django.shortcuts import get_object_or_404, redirect
 from .tables import AcademTable, ExpulsionTable, ContingentMovementTable
 from .filters import AcademFilter, ExpulsionFilter, ContingentMovementFilter
 from .forms import AcademLeaveForm, AcademReturnForm, ExpellStudentForm, RecoverStudentForm, StudentImportForm
-from Academhub.base import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView, ObjectTemplateView
+from Academhub.generic import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView, ObjectTemplateView
 from Academhub.modules.documentGenPars import StatisticsTableGenerator, CourseTableGenerator, GroupTableGenerator, VacationTableGenerator, MovementTableGenerator
 
 __all__ = (
@@ -281,14 +272,10 @@ class StudentTableView(ImportViewMixin, ObjectTableView):
     Класс для отображения таблицы студентов.
     """
     table_class = StudentTable
+    form_import = StudentImportForm
     filterset_class = StudentFilter
     queryset = Student.objects.filter(is_expelled=False, is_in_academ=False)
     template_name = 'Contingent/list/student_list.html'
-    form_import = StudentImportForm
-
-    def get(self, request, *args, **kwargs):
-        return super().get(request, *args, **kwargs)
-
 
 
 class StudentDetailView(ObjectDetailView):
@@ -944,99 +931,3 @@ def generate_movement_table(request):
         response['Content-Disposition'] = 'attachment; filename="movement_table.xlsx"'
     os.remove(file_path)
     return response
-
-
-def import_students(request):
-    """
-    Функция для импорта контингентов из файла форматат .xlsx, выгруженного из 1с приемной комиссией
-    """
-    if request.method == 'POST':
-        form = StudentImportForm(request.POST, request.FILES)
-        if form.is_valid():
-            excel_file = request.FILES['excel_file']
-            wb = load_workbook(excel_file)
-            ws = wb.active
-
-            # Сопоставление заголовков с индексами столбцов
-            headers = {cell.value: idx for idx, cell in enumerate(ws[1]) if cell.value}
-
-            # Пропускаем строку заголовков и начинаем с данных
-            for row in ws.iter_rows(min_row=2, values_only=True):
-                try:
-                    # Извлекаем данные из строки
-                    last_name = row[headers.get("Фамилия")]
-                    first_name = row[headers.get("Имя")]
-                    middle_name = row[headers.get("Отчество")]
-                    full_name = f"{last_name} {first_name} {middle_name}".strip() if last_name and first_name else None
-                    group_number = row[headers.get("Академическая группа")]
-                    course_str = row[headers.get("Курс")]
-                    course = int(course_str[0]) if course_str and course_str[0].isdigit() else None
-                    education_basis = row[headers.get("Основы обучения")]
-                    birth_date = (
-                        row[headers.get("Дата рождения")].date() if isinstance(row[headers.get("Дата рождения")],datetime)
-                        else datetime.strptime(row[headers.get("Дата рождения")], "%d.%m.%Y").date()) if row[
-                        headers.get("Дата рождения")] else None
-
-                    phone = row[headers.get("Телефон мобильный")]
-                    admission_order = row[headers.get("Приказ о зачислении")]
-                    expell_order = row[headers.get("Приказ об отчислении")] if row[
-                        headers.get("Приказ об отчислении")] else None
-                    date_of_expelling = (
-                        row[headers.get("Приказ об отчислении дата ОТ")].date() if isinstance(row[headers.get("Приказ об отчислении дата ОТ")], datetime)
-                        else datetime.strptime(row[headers.get("Приказ об отчислении дата ОТ")], "%d.%m.%Y").date()) if row[
-                        headers.get("Приказ об отчислении дата ОТ")] else None
-                    academ_leave_date = parse_date(str(row[headers.get("Дата начала последнего академ отпуска")])) if \
-                    row[headers.get("Дата начала последнего академ отпуска")] else None
-                    academ_return_date = parse_date(
-                        str(row[headers.get("Дата окончания последнего академ отпуска")])) if row[
-                        headers.get("Дата окончания последнего академ отпуска")] else None
-                    registration_addres = row[headers.get("Адрес по прописке")] if row[headers.get("Адрес по прописке")] else None
-                    actual_addres = row[headers.get("Адрес проживания")] if row[headers.get("Адрес проживания")] else None
-                    snils = row[headers.get("СПС")] if row[headers.get("СПС")] else None
-                    ancete_number = extract_application_number(row[headers.get("Анкета абитуриента")])
-                    expelled_due_to_graduation = False
-                    is_expelled = False
-                    reason_of_expelling = None
-                    note = None
-                    if expell_order:
-                        is_expelled = True
-                        if 'окончании' in expell_order:
-                            expelled_due_to_graduation = True
-                            reason_of_expelling = "Окончание обучения"
-                            note = 'Отчислен в связи с окончанием обучения'
-
-                    # Проверяем и создаём группу, если её нет
-                    group = GroupStudents.objects.get(full_name=group_number)
-
-                    # Создаём или обновляем студента
-                    student, created = Student.objects.update_or_create(
-                        full_name=full_name,
-                        defaults={
-                            'birth_date': birth_date,
-                            'group': group,
-                            'education_basis': education_basis,
-                            'phone': phone,
-                            'admission_order': admission_order,
-                            'expell_order': expell_order,
-                            'date_of_expelling': date_of_expelling,
-                            'is_in_academ': bool(academ_leave_date and not academ_return_date),
-                            'academ_leave_date': academ_leave_date,
-                            'academ_return_date': academ_return_date,
-                            'registration_address': registration_addres,
-                            'actual_address': actual_addres,
-                            'snils': snils,
-                            'expelled_due_to_graduation': expelled_due_to_graduation,
-                            'reason_of_expelling': reason_of_expelling,
-                            'is_expelled': is_expelled,
-                            'note': note,
-                            'ancete_number': ancete_number,
-                        }
-                    )
-                except Exception as e:
-                    return HttpResponse(f"Ошибка при импорте строки: {str(e)}", status=400)
-
-            return HttpResponse("Импорт студентов успешно завершён!")
-    else:
-        form = StudentImportForm()
-
-    return render(request, 'Contingent/import_students.html', {'form': form})
