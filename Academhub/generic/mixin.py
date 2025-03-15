@@ -1,28 +1,21 @@
 from django.contrib import messages
-from Academhub.models import Navigation
 from django_tables2 import RequestConfig
 from django.views.generic.base import ContextMixin
-# from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin
 
 __all__ = (
     'SubTablesMixin',
     'ImportViewMixin',
     'BaseContextMixin',
-    'NavigationContextMixin',
 )
 
-class NavigationContextMixin(ContextMixin):
-  """
-      Базовый миксин для добавления навигации в контекст всех представлений.
-      Наследуется от ContextMixin и добавляет ключ 'navigation' в контекст шаблона.
-  """
+class PermissionBaseMixin(PermissionRequiredMixin):
+    '''
+        Базовый mixin для реализации прав доступа
+    '''
+    pass
 
-  def get_context_data(self, **kwargs):
-      context = super().get_context_data(**kwargs)
-      context['navigation'] = Navigation().get()
-      return context
-
-class BaseContextMixin(NavigationContextMixin):
+class BaseContextMixin(ContextMixin):
   """
   Базовый миксин для добавления навигации в контекст всех представлений и прав доступа.
   Наследуется от ContextMixin и добавляет ключ 'navigation' в контекст шаблона.
