@@ -7,7 +7,7 @@ from django.http import HttpResponse
 from Gradebook.mixins import GradeBookMixin
 from Gradebook.filters import GradeBookTeachersFilter
 from django.shortcuts import get_object_or_404, redirect
-from Academhub.models import GradebookStudents, Gradebook, CustomUser, SubTable
+from Academhub.models import GradebookStudents, Gradebook, CustomUser, SubTable, ButtonTable
 from Academhub.generic import BulkUpdateView, ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView
 
 #
@@ -119,6 +119,13 @@ class GradebookDetailView(ObjectDetailView):
             table=GradebookStudentsTable,
             filter_func=grade_book_student_filter,
             queryset=GradebookStudents.objects.all(),
+            buttons=[
+                ButtonTable (
+                    name = 'Заполнить ведомость',
+                    link_name = 'gradebookstudents_bulk_create',
+                    link_params = ['pk']
+                )
+            ]
         ),
         SubTable(
             name='Учителя',

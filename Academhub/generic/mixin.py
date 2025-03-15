@@ -54,6 +54,13 @@ class SubTablesMixin:
                     queryset=Model.objects.all(),
                     table=Model,
                     filter_key='pk',
+                    buttons = [
+                        ButtonTable (
+                            name='Название кнопки',
+                            link_name='student_add',
+                            permission='add_student'
+                        )
+                    ]
                 )
             ]
     '''
