@@ -366,6 +366,8 @@ class GroupStudents(AcademHubModel):
         null=False
     )
 
+    is_active = models.BooleanField(null=True, blank=True, default=True, verbose_name="Активная группа")
+
     class Meta:
         verbose_name = "Группа"
         verbose_name_plural = "Группы"

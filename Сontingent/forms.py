@@ -105,6 +105,29 @@ class GroupForm(forms.ModelForm):
             'current_course',
         ]
 
+
+
+class PromoteGroupStudentsForm(forms.ModelForm):
+    """
+    Форма для перевода группы и студентов на следующий курс
+    """
+    transfer_order = forms.CharField(
+        label='Номер приказа о переводе',
+        max_length=255,
+        required=True,
+    )
+
+    class Meta:
+        model = GroupStudents
+        fields = []  # Пустой список, так как редактируем только transfer_order
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['transfer_order'].widget.attrs.update({
+            'class': 'form-control',
+            'autocomplete': 'off'
+        })
+
 class QualificationForm(forms.ModelForm):
     class Meta:
         model = Qualification

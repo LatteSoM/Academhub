@@ -41,10 +41,10 @@ navigation = Navigation(
                 name='Статистика', 
                 url='statisticks'
             ),
-            # ChildLink(
-            #     name='Логи движений', 
-            #     url='contingent_movement_list'
-            # )
+            ChildLink(
+                name='Логи движений',
+                url='contingent_movement_list'
+            )
         ]
     )
 )

@@ -1,6 +1,9 @@
 import re
 
+from django.core.files.base import equals_lf
+
 from Academhub.models import *
+from django.db import transaction
 
 
 def generate_unique_record_book_number(admission_year, student):
@@ -50,3 +53,52 @@ def student_format_to_list():
                          "course": student_current_course, "base": student_education_base, "budget": student_education_basis,
                          "academic_leave": student_is_in_academ, "is_expelled": student_is_expelled})
     return students
+
+
+def transfer_group(group_id):
+    """
+    Перевод группы на следующий курс
+    Если группа на 4 курсе - деактивируем ее
+    """
+    group = GroupStudents.objects.get(id=group_id)
+
+    if group.current_course < 4:
+        group.current_course += 1
+        group.save()
+    elif group.current_course == 4:
+        group.is_active = False
+        group.save()
+
+def transfer_group_students(group_id, transfer_order):
+    """
+    Перевод всех студентов группы на следующий курс с указанием приказа
+    Если группа на 4 курсе - деактивирует группу и не переводит студентов, ну и логично деактивирует студентов
+    """
+    transfer_group(group_id)
+    group = GroupStudents.objects.get(id=group_id)
+    students = Student.objects.filter(group=group, is_expelled=False, is_in_academ=False)
+
+    if group.current_course < 4:
+        order_field_map = {
+            2: 'transfer_to_2nd_year_order',
+            3: 'transfer_to_3rd_year_order',
+            4: 'transfer_to_4th_year_order'
+        }
+
+        new_course = group.current_course
+        order_field = order_field_map.get(new_course)
+        for student in students:
+            setattr(student, order_field, transfer_order)
+            student.save()
+
+        return True, f"Группа {group.full_name} и все студенты успешно переведены на курс"
+
+    elif group.current_course == 4:
+        group.is_active = False
+        group.save()
+        return True, f"Группа {group.full_name} деактивирована (4 курс завершен)"
+#
+    # except GroupStudents.DoesNotExist:
+    #     return False, "Группа не найдена"
+    # except Exception as e:
+    #     return False, f"Ошибка при переводе: {str(e)}"
