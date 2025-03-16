@@ -255,7 +255,7 @@ class Qualification(AcademHubModel):
     short_name = models.CharField(max_length=50, verbose_name="Сокращенное название")
     name = models.CharField(max_length=255, verbose_name="Наименование")
     specialty = models.ForeignKey(
-        Specialty, on_delete=models.CASCADE, related_name="qualifications", verbose_name="Специальность"
+        Specialty, on_delete=models.CASCADE, related_name="qualifications", null=True, verbose_name="Специальность"
     )
 
     class Meta:
@@ -904,6 +904,8 @@ class Category(AcademHubModel):
     identificator = models.CharField(max_length=50)
     cycles = models.CharField(max_length=255)
     curriculum = models.ForeignKey(Curriculum, related_name='categoreies', on_delete=models.CASCADE)
+    warnings = models.BooleanField(default=False)
+    warning_description = models.JSONField(null=True, blank=True)
 
     class Meta:
         verbose_name = "Категория"
@@ -917,9 +919,10 @@ class StudyCycle(AcademHubModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     identificator = models.CharField(max_length=50)
     cycles = models.CharField(max_length=255)
-    parent_id = models.UUIDField()
     categories = models.ForeignKey(Category, related_name='study_cycles', on_delete=models.CASCADE)
-
+    warnings = models.BooleanField(default=False)
+    warning_description = models.JSONField(null=True, blank=True)
+    
     class Meta:
         verbose_name = "Образовательный цикл"
         verbose_name_plural = "Образовательный циклы"
@@ -935,7 +938,8 @@ class Module(AcademHubModel):
     code_of_discipline = models.CharField(max_length=50)
     code_of_cycle_block = models.CharField(max_length=50)
     study_cycles = models.ForeignKey(StudyCycle, related_name='modules', on_delete=models.CASCADE)
-    
+    warnings = models.BooleanField(default=False)
+    warning_description = models.JSONField(null=True, blank=True)
 
     class Meta:
         verbose_name = "Модуль"
@@ -963,6 +967,8 @@ class Discipline(AcademHubModel):
     )
     module = models.ForeignKey(Module, on_delete=models.CASCADE, related_name="disciplines")
     curriculums = models.ManyToManyField(Curriculum, related_name='children_strings')
+    warnings = models.BooleanField(default=False)
+    warning_description = models.JSONField(null=True, blank=True)
 
     class Meta:
         verbose_name = "Дисциплина"
@@ -977,6 +983,8 @@ class Course(AcademHubModel):
     course_number = models.IntegerField()
     module = models.ForeignKey(Module, related_name='courses', on_delete=models.CASCADE, null=True)
     disipline = models.ForeignKey(Discipline, related_name='courses', on_delete=models.CASCADE, null=True)
+    warnings = models.BooleanField(default=False)
+    warning_description = models.JSONField(null=True, blank=True)
 
     class Meta:
         verbose_name = "Курс"
@@ -989,6 +997,8 @@ class Term(AcademHubModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     term_number = models.IntegerField()
     course = models.ForeignKey(Course, related_name='terms', on_delete=models.CASCADE)
+    warnings = models.BooleanField(default=False)
+    warning_description = models.JSONField(null=True, blank=True)
 
     class Meta:
         verbose_name = "Семестр"
@@ -999,14 +1009,15 @@ class Term(AcademHubModel):
 
 class ClockCell(AcademHubModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    course_number = models.IntegerField()
     code_of_type_work = models.CharField(max_length=100)
     code_of_type_hours = models.CharField(max_length=100)
     course = models.IntegerField()
     term = models.IntegerField()
     count_of_clocks = models.IntegerField()
     term_relation = models.ForeignKey(Term, related_name='clock_cells', on_delete=models.CASCADE)
-
+    warnings = models.BooleanField(default=False)
+    warning_description = models.JSONField(null=True, blank=True)
+    
     class Meta:
         verbose_name = "Ячейка часов"
         verbose_name_plural = "Ячейки часов"

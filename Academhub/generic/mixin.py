@@ -95,7 +95,7 @@ class ImportViewMixin:
         if self._form.is_valid():
             messages.success(
                 request,
-                "Студенты импортированы"
+                "Успешный импорт"
             )
             
             self._form = self.generate_form_import()
