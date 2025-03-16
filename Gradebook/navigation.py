@@ -4,8 +4,16 @@ navigation = Navigation(
     ParentLink(
         'Ведомости',
         sub_links=[
-            ChildLink('Все ведомости', 'gradebook_list'),
-            ChildLink('Ваши ведомости', "gradebookteacher_list")
+            ChildLink(
+                name='Все ведомости', 
+                url='gradebook_list',
+                permission_required='gradebook_view',
+            ),
+            ChildLink(
+                name='Ваши ведомости', 
+                url="gradebookteacher_list",
+                permission_required='gradebook_view',
+            )
         ]
     )
 )
