@@ -21,6 +21,7 @@ class AcademhubAppConfig(AppConfig):
         from Academhub.models import Student
         from Academhub.models import PracticeDate
         from django.db.models import Q
+        from datetime import timedelta
         from Academhub.models import ProfessionalModule
 
         from Academhub.models import TermPaper
@@ -225,6 +226,12 @@ class AcademhubAppConfig(AppConfig):
                     if not flag:
                         continue
 
+                for gradebook in Gradebook.objects.all():
+                    if gradebook.date_of_opening is not None and gradebook.amount_of_days_for_closing is not None:
+                        if today > gradebook.date_of_opening + timedelta(days=gradebook.amount_of_days_for_closing):
+                            print(f"Ведомость {gradebook.name} просрочена!")
+                            gradebook.status = Gradebook.STATUS_CHOICE[4][1]
+                            gradebook.save()
 
 
                 time.sleep(86400)  # Запуск раз в день

@@ -2,11 +2,15 @@ from django.views.generic import View
 from django.forms import modelformset_factory
 from django.shortcuts import render, redirect
 
+
 __all__ = (
     'BulkUpdateView',
 )
 
-class BulkUpdateView(View):
+from django.views.generic.base import ContextMixin
+
+
+class BulkUpdateView(ContextMixin, View):
     """
         Класс для обработки можественного обновления объектов
     """

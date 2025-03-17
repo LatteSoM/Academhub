@@ -1,6 +1,18 @@
 {% extends 'base_detail.html' %}
 
-<style>
+
+{% load django_tables2 %}
+{% load util %}
+
+{% block detail-header %}
+<h1>
+    {{object}}
+</h1>
+{% endblock %}
+
+{% block actions-button %}
+
+    <style>
     .custom-red-btn {
     background-color: #dc3545; /* Красный цвет */
     color: white; /* Белый текст */
@@ -16,16 +28,6 @@
 }
 </style>
 
-{% load django_tables2 %}
-{% load util %}
-
-{% block detail-header %}
-<h1>
-    Ведомость {{object}}
-</h1>
-{% endblock %}
-
-{% block actions-button %}
     {% if user.is_superuser %}
         <a class="btn-primary" href="{% url url_update pk=object.pk %}">
         Изменить
@@ -41,6 +43,9 @@
         {% endif %}
         {% if object.status == "Заполнена" %}
             <a href="{% url 'download_report' pk=object.pk %}" class="btn custom-red-btn">Закрыть ведомость</a>
+        {% endif %}
+        {% if object.status == "Закрыта" %}
+            <a href="{% url 'download_report' pk=object.pk %}" class="btn-primary">Скачать документ</a>
         {% endif %}
     {% else %}
 

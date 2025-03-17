@@ -62,12 +62,16 @@ class GradebookStudentBulkUpdateView(BulkUpdateView):
         formset = self.save_form(request)
 
         if formset.is_valid():
-            return redirect('gradebook_detail', pk=self.gradebook_pk)
+            user = get_object_or_404(CustomUser, pk=self.request.user.pk)
+
+            if user.is_teacher:
+                response = redirect('gradebookteacher_list')
+            else:
+                response = redirect('gradebook_list')
+            response['Location'] += '?is_filled=true'
+            return response
         return super().post(request, *args, **kwargs)
 
-#
-## Gradebook
-#
 
 class GradebookTableView(ObjectTableView):
     """
@@ -75,7 +79,31 @@ class GradebookTableView(ObjectTableView):
     """
     table_class = GradebookTable
     filterset_class = GradebookFilter
-    queryset = Gradebook.objects.all()
+    queryset = Gradebook.objects.exclude(status=Gradebook.STATUS_CHOICE[3][1])
+
+    def get_table_class(self):
+        if self.request.GET.get("mobile") == "1":
+            return GradebookMobileTable
+        return GradebookTable
+
+    def get(self, request, *args, **kwargs):
+
+        is_closed = request.GET.get('is_closed', None)
+        is_filled = request.GET.get('is_filled', None)
+
+        if is_closed:
+            messages.success(request, "Ведомость успешно закрыта!")
+        if is_filled:
+            messages.success(request, "Ведомость успешно заполнена!")
+
+        return super().get(request, *args, **kwargs)
+
+
+class GradebookClosedList(ObjectTableView):
+    table_class = GradebookTable
+    filterset_class = GradebookFilter
+    queryset = Gradebook.objects.filter(status=Gradebook.STATUS_CHOICE[3][1])
+    properties = {}
 
     def get_table_class(self):
         if self.request.GET.get("mobile") == "1":
@@ -107,16 +135,21 @@ class TeachersGradeBookTableView(ObjectTableView):
             'students'
         ).distinct()  # Убираем дубликаты
 
-        # Для отладки
-        # print(f"User {user} is teacher: {user.is_teacher}")
-        # print("Found gradebooks:", queryset.values_list('id', flat=True))
-
         return queryset
 
     def get_table_class(self):
         if self.request.GET.get("mobile") == "1":
             return GradebookMobileTable
         return TeacherGradeBookTable
+
+    def get(self, request, *args, **kwargs):
+
+        is_filled = request.GET.get('is_filled', None)
+
+        if is_filled:
+            messages.success(request, "Ведомость успешно заполнена!")
+
+        return super().get(request, *args, **kwargs)
 
 class GradebookDetailView(ObjectDetailView):
     """
@@ -132,18 +165,20 @@ class GradebookDetailView(ObjectDetailView):
         ],
     }
 
-    def grade_book_student_filter(object, queryset):
-        return queryset.filter(gradebook__pk=object.pk)
+    def grade_book_student_filter(self, queryset):
+        if queryset.filter(gradebook_id=self.pk).count() == 0:
+            return GradebookStudents.objects.filter(gradebook=self.pk)
+        return queryset.filter(gradebook__id=self.pk)
 
-    def grade_book_teacher_filter(object, queryset):
-        return object.teachers.all()
+    def grade_book_teacher_filter(self, queryset):
+        return self.teachers.all()
 
     tables = [
         SubTable (
             name='Студенты',
             table=GradebookStudentsTable,
-            filter_func=grade_book_student_filter,
             queryset=GradebookStudents.objects.all(),
+            filter_func=grade_book_student_filter,
             buttons=[
                 ButtonTable (
                     name = 'Заполнить ведомость',
@@ -223,14 +258,15 @@ class GradebookCreateView(GradeBookMixin, ObjectCreateView):
 
 def download_report(request, pk):
     gradebook = get_object_or_404(Gradebook, pk=pk)
-    gradebook.status = Gradebook.STATUS_CHOICE[3][1]
-    gradebook.save()
-    # Пример содержимого файла
-    file_content = "Это содержимое вашей ведомости."
 
-    # Создаём HTTP-ответ с файлом
-    response = HttpResponse(file_content, content_type="text/plain")
-    response["Content-Disposition"] = 'attachment; filename="report.txt"'
+    response = redirect('gradebook_list')
+    if gradebook.status == Gradebook.STATUS_CHOICE[2][1]:
+        response['Location'] += '?is_closed=true'
+    gradebook.status = Gradebook.STATUS_CHOICE[3][1]
+    gradebook.date_of_closing = timezone.now()
+    gradebook.save()
+
+    # TODO: Присрать Васин модуль генерации ведомости
 
     return response
 
