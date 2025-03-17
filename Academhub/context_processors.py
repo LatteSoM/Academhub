@@ -13,6 +13,6 @@ def navigation(request):
                     app_nav = app_config.get_navigation(request.user)
                     navs.extend(app_nav)
             except Exception as e:
-                continue
+                print(f'{app_config}: {e}')
 
     return {'navigation': navs}

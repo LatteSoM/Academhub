@@ -27,31 +27,7 @@ class SubTable:
     def generate_table(self, object):
         # Метод для генерации таблицы на основе данных и объекта
         self.get_queryset(object)  # Фильтруем данные для таблицы
-        self.generate_url_for_buttons(object)  # Генерируем URL для всех кнопок
         self.table = self.table_class(data=self.queryset)  # Создаем экземпляр таблицы с отфильтрованными данными
-    
-    def generate_url_for_buttons(self, object):
-        # Метод для генерации URL для каждой кнопки на основе объекта
-        for button in self.buttons:  # Проходим по всем кнопкам таблицы
-            button.generate_url(object)
-            # if button.link_name:  # Если у кнопки указано имя URL
-            #     if button.link_params:  # Если есть параметры для URL
-            #         params = {}  # Словарь для хранения параметров URL
-            #         for param in button.link_params:  # Проходим по каждому параметру
-            #             # Пробуем получить значение атрибута объекта
-            #             obj_param = getattr(object, param, None)
-            #             # Если атрибут не найден, проверяем, является ли он свойством (property)
-            #             if obj_param is None and hasattr(object.__class__, param):
-            #                 class_attr = getattr(object.__class__, param)
-            #                 if isinstance(class_attr, property):  # Если это свойство
-            #                     obj_param = class_attr.__get__(object, object.__class__)  # Получаем значение свойства
-            #             params[param] = obj_param  # Добавляем параметр в словарь
-                    
-            #         # Генерируем URL с использованием параметров и сохраняем его в button.url
-            #         button.button_url = reverse(button.link_name, kwargs=params)
-            #     else:
-            #         # Если параметров нет, генерируем URL без аргументов
-            #         button.button_url = reverse(button.link_name)
 
     def get_queryset(self, object):
         # Метод для получения отфильтрованного набора данных

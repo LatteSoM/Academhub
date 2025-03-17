@@ -1,5 +1,4 @@
 import os
-
 from .forms import *
 from .utils import *
 from .tables import *
@@ -26,8 +25,9 @@ from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.http import HttpResponse
 from Academhub.models import SubTable
-from Academhub.generic import ImportViewMixin
+from Academhub.utils import getpermission, getpattern
 from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth.decorators import permission_required
 from .tables import AcademTable, ExpulsionTable, ContingentMovementTable
 from .filters import AcademFilter, ExpulsionFilter, ContingentMovementFilter
 from .forms import AcademLeaveForm, AcademReturnForm, ExpellStudentForm, RecoverStudentForm, StudentImportForm
@@ -84,6 +84,15 @@ class DisciplineTableView(ObjectTableView):
     filterset_class = DisciplineFilter
     queryset = Discipline.objects.all()
 
+    buttons = [
+        Button (
+            id='add',
+            name = 'Добавить',
+            link_name = getpattern(Discipline, 'add'),
+            permission = getpermission(Discipline, 'add')
+        )
+    ]
+
 class DisciplineDetailView(ObjectDetailView):
     """
     Класс для отображения детальной информации о дисциплине.
@@ -95,6 +104,22 @@ class DisciplineDetailView(ObjectDetailView):
         'Основная информация':
             ['name', 'code', 'specialty',]
     }
+
+    buttons = [
+        Button (
+            id='change',
+            name = 'Обновить',
+            link_params = ['pk'],
+            link_name = getpattern(Discipline, 'change'),
+            permission = getpermission(Discipline, 'change')
+        ),
+        Button (
+            id = 'to_list',
+            name = 'К таблице',
+            link_name = getpattern(Discipline, 'list'),
+            permission = getpermission(Discipline, 'view'),
+        )
+    ]
         
 class DisciplineUpdateView(ObjectUpdateView):
     """
@@ -102,6 +127,22 @@ class DisciplineUpdateView(ObjectUpdateView):
     """
     form_class = DisciplineForm
     queryset = Discipline.objects.all()
+
+    buttons = [
+        Button (
+            id='to_object',
+            name = 'К объекту',
+            link_params = ['pk'],
+            link_name = getpattern(Discipline, 'detail'),
+            permission = getpermission(Discipline, 'view')
+        ),
+        Button (
+            id = 'to_list',
+            name = 'К таблице',
+            link_name = getpattern(Discipline, 'list'),
+            permission = getpermission(Discipline, 'view')
+        )
+    ]
     
 class DisciplineCreateView(ObjectCreateView):
     """
@@ -109,6 +150,15 @@ class DisciplineCreateView(ObjectCreateView):
     """
     model = Discipline
     form_class = DisciplineForm
+
+    buttons = [
+        Button (
+            id = 'to_list',
+            name = 'К таблице',
+            link_name = getpattern(Discipline, 'list'),
+            permission = getpermission(Discipline, 'view')
+        )
+    ]
 
 #
 ## Specialty
@@ -121,6 +171,15 @@ class SpecialtyTableView(ObjectTableView):
     queryset = Specialty.objects.all()
     table_class = SpecialtyTable
     filterset_class = SpecialtyFilter
+
+    buttons = [
+        Button (
+            id='add',
+            name = 'Добавить',
+            link_name = getpattern(Specialty, 'add'),
+            permission = getpermission(Specialty, 'add'),
+        )
+    ]
 
 
 class SpecialtyDetailView(ObjectDetailView):
@@ -145,12 +204,44 @@ class SpecialtyDetailView(ObjectDetailView):
         )
     ]
 
+    buttons = [
+        Button (
+            id = 'change',
+            name = 'Обновить',
+            link_params = ['pk'],
+            link_name = getpattern(Qualification, 'change'),
+            permission = getpermission(Qualification, 'change'),
+        ),
+        Button (
+            id = 'to_list',
+            name = 'К таблице',
+            link_name = getpattern(Qualification, 'list'),
+            permission = getpermission(Qualification, 'view')
+        )
+    ]
+
 class SpecialtyUpdateView(ObjectUpdateView):
     """
     Класс для обновления информации о специальности.
     """
     form_class = SpecialtyForm
     queryset = Specialty.objects.all()
+
+    buttons = [
+        Button (
+            id='to_object',
+            name = 'К объекту',
+            link_params = ['pk'],
+            link_name = getpattern(Specialty, 'detail'),
+            permission = getpermission(Specialty, 'view')
+        ),
+        Button (
+            id = 'to_list',
+            name = 'К таблице',
+            link_name = getpattern(Specialty, 'list'),
+            permission = getpermission(Specialty, 'view')
+        )
+    ]
 
 class SpecialtyCreateView(ObjectCreateView):
     """
@@ -159,6 +250,14 @@ class SpecialtyCreateView(ObjectCreateView):
     model = Specialty
     form_class = SpecialtyForm
 
+    buttons = [
+        Button (
+            id = 'to_list',
+            name = 'К таблице',
+            link_name = getpattern(Specialty, 'list'),
+            permission = getpermission(Specialty, 'view')
+        )
+    ]
 #
 ## Qualification
 #
@@ -171,13 +270,14 @@ class QualificationTableView(ObjectTableView):
     filterset_class = QualificationFilter
     queryset = Qualification.objects.all()
 
-class QualificationTableView(ObjectTableView):
-    """
-    Класс для отображения таблицы квалификаций.
-    """
-    table_class = QualificationTable
-    filterset_class = QualificationFilter
-    queryset = Qualification.objects.all()
+    buttons = [
+        Button (
+            id='add',
+            name = 'Добавить',
+            link_name = getpattern(Qualification, 'add'),
+            permission = getpermission(Qualification, 'add'),
+        )
+    ]
 
 class QualificationDetailView(ObjectDetailView):
     """
@@ -192,12 +292,19 @@ class QualificationDetailView(ObjectDetailView):
             ['short_name', 'name', 'specialty']
     }
 
-    tables = [
-        SubTable(
-            name='Студенты',
-            table=GroupTable,
-            filter_key='qualification',
-            queryset=GroupStudents.objects.all(),
+    buttons = [
+        Button (
+            id = 'change',
+            name = 'Обновить',
+            link_params = ['pk'],
+            link_name = getpattern(Qualification, 'change'),
+            permission = getpermission(Qualification, 'change'),
+        ),
+        Button (
+            id = 'to_list',
+            name = 'К таблице',
+            link_name = getpattern(Qualification, 'list'),
+            permission = getpermission(Qualification, 'view')
         )
     ]
 
@@ -208,12 +315,37 @@ class QualificationUpdateView(ObjectUpdateView):
     form_class = QualificationForm
     queryset = Qualification.objects.all()
 
+    buttons = [
+        Button (
+            id='to_object',
+            name = 'К объекту',
+            link_params = ['pk'],
+            link_name = getpattern(Qualification, 'detail'),
+            permission = getpermission(Qualification, 'view')
+        ),
+        Button (
+            id = 'to_list',
+            name = 'К таблице',
+            link_name = getpattern(Qualification, 'list'),
+            permission = getpermission(Qualification, 'view')
+        )
+    ]
+
 class QualificationCreateView(ObjectCreateView):
     """
     Класс для создания новой квалификации.
     """
     model = Qualification
     form_class = QualificationForm
+
+    buttons = [
+        Button (
+            id = 'to_list',
+            name = 'К таблице',
+            link_name = getpattern(Qualification, 'list'),
+            permission = getpermission(Qualification, 'view')
+        )
+    ]
 
 
 #
@@ -227,6 +359,15 @@ class GroupTableView(ObjectTableView):
     table_class = GroupTable
     filterset_class = GroupFilter
     queryset = GroupStudents.objects.all()
+
+    buttons = [
+        Button (
+            id='add',
+            name = 'Добавить',
+            link_name = getpattern(GroupStudents, 'add'),
+            permission = getpermission(GroupStudents, 'add'),
+        )
+    ]
 
 class GroupDetailView(ObjectDetailView):
     """
@@ -250,6 +391,22 @@ class GroupDetailView(ObjectDetailView):
         ),
     ]
 
+    buttons = [
+        Button (
+            id = 'change',
+            name = 'Обновить',
+            link_params = ['pk'],
+            link_name = getpattern(GroupStudents, 'change'),
+            permission = getpermission(GroupStudents, 'change'),
+        ),
+        Button (
+            id = 'to_list',
+            name = 'К таблице',
+            link_name = getpattern(GroupStudents, 'list'),
+            permission = getpermission(GroupStudents, 'view')
+        )
+    ]
+
 class GroupUpdateView(ObjectUpdateView):
     """
     Класс для обновления информации о группе.
@@ -257,12 +414,37 @@ class GroupUpdateView(ObjectUpdateView):
     form_class = GroupForm
     queryset = GroupStudents.objects.all()
 
+    buttons = [
+        Button (
+            id='to_object',
+            name = 'К объекту',
+            link_params = ['pk'],
+            link_name = getpattern(GroupStudents, 'detail'),
+            permission = getpermission(GroupStudents, 'view')
+        ),
+        Button (
+            id = 'to_list',
+            name = 'К таблице',
+            link_name = getpattern(GroupStudents, 'list'),
+            permission = getpermission(GroupStudents, 'view')
+        )
+    ]
+
 class GroupCreateView(ObjectCreateView):
     """
     Класс для создания новой группы.
     """
     model = GroupStudents
     form_class = GroupForm
+
+    buttons = [
+        Button (
+            id = 'to_list',
+            name = 'К таблице',
+            link_name = getpattern(GroupStudents, 'list'),
+            permission = getpermission(GroupStudents, 'view')
+        )
+    ]
 
 #
 ## Student
@@ -276,6 +458,15 @@ class StudentTableView(ObjectTableImportView):
     form_import = StudentImportForm
     filterset_class = StudentFilter
     queryset = Student.objects.filter(is_expelled=False, is_in_academ=False)
+
+    buttons = [
+        Button (
+            id='add',
+            name = 'Добавить',
+            link_name = getpattern(Student, 'add'),
+            permission = getpermission(Student, 'add'),
+        )
+    ]
 
 
 class StudentDetailView(ObjectDetailView):
@@ -297,6 +488,22 @@ class StudentDetailView(ObjectDetailView):
             ['registration_address', 'actual_address', 'representative_full_name', 'representative_email'],
     }
 
+    buttons = [
+        Button (
+            id = 'change',
+            name = 'Обновить',
+            link_params = ['pk'],
+            link_name = getpattern(Student, 'change'),
+            permission = getpermission(Student, 'change'),
+        ),
+        Button (
+            id = 'to_list',
+            name = 'К таблице',
+            link_name = getpattern(Student, 'list'),
+            permission = getpermission(Student, 'view')
+        )
+    ]
+
 
 class StudentUpdateView(ObjectUpdateView):
     """
@@ -305,6 +512,22 @@ class StudentUpdateView(ObjectUpdateView):
     form_class = StudentForm
     queryset = Student.objects.all()
 
+    buttons = [
+        Button (
+            id='to_object',
+            name = 'К объекту',
+            link_params = ['pk'],
+            link_name = getpattern(Student, 'detail'),
+            permission = getpermission(Student, 'view')
+        ),
+        Button (
+            id = 'to_list',
+            name = 'К таблице',
+            link_name = getpattern(Student, 'list'),
+            permission = getpermission(Student, 'view')
+        )
+    ]
+
 
 class StudentCreateView(ObjectCreateView):
     """
@@ -312,6 +535,15 @@ class StudentCreateView(ObjectCreateView):
     """
     model = Student
     form_class = StudentForm
+    
+    buttons = [
+        Button (
+            id = 'to_list',
+            name = 'К таблице',
+            link_name = getpattern(Student, 'list'),
+            permission = getpermission(Student, 'view')
+        )
+    ]
 
 #
 ##
@@ -498,6 +730,9 @@ class StatisticksView(ObjectTemplateView):
         return context
 
 
+@permission_required(
+    getpermission(RecordBookTemplate, 'add')
+)
 def save_record_book_template(request, qualification_id, admission_year):
     """
     Функция для сохранения ШАБЛОНА зачетной книжки

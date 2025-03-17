@@ -82,8 +82,8 @@ class GradebookTableView(ObjectTableView):
         Button (
             id='add',
             name = 'Добавить',
+            link_name = getpattern(Gradebook, 'add'),
             permission = getpermission(Gradebook, 'add'),
-            link_params = getpattern(Gradebook, 'add')
         )
     ]
 
@@ -187,10 +187,11 @@ class GradebookDetailView(ObjectDetailView):
 
         # Комплексная проверка всех условий
         if not all(required_fields) or not text_fields_valid or not relations_valid:
-            messages.error(request,
-                        "Невозможно открыть ведомость! Заполните все обязательные поля: "
-                        "группа, дисциплина, название, статус, семестр, преподаватели и студенты."
-                        )
+            messages.error(
+                request,
+                "Невозможно открыть ведомость! Заполните все обязательные поля: "
+                "группа, дисциплина, название, статус, семестр, преподаватели и студенты."
+            )
         else:
             if is_active:
                 messages.success(request, "Ведомость успешно открыта!")
@@ -203,10 +204,25 @@ class GradebookUpdateView(GradeBookMixin, ObjectUpdateView):
     """
     form_class = GradebookForm
     queryset = Gradebook.objects.all()
-    template_name = 'Gradebook/update/grade_book.html'
     properties = {
         'group_id': ''
     }
+
+    buttons = [
+        Button (
+            id='to_object',
+            name = 'К объекту',
+            link_params = ['pk'],
+            link_name = getpattern(Gradebook, 'detail'),
+            permission = getpermission(Gradebook, 'view')
+        ),
+        Button (
+            id = 'to_list',
+            name = 'К таблице',
+            link_name = getpattern(Gradebook, 'list'),
+            permission = getpermission(Gradebook, 'view')
+        )
+    ]
 
 
 
@@ -218,6 +234,15 @@ class GradebookCreateView(GradeBookMixin, ObjectCreateView):
     form_class = GradebookForm
     template_name = 'Gradebook/create/grade_book.html'
     properties = ['group_id']
+
+    buttons = [
+        Button (
+            id = 'to_list',
+            name = 'К таблице',
+            link_name = getpattern(Gradebook, 'list'),
+            permission = getpermission(Gradebook, 'view')
+        )
+    ]
 
 
 def download_report(request, pk):

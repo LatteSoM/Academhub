@@ -1,6 +1,6 @@
 from .views import *
 from django.urls import path
-
+from Academhub.utils import getpermission, getpattern
 from .views import AcademListView, AcademUpdateView, AcademReturn, ExpulsionListView, ExpelStudent, RecoverStudent, \
     StatisticksView, generate_student_record_book, create_auto_record_book_template, \
     ContingentMovementTableView, generate_group_table, generate_course_table, generate_statistics_table, \
@@ -13,47 +13,47 @@ urlpatterns = [
     ## Disciplines
     #
 
-    path('discipline/list', DisciplineTableView.as_view(), name='discipline_list'),
-    path('discipline/create', DisciplineCreateView.as_view(), name='discipline_create'),
-    path('discipline/<int:pk>', DisciplineDetailView.as_view(), name='discipline_detail'),
-    path('discipline/update/<int:pk>', DisciplineUpdateView.as_view(), name='discipline_update'),
+    path('discipline/list', DisciplineTableView.as_view(), name=getpattern('Discipline', 'list')),
+    path('discipline/add', DisciplineCreateView.as_view(), name=getpattern('Discipline', 'add')),
+    path('discipline/<int:pk>', DisciplineDetailView.as_view(), name=getpattern('Discipline', 'detail')),
+    path('discipline/update/<int:pk>', DisciplineUpdateView.as_view(), name=getpattern('Discipline', 'change')),
 
     #
     ## Specialty
     #
 
-    path('specialty/list', SpecialtyTableView.as_view(), name='specialty_list'),
-    path('specialty/create', SpecialtyCreateView.as_view(), name='specialty_create'),
-    path('specialty/<int:pk>', SpecialtyDetailView.as_view(), name='specialty_detail'),
-    path('specialty/update/<int:pk>', SpecialtyUpdateView.as_view(), name='specialty_update'),
+    path('specialty/list', SpecialtyTableView.as_view(), name=getpattern('Specialty', 'list')),
+    path('specialty/add', SpecialtyCreateView.as_view(), name=getpattern('Specialty', 'add')),
+    path('specialty/<int:pk>', SpecialtyDetailView.as_view(), name=getpattern('Specialty', 'detail')),
+    path('specialty/update/<int:pk>', SpecialtyUpdateView.as_view(), name=getpattern('Specialty', 'change')),
 
     #
     ## Qualification
     #
 
-    path('qualification/list', QualificationTableView.as_view(), name='qualification_list'),
-    path('qualification/create', QualificationCreateView.as_view(), name='qualification_create'),
-    path('qualification/<int:pk>', QualificationDetailView.as_view(), name='qualification_detail'),
-    path('qualification/update/<int:pk>', QualificationUpdateView.as_view(), name='qualification_update'),
+    path('qualification/list', QualificationTableView.as_view(), name=getpattern('Qualification', 'list')),
+    path('qualification/add', QualificationCreateView.as_view(), name=getpattern('Qualification', 'add')),
+    path('qualification/<int:pk>', QualificationDetailView.as_view(), name=getpattern('Qualification', 'detail')),
+    path('qualification/update/<int:pk>', QualificationUpdateView.as_view(), name=getpattern('Qualification', 'change')),
 
 
     #
     ## Group
     #
 
-    path('group/list', GroupTableView.as_view(), name='groupstudents_list'),
-    path('group/create', GroupCreateView.as_view(), name='groupstudents_create'),
-    path('group/<int:pk>', GroupDetailView.as_view(), name='groupstudents_detail'),
-    path('group/update/<int:pk>', GroupUpdateView.as_view(), name='groupstudents_update'),
+    path('group/list', GroupTableView.as_view(), name=getpattern('GroupStudents', 'list')),
+    path('group/add', GroupCreateView.as_view(), name=getpattern('GroupStudents', 'add')),
+    path('group/<int:pk>', GroupDetailView.as_view(), name=getpattern('GroupStudents', 'detail')),
+    path('group/update/<int:pk>', GroupUpdateView.as_view(), name=getpattern('GroupStudents', 'change')),
     
     #
     ## Student
     #
     
-    path('student/list', StudentTableView.as_view(), name='student_list'),
-    path('student/create', StudentCreateView.as_view(), name='student_create'),
-    path('student/<int:pk>', StudentDetailView.as_view(), name='student_detail'),
-    path('student/update/<int:pk>', StudentUpdateView.as_view(), name='student_update'),
+    path('student/list', StudentTableView.as_view(), name=getpattern('Student', 'list')),
+    path('student/add', StudentCreateView.as_view(), name=getpattern('Student', 'add')),
+    path('student/<int:pk>', StudentDetailView.as_view(), name=getpattern('Student', 'detail')),
+    path('student/update/<int:pk>', StudentUpdateView.as_view(), name=getpattern('Student', 'change')),
 
     #
     ## Зачетная книжка
@@ -66,7 +66,7 @@ urlpatterns = [
     # генерация зачетки для группы
     path('group/<int:group_id>/generate-group-record-books/', generate_group_recordbooks,
          name='group_record_books_generate'),
-    path('qualification/<int:qualification_id>/<int:admission_year>/record-book/auto-create/',create_auto_record_book_template,
+    path('qualification/<int:qualification_id>/<int:admission_year>/record-book/auto-add/', create_auto_record_book_template,
          name='create_auto_record_book_template'),
 
     # Страница академа
@@ -76,7 +76,7 @@ urlpatterns = [
     path('academ_return/<int:pk>/', AcademReturn.as_view(), name='academ_return'),
 
     # Страница движений
-    path('contingent-movements/', ContingentMovementTableView.as_view(), name='contingent_movement_list'),
+    path('contingent-movements/', ContingentMovementTableView.as_view(), name=getpattern('ContingentMovement', 'list')),
     path('expelled_students/', ExpulsionListView.as_view(), name='expelled_students'),
     path('student/<int:pk>/expell', ExpelStudent.as_view(), name='expel_student'),
 

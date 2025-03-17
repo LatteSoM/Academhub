@@ -510,7 +510,7 @@ class CurriculumItem(models.Model):
         return "Неопределённый элемент"
 
 
-class RecordBookTemplate(models.Model):
+class RecordBookTemplate(AcademHubModel):
     qualification = models.ForeignKey(
         'Qualification',
         on_delete=models.CASCADE,
@@ -729,7 +729,7 @@ class Student(AcademHubModel):
 
 
 
-class StudentRecordBook(models.Model):
+class StudentRecordBook(AcademHubModel):
     student = models.OneToOneField(Student, on_delete=models.CASCADE, verbose_name="Студент")
     qualification = models.ForeignKey('Qualification', on_delete=models.CASCADE, verbose_name="Квалификация")
     admission_year = models.PositiveIntegerField(verbose_name="Год поступления")

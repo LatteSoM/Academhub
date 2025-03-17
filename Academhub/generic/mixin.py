@@ -91,7 +91,6 @@ class ButtonsMixin:
 
         for button in self.buttons:
             if button.is_accessible(self.request.user):
-                button.generate_url(self.get_buttons_object())
                 buttons.append(button)
 
         context['buttons'] = buttons

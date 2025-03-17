@@ -1,3 +1,4 @@
+from Academhub.utils import getpermission, getpattern
 from Academhub.models import Navigation, ParentLink, ChildLink
 
 navigation = Navigation(
@@ -6,28 +7,28 @@ navigation = Navigation(
         sub_links=[
             ChildLink(
                 name='Специализации', 
-                url='specialty_list',
-                permission_required='specialty_view'
+                url=getpattern('Specialty', 'list'),
+                permission_required=getpermission('Specialty', 'view')
             ),
             ChildLink(
                 name='Квалификации', 
-                url='qualification_list',
-                permission_required='qualification_view'
+                url=getpattern('Qualification', 'list'),
+                permission_required=getpermission('Qualification', 'view')
             ),
             ChildLink(
                 name='Группы', 
-                url='groupstudents_list',
-                permission_required='groupstudents_view'
+                url=getpattern('GroupStudents', 'list'),
+                permission_required=getpermission('GroupStudents', 'view')
             ),
             ChildLink(
                 name='Студенты', 
-                url='student_list',
-                permission_required='student_view'
+                url=getpattern('Student', 'list'),
+                permission_required=getpermission('Student', 'view')
             ),
             ChildLink(
                 name='Дисциплины', 
-                url='discipline_list',
-                permission_required='discipline_view'
+                url=getpattern('Discipline', 'list'),
+                permission_required=getpermission('Discipline', 'view')
             ),
             ChildLink(
                 name='Академический отпуск', 
@@ -35,7 +36,8 @@ navigation = Navigation(
             ),
             ChildLink(
                 name='Движение контингента', 
-                url='expelled_students',
+                url=getpattern('ContingentMovement', 'list'),
+                permission_required=getpermission('ContingentMovement', 'view')
             ),
             ChildLink(
                 name='Статистика', 
