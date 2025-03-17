@@ -57,6 +57,6 @@ def getpermission(model: ModuleType | str, action: str, app: str = 'Academhub') 
     model_name = model.__name__.lower()
 
     # Формируем codenmae
-    codename = f'{app.lower()}.{action}_{model_name}'
+    codename = f'{app}.{action}_{model_name}'
     
     return codename

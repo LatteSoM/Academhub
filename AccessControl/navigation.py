@@ -1,5 +1,5 @@
-from Academhub.models import Navigation, ParentLink, ChildLink
 from Academhub.utils import getpermission, getpattern
+from Academhub.models import Navigation, ParentLink, ChildLink
 
 navigation = Navigation(
     ParentLink(

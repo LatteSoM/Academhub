@@ -1,3 +1,4 @@
+from ..utils import getpermission
 from django.contrib import messages
 from django_tables2 import RequestConfig
 from django.views.generic.base import ContextMixin
@@ -17,14 +18,16 @@ class PermissionBaseMixin(PermissionRequiredMixin):
         Базовый mixin для ограничения доступа к странциам на основе прав доступа
     '''
 
-    def __get_class_object(self):
+    def _get_class_object(self):
         try:
-            return self.model
+            if self.model is not None:
+                return self.model
         except AttributeError:
             pass
 
         try:
-            return self.queryset.model
+            if self.queryset is not None:
+                return self.queryset.model
         except AttributeError:
             pass
 
@@ -32,9 +35,6 @@ class PermissionBaseMixin(PermissionRequiredMixin):
             f"{self.__class__.__name__} is missing both 'model' and 'queryset' attributes. "
             f"Define either {self.__class__.__name__}.model or {self.__class__.__name__}.queryset."
         )
-
-    def __get_class_name(self):
-        return self.__get_class_object().__class__.__name__.lower()
 
     def get_permission_required(self):
         if self.permission_required is None:
@@ -45,7 +45,9 @@ class PermissionBaseMixin(PermissionRequiredMixin):
                 f"{self.__class__.__name__}.get_permission_required()."
             )
 
-        perm = f'{self.permission_required}_{self.__get_class_name()}'
+        model = self._get_class_object()
+
+        perm = getpermission(model, self.permission_required)
 
         return [perm, ]
 

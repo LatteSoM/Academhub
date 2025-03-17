@@ -1,3 +1,4 @@
+from Academhub.utils import getpermission, getpattern
 from Academhub.models import Navigation, ParentLink, ChildLink
 
 navigation = Navigation(
@@ -6,8 +7,8 @@ navigation = Navigation(
         sub_links=[
             ChildLink(
                 name='Все ведомости', 
-                url='gradebook_list',
-                permission_required='gradebook_view',
+                url=getpattern('Gradebook', 'list'),
+                permission_required=getpermission('Gradebook', 'view'),
             ),
             ChildLink(
                 name='Ваши ведомости', 

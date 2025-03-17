@@ -1,0 +1,14 @@
+{% extends 'base_detail.html' %}
+
+{% load django_tables2 %}
+{% load util %}
+
+{% block detail-header %}
+<h1>
+    Квалификация {{ object }}
+</h1>
+{% endblock %}
+
+{% block content %}
+    {{ block super }}
+{% endblock %}

@@ -7,4 +7,4 @@ class AccesscontrolConfig(AppConfig):
 
     def get_navigation(self, user):
         from .navigation import navigation
-        return navigation.get(user)
+        return navigation.get()
