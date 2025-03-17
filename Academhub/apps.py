@@ -105,6 +105,8 @@ class AcademhubAppConfig(AppConfig):
                 elif learning_plan_discipline.attestation_form == "course_pr":
                     grade_book.name = "Ведомость защиты курсового проекта"
 
+                grade_book.generated = True
+
                 grade_book.save()
                 grade_book.students.add(*students)
 
@@ -145,6 +147,7 @@ class AcademhubAppConfig(AppConfig):
                     continue  # Пропускаем создание дубликата
 
                 grade_book.name = "Экзаменационная ведомость"
+                grade_book.generated = True
                 grade_book.save()
                 grade_book.students.add(*students)
 
@@ -172,6 +175,7 @@ class AcademhubAppConfig(AppConfig):
                     f"⚠️ Ведомость для {grade_book.group} по {grade_book.discipline} уже существует, пропускаем!")
             else:
                 grade_book.name = "Ведомость дифференцированного зачета"
+                grade_book.generated = True
                 grade_book.save()
                 grade_book.students.add(*students)
 

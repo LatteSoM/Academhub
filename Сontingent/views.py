@@ -337,6 +337,7 @@ class StudentUpdateView(ObjectUpdateView):
     queryset = Student.objects.all()
 
 
+
 class StudentCreateView(ObjectCreateView):
     """
     Класс для создания нового студента.
