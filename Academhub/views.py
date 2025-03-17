@@ -1,6 +1,7 @@
 from django.urls import reverse_lazy
 from AccessControl.table import GroupTable
 from django.views.generic import UpdateView
+from AccessControl.mixin import PermissionMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from Academhub.generic import ObjectTemplateView, ObjectDetailView
 from django.contrib.auth.views import LoginView, PasswordChangeView
@@ -25,7 +26,7 @@ class CustomLoginView(LoginView):
     success_url = reverse_lazy('home')
     form_class = CustomAuthenticationForm
 
-class UserSettingsDetailView(ObjectDetailView):
+class UserSettingsDetailView(PermissionMixin, ObjectDetailView):
     model = CustomUser
     template_name = 'Academhub/user/personal_account.html'
 
@@ -47,11 +48,14 @@ class UserSettingsDetailView(ObjectDetailView):
         )
     ]
 
+    def has_permission(self):
+        return True
+
     def get_object(self, queryset=None):
         return self.request.user
 
     def get_permissions(self):
-        return PermissionProxy.objects.filter(user__id=self.object.pk)
+        return PermissionProxy.objects.filter(user__id=self.request.user.pk)
 
 class UserEmailChangeView(SuccessMessageMixin, UpdateView):
     """

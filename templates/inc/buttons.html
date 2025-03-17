@@ -1,0 +1,24 @@
+{% load util %}
+
+{% for button in buttons %}
+
+    {% if button.button_url %}
+
+        <a id="{{ button.id }}" 
+            class="btn-primary" 
+            style="margin: 10px 0; display: inline-block;" 
+            href="{{ button.button_url }}">
+            {{ button.name }}
+        </a>
+
+    {% else %}
+
+        <button
+            id="{{ button.id }}" 
+            class="btn-primary" >
+            {{ button.name }}
+        </button>
+        
+    {% endif %}
+
+{% endfor %}

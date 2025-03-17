@@ -11,8 +11,8 @@ class UrlGenerateMixin:
     url_attrs = [
         'list',
         'delete',
-        'create',
-        'update',
+        'add',
+        'change',
         'detail',
     ]
 

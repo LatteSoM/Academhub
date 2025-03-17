@@ -1,24 +1,30 @@
 from Academhub.models import Navigation, ParentLink, ChildLink
+from Academhub.utils import getpermission, getpattern
 
 navigation = Navigation(
     ParentLink(
         'Панель администрации',
         sub_links=[
             ChildLink(
-                name='Пользователи', 
-                url='customuser_list',
-                permission_required='customuser_view'
+                name = 'Пользователи', 
+                url = getpattern('CustomUser', 'list'),
+                permission_required = getpermission('CustomUser','view')
             ),
             ChildLink(
                 name='Группы прав', 
-                url='groupproxy_list',
-                permission_required='groupproxy_list'
+                url = getpattern('GroupProxy', 'list'),
+                permission_required = getpermission('GroupProxy','view')
             ),
             ChildLink(
                 name='Права', 
-                url='permissionproxy_list',
-                permission_required='permissionproxy_list'
+                url = getpattern('PermissionProxy', 'list'),
+                permission_required = getpermission('PermissionProxy', 'view'),
             ),
+            ChildLink (
+                name='Админка',
+                url = 'admin:index',
+                admin = True
+            )
         ]
     )
 )

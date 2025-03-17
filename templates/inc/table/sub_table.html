@@ -13,9 +13,9 @@
         <div class="detail-tab-content">
 
             {% for button in table.buttons %}
-                <a class="btn-primary" href="{{ button.url }}">
-                    {{ button.name }}
-                </a>
+                {% with buttons=table.buttons %}
+                    {% include 'inc/buttons.html' %}
+                {% endwith %}
             {% endfor %}
 
             {% with table=table.table %}

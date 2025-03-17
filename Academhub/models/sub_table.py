@@ -1,28 +1,8 @@
-from django.urls import reverse
+# from django.urls import reverse
 
-# Определяем, какие классы будут доступны при импорте модуля
 __all__ = (
     'SubTable',
-    'ButtonTable',
 )
-
-class ButtonTable:
-    '''
-    Класс для отображения кнопок таблиц
-    permission - права \n
-    name - текст кнопки \n
-    url - конечный url адрес \n
-    link_name - название url адреса \n
-    link_params - список параметров url адреса \n
-    '''
-    
-    def __init__(self, name, link_name=None, link_params=None, permission=None):
-        # Инициализация объекта кнопки
-        self.name = name  # Текст, отображаемый на кнопке
-        self.link_name = link_name  # Имя URL-паттерна из Django URL-конфигурации
-        self.link_params = link_params or []  # Список параметров для URL, по умолчанию пустой
-        self.permission = permission  # Права доступа для кнопки (опционально)
-        self.url = None  # Сгенерированный URL, будет заполнен позже
 
 class SubTable:
     '''
@@ -53,24 +33,25 @@ class SubTable:
     def generate_url_for_buttons(self, object):
         # Метод для генерации URL для каждой кнопки на основе объекта
         for button in self.buttons:  # Проходим по всем кнопкам таблицы
-            if button.link_name:  # Если у кнопки указано имя URL
-                if button.link_params:  # Если есть параметры для URL
-                    params = {}  # Словарь для хранения параметров URL
-                    for param in button.link_params:  # Проходим по каждому параметру
-                        # Пробуем получить значение атрибута объекта
-                        obj_param = getattr(object, param, None)
-                        # Если атрибут не найден, проверяем, является ли он свойством (property)
-                        if obj_param is None and hasattr(object.__class__, param):
-                            class_attr = getattr(object.__class__, param)
-                            if isinstance(class_attr, property):  # Если это свойство
-                                obj_param = class_attr.__get__(object, object.__class__)  # Получаем значение свойства
-                        params[param] = obj_param  # Добавляем параметр в словарь
+            button.generate_url(object)
+            # if button.link_name:  # Если у кнопки указано имя URL
+            #     if button.link_params:  # Если есть параметры для URL
+            #         params = {}  # Словарь для хранения параметров URL
+            #         for param in button.link_params:  # Проходим по каждому параметру
+            #             # Пробуем получить значение атрибута объекта
+            #             obj_param = getattr(object, param, None)
+            #             # Если атрибут не найден, проверяем, является ли он свойством (property)
+            #             if obj_param is None and hasattr(object.__class__, param):
+            #                 class_attr = getattr(object.__class__, param)
+            #                 if isinstance(class_attr, property):  # Если это свойство
+            #                     obj_param = class_attr.__get__(object, object.__class__)  # Получаем значение свойства
+            #             params[param] = obj_param  # Добавляем параметр в словарь
                     
-                    # Генерируем URL с использованием параметров и сохраняем его в button.url
-                    button.url = reverse(button.link_name, kwargs=params)
-                else:
-                    # Если параметров нет, генерируем URL без аргументов
-                    button.url = reverse(button.link_name)
+            #         # Генерируем URL с использованием параметров и сохраняем его в button.url
+            #         button.button_url = reverse(button.link_name, kwargs=params)
+            #     else:
+            #         # Если параметров нет, генерируем URL без аргументов
+            #         button.button_url = reverse(button.link_name)
 
     def get_queryset(self, object):
         # Метод для получения отфильтрованного набора данных

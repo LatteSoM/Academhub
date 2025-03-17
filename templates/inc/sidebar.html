@@ -9,12 +9,6 @@
     <nav class="sidebar-nav">
         <ul id="nav-menu">
             
-            {% if user.is_superuser %}
-                <a href="{% url 'admin:index' %}" class="nav-item">
-                    Панель администратора
-                </a>
-            {% endif %}
-            
             <a href="{% url 'personal_account'  %}" class="nav-item">
                 Личный кабинет
             </a>

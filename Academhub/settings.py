@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 import os
-import importlib
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -68,7 +67,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'Academhub.middleware.AuthMiddleware',
+    # 'Academhub.middleware.AuthMiddleware',
 ]
 
 ROOT_URLCONF = 'Academhub.urls'

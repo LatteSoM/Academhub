@@ -48,7 +48,7 @@ urlpatterns = [
     ## Подкючение app
     #
 
-    path('ContingentApp/', include('Сontingent.urls')),
+    path('Contingent/', include('Сontingent.urls')),
     path('AccessControl/', include('AccessControl.urls')),
-    path('GradeBookApp/', include('Gradebook.urls')),
+    path('GradeBook/', include('Gradebook.urls')),
 ]

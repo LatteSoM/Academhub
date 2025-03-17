@@ -1,10 +1,18 @@
-import importlib
+from django.apps import apps
 from django.conf import settings
-from Academhub.models import Navigation
 
 def navigation(request):
+    navs = []
 
-    for app in settings.ACTIVE_APPS:
-        importlib.import_module(f"{app}.navigation")
+    # Проходим по всем активным приложениям
+    for app_config in apps.get_app_configs():
+        if app_config.label in settings.ACTIVE_APPS:
+            try:
+                # Пытаемся получить навигацию из AppConfig
+                if hasattr(app_config, 'get_navigation'):
+                    app_nav = app_config.get_navigation(request.user)
+                    navs.extend(app_nav)
+            except Exception as e:
+                continue
 
-    return {'navigation': Navigation().get(request.user)}
+    return {'navigation': navs}

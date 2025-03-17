@@ -26,11 +26,7 @@
             <div id="table" class="tab-pane active">
 
             {% block buttons %}
-                {% if url_create|check_url_name_exists %}
-                    <a id="add-new" class="btn-primary" style="margin: 10px 0; display: inline-block;" href="{% url url_create %}">
-                        Добавить
-                    </a>
-                {% endif %}
+                {% include 'inc/buttons.html' %}
             {% endblock %}
 
                 {% if filter.form.search %}

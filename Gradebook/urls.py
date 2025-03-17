@@ -1,6 +1,6 @@
 from .views import *
 from django.urls import path
-
+from Academhub.utils import getpattern
 from .views import TeachersGradeBookTableView, download_report, check_and_open_gradebook
 
 urlpatterns = [
@@ -8,11 +8,11 @@ urlpatterns = [
     ## Gradebook
     #
 
-    path('gradebook/list', GradebookTableView.as_view(), name='gradebook_list'),
-    path('gradebook/create', GradebookCreateView.as_view(), name='gradebook_create'),
-    path('gradebook/<int:pk>', GradebookDetailView.as_view(), name='gradebook_detail'),
-    path('gradebook/update/<int:pk>', GradebookUpdateView.as_view(), name='gradebook_update'),
-    path('gradebook/create/discipline', GradebookCreateView.as_view(), name='gradebook_with_discipline_create'),
+    path('gradebook/list', GradebookTableView.as_view(), name = getpattern('Gradebook', 'list')),
+    path('gradebook/create', GradebookCreateView.as_view(), name = getpattern('Gradebook', 'add')),
+    path('gradebook/<int:pk>', GradebookDetailView.as_view(), name = getpattern('Gradebook', 'detail')),
+    path('gradebook/update/<int:pk>', GradebookUpdateView.as_view(), name = getpattern('Gradebook', 'change')),
+    path('gradebook/create/discipline', GradebookCreateView.as_view(), name = 'gradebook_with_discipline_create'),
 
     #
     ## GradebookStudents

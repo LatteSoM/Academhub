@@ -5,9 +5,10 @@ from django.utils import timezone
 from django.contrib import messages
 from django.http import HttpResponse
 from Gradebook.mixins import GradeBookMixin
+from Academhub.utils import getpermission, getpattern
 from Gradebook.filters import GradeBookTeachersFilter
 from django.shortcuts import get_object_or_404, redirect
-from Academhub.models import GradebookStudents, Gradebook, CustomUser, SubTable, ButtonTable
+from Academhub.models import GradebookStudents, Gradebook, CustomUser, SubTable, Button
 from Academhub.generic import BulkUpdateView, ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView
 
 #
@@ -77,6 +78,15 @@ class GradebookTableView(ObjectTableView):
     filterset_class = GradebookFilter
     queryset = Gradebook.objects.all()
 
+    buttons = [
+        Button (
+            id='add',
+            name = 'Добавить',
+            permission = getpermission(Gradebook, 'add'),
+            link_params = getpattern(Gradebook, 'add')
+        )
+    ]
+
     def get_table_class(self):
         if self.request.GET.get("mobile") == "1":
             return GradebookMobileTable
@@ -106,6 +116,22 @@ class GradebookDetailView(ObjectDetailView):
         ],
     }
 
+    buttons = [
+        Button (
+            id = 'change',
+            name = 'Обновить',
+            link_params = ['pk'],
+            link_name = getpattern(Gradebook, 'change'),
+            permission = getpermission(Gradebook, 'change'),
+        ),
+        Button (
+            id = 'to_list',
+            name = 'К таблице',
+            link_name = getpattern(Gradebook, 'list'),
+            permission = getpermission(Gradebook, 'view')
+        )
+    ]
+
     def grade_book_student_filter(object, queryset):
         return queryset.filter(gradebook__pk=object.pk)
 
@@ -119,7 +145,7 @@ class GradebookDetailView(ObjectDetailView):
             filter_func=grade_book_student_filter,
             queryset=GradebookStudents.objects.all(),
             buttons=[
-                ButtonTable (
+                Button (
                     name = 'Заполнить ведомость',
                     link_name = 'gradebookstudents_bulk_create',
                     link_params = ['pk']
