@@ -144,24 +144,6 @@ class CustomUser(AcademHubModel, AbstractBaseUser, PermissionsMixin):
         return self.full_name
 
 
-<<<<<<< HEAD
-=======
-class Discipline(AcademHubModel):
-    code = models.CharField(max_length=50, unique=False, verbose_name="Код", blank=True ,null=True)
-    name = models.CharField(max_length=255, verbose_name="Наименование")
-    specialty = models.ForeignKey(
-        'Specialty', on_delete=models.CASCADE, related_name="disciplines", verbose_name="Специальность"
-    )
-
-    class Meta:
-        verbose_name = "Дисциплина"
-        verbose_name_plural = "Дисциплины"
-
-    def __str__(self):
-        return self.name
-
-
->>>>>>> 1004b84225cea52c0011c4f0be491724a0ebdd2b
 class MiddleCertification(AcademHubModel):
     # semester = models.PositiveSmallIntegerField(verbose_name='Семестр')
     SEMESTER_CHOICES = [(i, str(i)) for i in range(1, 8)]
@@ -290,23 +272,6 @@ class Qualification(AcademHubModel):
 
     def __str__(self):
         return self.name
-
-
-class Curriculum(models.Model):
-    qualification = models.ForeignKey(
-        Qualification,
-        on_delete=models.CASCADE,
-        verbose_name="Квалификация"
-    )
-    admission_year = models.PositiveIntegerField(verbose_name="Год поступления")
-
-    class Meta:
-        verbose_name = "Учебный план"
-        verbose_name_plural = "Учебные планы"
-        unique_together = ['qualification', 'admission_year']
-
-    def __str__(self):
-        return f"План для {self.qualification} ({self.admission_year} года)"
 
 
 class GroupStudents(AcademHubModel):
@@ -1132,6 +1097,14 @@ class ClockCell(AcademHubModel):
 def validate_practice_dates(value):
     if value.start_date > value.end_date:
         raise ValidationError("Дата окончания не может быть раньше даты начала")
+    
+
+class TeacherDicsciplineCurriculum(AcademHubModel):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    teacher = models.ForeignKey(CustomUser, related_name='disciplines', on_delete=models.CASCADE)
+    term = models.ForeignKey(Term, related_name='techers_disciplines', on_delete=models.CASCADE)
+    discipline = models.ForeignKey(Discipline, related_name='teachers', on_delete=models.CASCADE)
+    curriculum = models.ForeignKey(Curriculum, related_name='teachers_dicsciplines', on_delete=models.CASCADE)
 
 class PracticeDate(AcademHubModel):
     calendar_graphic = models.ForeignKey(
