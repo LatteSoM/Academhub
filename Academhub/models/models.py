@@ -357,6 +357,8 @@ class GroupStudents(AcademHubModel):
         null=False
     )
 
+    is_active = models.BooleanField(null=True, blank=True, default=True, verbose_name="Активная группа")
+
     class Meta:
         verbose_name = "Группа"
         verbose_name_plural = "Группы"
@@ -636,6 +638,14 @@ class Student(AcademHubModel):
 
     def save(self, *args, **kwargs):
         from django.utils import timezone  # Импортируем внутри метода, чтобы избежать проблем с импортом
+        from django.core.exceptions import ValidationError
+
+        # Проверка соответствия education_base группы и студента
+        if self.group and self.education_base != self.group.education_base:
+            raise ValidationError(
+                f"База образования студента ({self.education_base}) не соответствует "
+                f"базе образования группы ({self.group.education_base})"
+            )
 
         # Сохраняем старые значения перед обновлением
         if self.pk:  # Если это обновление существующего объекта

@@ -93,7 +93,19 @@ class StudentForm(forms.ModelForm):
             'representative_full_name',
             'representative_email',
             'note',
-        ] 
+        ]
+
+    def clean(self):
+        cleaned_data = super().clean()
+        group = cleaned_data.get('group')
+        education_base = cleaned_data.get('education_base')
+
+        if group and education_base and education_base != group.education_base:
+            raise forms.ValidationError(
+                f"База образования студента ({education_base}) должна совпадать с "
+                f"базой образования группы ({group.education_base})"
+            )
+        return cleaned_data
 
 class GroupForm(forms.ModelForm):
     class Meta:
@@ -104,6 +116,29 @@ class GroupForm(forms.ModelForm):
             'education_base',
             'current_course',
         ]
+
+
+
+class PromoteGroupStudentsForm(forms.ModelForm):
+    """
+    Форма для перевода группы и студентов на следующий курс
+    """
+    transfer_order = forms.CharField(
+        label='Номер приказа о переводе',
+        max_length=255,
+        required=True,
+    )
+
+    class Meta:
+        model = GroupStudents
+        fields = []  # Пустой список, так как редактируем только transfer_order
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['transfer_order'].widget.attrs.update({
+            'class': 'form-control',
+            'autocomplete': 'off'
+        })
 
 class QualificationForm(forms.ModelForm):
     class Meta:

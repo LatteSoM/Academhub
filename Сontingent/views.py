@@ -1,5 +1,8 @@
 import os
 
+from django.contrib.messages.views import SuccessMessageMixin
+from django.views.generic import UpdateView
+
 from .forms import *
 from .utils import *
 from .tables import *
@@ -30,7 +33,8 @@ from Academhub.generic import ImportViewMixin
 from django.shortcuts import get_object_or_404, redirect
 from .tables import AcademTable, ExpulsionTable, ContingentMovementTable
 from .filters import AcademFilter, ExpulsionFilter, ContingentMovementFilter
-from .forms import AcademLeaveForm, AcademReturnForm, ExpellStudentForm, RecoverStudentForm, StudentImportForm
+from .forms import AcademLeaveForm, AcademReturnForm, ExpellStudentForm, RecoverStudentForm, StudentImportForm, \
+    PromoteGroupStudentsForm
 from Academhub.generic import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView, ObjectTemplateView, ObjectTableImportView
 from Academhub.modules.documentGenPars import StatisticsTableGenerator, CourseTableGenerator, GroupTableGenerator, VacationTableGenerator, MovementTableGenerator
 
@@ -64,6 +68,7 @@ __all__ = (
     'GroupDetailView', 
     'GroupUpdateView', 
     'GroupCreateView',
+    'PromoteGroupStudentsView',
 
     'QualificationTableView',
     'QualificationCreateView',
@@ -257,6 +262,32 @@ class GroupUpdateView(ObjectUpdateView):
     form_class = GroupForm
     queryset = GroupStudents.objects.all()
 
+
+class PromoteGroupStudentsView(SuccessMessageMixin, UpdateView):
+    """
+    Перевод группы и всех студентов на следующий курс
+    """
+    model = GroupStudents
+    form_class = PromoteGroupStudentsForm
+    template_name = 'Contingent/promote_group_students_form.html'
+    success_message = 'Группа и студенты были успешно переведены на следующий курс!'
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(GroupStudents, pk=self.kwargs['pk'])
+
+    def form_valid(self, form):
+        group = self.get_object()
+        transfer_order = form.cleaned_data['transfer_order']
+        success, message = transfer_group_students(group.pk, transfer_order)
+        if success:
+            return super().form_valid(form)
+        else:
+            form.add_error(None, message)
+            return self.form_invalid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('groupstudents_detail', kwargs={'pk': self.get_object().pk})
+
 class GroupCreateView(ObjectCreateView):
     """
     Класс для создания новой группы.
@@ -304,6 +335,7 @@ class StudentUpdateView(ObjectUpdateView):
     """
     form_class = StudentForm
     queryset = Student.objects.all()
+
 
 
 class StudentCreateView(ObjectCreateView):

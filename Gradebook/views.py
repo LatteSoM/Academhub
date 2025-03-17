@@ -116,8 +116,6 @@ class TeachersGradeBookTableView(ObjectTableView):
             return GradebookMobileTable
         return TeacherGradeBookTable
 
-
-
 class GradebookDetailView(ObjectDetailView):
     """
     Класс для отображения детальной информации об учебном журнале.
