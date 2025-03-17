@@ -82,16 +82,6 @@ class GradebookTableView(ObjectTableView):
             return GradebookMobileTable
         return GradebookTable
 
-# class TeachersGradeBookTableView(ObjectTableView):
-#     table_class = TeacherGradeBookTable
-#     filterset_class = GradeBookTeachersFilter
-#     queryset = Gradebook.objects.filter(status=Gradebook.STATUS_CHOICE[1][1])
-#
-#     def get_table_class(self):
-#         if self.request.GET.get("mobile") == "1":
-#             return GradebookMobileTable
-#         return TeacherGradeBookTable
-
 class TeachersGradeBookTableView(ObjectTableView):
     table_class = TeacherGradeBookTable
     filterset_class = GradeBookTeachersFilter
@@ -99,15 +89,27 @@ class TeachersGradeBookTableView(ObjectTableView):
 
     def get_queryset(self):
         # Получаем залогиненного пользователя
-        user = self.request.user
+        user = get_object_or_404(CustomUser, pk=self.request.user.pk)
 
-        # Фильтруем ведомости:
-        # - Статус "Открыта"
-        # - Ведомости, где залогиненный пользователь является учителем
+        # Проверка аутентификации и прав преподавателя
+        if not user.is_authenticated or not hasattr(user, 'is_teacher') or not user.is_teacher:
+            return Gradebook.objects.none()
+
+        # Фильтрация ведомостей
         queryset = Gradebook.objects.filter(
-            status=Gradebook.STATUS_CHOICE[1][1],  # Статус "Открыта"
-            teachers=user  # Залогиненный пользователь является учителем
-        ).distinct()  # Убираем дубликаты, если они есть
+            status='Открыта',  # Статус "Открыта"
+            teachers__id=user.id  # Текущий пользователь в списке преподавателей
+        ).select_related(  # Оптимизация запросов
+            'group',
+            'discipline'
+        ).prefetch_related(
+            'teachers',
+            'students'
+        ).distinct()  # Убираем дубликаты
+
+        # Для отладки
+        # print(f"User {user} is teacher: {user.is_teacher}")
+        # print("Found gradebooks:", queryset.values_list('id', flat=True))
 
         return queryset
 
