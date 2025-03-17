@@ -17,6 +17,7 @@ def check_url_name_exists(url_name):
    Проверяет, существует ли URL с указанным именем.
    """
    try:
+       print(url_name)
        reverse(url_name)
        return True
    except NoReverseMatch:

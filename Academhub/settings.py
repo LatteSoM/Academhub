@@ -44,6 +44,7 @@ ACTIVE_APPS = [
     'Сontingent',
     'AccessControl',
     'Gradebook',
+    'Curriculum',
 ]
 
 INSTALLED_APPS = [
