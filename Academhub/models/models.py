@@ -379,7 +379,10 @@ class GroupStudents(AcademHubModel):
         if not self.pk:
             self.number = self.get_default_number_value()
 
-        self.full_name = f"{self.qualification.short_name}-{self.number}-{str(self.year_create)[-2:]}"
+        if self.education_base != "Основное общее":
+            self.full_name = f"{self.qualification.short_name}-11/{self.number}-{str(self.year_create)[-2:]}"
+        else:
+            self.full_name = f"{self.qualification.short_name}-{self.number}-{str(self.year_create)[-2:]}"
 
         return super().save(*args, **kwargs)
 
@@ -474,8 +477,9 @@ class CurriculumItem(models.Model):
     semester = models.PositiveSmallIntegerField(
         choices=SEMESTER_CHOICES,
         verbose_name="Семестр",
-        null=True,
-        blank=True  # Для курсовых может не быть семестра
+        default=SEMESTER_CHOICES[0][1]
+        # null=True,
+        # blank=True  # Для курсовых может не быть семестра
     )
     hours = models.PositiveIntegerField(
         verbose_name="Количество часов",
@@ -510,6 +514,19 @@ class CurriculumItem(models.Model):
         elif self.item_type == 'term_paper' and self.term_paper:
             return f"Курсовая по {self.term_paper.name} ({self.get_attestation_form_display()})"
         return "Неопределённый элемент"
+
+    # def clean(self):
+    #     super().clean()  # Вызов метода родительского класса
+    #
+    #     # если тип элемента - курсовая работа
+    #     if self.item_type == 'term_paper':
+    #         # Если семестр не пустой, то добавляем ошибку валидации
+    #         if self.semester is not None:
+    #             raise ValidationError({'semester': "Семестр не должен быть указан для курсовых работ."})
+    #     else:
+    #         # Для других типов элементов семестр должен быть указан
+    #         if self.semester is None:
+    #             raise ValidationError({'semester': "Семестр обязателен для данного типа элемента."})
 
 
 class RecordBookTemplate(models.Model):
