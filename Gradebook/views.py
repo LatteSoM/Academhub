@@ -82,10 +82,34 @@ class GradebookTableView(ObjectTableView):
             return GradebookMobileTable
         return GradebookTable
 
+# class TeachersGradeBookTableView(ObjectTableView):
+#     table_class = TeacherGradeBookTable
+#     filterset_class = GradeBookTeachersFilter
+#     queryset = Gradebook.objects.filter(status=Gradebook.STATUS_CHOICE[1][1])
+#
+#     def get_table_class(self):
+#         if self.request.GET.get("mobile") == "1":
+#             return GradebookMobileTable
+#         return TeacherGradeBookTable
+
 class TeachersGradeBookTableView(ObjectTableView):
     table_class = TeacherGradeBookTable
     filterset_class = GradeBookTeachersFilter
-    queryset = Gradebook.objects.filter(status=Gradebook.STATUS_CHOICE[1][1])
+    queryset = Gradebook.objects.all()
+
+    def get_queryset(self):
+        # Получаем залогиненного пользователя
+        user = self.request.user
+
+        # Фильтруем ведомости:
+        # - Статус "Открыта"
+        # - Ведомости, где залогиненный пользователь является учителем
+        queryset = Gradebook.objects.filter(
+            status=Gradebook.STATUS_CHOICE[1][1],  # Статус "Открыта"
+            teachers=user  # Залогиненный пользователь является учителем
+        ).distinct()  # Убираем дубликаты, если они есть
+
+        return queryset
 
     def get_table_class(self):
         if self.request.GET.get("mobile") == "1":
@@ -173,17 +197,18 @@ class GradebookDetailView(ObjectDetailView):
 
         return super().get(request, *args, **kwargs)
 
+
 class GradebookUpdateView(GradeBookMixin, ObjectUpdateView):
-    """
-    Класс для обновления информации об учебном журнале.
-    """
-    form_class = GradebookForm
+    form_class = GradebookForm  # Используем обновленную форму
     queryset = Gradebook.objects.all()
     template_name = 'Gradebook/update/grade_book.html'
-    properties = {
-        'group_id': ''
-    }
+    properties = {}
 
+    # Убираем ненужные свойства
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.pop('properties', None)  # Удаляем параметр properties
+        return kwargs
 
 
 class GradebookCreateView(GradeBookMixin, ObjectCreateView):

@@ -136,15 +136,6 @@ class CustomUser(AcademHubModel, AbstractBaseUser, PermissionsMixin):
 
 
 class Discipline(AcademHubModel):
-
-    # TYPE_CHOICES = [
-    #     ("Профессиональный модуль", "Профессиональный модуль"),
-    #     ("Учебная практика", "Учебная практика"),
-    #     ("Производственная практика", "Производственная практика"),
-    #     ("Курсовая работа", "Курсовая работа")
-    # ]
-    #
-    # type = models.CharField(verbose_name="Тип дисциплины", max_length=255, choices=TYPE_CHOICES)
     code = models.CharField(max_length=50, unique=False, verbose_name="Код", blank=True ,null=True)
     name = models.CharField(max_length=255, verbose_name="Наименование")
     specialty = models.ForeignKey(
@@ -860,6 +851,8 @@ class Gradebook(AcademHubModel):
         default=STATUS_CHOICE[0][0], 
         blank=False)
     semester_number = models.IntegerField(verbose_name="Номер семестра", choices=SEMESTER_CHOICES, default=SEMESTER_CHOICES[0][1])
+
+    generated = models.BooleanField(verbose_name="Была ли ведомсть сгенерирована", default=False, null=False, blank=False)
 
     class Meta:
         verbose_name = "Ведомость"

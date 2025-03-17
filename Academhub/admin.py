@@ -7,6 +7,7 @@ from Academhub.models import CustomUser, GradebookStudents, Discipline, Specialt
     StudentRecordBook, CalendarGraphicOfLearningProcess, \
     Student, Gradebook, Curriculum, TermPaper, Practice, ProfessionalModule, MiddleCertification, RecordBookTemplate, \
     StudentRecordBook, CurriculumItem, PracticeDate
+from Academhub.models.models import ProgramSettings
 
 admin.site.register(Student)
 admin.site.register(Practice)
@@ -18,6 +19,7 @@ admin.site.register(Permission)
 admin.site.register(Discipline)
 admin.site.register(Curriculum)
 admin.site.register(PracticeDate)
+# admin.site.register(ProgramSettings)
 admin.site.register(GroupStudents)
 admin.site.register(Qualification)
 admin.site.register(CurriculumItem)
