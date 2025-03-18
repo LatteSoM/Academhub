@@ -1,8 +1,14 @@
 import os
 
+<<<<<<< HEAD
 from django.contrib.messages.views import SuccessMessageMixin
 from django.views.generic import UpdateView
 
+=======
+from Academhub.modules.documentGenPars import StatisticsTableGenerator,  \
+    CourseTableGenerator, GroupTableGenerator, VacationTableGenerator, \
+    MovementTableGenerator
+>>>>>>> 6a63b28 (генератор документа ведомости)
 from .forms import *
 from .utils import *
 from .tables import *
@@ -888,22 +894,22 @@ def generate_course_table(request, course):
     Функция для генерации файла .xslx для статистики по определенному курсу
     """
     students = Student.objects.filter(group__current_course=course)
-    try:
-        generator = CourseTableGenerator(students)
-        file_path = os.path.join(settings.MEDIA_ROOT, f'course_{course}_table.xlsx')
+    # try:
+    generator = CourseTableGenerator(students)
+    file_path = os.path.join(settings.MEDIA_ROOT, f'course_{course}_table.xlsx')
 
-        os.makedirs(settings.MEDIA_ROOT, exist_ok=True)
+    os.makedirs(settings.MEDIA_ROOT, exist_ok=True)
 
-        generator.generate_document(file_path)
+    generator.generate_document(file_path)
 
-        with open(file_path, 'rb') as f:
-            response = HttpResponse(f.read(),
-                                    content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-            response['Content-Disposition'] = f'attachment; filename="course_{course}_table.xlsx"'
-        os.remove(file_path)
-        return response
-    except Exception as e:
-        return HttpResponse(f"Ошибка: {e.message}", status=400)
+    with open(file_path, 'rb') as f:
+        response = HttpResponse(f.read(),
+                                content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = f'attachment; filename="course_{course}_table.xlsx"'
+    os.remove(file_path)
+    return response
+    # except (CourseDifferenceError, EducationBaseDifferenceError) as e:
+    #     return HttpResponse(f"Ошибка: {e.message}", status=400)
 
 
 def generate_statistics_table(request):
