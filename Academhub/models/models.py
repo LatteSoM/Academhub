@@ -98,15 +98,6 @@ class CustomUser(AcademHubModel, AbstractBaseUser, PermissionsMixin):
 
 
 class Discipline(AcademHubModel):
-
-    # TYPE_CHOICES = [
-    #     ("Профессиональный модуль", "Профессиональный модуль"),
-    #     ("Учебная практика", "Учебная практика"),
-    #     ("Производственная практика", "Производственная практика"),
-    #     ("Курсовая работа", "Курсовая работа")
-    # ]
-    #
-    # type = models.CharField(verbose_name="Тип дисциплины", max_length=255, choices=TYPE_CHOICES)
     code = models.CharField(max_length=50, unique=False, verbose_name="Код", blank=True ,null=True)
     name = models.CharField(max_length=255, verbose_name="Наименование")
     specialty = models.ForeignKey(
@@ -220,8 +211,6 @@ class Specialty(AcademHubModel):
 
     code = models.CharField(max_length=50, unique=True, verbose_name="Код")
     name = models.CharField(max_length=255, verbose_name="Наименование")
-    name = models.CharField(max_length=255, verbose_name="Наименование")
-
 
     class Meta:
         verbose_name = "Специальность"
@@ -328,6 +317,8 @@ class GroupStudents(AcademHubModel):
         null=False
     )
 
+    is_active = models.BooleanField(null=True, blank=True, default=True, verbose_name="Активная группа")
+
     class Meta:
         verbose_name = "Группа"
         verbose_name_plural = "Группы"
@@ -342,7 +333,10 @@ class GroupStudents(AcademHubModel):
         if not self.pk:
             self.number = self.get_default_number_value()
 
-        self.full_name = f"{self.qualification.short_name}-{self.number}-{str(self.year_create)[-2:]}"
+        if self.education_base != "Основное общее":
+            self.full_name = f"{self.qualification.short_name}-11/{self.number}-{str(self.year_create)[-2:]}"
+        else:
+            self.full_name = f"{self.qualification.short_name}-{self.number}-{str(self.year_create)[-2:]}"
 
         return super().save(*args, **kwargs)
 
@@ -437,8 +431,9 @@ class CurriculumItem(models.Model):
     semester = models.PositiveSmallIntegerField(
         choices=SEMESTER_CHOICES,
         verbose_name="Семестр",
-        null=True,
-        blank=True  # Для курсовых может не быть семестра
+        default=SEMESTER_CHOICES[0][1]
+        # null=True,
+        # blank=True  # Для курсовых может не быть семестра
     )
     hours = models.PositiveIntegerField(
         verbose_name="Количество часов",
@@ -473,6 +468,19 @@ class CurriculumItem(models.Model):
         elif self.item_type == 'term_paper' and self.term_paper:
             return f"Курсовая по {self.term_paper.name} ({self.get_attestation_form_display()})"
         return "Неопределённый элемент"
+
+    # def clean(self):
+    #     super().clean()  # Вызов метода родительского класса
+    #
+    #     # если тип элемента - курсовая работа
+    #     if self.item_type == 'term_paper':
+    #         # Если семестр не пустой, то добавляем ошибку валидации
+    #         if self.semester is not None:
+    #             raise ValidationError({'semester': "Семестр не должен быть указан для курсовых работ."})
+    #     else:
+    #         # Для других типов элементов семестр должен быть указан
+    #         if self.semester is None:
+    #             raise ValidationError({'semester': "Семестр обязателен для данного типа элемента."})
 
 
 class RecordBookTemplate(AcademHubModel):
@@ -608,6 +616,14 @@ class Student(AcademHubModel):
 
     def save(self, *args, **kwargs):
         from django.utils import timezone  # Импортируем внутри метода, чтобы избежать проблем с импортом
+        from django.core.exceptions import ValidationError
+
+        # Проверка соответствия education_base группы и студента
+        if self.group and self.education_base != self.group.education_base:
+            raise ValidationError(
+                f"База образования студента ({self.education_base}) не соответствует "
+                f"базе образования группы ({self.group.education_base})"
+            )
 
         # Сохраняем старые значения перед обновлением
         if self.pk:  # Если это обновление существующего объекта
@@ -822,6 +838,8 @@ class Gradebook(AcademHubModel):
         blank=False)
     semester_number = models.IntegerField(verbose_name="Номер семестра", choices=SEMESTER_CHOICES, default=SEMESTER_CHOICES[0][1])
 
+    # generated = models.BooleanField(verbose_name="Была ли ведомсть сгенерирована", default=False, null=False, blank=False)
+
     class Meta:
         verbose_name = "Ведомость"
         verbose_name_plural = "Ведомости"
@@ -1023,3 +1041,4 @@ class ProgramSettings(models.Model):
         settings = cls.get_current_settings()
         if current_year != settings.current_year:
             settings.reset_counter()
+

@@ -14,6 +14,11 @@ navigation = Navigation(
                 name='Ваши ведомости', 
                 url="gradebookteacher_list",
                 permission_required='gradebook_view',
+            ),
+            ChildLink(
+                name='Закрытые ведомости',
+                url="gradebookclosed_list",
+                permission_required='gradebook_view',
             )
         ]
     )

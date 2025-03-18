@@ -23,4 +23,6 @@ urlpatterns = [
     path('gradebook/teacher/list', TeachersGradeBookTableView.as_view(), name='gradebookteacher_list'),
     path("download_report/<int:pk>/", download_report, name="download_report"),
     path('gradebook/<int:pk>/check_open/', check_and_open_gradebook, name='check_open_gradebook'),
+
+    path('gradebook/closed/list', GradebookClosedList.as_view(), name='gradebookclosed_list'),
 ]

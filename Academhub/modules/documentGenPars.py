@@ -2,14 +2,20 @@ import os
 import sys
 import django
 
+from django.utils.translation.trans_real import parse_accept_lang_header
 from openpyxl import Workbook
 from openpyxl.styles import Color, PatternFill
+
+from docx import Document
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.shared import Pt, RGBColor, Cm
+from docx.enum.style import WD_STYLE_TYPE
 
 # Определение среды Django для тестов
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Academhub.settings")
 django.setup()
-from Academhub.models import GroupStudents, Qualification, Specialty, Student
+from Academhub.models import ContingentMovement, GradebookStudents, GroupStudents, Qualification, Specialty, Student, Gradebook
 
 
 class GroupTableGenerator:
@@ -415,7 +421,7 @@ class VacationTableGenerator:
             worksheet["Q1"].value = "Примечание"
             
             entry_index = 2
-            for student in students:
+            for student in self.students:
                 if student.is_in_academ and not student.is_expelled:
                     worksheet.cell(row=entry_index, column=1).value = entry_index - 1
                     worksheet.cell(row=entry_index, column=2).value = student.full_name
@@ -503,6 +509,168 @@ class MovementTableGenerator:
 
             workbook.save(path)
 
+class GradebookDocumentGenerator:
+    def __init__(self, gradebook) -> None:
+        self.gradebook = gradebook
+        self.gradebook_name = gradebook.name
+        self.gradebook_number = gradebook.number
+        self.gradebook_discipline = gradebook.discipline
+        self.gradebook_semester = gradebook.semester_number
+        self.gradebook_course = gradebook.group.current_course
+        self.gradebook_group = gradebook.group.full_name
+        self.gradebook_students = gradebook.students
+        self.gradebook_specialty = gradebook.group.qualification.specialty
+        self.gradebook_teachers = [str(i[5]) for i in list(gradebook.teachers.values_list())]
+
+    def generate_document(self, path) -> None:
+        document = Document()
+        sections = document.sections
+        for section in sections:
+            section.page_width = Cm(21.0)
+            section.page_height = Cm(29.70)
+            section.left_margin = Cm(3.0)
+            section.right_margin = Cm(1.49)
+            section.top_margin = Cm(1.50)
+            section.bottom_margin = Cm(2.0)
+
+        styles = document.styles
+        # Определенние стилей:
+        # Heading 1
+        heading_style = styles.add_style('Our_Heading 1', WD_STYLE_TYPE.PARAGRAPH)
+        heading_style.base_style = styles['Heading 1']
+        heading_style.font.name = 'Times New Roman'
+        heading_style.font.size = Pt(12)
+        heading_style.font.color.rgb = RGBColor(0, 0, 0)
+
+        # Normal
+        normal_style = styles.add_style('Our_Normal', WD_STYLE_TYPE.PARAGRAPH)
+        normal_style.base_style = styles['Normal']
+        normal_style.font.name = 'Times New Roman'
+        normal_style.font.size = Pt(10)
+
+        # Subtitle
+        subtitle_style = styles.add_style('Our_subtitle', WD_STYLE_TYPE.PARAGRAPH)
+        subtitle_style.base_style = styles['Our_subtitle']
+        subtitle_style.font.name = 'Times New Roman'
+        subtitle_style.font.size = Pt(14)
+        subtitle_style.font.bold = True
+
+        # Отсюда идет форматирование самого документа
+        # Заголовок в начале документа
+        paragraph = document.add_paragraph('МИНИСТЕРСТВО НАУКИ И ВЫСШЕГО ОБРАЗОВАНИЯ РОССИЙСКОЙ ФЕДЕРАЦИИ\n', 'Our_Normal')
+        paragraph.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        paragraph.style.font.bold = True
+        paragraph.style.font.size = Pt(9)
+        run = paragraph.add_run('''федеральное государственное бюджетное образовательное учреждение высшего образования 
+        «Российский экономический университет имени Г.В. Плеханова»''')
+        run.bold = True
+        run.font.size = Pt(10)
+        paragraph.paragraph_format.space_after = 0
+
+        paragraph = document.add_heading('Московский приборостроительный техникум\n', 1)
+        paragraph.style = 'Our_Heading 1'
+        paragraph.paragraph_format.space_before = 0
+        paragraph.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+        # Subtitle с номером ведомости
+        paragraph = document.add_paragraph(f'{self.gradebook_name.upper()}   ', 'Our_subtitle')
+        paragraph.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        paragraph.add_run(f'№ {self.gradebook_number}').underline = True
+
+        # Параграф с описанием про кого и от кого ведомость (не закончено: нужно разобраться со стилями разных параграфов
+        # В случае если курсовой проект надо писать не "по дисциплине", а "курсовой проект"
+        if self.gradebook_name == 'Ведомость защиты курсового проекта':
+            paragraph = document.add_paragraph('Курсовой проект: ', 'Our_Normal')
+        else:
+            paragraph = document.add_paragraph('По дисциплине/МДК: ', 'Our_Normal')
+
+        paragraph.style.font.bold = False
+        paragraph.add_run(f'{self.gradebook_discipline}\n').font.size = Pt(12)
+        paragraph.add_run(str(self.gradebook_course)).bold = True
+        paragraph.add_run(' курс ')
+        paragraph.add_run(str(self.gradebook_semester)).bold = True
+        paragraph.add_run(' семестр ')
+        paragraph.add_run(self.gradebook_group).bold = True
+        paragraph.add_run(' группа\n')
+        paragraph.add_run('Специальность: ')
+        paragraph.add_run(f'{self.gradebook_specialty.code} "{self.gradebook_specialty.name}"\n').bold = True
+        paragraph.add_run('Форма обучения: ')
+        paragraph.add_run('Очная\n').bold = True
+        paragraph.add_run('Преподаватель: ')
+        paragraph.add_run(' '.join(self.gradebook_teachers))
+        paragraph.add_run('\n')
+        
+        # Сделать отсутствие колонки с билетами в случае если курсовой или успеваемость
+        
+        if self.gradebook_name == 'Ведомость успеваемости' or self.gradebook_name == 'Ведомость защиты курсового проекта':
+            table = document.add_table(rows=1, cols=4)
+            table.style = 'Table Grid'
+            # Заголовки таблицы
+            header_cells = table.rows[0].cells
+            header_cells[0].text = '№ П/П'
+            header_cells[1].text = 'Фамилия, имя, отчество студента'
+            header_cells[2].text = 'Оценка'
+            header_cells[3].text = 'Подпись экзаменатора'
+            
+            counter = 1
+            for gradebook_student in GradebookStudents.objects.filter(gradebook=self.gradebook):
+                row_cells = table.add_row().cells
+                row_cells[0].text = str(counter)
+                row_cells[1].text = gradebook_student.student.full_name
+                row_cells[2].text = str(gradebook_student.grade)
+                counter += 1
+        else:
+            table = document.add_table(rows=1, cols=5)
+            table.style = 'Table Grid'
+            # Заголовки таблицы
+            header_cells = table.rows[0].cells
+            header_cells[0].text = '№ П/П'
+            header_cells[1].text = '№ экз.билета'
+            header_cells[2].text = 'Фамилия, имя, отчество студента'
+            header_cells[3].text = 'Оценка'
+            header_cells[4].text = 'Подпись экзаменатора'
+            
+            counter = 1
+            for gradebook_student in GradebookStudents.objects.filter(gradebook=self.gradebook):
+                row_cells = table.add_row().cells
+                row_cells[0].text = str(counter)
+                row_cells[1].text = str(gradebook_student.ticket_number)
+                row_cells[2].text = gradebook_student.student.full_name
+                row_cells[3].text = str(gradebook_student.grade)
+                counter += 1
+
+        paragraph = document.add_paragraph('\n')
+
+        footer_table = document.add_table(rows=8, cols=3)
+        footer_table.rows[0].cells[0].text = '«      »               2025 года'
+        footer_table.rows[0].cells[1].text = 'Подпись преподавателя:'
+        footer_table.rows[0].cells[2].text = '________________'
+
+        footer_table.rows[2].cells[1].text = 'Всего оценок: '
+        footer_table.rows[2].cells[2].text = '__'
+        
+        footer_table.rows[3].cells[0].merge(footer_table.rows[3].cells[1])
+        footer_table.rows[3].cells[1].text = 'в том числе «5» –'
+        footer_table.rows[3].cells[2].text = '__'
+
+        footer_table.rows[4].cells[0].merge(footer_table.rows[4].cells[1])
+        footer_table.rows[4].cells[1].text = '«4» –'
+        footer_table.rows[4].cells[2].text = '__'
+
+        footer_table.rows[5].cells[0].merge(footer_table.rows[5].cells[1])
+        footer_table.rows[5].cells[1].text = '«3» –'
+        footer_table.rows[5].cells[2].text = '__'
+
+        footer_table.rows[6].cells[0].merge(footer_table.rows[6].cells[1])
+        footer_table.rows[6].cells[1].text = '«2» –'
+        footer_table.rows[6].cells[2].text = '__'
+
+        footer_table.rows[7].cells[0].merge(footer_table.rows[7].cells[1])
+        footer_table.rows[7].cells[1].text = '«н/я» –'
+        footer_table.rows[7].cells[2].text = '__'
+
+        document.save(path)
+
 # def tableStudentsParse(path):
 #     ext = os.path.splitext(path)[1].lower()
 #     data = []
@@ -526,20 +694,32 @@ class MovementTableGenerator:
 #        student = Student(full_name=student_row[1], )
 
 if __name__ == "__main__":
-    students = Student.objects.all()
-    specialties = Specialty.objects.all()
-    qualifications = Qualification.objects.all()
-    groups = GroupStudents.objects.all()
+    # students = Student.objects.all()
+    # specialties = Specialty.objects.all()
+    # qualifications = Qualification.objects.all()
+    # groups = GroupStudents.objects.all()
+    # movements = ContingentMovement.objects.all()
+    #
+    # gtg = GroupTableGenerator(groups=groups)
+    # ctg = CourseTableGenerator(students=students, education_base="Основное общее", course="2")
+    # stg = StatisticsTableGenerator(specialties=specialties, qualifications=qualifications, students=students)
+    # vtg = VacationTableGenerator(students=students)
+    # mtg = MovementTableGenerator(movements=movements)
+    #
+    # gtg.generate_document("test_groups.xlsx")
+    # ctg.generate_document("test_course.xlsx")
+    # stg.generate_document("test_statistics.xlsx")
+    # vtg.generate_document("test_vacation.xlsx")
+    # mtg.generate_document("test_movement.xlsx")
+    #
 
-    gtg = GroupTableGenerator(groups=groups)
-    ctg = CourseTableGenerator(students=students, education_base="Основное общее", course="2")
-    stg = StatisticsTableGenerator(specialties=specialties, qualifications=qualifications, students=students)
-    vtg = VacationTableGenerator(students=students)
-    mtg = MovementTableGenerator(students=students)
+    gradebook_exam = Gradebook.objects.get(number="ааа1123")
+    gradebook_courseProject = Gradebook.objects.get(number="546NN")
 
-    gtg.generate_document("test_groups.xlsx")
-    ctg.generate_document("test_course.xlsx")
-    stg.generate_document("test_statistics.xlsx")
-    vtg.generate_document("test_vacation.xlsx")
-    mtg.generate_document("test_movement.xlsx")
-    
+    gdg = GradebookDocumentGenerator(gradebook_exam)
+
+    gdg.generate_document("test_gradebook_exam.docx")
+
+    gdg = GradebookDocumentGenerator(gradebook_courseProject)
+    gdg.generate_document("test_gradebook_courseProject.docx")
+
