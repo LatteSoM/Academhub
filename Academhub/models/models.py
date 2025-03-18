@@ -877,7 +877,7 @@ class Gradebook(AcademHubModel):
         blank=False)
     semester_number = models.IntegerField(verbose_name="Номер семестра", choices=SEMESTER_CHOICES, default=SEMESTER_CHOICES[0][1])
 
-    generated = models.BooleanField(verbose_name="Была ли ведомсть сгенерирована", default=False, null=False, blank=False)
+    # generated = models.BooleanField(verbose_name="Была ли ведомсть сгенерирована", default=False, null=False, blank=False)
 
     class Meta:
         verbose_name = "Ведомость"

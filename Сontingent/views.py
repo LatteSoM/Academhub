@@ -621,7 +621,68 @@ class ViewRecordBookTemplateView(ObjectTemplateView):
 
         return context
 
-class ViewRecordBookView(ObjectTemplateView):
+# class ViewRecordBookView(ObjectTemplateView):
+#     """
+#     Класс для отображения информации о зачетной книжке конкретного студента.
+#     """
+#     template_name = 'Contingent/record_book_view.html'
+#     model = StudentRecordBook
+#
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         qualification = get_object_or_404(Qualification, id=self.kwargs['qualification_id'])
+#         template = get_object_or_404(StudentRecordBook, student=self.kwargs['student_id'])
+#         context['qualification'] = qualification
+#
+#         # context['qualification'] = qualification
+#         context['template'] = template
+#         context['admission_year'] = self.kwargs['admission_year']
+#         context['url_list'] = 'student_list'
+#         context['is_student_gradebbok'] = True
+#         context['student_id'] = self.kwargs['student_id']
+#         return context
+
+# from django.views.generic import TemplateView
+# from django.shortcuts import get_object_or_404
+#
+#
+# class ViewRecordBookView(ObjectTemplateView):
+#     """
+#     Класс для отображения информации о зачетной книжке конкретного студента.
+#     """
+#     template_name = 'Contingent/record_book_view.html'
+#     model = StudentRecordBook
+#
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#
+#         # Получаем qualification и template
+#         qualification = get_object_or_404(Qualification, id=self.kwargs['qualification_id'])
+#         template = get_object_or_404(StudentRecordBook, student_id=self.kwargs['student_id'])
+#
+#         # Заполняем контекст
+#         context['qualification'] = qualification
+#         context['template'] = template
+#         context['admission_year'] = self.kwargs['admission_year']
+#         context['url_list'] = 'student_list'
+#         context['is_student_gradebbok'] = True  # Исправлено опечатка: gradebbok -> gradebook
+#         context['student_id'] = self.kwargs['student_id']
+#
+#         # Добавим отладочную информацию для проверки
+#         print("Template data:", template.__dict__)
+#         print("Middle certifications:", list(template.middle_certifications.all()))
+#         print("Professional modules:", list(template.professional_modules.all()))
+#         print("Practices:", list(template.practices.all()))
+#         print("Term papers:", list(template.term_papers.all()))
+#
+#         return context
+
+from django.views.generic import TemplateView
+# from django.shortcuts import get_object_or_404
+# # from .models import StudentRecordBook, Qualification
+#
+#
+class ViewRecordBookView(TemplateView):
     """
     Класс для отображения информации о зачетной книжке конкретного студента.
     """
@@ -630,16 +691,33 @@ class ViewRecordBookView(ObjectTemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        qualification = get_object_or_404(Qualification, id=self.kwargs['qualification_id'])
-        template = get_object_or_404(StudentRecordBook, student=self.kwargs['student_id'])
-        context['qualification'] = qualification
 
+        # Получаем объекты
+        qualification = get_object_or_404(Qualification, id=self.kwargs['qualification_id'])
+        record_book = get_object_or_404(StudentRecordBook, student_id=self.kwargs['student_id'])
+
+        # Задаём контекст
+        context['object'] = record_book  # Передаём как object для base_detail.html
         context['qualification'] = qualification
-        context['template'] = template
         context['admission_year'] = self.kwargs['admission_year']
         context['url_list'] = 'student_list'
-        context['is_student_gradebbok'] = True
+        context['is_student_gradebook'] = True  # Исправлено gradebbok -> gradebook
         context['student_id'] = self.kwargs['student_id']
+
+        # Определяем fieldset для табов
+        context['fieldset'] = {
+            'Информация': [
+                # 'student_name',
+                # 'record_book_number',
+                # 'admission_order',
+                # 'issue_date',
+            ],
+            'Промежуточная аттестация': ['middle_certifications'],
+            'Профессиональные модули': ['professional_modules'],
+            'Практики': ['practices'],
+            'Курсовые работы': ['term_papers'],
+        }
+
         return context
 
 class EditRecordBookTemplateView(ObjectUpdateView):
@@ -737,7 +815,7 @@ def generate_student_record_book(request, pk):
         admission_year=admission_year,
         student_name=f"{student.full_name}",
         record_book_number=record_book_number,
-        admission_order=template.admission_order,
+        admission_order=student.admission_order,
         issue_date=template.issue_date,
         curriculum=template.curriculum
     )

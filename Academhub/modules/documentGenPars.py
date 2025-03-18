@@ -421,7 +421,7 @@ class VacationTableGenerator:
             worksheet["Q1"].value = "Примечание"
             
             entry_index = 2
-            for student in students:
+            for student in self.students:
                 if student.is_in_academ and not student.is_expelled:
                     worksheet.cell(row=entry_index, column=1).value = entry_index - 1
                     worksheet.cell(row=entry_index, column=2).value = student.full_name
