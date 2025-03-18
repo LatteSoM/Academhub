@@ -951,7 +951,6 @@ class ContingentMovement(AcademHubModel):
 
     def __str__(self):
         return f"{self.get_action_type_display()} - {self.student.full_name} ({self.action_date})"
-<<<<<<< HEAD:Academhub/models/models.py
 
 def validate_practice_dates(value):
     if value.start_date > value.end_date:
@@ -1078,5 +1077,4 @@ class ProgramSettings(models.Model):
         settings = cls.get_current_settings()
         if current_year != settings.current_year:
             settings.reset_counter()
-=======
->>>>>>> 6a63b28 (генератор документа ведомости):Academhub/models.py
+

@@ -1,14 +1,14 @@
 import os
 
-<<<<<<< HEAD
+
 from django.contrib.messages.views import SuccessMessageMixin
 from django.views.generic import UpdateView
 
-=======
-from Academhub.modules.documentGenPars import StatisticsTableGenerator,  \
-    CourseTableGenerator, GroupTableGenerator, VacationTableGenerator, \
-    MovementTableGenerator
->>>>>>> 6a63b28 (генератор документа ведомости)
+
+# from Academhub.modules.documentGenPars import StatisticsTableGenerator,  \
+#     CourseTableGenerator, GroupTableGenerator, VacationTableGenerator, \
+#     MovementTableGenerator
+
 from .forms import *
 from .utils import *
 from .tables import *
