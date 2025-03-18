@@ -52,11 +52,13 @@ navigation = Navigation(
             ),
             ChildLink(
                 name='Статистика', 
-                url='statisticks'
+                url='statisticks',
+                permission_required=getpermission('Student', 'statistic')
             ),
             ChildLink(
                 name='Логи движений',
-                url='contingent_movement_list'
+                url=getpattern('ContingentMovement', 'list'),
+                permission_required=getpermission('ContingentMovement', 'view')
             )
         ]
     )

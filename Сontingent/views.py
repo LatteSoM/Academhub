@@ -31,8 +31,8 @@ from Academhub.utils import getpermission, getpattern
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.decorators import permission_required
+from .tables import AcademTable, ExpulsionTable, ContingentMovementTable
 from django.core.exceptions import ImproperlyConfigured, PermissionDenied
-from .tables import AcademTable, ExpulsionTable, ContingentMovementTableS
 from .filters import AcademFilter, ExpulsionFilter, ContingentMovementFilter
 from .forms import AcademLeaveForm, AcademReturnForm, ExpellStudentForm, RecoverStudentForm, StudentImportForm
 from Academhub.generic import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView, ObjectTemplateView, ObjectTableImportView

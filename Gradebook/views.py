@@ -5,9 +5,11 @@ from django.utils import timezone
 from django.contrib import messages
 from django.http import HttpResponse
 from Gradebook.mixins import GradeBookMixin
+from Gradebook.tables import TeacherGradeBookTable
 from Academhub.utils import getpermission, getpattern
 from Gradebook.filters import GradeBookTeachersFilter
 from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth.decorators import permission_required
 from Academhub.models import GradebookStudents, Gradebook, CustomUser, SubTable, Button
 from Academhub.generic import BulkUpdateView, ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView
 
@@ -16,16 +18,16 @@ from Academhub.generic import BulkUpdateView, ObjectTableView, ObjectDetailView,
 #
 
 __all__ = (
+    'download_report',
     'GradebookTableView',
+    'GradebookClosedList',
     'GradebookDetailView',
     'GradebookCreateView',
     'GradebookUpdateView',
-    # 'GradebookDisciplineCreateView',
+    'check_and_open_gradebook',
+    'TeachersGradeBookTableView',
     'GradebookStudentBulkUpdateView',
 )
-
-from Gradebook.tables import TeacherGradeBookTable
-
 
 class GradebookStudentBulkUpdateView(BulkUpdateView):
     model = GradebookStudents
@@ -122,9 +124,10 @@ class GradebookClosedList(ObjectTableView):
         return GradebookTable
 
 class TeachersGradeBookTableView(ObjectTableView):
+    permission_required = None
     table_class = TeacherGradeBookTable
     filterset_class = GradeBookTeachersFilter
-    queryset = Gradebook.objects.all()
+    queryset = Gradebook.objects.all() 
 
     def get_queryset(self):
         # Получаем залогиненного пользователя
@@ -147,7 +150,7 @@ class TeachersGradeBookTableView(ObjectTableView):
         ).distinct()  # Убираем дубликаты
 
         return queryset
-
+ 
     def get_table_class(self):
         if self.request.GET.get("mobile") == "1":
             return GradebookMobileTable
@@ -324,6 +327,7 @@ class GradebookCreateView(GradeBookMixin, ObjectCreateView):
     ]
 
 
+@permission_required(getpermission(Gradebook, 'view'))
 def download_report(request, pk):
     gradebook = get_object_or_404(Gradebook, pk=pk)
 
@@ -338,7 +342,7 @@ def download_report(request, pk):
 
     return response
 
-
+@permission_required(getpermission(Gradebook, 'view'))
 def check_and_open_gradebook(request, pk):
     """
     Проверяет заполненность всех обязательных полей ведомости,

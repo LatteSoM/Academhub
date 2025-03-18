@@ -1,7 +1,6 @@
 from .views import *
 from django.urls import path
 from Academhub.utils import getpattern
-from .views import TeachersGradeBookTableView, download_report, check_and_open_gradebook
 
 urlpatterns = [
     #

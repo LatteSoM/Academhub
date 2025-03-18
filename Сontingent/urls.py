@@ -76,7 +76,6 @@ urlpatterns = [
      path('student/<int:pk>/recover', RecoverStudent.as_view(), name='student_recover'),
 
      # Страница статистики
-     # path('statisticks/', statisticks_view, name='statisticks'),
 
      path('statisticks/', StatisticksView.as_view(), name='statisticks'),
      path('qualification/<int:qualification_id>/<int:admission_year>/record-book/view/', ViewRecordBookTemplateView.as_view(),

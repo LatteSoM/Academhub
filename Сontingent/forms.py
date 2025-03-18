@@ -15,6 +15,7 @@ __all__ = [
     'DisciplineForm', 
     'StudentImportForm',
     'QualificationForm',
+    'PromoteGroupStudentsForm',
 ]
 
 class DisciplineForm(forms.ModelForm):

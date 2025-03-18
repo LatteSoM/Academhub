@@ -38,18 +38,22 @@ class PermissionBaseMixin(PermissionRequiredMixin):
 
     def get_permission_required(self):
         if self.permission_required is None:
-            raise ImproperlyConfigured(
-                f"{self.__class__.__name__} is missing the "
-                f"permission_required attribute. Define "
-                f"{self.__class__.__name__}.permission_required, or override "
-                f"{self.__class__.__name__}.get_permission_required()."
-            )
+            return None
 
         model = self._get_class_object()
 
         perm = getpermission(model, self.permission_required)
 
         return [perm, ]
+    
+    def has_permission(self):
+        """
+        Override this method to customize the way permissions are checked.
+        """
+        perms = self.get_permission_required()
+        if not perms:
+            return True
+        return self.request.user.has_perms(perms)
 
 class ButtonsMixin:
     """
