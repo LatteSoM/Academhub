@@ -20,19 +20,30 @@ navigation = Navigation(
                 url=getpattern('GroupStudents', 'list'),
                 permission_required=getpermission('GroupStudents', 'view')
             ),
-            ChildLink(
+            ParentLink(
                 name='Студенты', 
-                url=getpattern('Student', 'list'),
-                permission_required=getpermission('Student', 'view')
+                sub_links = [
+                    ChildLink(
+                        name='Текущие студенты',
+                        url=getpattern('CurrentStudent', 'list'),
+                        permission_required=getpermission('CurrentStudent', 'view')
+                    ),
+                    ChildLink(
+                        name='Отчисленные студенты',
+                        url=getpattern('ExpulsionStudent', 'list'),
+                        permission_required=getpermission('ExpulsionStudent', 'view')
+                    ),
+                    ChildLink(
+                        name='Студенты в академическом отпуске',
+                        url=getpattern('AcademStudent', 'list'),
+                        permission_required=getpermission('AcademStudent', 'view')
+                    ),
+                ]
             ),
             ChildLink(
                 name='Дисциплины', 
                 url=getpattern('Discipline', 'list'),
                 permission_required=getpermission('Discipline', 'view')
-            ),
-            ChildLink(
-                name='Академический отпуск', 
-                url='academ_list',
             ),
             ChildLink(
                 name='Движение контингента', 
@@ -43,10 +54,10 @@ navigation = Navigation(
                 name='Статистика', 
                 url='statisticks'
             ),
-            ChildLink(
-                name='Логи движений', 
-                url='contingent_movement_list'
-            )
+            # ChildLink(
+            #     name='Логи движений', 
+            #     url='contingent_movement_list'
+            # )
         ]
     )
 )

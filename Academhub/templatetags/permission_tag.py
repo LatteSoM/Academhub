@@ -11,10 +11,14 @@ def has_perm(context, permission):
     :return: True, если право есть, иначе False.
     """
     user = context.get('user')
-    if not user or not permission:
-        return False
 
+    if not user:
+        return False
+    
     if user.is_superuser:
         return True
+
+    if not permission:
+        return False
 
     return user.has_perm(permission)

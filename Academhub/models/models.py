@@ -1,12 +1,10 @@
 from ..validators import *
 from django.db import models
 from django.urls import reverse
-from django.db.models import ManyToManyField
 from django.utils import timezone
 from .mixin import UrlGenerateMixin
-from .utils import UnifiedPermissionQyerySet
 from django.utils.translation import gettext_lazy as _
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permission, Group, PermissionsMixin, PermissionManager
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
 __all__ = (
     'Student',
@@ -17,13 +15,11 @@ __all__ = (
     'Curriculum',
     'Discipline',
     'CustomUser',
-    'GroupProxy',
     'PracticeDate',
     'GroupStudents',
     'Qualification',
     'AcademHubModel',
     'CurriculumItem',
-    'PermissionProxy',
     'StudentRecordBook',
     'GradebookStudents',
     'ProfessionalModule',
@@ -43,40 +39,6 @@ class AcademHubModel(UrlGenerateMixin, models.Model):
 
     class Meta:
         abstract = True
-
-class UnifiedPermissionsManager(PermissionManager):
-    '''
-        Расширение менеджера модели Permisision
-    '''
-
-    def get_queryset(self):
-        '''
-            Добавление новых функция для работы с Queryset Permission
-        '''
-        return UnifiedPermissionQyerySet(self.model, using=self._db)
-
-class PermissionProxy(AcademHubModel, Permission):
-    '''
-        Расширение для модели Permissions. Поддерживает навигацию
-    '''
-
-    objects = UnifiedPermissionsManager()
-
-    class Meta:
-        proxy = True
-        ordering = ['pk']
-        verbose_name = 'Право'
-        verbose_name_plural = 'Права'
-
-class GroupProxy(AcademHubModel, Group):
-    '''
-        Расширение для модели Group. Поддерживает навигацию
-    '''
-
-    class Meta:
-        proxy = True
-        verbose_name = 'Группа прав'
-        verbose_name_plural = 'Группы прав'
 
 class CustomUserManager(BaseUserManager):
     '''
@@ -369,6 +331,9 @@ class GroupStudents(AcademHubModel):
     class Meta:
         verbose_name = "Группа"
         verbose_name_plural = "Группы"
+        permissions = [
+            ('export_group', 'Export group'),
+        ]
 
     def __str__(self):
         return self.full_name
@@ -637,10 +602,8 @@ class Student(AcademHubModel):
         verbose_name_plural = "Студенты"
         permissions = [
             ('import_student', 'Import student'),
-            ('academic_come_back_student', 'Come back student from academic'),
-            ('academic_leave_student', 'May send academic leave'),
-            ('expel_student', 'Expel student'),
-            ('generate_record_book,student', 'Generate record book')
+            ('export_student', 'Export student'),
+            ('statistic_student', 'View statitic student'),
         ]
 
     def save(self, *args, **kwargs):
@@ -725,8 +688,6 @@ class Student(AcademHubModel):
 
     def __str__(self):
         return self.full_name
-
-
 
 
 class StudentRecordBook(AcademHubModel):
@@ -930,6 +891,9 @@ class ContingentMovement(AcademHubModel):
         verbose_name = "Движение контингента"
         verbose_name_plural = "Движения контингента"
         ordering = ['-action_date']  # Сортировка по убыванию даты действия
+        permissions = [
+            ('export_contingentmovement', 'Export ContingentMovement')
+        ]
 
     def __str__(self):
         return f"{self.get_action_type_display()} - {self.student.full_name} ({self.action_date})"

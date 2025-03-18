@@ -2,7 +2,7 @@ import django_tables2 as table
 from django_tables2 import tables
 from Academhub.tables import BaseTable
 from Academhub.models import Qualification, Specialty, GroupStudents, Student, Discipline, MiddleCertification, \
-    ProfessionalModule, Practice, TermPaper, ContingentMovement
+    ProfessionalModule, Practice, TermPaper, ContingentMovement, AcademStudent, CurrentStudent
 
 __all__ = (
     'GroupTable',
@@ -61,7 +61,7 @@ class StudentTable(BaseTable):
     )
 
     class Meta:
-        model = Student
+        model = CurrentStudent
         paginate_by = 10
         fields = ('full_name', 'phone', 'birth_date', 'course', 'group')
 
@@ -74,7 +74,7 @@ class StudentTable2(BaseTable):
 class AcademTable(BaseTable):
 
     class Meta:
-        model = Student
+        model = AcademStudent
         paginate_by = 10
         table_name = 'Академический отпуск'
         fields = ('full_name', 'birth_date', 'group', 'left_course', 'academ_leave_date',

@@ -9,9 +9,8 @@
 {% endblock %}
 
 {% block buttons %}
-    <a class="btn-primary" href="{% url url_change pk=object.pk %}">
-        Изменить
-    </a>
+    {{ block.super }}
+    
     {% if not student.record_book %}
         <a class="btn-primary" href="{% url 'generate_record_book' pk=object.pk %}">Сгенерировать зачётку</a>
     {% else %}
