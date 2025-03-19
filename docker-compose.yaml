@@ -46,7 +46,7 @@ services:
     depends_on:
       - django
     ports:
-      - 80:80
+      - "80:80"
 
 volumes:
   postgres:
