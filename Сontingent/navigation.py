@@ -35,7 +35,7 @@ navigation = Navigation(
                     ),
                     ChildLink(
                         name='Студенты в академическом отпуске',
-                        url=getpattern('AcademStudent', 'list'),
+                        url='AcademStudent_list',
                         permission_required=getpermission('AcademStudent', 'view')
                     ),
                 ]
