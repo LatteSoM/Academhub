@@ -11,31 +11,21 @@
 {% endblock %}
 
 {% block buttons %}
-    <a class="btn-primary" href="{% url url_update pk=object.pk %}">
-        Изменить
-    </a>
+
+    {{ block.super }}
+    
     <a class="btn-primary" href="{% url 'group_record_books_generate' group_id=object.pk %}">
         Сгенерировать ЗК для группы
     </a>
 
     {% if object.current_course == 4 %}
-{#    	<a class="btn-primary" href="{% url 'group_record_books_generate' group_id=object.pk %}">#}
-{#            Деактивировать группу в связи с окончанием обучения#}
-{#        </a>#}
         <a class="btn-primary" href="{% url 'group_record_books_generate' group_id=object.pk %}">
             Деактивировать группу и студентов в связи с окончанием обучения
         </a>
     {% else %}
-{#        <a class="btn-primary" href="{% url 'group_record_books_generate' group_id=object.pk %}">#}
-{#        перевести группу на след курс#}
-{#        </a>#}
         <a class="btn-primary" href="{% url 'promote_group_students_form' pk=object.pk %}">
             перевести на след курс
         </a>
     {% endif %}
-{#    {% if messages %}#}
-{#        {% for message in messages %}#}
-{#            <div class="alert alert-{{ message.tags }}">{{ message }}</div>#}
-{#        {% endfor %}#}
-{#    {% endif %}#}
+
 {% endblock %}

@@ -8,11 +8,3 @@
     Квалификация {{ object }}
 </h1>
 {% endblock %}
-
-{% block buttons %}
-    <a class="btn-primary" href="{% url url_update pk=object.pk %}">
-        Изменить
-    </a>
-{#    <a class="btn-primary" href="{% url 'create_record_book_template' qualification_id=object.pk admission_year=2021 %}" class="btn">К формированию зачетки</a>#}
-
-{% endblock %}

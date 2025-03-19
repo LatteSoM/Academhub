@@ -46,11 +46,6 @@ navigation = Navigation(
                 permission_required=getpermission('Discipline', 'view')
             ),
             ChildLink(
-                name='Движение контингента', 
-                url=getpattern('ContingentMovement', 'list'),
-                permission_required=getpermission('ContingentMovement', 'view')
-            ),
-            ChildLink(
                 name='Статистика', 
                 url='statisticks',
                 permission_required=getpermission('Student', 'statistic')
