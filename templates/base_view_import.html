@@ -14,7 +14,7 @@
 
     {{ block.super }}
 
-    {% if user_has_perm %}
+
         <div id="import" class="tab-pane">
             <div class="page-header">
                 <h2>
@@ -32,6 +32,5 @@
                 <button type="submit" class="btn-primary">Сохранить</button>
             </form>
         </div>
-    {% endif %}
 
 {% endblock %}

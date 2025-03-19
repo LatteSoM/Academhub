@@ -68,7 +68,7 @@ class AcademStudentManager(models.Manager):
         Менеджер для фильтрации студентов находящихся только в академическом отпуске
     '''
     def get_queryset(self):
-        return super().get_queryset().filter(is_in_academ=True)
+        return super().get_queryset().filter(is_in_academ=True, is_expelled=False)
 
 class AcademStudent(Student):
     '''
@@ -91,7 +91,7 @@ class ExpulsionStudentManager(models.Manager):
     '''
         
     def get_queryset(self):
-        return super().get_queryset().filter(is_expelled=True)
+        return super().get_queryset().filter(is_in_academ=False, is_expelled=True)
 
 class ExpulsionStudent(Student):
     '''

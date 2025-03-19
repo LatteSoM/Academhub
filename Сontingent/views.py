@@ -1178,7 +1178,6 @@ class ContingentMovementTableView(ObjectTableView):
     filterset_class = ContingentMovementFilter
     queryset = ContingentMovement.objects.all()
     template_name = 'Contingent/contingent_movement_list.html'
-    permission_required = getpermission(ContingentMovement, 'view')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

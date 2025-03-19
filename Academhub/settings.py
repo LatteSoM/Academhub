@@ -67,7 +67,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 'Academhub.middleware.AuthMiddleware',
+    'Academhub.middleware.AuthMiddleware',
 ]
 
 ROOT_URLCONF = 'Academhub.urls'
