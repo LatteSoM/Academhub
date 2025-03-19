@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Environment
+.env
+.venv/
+.idea/
+*.env
+.venv
+.env 
+env/ 
+venv/ 
+
+# Django
+db.sqlite3
+Academhub/static/
+README.txt
+**/migrations/**
+!**/migrations
+!**/migrations/__init__.py
+# Visual Studio Code # 
+.vscode/* 
+.history

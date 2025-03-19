@@ -1,0 +1,53 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: ${NAME}
+      POSTGRES_USER: ${USER_DB}
+      POSTGRES_PASSWORD: ${PASSWORD}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+  adminer:
+    image: adminer
+    restart: always
+    depends_on:
+      - postgres
+  django:
+    build: Academhub/.
+    container_name: django
+    restart: always
+    depends_on:
+      - postgres
+    environment:
+      SUPERUSER: ${SUPERUSER}
+      SUPERUSER_PASSWORD: ${SUPERUSER_PASSWORD}
+      NAME: ${NAME}
+      HOST: ${HOST}
+      PORT: ${PORT}
+      DEBUG: ${DEBUG}
+      USER_DB: ${USER_DB}
+      PASSWORD: ${PASSWORD}
+      SECRET_KEY: ${SECRET_KEY}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS}
+    volumes:
+      - static:/Academhub/static
+  nginx:
+    image: nginx
+    restart: always
+    environment:
+      TZ: ${TZ}
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - static:/Academhub/static
+    depends_on:
+      - django
+    ports:
+      - 80:80
+
+volumes:
+  postgres:
+  static:

@@ -67,7 +67,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 'Academhub.middleware.AuthMiddleware',
+    'Academhub.middleware.AuthMiddleware',
 ]
 
 ROOT_URLCONF = 'Academhub.urls'
@@ -97,18 +97,18 @@ WSGI_APPLICATION = 'Academhub.wsgi.application'
 
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-     }
     # 'default': {
-    #             'ENGINE': 'django.db.backends.postgresql',
-    #             'NAME': os.getenv("NAME"),
-    #             'USER': os.getenv("USER_DB"),
-    #             'PASSWORD': os.getenv("PASSWORD"),
-    #             'HOST': os.getenv("HOST"),
-    #             'PORT': os.getenv("PORT")
-    #         }
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'db.sqlite3',
+    #  }
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv("NAME"),
+        'USER': os.getenv("USER_DB"),
+        'PASSWORD': os.getenv("PASSWORD"),
+        'HOST': os.getenv("HOST"),
+        'PORT': os.getenv("PORT")
+    }
 }
 
 # DATABASES = os.getenv("DB")
@@ -169,11 +169,3 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Добавление кастомной модели пользователя
 AUTH_USER_MODEL = 'Academhub.CustomUser'
-
-# Navigation
-
-# for app in ACTIVE_APPS:
-#     try:
-#         module = importlib.import_module(f"{app}.navigation")
-#     except ModuleNotFoundError as e:
-#         pass
