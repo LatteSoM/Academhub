@@ -76,6 +76,7 @@ __all__ = (
     'QualificationUpdateView',
 
     'ExpulsionListView',
+    'AcademListView',
 )
 
 
@@ -497,7 +498,7 @@ class StudentTableView(ObjectTableImportView):
             id='add',
             name = 'Добавить',
             link_name = getpattern(CurrentStudent, 'add'),
-            permission = getpermission(CurrentStudent, 'add'),
+            permission = getpermission(Student, 'add'),
         )
     ]
 
@@ -506,7 +507,7 @@ class StudentDetailView(ObjectDetailView):
     """
     Класс для отображения детальной информации о студенте.
     """
-    model= CurrentStudent
+    model= Student
     paginate_by  = 30
     template_name = 'Contingent/detail/student_detail.html'
 
@@ -527,13 +528,13 @@ class StudentDetailView(ObjectDetailView):
             name = 'Обновить',
             link_params = ['pk'],
             link_name = getpattern(CurrentStudent, 'change'),
-            permission = getpermission(CurrentStudent, 'change'),
+            permission = getpermission(Student, 'change'),
         ),
         Button (
             id = 'to_list',
             name = 'К таблице',
             link_name = getpattern(CurrentStudent, 'list'),
-            permission = getpermission(CurrentStudent, 'view')
+            permission = getpermission(Student, 'view')
         )
     ]
 
@@ -545,20 +546,18 @@ class StudentUpdateView(ObjectUpdateView):
     form_class = StudentForm
     queryset = Student.objects.all()
 
-    queryset = CurrentStudent.objects.all()
-
     buttons = [
         Button (
             id='to_object',
             name = 'К объекту',
             link_params = ['pk'],
-            link_name = getpattern(Student, 'detail'),
+            link_name = getpattern(CurrentStudent, 'detail'),
             permission = getpermission(Student, 'view')
         ),
         Button (
             id = 'to_list',
             name = 'К таблице',
-            link_name = getpattern(Student, 'list'),
+            link_name = getpattern(CurrentStudent, 'list'),
             permission = getpermission(Student, 'view')
         )
     ]

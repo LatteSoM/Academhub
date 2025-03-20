@@ -8,17 +8,17 @@ navigation = Navigation(
             ChildLink(
                 name='Все ведомости', 
                 url=getpattern('Gradebook', 'list'),
-                permission_required=getpermission('Gradebook', 'view'),
+                permission_required=getpermission('Gradebook', 'add'),
             ),
             ChildLink(
                 name='Ваши ведомости', 
                 url="gradebookteacher_list",
-                permission_required='gradebook_view',
+                permission_required=getpermission('Gradebook', 'view'),
             ),
             ChildLink(
                 name='Закрытые ведомости',
                 url="gradebookclosed_list",
-                permission_required='gradebook_view',
+                permission_required=getpermission('Gradebook', 'add'),
             )
         ]
     )

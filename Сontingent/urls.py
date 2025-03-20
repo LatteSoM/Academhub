@@ -58,9 +58,9 @@ urlpatterns = [
 
 
      # Студенты в академическом отпуске
-     path('student/<int:pk>/academ-leave/', AcademUpdateView.as_view(), name='academ_leave'),
-     path('student/academ/list', AcademListView.as_view(), name=getpattern('AcademStudent', 'list')),
-     path('academ_return/<int:pk>/', AcademReturn.as_view(), name='academ_return'),
+    path('student/<int:pk>/academ-leave/', AcademUpdateView.as_view(), name='academ_leave'),
+    path('student/academ/list', AcademListView.as_view(), name=getpattern('AcademStudent', 'list')),
+    path('academ_return/<int:pk>/', AcademReturn.as_view(), name='academ_return'),
 
 
      # Студенты отчисленные
