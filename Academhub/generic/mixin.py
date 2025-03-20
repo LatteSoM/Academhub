@@ -90,11 +90,13 @@ class ButtonsMixin:
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        
+        obj = self.get_buttons_object()
 
         buttons = []
 
         for button in self.buttons:
-            if button.is_accessible(self.request.user):
+            if button.is_accessible(self.request.user) and button.is_visible(self.request.user, obj):
                 buttons.append(button)
 
         context['buttons'] = buttons
