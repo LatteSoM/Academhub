@@ -369,3 +369,96 @@ class StudentImportForm(forms.Form):
                 }
         )
 
+
+class ContingentStudentImportForm(StudentForm):
+    def clean(self):
+        return super().clean()
+
+    def get_data_from_file(self, file):
+        wb = load_workbook(file)
+        #весь 1 курс
+        course_1_9 = wb["1 курс (9 кл)"]
+        #весь второй курс
+        course_1_11 = wb["1 курс (11 кл)"]
+        course_2_9 = wb["2 курс (9 кл)"]
+        #весь третий курс
+        course_2_11 = wb["2 курс (11 кл) "]
+        course_3_9 = wb["3 курс (9кл)"]
+        #весь четвертый курс
+        course_3_11 = wb["3 курс (11 кл)"]
+        course_4_9 = wb["4 курс (9 кл.)  "]
+
+        # список нужных таблиц
+        contingent_sheets = [
+            course_1_9,
+            course_1_11, course_2_9,
+            course_2_11, course_3_9,
+            course_3_11, course_4_9
+        ]
+
+        self.data_list = []
+        for sheet_name in contingent_sheets:
+
+            headers = {
+                cell.value: idx for idx, cell in enumerate(ws[1]) if cell.value
+            }
+
+            ws = wb[sheet_name]
+
+            for row in ws.iter_rows(min_row=2, values_only=True):
+                if all(cell is None for cell in row):
+                    return  # Пропускаем пустые строки
+
+                data = {}
+
+                data['full_name'] = row[headers.get("ФИО")]
+                data['birth_date'] = (
+                    row[headers.get("Дата рождения")].date() if isinstance(row[headers.get("Дата рождения")], datetime)
+                    else datetime.strptime(row[headers.get("Дата рождения")], "%d.%m.%Y").date()) if row[
+                    headers.get("Дата рождения")] else None
+                data['group_number'] = row[headers.get("Группа")]
+                data['education_base'] = row[headers.get("База образования (9 или 11 классов)")]
+                data['education_basis'] = row[headers.get("Основа образования (бюджет, внебюджет)")]
+                data['admission_order'] = row[headers.get("Приказ о зачислении")]
+                data['transfer_to_2nd_year_order'] = row[headers.get("Переводной приказ на 2 курс")] if row[
+                    headers.get("Переводной приказ на 2 курс")] else None
+                data['transfer_to_3rd_year_order'] = row[headers.get("Переводной приказ на 3 курс")] if row[
+                    headers.get("Переводной приказ на 3 курс")] else None
+                data['transfer_to_4th_year_order'] = row[headers.get("Переводной приказ на 4 курс")] if row[
+                    headers.get("Переводной приказ на 4 курс")] else None
+                data['expell_order'] = row[headers.get("Приказ об отчислении")] if row[
+                    headers.get("Приказ об отчислении")] else None
+
+                # Проверяем группу
+                group_filter = GroupStudents.objects.filter(
+                    full_name=data['group_number']
+                )
+
+                if group_filter.exists():
+                    data['group'] = group_filter.first()
+                else:
+                    raise ValidationError(
+                        f'Группы {data["group_number"]} не существует'
+                    )
+
+                self.data_list.append(data)
+
+    def save(self):
+        for data in self.data_list:  # Перебираем массив данных
+            # Создаём или обновляем студента
+            student, created = Student.objects.update_or_create(
+                full_name=data['full_name'],
+                defaults={
+                    'birth_date': data['birth_date'],
+                    'group': data['group'],
+                    'education_basis': data['education_basis'],
+                    'education_base': data['education_base'],
+                    'admission_order': data['admission_order'],
+                    'expell_order': data['expell_order'],
+                    'transfer_to_2nd_year_order': data['transfer_to_2nd_year_order'],
+                    'transfer_to_3rd_year_order': data['transfer_to_3rd_year_order'],
+                    'transfer_to_4th_year_order': data['transfer_to_4th_year_order'],
+                }
+        )
+
+
