@@ -541,8 +541,8 @@ class Student(AcademHubModel):
     )
 
     EDUCATION_BASIS_CHOICES = (
-        ("Бюджет", 'Бюджет'),
-        ("Внебюджет", "Внебюджет")
+        ("бюджет", 'бюджет'),
+        ("внебюджет", "внебюджет")
     )
 
     REASONS_OF_EXPELLING_CHOICES = (
