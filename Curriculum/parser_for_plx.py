@@ -3,7 +3,6 @@ from xml.etree.ElementTree import Element
 from typing import List
 import json
 import uuid
-import _io
 
 
 __all__ = (
@@ -123,7 +122,7 @@ class RUP_parser:
 
             courses.append(course_object)
         
-        print(courses)
+        # print(courses)
         return courses
             
 
@@ -182,11 +181,11 @@ class RUP_parser:
 
         with open(f"./Curriculum/media/plan_{self.rup['id']}.json", "w", encoding="utf-8") as file:
             json.dump(self.rup, file, ensure_ascii=False, indent=4)
-        print("=== JSON data (from XML) ===")
+        # print("=== JSON data (from XML) ===")
         # return self.plan_dict
 
         with open(f"./Curriculum/media/plan_{self.rup['id']}.json", "r", encoding="utf-8") as file:
             json_content = file.read()
 
-        print("=== JSON data (from XML) ===")
+        # print("=== JSON data (from XML) ===")
         return json_content  # Возвращаем содержимое файла в виде строки
