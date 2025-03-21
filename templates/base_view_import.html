@@ -5,9 +5,9 @@
 
 {% block tabs %}
     {{ block.super }}
-    {% if user_has_perm %}
+{#    {% if user_has_perm %}#}
         <button class="tab-button" data-tab="import">Импорт</button>
-    {% endif %}
+{#    {% endif %}#}
 {% endblock %}
 
 {% block content %}

@@ -536,8 +536,8 @@ class RecordBookTemplate(AcademHubModel):
 
 class Student(AcademHubModel):
     EDUCATION_BASE_CHOICES = (
-        ("Основное общее", "Основное общее"),
-        ("Среднее общее", "Среднее общее"),
+        ("основное общее", "основное общее"),
+        ("среднее общее", "среднее общее"),
     )
 
     EDUCATION_BASIS_CHOICES = (
@@ -564,8 +564,9 @@ class Student(AcademHubModel):
         verbose_name="ФИО", 
         validators=[validate_full_name]
     )
+    academic_debts = models.BooleanField(verbose_name="Наличие академических задолжностей", default=False, blank=True, null=True)
     phone = models.CharField(max_length=18, verbose_name="Телефон")
-    birth_date = models.DateField(verbose_name="Дата рождения")
+    birth_date = models.DateField(verbose_name="Дата рождения", blank=True, null=True)
     snils = models.CharField(max_length=14, verbose_name="СНИЛС")
     group = models.ForeignKey(
         'GroupStudents', on_delete=models.CASCADE, related_name="students", verbose_name="Группа"
@@ -617,13 +618,14 @@ class Student(AcademHubModel):
     def save(self, *args, **kwargs):
         from django.utils import timezone  # Импортируем внутри метода, чтобы избежать проблем с импортом
         from django.core.exceptions import ValidationError
+        # :TODO нада что-то придумать для импорта, потому что в доке может быть как 'Основное общее' так и 'основное общее', еще закоментил подобную строку в forms.py 104 строка
 
         # Проверка соответствия education_base группы и студента
-        if self.group and self.education_base != self.group.education_base:
-            raise ValidationError(
-                f"База образования студента ({self.education_base}) не соответствует "
-                f"базе образования группы ({self.group.education_base})"
-            )
+        # if self.group and self.education_base != self.group.education_base:
+        #     raise ValidationError(
+        #         f"База образования студента ({self.education_base}) не соответствует "
+        #         f"базе образования группы ({self.group.education_base})"
+        #     )
 
         # Сохраняем старые значения перед обновлением
         if self.pk:  # Если это обновление существующего объекта
@@ -875,7 +877,7 @@ class ContingentMovement(AcademHubModel):
 
     order_number = models.CharField(
         max_length=50,
-        unique=True,
+        unique=False,
         verbose_name="Номер приказа"
     )
     action_type = models.CharField(

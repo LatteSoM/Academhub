@@ -1,4 +1,5 @@
 from cProfile import label
+from random import choices
 
 from django import forms
 from django.db.models import Q
@@ -83,7 +84,14 @@ class StudentFilter(FilterSet):
         ("4", 4)
     )
 
+    ACADEMIC_DEBTS_CHOICE = (
+        (True, "Есть задолжности",),
+        (False, "Нет задолжностей",)
+    )
+
     course = ChoiceFilter(choices=COURSE_CHOICES, label='Курс')
+
+    academic_debts = ChoiceFilter(choices=ACADEMIC_DEBTS_CHOICE, label='Наличие академических задолжностей')
 
     group = ModelMultipleChoiceFilter(
         widget=forms.CheckboxSelectMultiple,
@@ -105,7 +113,7 @@ class StudentFilter(FilterSet):
 
     class Meta:
         model = Student
-        fields = ['course', 'group', 'education_base', 'education_basis']
+        fields = ['course', 'group', 'education_base', 'education_basis', 'academic_debts']
 
     def filter_search(self, queryset, name, value):
         return queryset.filter(

@@ -34,7 +34,8 @@ from django.contrib.auth.decorators import permission_required
 from .tables import AcademTable, ExpulsionTable, ContingentMovementTable
 from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 from .filters import AcademFilter, ExpulsionFilter, ContingentMovementFilter
-from .forms import AcademLeaveForm, AcademReturnForm, ExpellStudentForm, RecoverStudentForm, StudentImportForm
+from .forms import AcademLeaveForm, AcademReturnForm, ExpellStudentForm, RecoverStudentForm, StudentImportForm, \
+    ContingentStudentImportForm
 from Academhub.generic import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView, ObjectTemplateView, ObjectTableImportView
 from Academhub.modules.documentGenPars import StatisticsTableGenerator, CourseTableGenerator, GroupTableGenerator, VacationTableGenerator, MovementTableGenerator
 
@@ -489,7 +490,8 @@ class StudentTableView(ObjectTableImportView):
     Класс для отображения таблицы студентов.
     """
     table_class = StudentTable
-    form_import = StudentImportForm
+    # form_import = StudentImportForm
+    form_import = ContingentStudentImportForm
     filterset_class = StudentFilter
     queryset = CurrentStudent.objects.all().filter()
 
