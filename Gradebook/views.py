@@ -1,6 +1,8 @@
+import os
 import re
+import sys
 from collections import defaultdict
-
+from pathlib import Path
 
 from django.db.models import Prefetch
 from openpyxl.styles import PatternFill, Font, Alignment, Side, Border
@@ -8,6 +10,7 @@ from openpyxl.utils import get_column_letter
 from openpyxl.workbook import Workbook
 from unidecode import unidecode
 
+from Academhub.modules.documentGenPars import GradebookDocumentGenerator
 from Gradebook.forms import *
 from Gradebook.forms import GenerateGradebookForm, GetStatisticksGradebookForm
 from Gradebook.tables import *
@@ -195,7 +198,7 @@ class ViewStudentsGradesForSemester(ObjectTemplateView):
     def post(self, request):
         form = GetStatisticksGradebookForm(request.POST)  # Создаем экземпляр формы
 
-        if form.is_valid():  # Проверяем валидность ФОРМЫ, а не представления
+        if form.is_valid():  # Проверяем валидность ФОРМЫ
             try:
                 semester = form.cleaned_data['semester']  # Данные берем из формы
                 group = form.cleaned_data['group']
@@ -647,6 +650,50 @@ class GradebookCreateView(GradeBookMixin, ObjectCreateView):
     ]
 
 
+def get_download_path() -> Path:
+    """
+    Возвращает путь к папке загрузок в зависимости от ОС.
+    Поддерживает: Windows, macOS, Linux, Android (Termux), iOS (Pythonista).
+    Для других случаев возвращает текущую директорию.
+    """
+    # Для Android (Termux)
+    if "ANDROID_ROOT" in os.environ:
+        return Path("/storage/emulated/0/Download")
+
+    # Для iOS (Pythonista)
+    if sys.platform == "ios":
+        return Path(os.path.expanduser("~/Documents"))
+
+    # Для Windows
+    if sys.platform == "win32":
+        return Path(os.path.join(os.environ["USERPROFILE"], "Downloads"))
+
+    # Для macOS и Linux
+    download_dir = ""
+
+    # Проверка XDG для Linux
+    if sys.platform == "linux":
+        download_dir = os.environ.get("XDG_DOWNLOAD_DIR", "")
+        if download_dir:
+            return Path(download_dir)
+
+    # Стандартные пути для macOS/Linux/других Unix
+    home = Path.home()
+    possible_paths = [
+        home / "Downloads",
+        home / "Download",
+        home / "downloads",
+        home / "Загрузки"  # Для русскоязычных систем
+    ]
+
+    # Поиск существующей папки
+    for path in possible_paths:
+        if path.exists():
+            return path
+
+    # Fallback: текущая директория
+    return Path.cwd()
+
 @permission_required(getpermission(Gradebook, 'view'))
 def download_report(request, pk):
     gradebook = get_object_or_404(Gradebook, pk=pk)
@@ -654,11 +701,14 @@ def download_report(request, pk):
     response = redirect('gradebook_list')
     if gradebook.status == Gradebook.STATUS_CHOICE[2][1]:
         response['Location'] += '?is_closed=true'
-    gradebook.status = Gradebook.STATUS_CHOICE[3][1]
-    gradebook.date_of_closing = timezone.now()
-    gradebook.save()
+        gradebook.status = Gradebook.STATUS_CHOICE[3][1]
+        gradebook.date_of_closing = timezone.now()
+        gradebook.save()
 
-    # TODO: Присрать Васин модуль генерации ведомости
+    path = get_download_path()
+    print(path)
+    generator = GradebookDocumentGenerator(gradebook)
+    generator.generate_document(f"{path}/{gradebook.name}_{gradebook.discipline.name}_{gradebook.semester_number}_семестр_{gradebook.group.full_name}.docx")
 
     return response
 
