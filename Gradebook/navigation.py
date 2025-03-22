@@ -19,6 +19,11 @@ navigation = Navigation(
                 name='Закрытые ведомости',
                 url="gradebookclosed_list",
                 permission_required=getpermission('Gradebook', 'add'),
+            ),
+            ChildLink(
+                name="Таблица оценок группы",
+                url="gradebook_view_group_grades",
+                permission_required=getpermission('Gradebook', 'add'),
             )
         ]
     )

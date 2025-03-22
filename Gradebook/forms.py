@@ -6,6 +6,47 @@ __all__ = (
     'GradebookStudentsForm',
 )
 
+class GenerateGradebookForm(forms.Form):
+
+    SEMESTER_NUMBERS = (
+        (1, 1),
+        (2, 2),
+        (3, 3),
+        (4, 4),
+        (5, 5),
+        (6, 6),
+        (7, 7),
+        (8, 8),
+    )
+
+    semester = forms.ChoiceField(
+        choices=SEMESTER_NUMBERS,
+        label="Выберите семестр"
+    )
+
+
+class GetStatisticksGradebookForm(forms.Form):
+
+    SEMESTER_NUMBERS = (
+        (1, 1),
+        (2, 2),
+        (3, 3),
+        (4, 4),
+        (5, 5),
+        (6, 6),
+        (7, 7),
+        (8, 8),
+    )
+
+    semester = forms.ChoiceField(
+        choices=SEMESTER_NUMBERS,
+        label="Выберите семестр"
+    )
+
+    group = forms.ModelChoiceField(
+        queryset=GroupStudents.objects.all(),
+        label="Группы"
+    )
 
 class GradebookForm(forms.ModelForm):
     teachers = forms.ModelMultipleChoiceField(
