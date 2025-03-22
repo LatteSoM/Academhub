@@ -1,6 +1,5 @@
 from .views import *
 from django.urls import path
-from Academhub.views import UserEmailChangeView
 
 urlpatterns = [
     path('user/list', UserTableView.as_view(), name='customuser_list'),

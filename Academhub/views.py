@@ -1,19 +1,11 @@
 from django.urls import reverse_lazy
-from AccessControl.table import GroupTable
-from django.views.generic import UpdateView
-from django.contrib.messages.views import SuccessMessageMixin
-from Academhub.generic import ObjectTemplateView, ObjectDetailView
-from django.contrib.auth.views import LoginView, PasswordChangeView
-from .models import CustomUser, SubTable, GroupProxy, PermissionProxy
-from AccessControl.form import UserEmailChangeForm, UserPasswordChangeForm
-from .forms.form import CustomAuthenticationForm, CustomAuthenticationForm
+from django.contrib.auth.views import LoginView
+from .forms.form import CustomAuthenticationForm
+from Academhub.generic.generic import ObjectTemplateView
 
 __all__ = (
     'HomeView',
-    'CustomLoginView',
-    'UserEmailChangeView',
-    'UserPasswordChangeView',
-    'UserSettingsDetailView',
+    'CustomLoginView'
 )
 
 class HomeView(ObjectTemplateView):
@@ -24,51 +16,3 @@ class CustomLoginView(LoginView):
     redirect_authenticated_user = True
     success_url = reverse_lazy('home')
     form_class = CustomAuthenticationForm
-
-class UserSettingsDetailView(ObjectDetailView):
-    model = CustomUser
-    template_name = 'Academhub/user/personal_account.html'
-
-    fieldset = {
-        'Пользовательская информация': [
-            'email',
-            'full_name',
-            'is_staff',
-            'is_teacher',
-        ],
-    }
-
-    tables = [
-        SubTable (
-            name='Группы прав',
-            queryset=GroupProxy.objects.all(),
-            table=GroupTable,
-            filter_key='user',
-        )
-    ]
-
-    def get_object(self, queryset=None):
-        return self.request.user
-
-    def get_permissions(self):
-        return PermissionProxy.objects.filter(user__id=self.object.pk)
-
-class UserEmailChangeView(SuccessMessageMixin, UpdateView):
-    """
-    Изменение email пользователя
-    """
-    form_class = UserEmailChangeForm
-    success_url = reverse_lazy('home')
-    template_name = 'Academhub/user/change_email.html'
-    success_message = 'Ваш email был успешно изменён!'
-
-    def get_object(self, queryset=None):
-        return self.request.user
-
-class UserPasswordChangeView(SuccessMessageMixin, PasswordChangeView):
-    """
-    Изменение пароля пользователя
-    """
-    form_class = UserPasswordChangeForm
-    template_name = 'Academhub/user/change_password.html'
-    success_message = 'Ваш пароль был успешно изменён!'

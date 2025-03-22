@@ -3,6 +3,7 @@ from xml.etree.ElementTree import Element
 from typing import List
 import json
 import uuid
+import _io
 
 
 __all__ = (
@@ -26,6 +27,7 @@ class RUP_parser:
         self.plany_stroky_childs: List[Element] = []
         self.spravochnik_vidy_rabot: dict = {}
         self.spravochnik_tipa_chasov: dict = {}
+        self.spravochnik_tipa_objecta: dict = {}
 
     def get_elements_from_file(self):
         for child in self.root_child:
@@ -37,10 +39,7 @@ class RUP_parser:
                     else:
                         self.plany_ciclov.append(child)
                 case "ПланыСтроки":
-                    if child.attrib.get('КодРодителя'):
-                        self.plany_stroky_childs.append(child)
-                    else:
-                        self.plany_stroky.append(child)
+                    self.plany_stroky.append(child)
                 case "ПланыНовыеЧасы":
                     self.plany_novie_chasy.append(child)
                 case "Планы":
@@ -54,13 +53,16 @@ class RUP_parser:
                     self.spravochnik_vidy_rabot[child.attrib.get('Код')] = child.attrib.get('Название')
                 case "СправочникТипаЧасов":
                     self.spravochnik_tipa_chasov[child.attrib.get('Код')] = child.attrib.get('Наименование')
+                case "СправочникТипОбъекта":
+                    self.spravochnik_tipa_objecta[child.attrib.get('Код')] = child.attrib.get('Название')
 
     def make_cycles(self):
         for cicl in self.plany_ciclov:
             self.plan_dict.append({
-                "id": cicl.get('Код'),
+                "id": str(uuid.uuid4()),
                 "identificator": cicl.get('Идентификатор'),
                 "cycles": cicl.get('Цикл'),
+                "cycle_id_local": cicl.get("Код"),
                 "children": []
             })
 
@@ -68,107 +70,133 @@ class RUP_parser:
         for child in self.plany_ciclov_childs:
             parent_code = child.get("КодРодителя")
             for parent in self.plan_dict:
-                if parent_code == parent['id']:
+                if parent_code == parent['cycle_id_local']:
                     parent['children'].append({
-                        "id": child.get('Код'),
+                        "id": str(uuid.uuid4()),
                         "identificator": child.get('Идентификатор'),
                         "cycles": child.get('Цикл'),
                         "parent_id": child.get('КодРодителя'),
-                        "plans_of_string": []
+                        "cycle_id_local": child.get("Код"),
+                        "modules": [],
+                        "disciplines": [],
                     })
 
     def get_clock_cells(self, child_object, child_code_xml):
 
-        true_type_of_works = ['Итого часов', 'Лекционные занятия', 'Практические занятия', 'Самостоятельная работа', 'Часы на контроль', 'Курсовое проектирование']
+        true_type_of_works = {
+            'Итого часов',
+            'Лекционные занятия',
+            'Практические занятия',
+            'Самостоятельная работа',
+            'Курсовое проектирование',
+            'Экзамен',
+            'Зачет',
+            'Зачет с оценкой',
+            'Курсовой проект',
+            'Курсовая работа',
+            'Контрольная работа',
+            'Контрольная работа',
+            'Домашняя контрольная работа',
+            'Оценка',
+            'Эссе',
+            'Реферат',
+            'Расчетно-графическая работа',
+            'Другие формы контроля',
+        }
         for hour in self.plany_novie_chasy:
             new_hour_parent_id = hour.get("КодОбъекта")
 
             code_of_type_work = self.spravochnik_vidy_rabot.get(hour.get("КодВидаРаботы"))
             code_of_type_hourse = self.spravochnik_tipa_chasov.get((hour.get("КодТипаЧасов")))
 
-            if new_hour_parent_id == child_code_xml and int(hour.get("Количество")) > 1:
+            if new_hour_parent_id == child_code_xml and int(hour.get("Количество")):
                 if code_of_type_hourse == 'Часы в объемных показателях' and code_of_type_work in true_type_of_works:
                     course = int(hour.get("Курс"))
                     term = int(hour.get("Семестр"))
-                    child_object['clock_cells'][course]['terms'][term - 1]['clock_cells'].append({
-                        'id': str(uuid.uuid4()),
-                        'code_of_type_work': code_of_type_work,
-                        'code_of_type_hours': code_of_type_hourse,
-                        'course': int(course),
-                        'term': int(term),
-                        'count_of_clocks': int(hour.get("Количество")),
-                        'parent_string_id': child_object['id']
-                    })
+                    if child_object.get('module_name'):
+                        child_object['clock_cells'].append({
+                            'id': str(uuid.uuid4()),
+                            'code_of_type_work': code_of_type_work,
+                            'code_of_type_hours': code_of_type_hourse,
+                            'course': int(course),
+                            'term': int(term),
+                            'count_of_clocks': int(hour.get("Количество")),
+                            'module': child_object.get('module_name'),
+                            'discipline': None,
+                        })
 
-
-    def generate_courses_array(self):
-        courses = []
-
-        for i in range(1, 5):
-            course_object = {
-                'id': str(uuid.uuid4()),
-                'course_number': i,
-                'terms': []
-            }
-
-            for j in range(1, 3):
-                term_object = {
-                    'id': str(uuid.uuid4()),
-                    'term_number': j,
-                    'clock_cells': []
-                }
-
-                course_object['terms'].append(term_object)
-
-            courses.append(course_object)
-        
-        # print(courses)
-        return courses
-            
+                    else:
+                        child_object['clock_cells'].append({
+                            'id': str(uuid.uuid4()),
+                            'code_of_type_work': code_of_type_work,
+                            'code_of_type_hours': code_of_type_hourse,
+                            'course': int(course),
+                            'term': int(term),
+                            'count_of_clocks': int(hour.get("Количество")),
+                            'module': None,
+                            'discipline': child_object.get('discipline_name'),
+                        })
 
     def get_parent_strings_with_hours(self):
         for cycl in self.plan_dict:
             cycl['id'] = str(uuid.uuid4())
 
             for child in cycl['children']:
-                child_id_local = child['id']
-                child['id'] = str(uuid.uuid4())
+                child_id_local = child['cycle_id_local']
                 child['parent_id'] = cycl['id']
 
                 for string in self.plany_stroky:
-                    string_block_id = string.get("КодБлока")
-                    if child_id_local == string_block_id:
+                    string_cycle_id_local = string.get("КодБлока")
+                    if child_id_local == string_cycle_id_local:
                         parent_string_id_local = string.get('Код')
-                        parent_string_object = {
-                            'id': str(uuid.uuid4()),
-                            'discipline': string.get('Дисциплина'),
-                            'code_of_discipline': string.get('ДисциплинаКод'),
-                            'code_of_cycle_block': child['id'],
-                            'clock_cells': self.generate_courses_array(),
-                            'children_strings': []
-                        }
+                        string_object_type = self.spravochnik_tipa_objecta.get(string.get('ТипОбъекта'))
 
-                        for child_string in self.plany_stroky_childs:
-                            code_of_parent = child_string.get('КодРодителя')
-                            if parent_string_id_local == code_of_parent:
-                                child_string_id_local = child_string.get('Код')
-                                child_string_object = {
+                        if string_object_type == "Модули":
+                            module = {
+                                'id': str(uuid.uuid4()),
+                                'module_name': string.get('Дисциплина'),
+                                'code_of_discipline': string.get('ДисциплинаКод'),
+                                'code_of_cycle_block': child['id'],
+                                'module_local_code': parent_string_id_local,
+                                'clock_cells': [],
+                                'disciplines': []
+                            }
+
+                            self.get_clock_cells(module, parent_string_id_local)
+
+                            child['modules'].append(module)
+
+                        else:
+                            string_parent_code = string.get('КодРодителя')
+                            if string_parent_code:
+                                for module in child['modules']:
+                                    if module.get('module_local_code') == string_parent_code:
+                                        discipline = {
+                                            'id': str(uuid.uuid4()),
+                                            'discipline_name': string.get('Дисциплина'),
+                                            'code_of_discipline': string.get('ДисциплинаКод'),
+                                            'code_of_cycle_block': child['id'],
+                                            'module_relation': module.get('module_name'),
+                                            'clock_cells': [],
+                                        }
+
+                                        self.get_clock_cells(discipline, string.get('Код'))
+
+                                        module['disciplines'].append(discipline)
+
+                            else:
+                                discipline = {
                                     'id': str(uuid.uuid4()),
-                                    'discipline': child_string.get('Дисциплина'),
-                                    'code_of_discipline': child_string.get('ДисциплинаКод'),
+                                    'discipline_name': string.get('Дисциплина'),
+                                    'code_of_discipline': string.get('ДисциплинаКод'),
                                     'code_of_cycle_block': child['id'],
-                                    'parent_string_id': parent_string_object['id'],
-                                    'clock_cells': self.generate_courses_array(),
+                                    'cycle_relation': child.get('cycles'),
+                                    'clock_cells': [],
                                 }
-                                
-                                self.get_clock_cells(child_string_object, child_string_id_local)
 
-                                parent_string_object['children_strings'].append(child_string_object)
+                                self.get_clock_cells(discipline, string.get('Код'))
 
-
-                        self.get_clock_cells(parent_string_object, parent_string_id_local)
-
-                        child['plans_of_string'].append(parent_string_object)
+                                child['disciplines'].append(discipline)
 
 
     def get_plan(self):
@@ -179,13 +207,12 @@ class RUP_parser:
 
         self.rup['stady_plan'] = self.plan_dict
 
-        with open(f"./Curriculum/media/plan_{self.rup['id']}.json", "w", encoding="utf-8") as file:
-            json.dump(self.rup, file, ensure_ascii=False, indent=4)
-        # print("=== JSON data (from XML) ===")
-        # return self.plan_dict
+        # with open(f"./Curriculum/media/plan_{self.rup['id']}.json", "w", encoding="utf-8") as file:
+        #     json.dump(self.rup, file, ensure_ascii=False, indent=4)
+        # # print("=== JSON data (from XML) ===")
+        # # return self.plan_dict
+        #
+        # with open(f"./Curriculum/media/plan_{self.rup['id']}.json", "r", encoding="utf-8") as file:
+        #     json_content = file.read()
 
-        with open(f"./Curriculum/media/plan_{self.rup['id']}.json", "r", encoding="utf-8") as file:
-            json_content = file.read()
-
-        # print("=== JSON data (from XML) ===")
-        return json_content  # Возвращаем содержимое файла в виде строки
+        return self.rup  # Возвращаем содержимое файла в виде строки

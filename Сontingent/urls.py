@@ -5,7 +5,7 @@ from .views import AcademListView, AcademUpdateView, AcademReturn, ExpulsionList
     StatisticksView, generate_student_record_book, create_auto_record_book_template, \
     ContingentMovementTableView, generate_group_table, generate_course_table, generate_statistics_table, \
     generate_vacation_table, generate_movement_table, \
-    generate_student_record_book, create_auto_record_book_template, PromoteGroupStudentsView
+    generate_student_record_book, create_auto_record_book_template
 
 urlpatterns = [
 
@@ -45,8 +45,6 @@ urlpatterns = [
     path('group/create', GroupCreateView.as_view(), name='groupstudents_create'),
     path('group/<int:pk>', GroupDetailView.as_view(), name='groupstudents_detail'),
     path('group/update/<int:pk>', GroupUpdateView.as_view(), name='groupstudents_update'),
-    path('group/promote-students/<int:pk>', PromoteGroupStudentsView.as_view(),
-         name='promote_group_students_form'),
     
     #
     ## Student

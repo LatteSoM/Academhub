@@ -1,51 +1,21 @@
 from django.contrib import messages
 from django_tables2 import RequestConfig
 from django.views.generic.base import ContextMixin
-from django.core.exceptions import ImproperlyConfigured
 from django.contrib.auth.mixins import PermissionRequiredMixin
 
 __all__ = (
     'SubTablesMixin',
     'ImportViewMixin',
     'BaseContextMixin',
-    'PermissionBaseMixin',
 )
 
 class PermissionBaseMixin(PermissionRequiredMixin):
     '''
         Базовый mixin для реализации прав доступа
     '''
+    pass
 
-    def __get_class_name(self):
-        try:
-            return self.model.__name__.lower()
-        except AttributeError:
-            pass
-
-        try:
-            return self.queryset.model.__name__.lower()
-        except AttributeError:
-            pass
-
-        raise ImproperlyConfigured(
-            f"{self.__class__.__name__} is missing both 'model' and 'queryset' attributes. "
-            f"Define either {self.__class__.__name__}.model or {self.__class__.__name__}.queryset."
-        )
-
-    def get_permission_required(self):
-        if self.permission_required is None:
-            raise ImproperlyConfigured(
-                f"{self.__class__.__name__} is missing the "
-                f"permission_required attribute. Define "
-                f"{self.__class__.__name__}.permission_required, or override "
-                f"{self.__class__.__name__}.get_permission_required()."
-            )
-
-        perm = f'{self.permission_required}_{self.__get_class_name()}'
-
-        return [perm, ]
-
-class BaseContextMixin(PermissionBaseMixin, ContextMixin):
+class BaseContextMixin(ContextMixin):
   """
   Базовый миксин для добавления навигации в контекст всех представлений и прав доступа.
   Наследуется от ContextMixin и добавляет ключ 'navigation' в контекст шаблона.
@@ -123,6 +93,7 @@ class ImportViewMixin:
         self._form =  self.save_from_import(request.POST, request.FILES)
 
         if self._form.is_valid():
+            print("=== form.is_valid() is True ===") # Debug print
             messages.success(
                 request,
                 "Успешный импорт"
@@ -138,7 +109,7 @@ class ImportViewMixin:
                 request,
                 error_message
             )
-            
+        
         return super().get(request, *args, **kwargs)
         
 

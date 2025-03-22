@@ -36,7 +36,6 @@ class UrlGenerateMixin:
     @classmethod
     def get_urls(cls):
         cls._check_urls()
-        print(cls._urls)
         return cls._urls
 
     @classmethod

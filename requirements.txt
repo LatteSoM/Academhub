@@ -7,6 +7,7 @@ django-bootstrap3==25.1
 django-bootstrap4==24.4
 django-filter==24.3
 django-tables2==2.7.5
+django-widget-tweaks==1.5.0
 et_xmlfile==2.0.0
 idna==3.10
 openpyxl==3.1.5

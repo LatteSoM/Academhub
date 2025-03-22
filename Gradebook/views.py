@@ -52,8 +52,7 @@ class GradebookStudentBulkUpdateView(BulkUpdateView):
                 Gradebook, 
                 pk=self.gradebook_pk
             )
-            gradebook.status = Gradebook.STATUS_CHOICE[2][1]
-            gradebook.date_of_filling = timezone.now()
+            gradebook.status = Gradebook.STATUS_CHOICE[1][1]
             gradebook.save()
 
         return form
@@ -82,39 +81,17 @@ class GradebookTableView(ObjectTableView):
             return GradebookMobileTable
         return GradebookTable
 
-# class TeachersGradeBookTableView(ObjectTableView):
-#     table_class = TeacherGradeBookTable
-#     filterset_class = GradeBookTeachersFilter
-#     queryset = Gradebook.objects.filter(status=Gradebook.STATUS_CHOICE[1][1])
-#
-#     def get_table_class(self):
-#         if self.request.GET.get("mobile") == "1":
-#             return GradebookMobileTable
-#         return TeacherGradeBookTable
-
 class TeachersGradeBookTableView(ObjectTableView):
     table_class = TeacherGradeBookTable
     filterset_class = GradeBookTeachersFilter
-    queryset = Gradebook.objects.all()
-
-    def get_queryset(self):
-        # Получаем залогиненного пользователя
-        user = self.request.user
-
-        # Фильтруем ведомости:
-        # - Статус "Открыта"
-        # - Ведомости, где залогиненный пользователь является учителем
-        queryset = Gradebook.objects.filter(
-            status=Gradebook.STATUS_CHOICE[1][1],  # Статус "Открыта"
-            teachers=user  # Залогиненный пользователь является учителем
-        ).distinct()  # Убираем дубликаты, если они есть
-
-        return queryset
+    queryset = Gradebook.objects.filter(status=Gradebook.STATUS_CHOICE[1][1])
 
     def get_table_class(self):
         if self.request.GET.get("mobile") == "1":
             return GradebookMobileTable
         return TeacherGradeBookTable
+
+
 
 class GradebookDetailView(ObjectDetailView):
     """
@@ -166,7 +143,7 @@ class GradebookDetailView(ObjectDetailView):
         # Проверка основных полей
         required_fields = [
             gradebook.group_id,  # Проверка ForeignKey через id
-            gradebook.name,  # Проверка CharField
+            gradebook.discipline_name,  # Проверка CharField
             gradebook.discipline_id,  # Проверка ForeignKey дисциплины
             gradebook.semester_number,  # Проверка IntegerField
             gradebook.status,  # Проверка CharField статуса
@@ -174,7 +151,7 @@ class GradebookDetailView(ObjectDetailView):
 
         # Проверка текстовых полей на непустые значения
         text_fields_valid = all([
-            gradebook.name and gradebook.name.strip(),
+            gradebook.discipline_name and gradebook.discipline_name.strip(),
             gradebook.status and gradebook.status.strip(),
         ])
 
@@ -195,18 +172,17 @@ class GradebookDetailView(ObjectDetailView):
 
         return super().get(request, *args, **kwargs)
 
-
 class GradebookUpdateView(GradeBookMixin, ObjectUpdateView):
-    form_class = GradebookForm  # Используем обновленную форму
+    """
+    Класс для обновления информации об учебном журнале.
+    """
+    form_class = GradebookForm
     queryset = Gradebook.objects.all()
     template_name = 'Gradebook/update/grade_book.html'
-    properties = {}
+    properties = {
+        'group_id': ''
+    }
 
-    # Убираем ненужные свойства
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs.pop('properties', None)  # Удаляем параметр properties
-        return kwargs
 
 
 class GradebookCreateView(GradeBookMixin, ObjectCreateView):

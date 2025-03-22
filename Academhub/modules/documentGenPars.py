@@ -270,7 +270,7 @@ class StatisticsTableGenerator:
                 for qualification in qualifications_specialty:
                     # Здесь я единожды разбираюсь с 1-м курсом исипа и выделяю место под него в таблице,
                     # после чего единожды заполняю их количество, больше в этом цикле заполнения связанного с ними не будет
-                    if specialty.name == "Информационные системы и программирование" and not isip_done:
+                    if specialty.discipline_name == "Информационные системы и программирование" and not isip_done:
                         worksheet.merge_cells(f"G{entry_index}:G{entry_index+(len(qualifications_specialty)-2)}")
                         worksheet.cell(row=entry_index, column=7).fill = PatternFill("solid", fgColor=Color(indexed=3))
                         worksheet.cell(row=entry_index, column=7).value = len(self.students.filter(group__qualification__name="Информационные системы и программирование")
@@ -299,16 +299,16 @@ class StatisticsTableGenerator:
                     
                     # В случае если нам попадается эта квалификация (это 1-ый курс исипа),
                     # ничего не делаем, т.к. до этого мы уже с ними разобрались
-                    if qualification.name == "Информационные системы и программирование":
+                    if qualification.discipline_name == "Информационные системы и программирование":
                         continue
                     
                     worksheet.cell(row=entry_index,column=1).value = entry_count
                     worksheet.cell(row=entry_index,column=2).value = specialty.code
-                    worksheet.cell(row=entry_index,column=3).value = specialty.name
-                    worksheet.cell(row=entry_index,column=4).value = qualification.name
+                    worksheet.cell(row=entry_index,column=3).value = specialty.discipline_name
+                    worksheet.cell(row=entry_index,column=4).value = qualification.discipline_name
                     worksheet.cell(row=entry_index,column=5).value = "Очная"
 
-                    students_qualification = self.students.filter(group__qualification__name=qualification.name)
+                    students_qualification = self.students.filter(group__qualification__name=qualification.discipline_name)
                     worksheet.merge_cells(f"A{entry_index}:A{entry_index+1}")
                     worksheet.merge_cells(f"B{entry_index}:B{entry_index+1}")
                     worksheet.merge_cells(f"C{entry_index}:C{entry_index+1}")
@@ -324,7 +324,7 @@ class StatisticsTableGenerator:
 
                     # 9 классники
                     for course in range(1, 5):
-                        if not(course == 1 and specialty.name == "Информационные системы и программирование"): 
+                        if not(course == 1 and specialty.discipline_name == "Информационные системы и программирование"):
                             worksheet.cell(row=entry_index, column=6+course).value = len(students_qualification.filter(group__current_course=course).filter(education_basis="Бюджет")
                                                                                          .filter(education_base="Основное общее").filter(is_in_academ=False).filter(is_expelled=False))
                             worksheet.cell(row=entry_index+1, column=6+course).value = len(students_qualification.filter(group__current_course=course).filter(education_basis="Внебюджет")

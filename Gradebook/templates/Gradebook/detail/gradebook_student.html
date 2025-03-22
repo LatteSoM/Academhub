@@ -1,21 +1,5 @@
 {% extends 'base_detail.html' %}
 
-<style>
-    .custom-red-btn {
-    background-color: #dc3545; /* Красный цвет */
-    color: white; /* Белый текст */
-    border: none; /* Убираем границу */
-    padding: 10px 20px; /* Отступы */
-    border-radius: 5px; /* Закругленные углы */
-    text-decoration: none; /* Убираем подчеркивание */
-    cursor: pointer; /* Курсор в виде указателя */
-}
-
-.custom-red-btn:hover {
-    background-color: #c82333; /* Темнее красный при наведении */
-}
-</style>
-
 {% load django_tables2 %}
 {% load util %}
 
@@ -40,7 +24,7 @@
              class="btn btn-primary">Открыть ведомость</a>
         {% endif %}
         {% if object.status == "Заполнена" %}
-            <a href="{% url 'download_report' pk=object.pk %}" class="btn custom-red-btn">Закрыть ведомость</a>
+            <a href="{% url 'download_report' pk=object.pk %}" class="btn btn-primary">Закрыть ведомость</a>
         {% endif %}
     {% else %}
 

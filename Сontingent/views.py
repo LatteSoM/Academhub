@@ -1,8 +1,5 @@
 import os
 
-from django.contrib.messages.views import SuccessMessageMixin
-from django.views.generic import UpdateView
-
 from .forms import *
 from .utils import *
 from .tables import *
@@ -33,9 +30,8 @@ from Academhub.generic import ImportViewMixin
 from django.shortcuts import get_object_or_404, redirect
 from .tables import AcademTable, ExpulsionTable, ContingentMovementTable
 from .filters import AcademFilter, ExpulsionFilter, ContingentMovementFilter
-from .forms import AcademLeaveForm, AcademReturnForm, ExpellStudentForm, RecoverStudentForm, StudentImportForm, \
-    PromoteGroupStudentsForm
-from Academhub.generic import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView, ObjectTemplateView, ObjectTableImportView
+from .forms import AcademLeaveForm, AcademReturnForm, ExpellStudentForm, RecoverStudentForm, StudentImportForm
+from Academhub.generic import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView, ObjectTemplateView
 from Academhub.modules.documentGenPars import StatisticsTableGenerator, CourseTableGenerator, GroupTableGenerator, VacationTableGenerator, MovementTableGenerator
 
 __all__ = (
@@ -68,7 +64,6 @@ __all__ = (
     'GroupDetailView', 
     'GroupUpdateView', 
     'GroupCreateView',
-    'PromoteGroupStudentsView',
 
     'QualificationTableView',
     'QualificationCreateView',
@@ -123,10 +118,9 @@ class SpecialtyTableView(ObjectTableView):
     """
     Класс для отображения таблицы специальностей.
     """
-    queryset = Specialty.objects.all()
     table_class = SpecialtyTable
     filterset_class = SpecialtyFilter
-
+    queryset = Specialty.objects.all()
 
 class SpecialtyDetailView(ObjectDetailView):
     """
@@ -262,32 +256,6 @@ class GroupUpdateView(ObjectUpdateView):
     form_class = GroupForm
     queryset = GroupStudents.objects.all()
 
-
-class PromoteGroupStudentsView(SuccessMessageMixin, UpdateView):
-    """
-    Перевод группы и всех студентов на следующий курс
-    """
-    model = GroupStudents
-    form_class = PromoteGroupStudentsForm
-    template_name = 'Contingent/promote_group_students_form.html'
-    success_message = 'Группа и студенты были успешно переведены на следующий курс!'
-
-    def get_object(self, queryset=None):
-        return get_object_or_404(GroupStudents, pk=self.kwargs['pk'])
-
-    def form_valid(self, form):
-        group = self.get_object()
-        transfer_order = form.cleaned_data['transfer_order']
-        success, message = transfer_group_students(group.pk, transfer_order)
-        if success:
-            return super().form_valid(form)
-        else:
-            form.add_error(None, message)
-            return self.form_invalid(form)
-
-    def get_success_url(self):
-        return reverse_lazy('groupstudents_detail', kwargs={'pk': self.get_object().pk})
-
 class GroupCreateView(ObjectCreateView):
     """
     Класс для создания новой группы.
@@ -299,7 +267,7 @@ class GroupCreateView(ObjectCreateView):
 ## Student
 #
 
-class StudentTableView(ObjectTableImportView):
+class StudentTableView(ImportViewMixin, ObjectTableView):
     """
     Класс для отображения таблицы студентов.
     """
@@ -307,6 +275,7 @@ class StudentTableView(ObjectTableImportView):
     form_import = StudentImportForm
     filterset_class = StudentFilter
     queryset = Student.objects.filter(is_expelled=False, is_in_academ=False)
+    template_name = 'Contingent/list/student_list.html'
 
 
 class StudentDetailView(ObjectDetailView):
@@ -335,7 +304,6 @@ class StudentUpdateView(ObjectUpdateView):
     """
     form_class = StudentForm
     queryset = Student.objects.all()
-
 
 
 class StudentCreateView(ObjectCreateView):
@@ -395,7 +363,7 @@ class StatisticksView(ObjectTemplateView):
         # Инициализируем все направления заранее
         for qualification in Qualification.objects.all():
             specialty_data[(
-            qualification.specialty.code, qualification.specialty.name, qualification.name)]  # Создаем пустые записи
+                qualification.specialty.code, qualification.specialty.name, qualification.name)]  # Создаем пустые записи
             all_specialties = [spec for spec in all_specialties if spec[0] != qualification.specialty.id]
 
         for specialty in all_specialties:
@@ -654,7 +622,7 @@ class EditRecordBookTemplateView(ObjectUpdateView):
         context['qualification'] = qualification
         context['admission_year'] = self.kwargs['admission_year']
         context['curriculum'] = self.object.curriculum
-        context['curriculum_disciplines'] = [{"id": d.id, "name": d.name} for d in self.object.curriculum.disciplines.all()]
+        context['curriculum_disciplines'] = [{"id": d.id, "name": d.discipline_name} for d in self.object.curriculum.disciplines.all()]
         context['url_list'] = 'qualification_list'
         context['mobel_verbosename'] = self.get_verbose_name()  # Совместимость с ObjectUpdateView
         return context
@@ -774,11 +742,11 @@ def create_auto_record_book_template(request, qualification_id, admission_year):
 
     # Автоматически заполняем компоненты зачётки из CurriculumItem
     for item in curriculum.items.all():
-        if item.item_type == 'discipline' and item.discipline:
+        if item.item_type == 'discipline' and item.module_name:
             # Создаём MiddleCertification для дисциплин
             middle_cert = MiddleCertification.objects.create(
                 semester=item.semester,
-                discipline=item.discipline,
+                discipline=item.module_name,
                 hours=item.hours,
                 is_exam=(item.attestation_form == 'exam')
             )
@@ -949,9 +917,6 @@ def generate_vacation_table(request):
 
 
 def generate_movement_table(request):
-    """
-    Функция для генерации файла .xslx для движения кнтингента
-    """
     movements = ContingentMovement.objects.all()  # Получаем все записи о движениях
     generator = MovementTableGenerator(movements)
     file_path = os.path.join(settings.MEDIA_ROOT, 'movement_table.xlsx')

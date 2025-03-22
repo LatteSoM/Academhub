@@ -17,7 +17,6 @@ def check_url_name_exists(url_name):
    Проверяет, существует ли URL с указанным именем.
    """
    try:
-       print(url_name)
        reverse(url_name)
        return True
    except NoReverseMatch:
@@ -29,10 +28,10 @@ def check_url_exists(url):
    Проверяет, существует ли URL.
    """
    try:
-      resolve(url)
-      return True
+       resolve(url)
+       return True
    except Resolver404:
-      return False
+       return False
 
 @register.filter
 def exclude_field(form, field):

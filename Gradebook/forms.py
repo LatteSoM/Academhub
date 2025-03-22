@@ -6,15 +6,17 @@ __all__ = (
     'GradebookStudentsForm',
 )
 
-
 class GradebookForm(forms.ModelForm):
+    """
+    Форма для создания и редактирования записей в журнале оценок.
+    """
     teachers = forms.ModelMultipleChoiceField(
         queryset=CustomUser.objects.filter(is_teacher=True),
         label='Преподаватели',
         widget=forms.CheckboxSelectMultiple
     )
     discipline = forms.ModelChoiceField(
-        queryset=Discipline.objects.none(),
+        queryset=Discipline.objects.all(),
         label='Дисциплина',
     )
     group = forms.ModelChoiceField(
@@ -24,61 +26,52 @@ class GradebookForm(forms.ModelForm):
     students = forms.ModelMultipleChoiceField(
         queryset=Student.objects.none(),
         label='Студенты',
-        widget=forms.CheckboxSelectMultiple,
-        required=False
+        widget=forms.CheckboxSelectMultiple
     )
 
     class Meta:
+        """
+        Метакласс для настройки формы.
+        """
         model = Gradebook
-        fields = ['name', 'semester_number', 'type_of_grade_book',
-                  'amount_of_days_for_closing', 'teachers', 'group',
-                  'discipline', 'students']
+        fields = ['name', 'semester_number', 'type_of_grade_book', 'amount_of_days_for_closing', 'teachers', 'group',
+                  'name', 'students']
 
     def __init__(self, *args, **kwargs):
+        """
+        Инициализация формы.
+
+        Args:
+            *args: Позиционные аргументы.
+            **kwargs: Именованные аргументы.
+        """
         properties = kwargs.pop('properties', {})
         super().__init__(*args, **kwargs)
 
-        # Для существующих объектов
         if self.instance.pk:
-            self._configure_existing_instance(properties)
-        # Для новых объектов
+            self.group_id = properties.get('group_id', self.instance.group.pk)
+            if self.group_id == '':
+                self.group_id = self.instance.group.pk
         else:
-            self._configure_new_instance(properties)
-
-    def _configure_existing_instance(self, properties):
-        """Настройка для редактирования существующей ведомости"""
-        self.group_id = self.instance.group.pk
-
-        # Получаем текущих студентов ведомости
-        current_students_ids = self.instance.students.values_list('id', flat=True)
-
-        # Устанавливаем начальные значения
-        self.initial.update({
-            'group': self.group_id,
-            'discipline': self.instance.discipline.pk,
-            'students': list(current_students_ids),
-            'teachers': list(self.instance.teachers.values_list('pk', flat=True))
-        })
-
-        # Настраиваем queryset для студентов
-        self.fields['students'].queryset = Student.objects.filter(
-            group__id=self.group_id
-        )
-
-        # Настраиваем дисциплины для группы
-        specialty = self.instance.group.qualification.specialty
-        self.fields['discipline'].queryset = specialty.disciplines.all()
-
-    def _configure_new_instance(self, properties):
-        """Настройка для создания новой ведомости"""
-        self.group_id = properties.get('group_id')
-
+            self.group_id = properties.get('group_id', None)
+        
         if self.group_id:
-            group = GroupStudents.objects.get(pk=self.group_id)
             self.initial['group'] = self.group_id
-            self.fields['students'].queryset = Student.objects.filter(group=group)
-            self.fields['discipline'].queryset = group.qualification.specialty.disciplines.all()
+            self.fields['students'].queryset = Student.objects.filter(group__id=self.group_id)
+            
+            group = GroupStudents.objects.filter(pk=self.group_id)
 
+            if  group.exists():
+                group = group.first()
+
+                specialty = group.qualification.specialty
+                self.fields['name'].queryset = specialty.disciplines.all()
+
+
+        elif self.instance.pk:
+            self.initial['group'] = self.group_id
+            self.fields['students'].queryset = Student.objects.filter(group__id=self.group_id)
+            self.fields['name'].queryset = self.instance.group.qualification.specialty.disciplines.all()
 
 class GradebookStudentsForm(forms.ModelForm):
     ticket_number = forms.IntegerField(

@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'bootstrap3',
     'bootstrap4',
     'Academhub',
+    'widget_tweaks',
 ] + ACTIVE_APPS
 
 MIDDLEWARE = [
