@@ -45,8 +45,7 @@ urlpatterns = [
      path('group/add', GroupCreateView.as_view(), name=getpattern('GroupStudents', 'add')),
      path('group/<int:pk>', GroupDetailView.as_view(), name=getpattern('GroupStudents', 'detail')),
      path('group/update/<int:pk>', GroupUpdateView.as_view(), name=getpattern('GroupStudents', 'change')),
-    path('group/promote-students/<int:pk>', PromoteGroupStudentsView.as_view(),
-         name='promote_group_students_form'),
+     path('group/promote-students/<int:pk>', PromoteGroupStudentsView.as_view(), name='promote_group_students_form'),
 
      #
      ## Student
@@ -97,14 +96,10 @@ urlpatterns = [
      #
      ## Зачетная книжка
      #
-     path('qualification/<int:qualification_id>/<int:admission_year>/record-book/save/', save_record_book_template,
-          name='save_record_book_template'),
+     path('qualification/<int:qualification_id>/<int:admission_year>/record-book/save/', save_record_book_template, name='save_record_book_template'),
      #генерация зачетки для студента
-     path('student/<int:pk>/generate-record-book/', generate_student_record_book,
-          name='generate_record_book'),
+     path('student/<int:pk>/generate-record-book/', generate_student_record_book, name='generate_record_book'),
      # генерация зачетки для группы
-     path('group/<int:group_id>/generate-group-record-books/', generate_group_recordbooks,
-          name='group_record_books_generate'),
-     path('qualification/<int:qualification_id>/<int:admission_year>/record-book/auto-add/', create_auto_record_book_template,
-          name='create_auto_record_book_template'),
+     path('group/<int:group_id>/generate-group-record-books/', generate_group_recordbooks, name='group_record_books_generate'),
+     path('qualification/<int:qualification_id>/<int:admission_year>/record-book/auto-add/', create_auto_record_book_template, name='create_auto_record_book_template'),
 ]

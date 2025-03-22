@@ -179,9 +179,14 @@ class GradebookDetailView(ObjectDetailView):
         ],
     }
 
+
+    def check_status(obj, user):
+        return obj.status == "Не заполнена"
+
     buttons = [
         Button (
             id = 'change',
+            name = 'Обновить',
             link_params = ['pk'],
             link_name = getpattern(Gradebook, 'change'),
             permission = getpermission(Gradebook, 'change'),
@@ -191,6 +196,24 @@ class GradebookDetailView(ObjectDetailView):
             name = 'К таблице',
             link_name = getpattern(Gradebook, 'list'),
             permission = getpermission(Gradebook, 'view')
+        ),
+        Button (
+            link_params = ['pk'],
+            name = 'Открыть ведомость',
+            link_name = 'check_open_gradebook',
+            condition = lambda obj, user: obj.status == "Не заполнена"
+        ),
+        Button (
+            link_params = ['pk'],
+            name = 'Закрыть ведомость',
+            link_name = 'Тут url для закрытия ведомости',
+            condition = lambda obj, user: obj.status == "Закрыта"
+        ),
+        Button (
+            link_params = ['pk'],
+            name = 'Скачать документ',
+            link_name = 'download_report',
+            condition = lambda obj, user: obj.status == "Закрыта"
         )
     ]
 
