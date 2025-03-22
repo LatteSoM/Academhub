@@ -182,23 +182,6 @@ class GradebookDetailView(ObjectDetailView):
     buttons = [
         Button (
             id = 'change',
-            name = 'Обновить',
-            link_params = ['pk'],
-            link_name = getpattern(Gradebook, 'change'),
-            permission = getpermission(Gradebook, 'change'),
-        ),
-        Button (
-            id = 'to_list',
-            name = 'К таблице',
-            link_name = getpattern(Gradebook, 'list'),
-            permission = getpermission(Gradebook, 'view')
-        )
-    ]
-
-    buttons = [
-        Button (
-            id = 'change',
-            name = 'Обновить',
             link_params = ['pk'],
             link_name = getpattern(Gradebook, 'change'),
             permission = getpermission(Gradebook, 'change'),
