@@ -784,10 +784,10 @@ class StudentRecordBook(AcademHubModel):
 
 class GradebookStudents(AcademHubModel):
     ASSESSMENT_CHOICES = (
-        ('Отлично', '5'),
-        ('Хорошо', '4'),
-        ('Удовлетворительно', '3'),
-        ('Неудовлетворительно', '2'),
+        ('5', '5'),
+        ('4', '4'),
+        ('3', '3'),
+        ('2', '2'),
         ('Неявка', 'Неявка'),
     )
 
@@ -896,6 +896,110 @@ class Gradebook(AcademHubModel):
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        """
+        Автоматически генерирует номер ведомости при создании.
+        """
+        if not self.number:  # Если номер не задан
+            settings = ProgramSettings.get_current_settings()
+            settings.reset_counter_if_august()  # Проверяем, нужно ли сбросить счетчик
+            settings.reset_year_if_new()  # Проверяем, нужно ли обновить год
+            settings.increment_counter()
+            self.number = settings.generate_gradebook_number()
+        super().save(*args, **kwargs)
+
+
+
+def get_current_year():
+    return timezone.now().year
+
+class ProgramSettings(models.Model):
+    """
+    Модель для хранения настроек программы.
+    """
+    gradebook_prefix = models.CharField(
+        max_length=50,
+        verbose_name="Префикс номера ведомости",
+        default="18.01",  # По умолчанию "ВДМ"
+        help_text="Префикс, с которого начинается номер ведомости."
+    )
+    current_year = models.PositiveIntegerField(
+        verbose_name="Текущий год",
+        default=get_current_year,  # Используем функцию вместо лямбды
+        help_text="Текущий год для формирования номера ведомости."
+    )
+    gradebook_counter = models.PositiveIntegerField(
+        verbose_name="Счетчик ведомостей",
+        default=0,  # Начинаем с нуля
+        help_text="Счетчик ведомостей, который сбрасывается каждый август."
+    )
+
+    class Meta:
+        verbose_name = "Настройки программы"
+        verbose_name_plural = "Настройки программы"
+
+    def __str__(self):
+        return f"Настройки: {self.gradebook_prefix}-{self.current_year % 100}/XXXX"
+
+    def reset_counter(self):
+        """
+        Сбрасывает счетчик ведомостей.
+        """
+        self.gradebook_counter = 0
+        self.save()
+
+    def reset_year(self):
+        """
+        Обновляет год
+        """
+        self.year = timezone.now().year
+        self.save()
+
+    def increment_counter(self):
+        """
+        Увеличивает счетчик ведомостей на 1.
+        """
+        self.gradebook_counter += 1
+        self.save()
+
+    def generate_gradebook_number(self):
+        """
+        Генерирует номер ведомости по шаблону: <префикс><год>/<счетчик>.
+        """
+        year_short = self.current_year % 100  # Последние две цифры года
+        return f"{self.gradebook_prefix}-{year_short:02d}/{self.gradebook_counter:04d}"
+
+    @classmethod
+    def get_current_settings(cls):
+        """
+        Возвращает текущие настройки программы.
+        Если настройки отсутствуют, создает новую запись.
+        """
+        settings, created = cls.objects.get_or_create(pk=1)  # Единая запись с ID=1
+        return settings
+
+    @classmethod
+    def reset_counter_if_august(cls):
+        """
+        Сбрасывает счетчик ведомостей, если начался август.
+        """
+        current_month = timezone.now().month
+        settings = cls.get_current_settings()
+
+        if current_month == 8:
+            settings.reset_counter()
+
+
+    @classmethod
+    def reset_year_if_new(cls):
+        """
+        Обновляет год, если сейчас уже новый год
+        """
+        current_year = timezone.now().year
+        settings = cls.get_current_settings()
+        if current_year != settings.current_year:
+            settings.reset_counter()
 
 class CalendarGraphicOfLearningProcess(AcademHubModel):
 
