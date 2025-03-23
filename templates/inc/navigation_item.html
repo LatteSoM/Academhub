@@ -1,8 +1,9 @@
 {% load util %}
+{% load permission_tag %}
 
-<li>
-    {% if link|get_type == 'ParentLink' %}
-        <div class="nav-item has-children">
+{% if link|get_type == 'ParentLink' %}
+    <li>
+        <div name="parent" class="nav-item has-children">
             {{ link.name }}
         </div>
         {% if link.sub_links %}
@@ -12,9 +13,15 @@
                 {% endfor %}
             </ul>
         {% endif %}
-    {% else %}
-        <a href="{% url link.url %}" class="nav-item">
-            {{ link.name }}
-        </a>
+    </li>
+{% else %}
+    {# Получаем результат проверки прав #}
+    {% has_perm link.permission_required as user_has_perm %}
+    {% if user_has_perm %}
+        <li>
+            <a href="{% url link.url %}" class="nav-item">
+                {{ link.name }}
+            </a>
+        </li>
     {% endif %}
-</li>
+{% endif %}

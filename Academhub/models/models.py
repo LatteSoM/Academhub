@@ -4,10 +4,8 @@ from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 from .mixin import UrlGenerateMixin
-from .utils import UnifiedPermissionQyerySet
 from django.utils.translation import gettext_lazy as _
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permission, Group, PermissionsMixin, PermissionManager
-
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
 __all__ = (
     'Student',
@@ -16,12 +14,11 @@ __all__ = (
     'Specialty',
     'TermPaper',
     'CustomUser',
-    'GroupProxy',
+    'PracticeDate',
     'GroupStudents',
     'Qualification',
     'AcademHubModel',
     'CurriculumItem',
-    'PermissionProxy',
     'StudentRecordBook',
     'GradebookStudents',
     'ProfessionalModule',
@@ -46,40 +43,6 @@ class AcademHubModel(UrlGenerateMixin, models.Model):
     class Meta:
         abstract = True
 
-class UnifiedPermissionsManager(PermissionManager):
-    '''
-        Расширение менеджера модели Permisision
-    '''
-
-    def get_queryset(self):
-        '''
-            Добавление новых функция для работы с Queryset Permission
-        '''
-        return UnifiedPermissionQyerySet(self.model, using=self._db)
-
-class PermissionProxy(AcademHubModel, Permission):
-    '''
-        Расширение для модели Permissions. Поддерживает навигацию
-    '''
-
-    objects = UnifiedPermissionsManager()
-
-    class Meta:
-        proxy = True
-        ordering = ['pk']
-        verbose_name = 'Право'
-        verbose_name_plural = 'Права'
-
-class GroupProxy(AcademHubModel, Group):
-    '''
-        Расширение для модели Group. Поддерживает навигацию
-    '''
-
-    class Meta:
-        proxy = True
-        verbose_name = 'Группа прав'
-        verbose_name_plural = 'Группы прав'
-    
 class CustomUserManager(BaseUserManager):
     '''
     Менеджер для пользовательской модели, который управляет созданием пользователей.
@@ -234,7 +197,6 @@ class Specialty(AcademHubModel):
     code = models.CharField(max_length=50, unique=True, verbose_name="Код")
     name = models.CharField(max_length=255, verbose_name="Наименование")
 
-
     class Meta:
         verbose_name = "Специальность"
         verbose_name_plural = "Специальности"
@@ -271,6 +233,134 @@ class Qualification(AcademHubModel):
         verbose_name = "Квалификация"
         verbose_name_plural = "Квалификации"
 
+    def __str__(self):
+        return self.name
+
+
+class Curriculum(models.Model):
+    qualification = models.ForeignKey(
+        Qualification,
+        on_delete=models.CASCADE,
+        verbose_name="Квалификация"
+    )
+    admission_year = models.PositiveIntegerField(verbose_name="Год поступления")
+
+    class Meta:
+        verbose_name = "Учебный план"
+        verbose_name_plural = "Учебные планы"
+        unique_together = ['qualification', 'admission_year']
+
+    def __str__(self):
+        return f"План для {self.qualification} ({self.admission_year} года)"
+
+
+class GroupStudents(AcademHubModel):
+    '''
+        П50-9-21
+    '''
+
+    EDUCATION_BASE_CHOICES = (
+        ("Основное общее", "Основное общее"),
+        ("Среднее общее", "Среднее общее"),
+    )
+
+    COURCE_CHOICES = (
+        (1, '1'),
+        (2, '2'),
+        (3, '3'),
+        (4, '4')
+    )
+
+    def get_years_choices():
+        years = []
+        for i in range(1990, timezone.now().year + 1):
+            years.append((i, i))
+        return years
+
+    def get_default_number_value(self):
+        return GroupStudents.objects.filter(
+            year_create=self.year_create,
+            qualification=self.qualification,
+        ).count() + 1
+
+    full_name = models.CharField(blank=True, null=True, verbose_name='Полное название группы', max_length=1000,
+                                 unique=True)
+
+    qualification = models.ForeignKey(
+        Qualification, on_delete=models.CASCADE, related_name="groups", verbose_name="Квалификация"
+    )
+
+    number = models.PositiveIntegerField(
+        verbose_name='Порядковый номер группы в потоке',
+    )
+
+    education_base = models.CharField(
+        max_length=255,
+        verbose_name="База образования",
+        choices=EDUCATION_BASE_CHOICES,
+        default=EDUCATION_BASE_CHOICES[0][1]
+    )
+
+    year_create = models.PositiveIntegerField(
+        verbose_name='Год создания',
+        choices=get_years_choices(),
+        default=timezone.now().year
+    )
+
+    current_course = models.IntegerField(
+        verbose_name="Курс",
+        choices=COURCE_CHOICES,
+        default=COURCE_CHOICES[0][1],
+        null=False
+    )
+
+    is_active = models.BooleanField(null=True, blank=True, default=True, verbose_name="Активная группа")
+
+    class Meta:
+        verbose_name = "Группа"
+        verbose_name_plural = "Группы"
+        permissions = [
+            ('export_group', 'Export group'),
+        ]
+
+    def __str__(self):
+        return self.full_name
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.number = self.get_default_number_value()
+
+        if self.education_base != "Основное общее":
+            self.full_name = f"{self.qualification.short_name}-11/{self.number}-{str(self.year_create)[-2:]}"
+        else:
+            self.full_name = f"{self.qualification.short_name}-{self.number}-{str(self.year_create)[-2:]}"
+
+        return super().save(*args, **kwargs)
+
+
+class CalendarGraphicOfLearningProcess(AcademHubModel):
+
+    name = models.CharField(max_length=255, verbose_name="Название")
+
+    group = models.ForeignKey(
+        GroupStudents,
+        on_delete=models.CASCADE,
+        related_name="learning_process_calendars",
+        verbose_name="Группа"
+    )
+
+    start_exam_date_first_semester = models.DateField(null=False, blank=False, verbose_name="Дата начала сессии первого семестра")
+    date_of_pm_first_semester = models.DateField(null=True, blank=True, verbose_name="Дата экзамена по профессиональному модулю первого семестра")
+    start_exam_date_second_semester = models.DateField(null=False, blank=False, verbose_name="Дата начала сессии второго семестра")
+    date_of_pm_second_semester = models.DateField(null=True, blank=True, verbose_name="Дата экзамена по профессиональному модулю второго семестра")
+
+    @property
+    def all_practice_dates(self):
+        return self.practice_dates.select_related('curriculum_item__practice')
+
+    class Meta:
+        verbose_name = "Календарный график учебного процесса"
+        verbose_name_plural = "Календарные графики учебного процесса"
     @classmethod
     def from_dict(cls, data):
         specialty_obj = Specialty.from_dict(data["specialty"])
@@ -389,7 +479,7 @@ class CurriculumItem(models.Model):
 
 
 
-class RecordBookTemplate(models.Model):
+class RecordBookTemplate(AcademHubModel):
     qualification = models.ForeignKey(
         'Qualification',
         on_delete=models.CASCADE,
@@ -590,10 +680,8 @@ class Student(AcademHubModel):
         verbose_name_plural = "Студенты"
         permissions = [
             ('import_student', 'Import student'),
-            ('academic_come_back_student', 'Come back student from academic'),
-            ('academic_leave_student', 'May send academic leave'),
-            ('expel_student', 'Expel student'),
-            ('generate_record_book,student', 'Generate record book')
+            ('export_student', 'Export student'),
+            ('statistic_student', 'View statitic student'),
         ]
 
     def save(self, *args, **kwargs):
@@ -680,9 +768,7 @@ class Student(AcademHubModel):
         return self.full_name
 
 
-
-
-class StudentRecordBook(models.Model):
+class StudentRecordBook(AcademHubModel):
     student = models.OneToOneField(Student, on_delete=models.CASCADE, verbose_name="Студент")
     qualification = models.ForeignKey('Qualification', on_delete=models.CASCADE, verbose_name="Квалификация")
     admission_year = models.PositiveIntegerField(verbose_name="Год поступления")
@@ -731,9 +817,7 @@ class GradebookStudents(AcademHubModel):
     grade = models.CharField(
         verbose_name='Оценка', 
         choices=ASSESSMENT_CHOICES, 
-        default=ASSESSMENT_CHOICES[0][1], 
         max_length=50,
-        blank=True
     )
 
     class Meta:
@@ -893,6 +977,9 @@ class ContingentMovement(AcademHubModel):
         verbose_name = "Движение контингента"
         verbose_name_plural = "Движения контингента"
         ordering = ['-action_date']  # Сортировка по убыванию даты действия
+        permissions = [
+            ('export_contingentmovement', 'Export ContingentMovement')
+        ]
 
     def __str__(self):
         return f"{self.get_action_type_display()} - {self.student.full_name} ({self.action_date})"
@@ -1233,3 +1320,4 @@ class TeacherDicsciplineCurriculum(AcademHubModel):
             "discipline": self.discipline,
             "curriculum": self.curriculum,
         }
+

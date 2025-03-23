@@ -1,12 +1,13 @@
 from django.views.generic import View
 from django.forms import modelformset_factory
 from django.shortcuts import render, redirect
+from django.views.generic.base import ContextMixin
 
 __all__ = (
     'BulkUpdateView',
 )
 
-class BulkUpdateView(View):
+class BulkUpdateView(ContextMixin, View):
     """
         Класс для обработки можественного обновления объектов
     """
@@ -51,7 +52,7 @@ class BulkUpdateView(View):
                 is_save = True
 
         return formset
-    
+
     def get(self, request, *args, **kwargs):
         """
             Обработка get запроса

@@ -6,6 +6,48 @@ __all__ = (
     'GradebookStudentsForm',
 )
 
+class GenerateGradebookForm(forms.Form):
+
+    SEMESTER_NUMBERS = (
+        (1, 1),
+        (2, 2),
+        (3, 3),
+        (4, 4),
+        (5, 5),
+        (6, 6),
+        (7, 7),
+        (8, 8),
+    )
+
+    semester = forms.ChoiceField(
+        choices=SEMESTER_NUMBERS,
+        label="Выберите семестр"
+    )
+
+
+class GetStatisticksGradebookForm(forms.Form):
+
+    SEMESTER_NUMBERS = (
+        (1, 1),
+        (2, 2),
+        (3, 3),
+        (4, 4),
+        (5, 5),
+        (6, 6),
+        (7, 7),
+        (8, 8),
+    )
+
+    semester = forms.ChoiceField(
+        choices=SEMESTER_NUMBERS,
+        label="Выберите семестр"
+    )
+
+    group = forms.ModelChoiceField(
+        queryset=GroupStudents.objects.all(),
+        label="Группы"
+    )
+
 class GradebookForm(forms.ModelForm):
     """
     Форма для создания и редактирования записей в журнале оценок.
@@ -76,12 +118,12 @@ class GradebookForm(forms.ModelForm):
 class GradebookStudentsForm(forms.ModelForm):
     ticket_number = forms.IntegerField(
         min_value=1,
-        label='Номер билета'
+        label='Номер билета',
+        required = False
     )
 
     grade = forms.ChoiceField(
         choices=GradebookStudents.ASSESSMENT_CHOICES,
-        initial=GradebookStudents.ASSESSMENT_CHOICES[0][1],
         label='Оценка'
     )
     

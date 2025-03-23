@@ -15,6 +15,7 @@ __all__ = [
     'DisciplineForm', 
     'StudentImportForm',
     'QualificationForm',
+    'PromoteGroupStudentsForm',
 ]
 
 class DisciplineForm(forms.ModelForm):
@@ -78,7 +79,7 @@ class StudentForm(forms.ModelForm):
     )
 
     class Meta:
-        model = Student
+        model = CurrentStudent
         fields = [
             'full_name',
             'phone',
@@ -118,7 +119,7 @@ class SpecialtyForm(forms.ModelForm ):
 class AcademLeaveForm(forms.ModelForm):
 
     class Meta:
-        model = Student
+        model = CurrentStudent
         fields = [
             'academ_leave_date',
             'academ_return_date',

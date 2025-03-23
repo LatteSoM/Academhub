@@ -1,0 +1,110 @@
+{% extends 'base_view.html' %}
+{% load static %}
+{% load custom_filters %}
+
+
+{% block content %}
+
+
+<style>
+
+    .export-btn-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+    }
+    /* Стили для таблицы */
+    .grades-table {
+        border: 1px solid black;
+        border-collapse: collapse;
+        width: 10%;
+    }
+
+    .grades-table th,
+    .grades-table td {
+        border: 1px solid black;
+        padding: 8px;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    /* Стили для заголовков дисциплин */
+    .discipline-header {
+        max-width: 10%;
+        height: 150px;
+        white-space: normal;
+        word-wrap: break-word;
+        writing-mode: bt-lr;
+        text-orientation: mixed;
+        line-height: 1.5;
+    }
+
+    /* Фиксированная ширина для колонки студентов */
+    .student-column {
+        width: 10%;
+        position: sticky;
+        left: 0;
+        background: white;
+        z-index: 1;
+    }
+
+    .grade-primary { background-color: #d4edda !important; } /* Зеленый */
+    .grade-retake { background-color: #cce5ff !important; }  /* Голубой */
+    .grade-commission { background-color: #e2d9f3 !important; } /* Фиолетовый */
+    .grade-bad {background-color: #f5c6cb !important;} /* Красный */
+</style>
+
+<div class="export-btn-container">
+    <a href="{% url 'export_grades' %}?semester={{ semestr }}&group={{ group.values_list.0.0 }}"
+       class="btn btn-success"
+       {% if not semester or not group %}disabled{% endif %}>
+        <i class="fas fa-file-export"></i> Экспорт в Excel
+    </a>
+</div>
+
+<div class="legend mb-3">
+    <span class="badge grade-primary">Первичная сдача</span>
+    <span class="badge grade-retake">Пересдача</span>
+    <span class="badge grade-commission">Комиссия</span>
+    <span class="badge grade-bad">2 или н/я</span>
+</div>
+
+<div class="table-responsive">
+    <table class="grades-table">
+        <thead>
+            <tr>
+                <th class="fixed-column number-column">№</th>
+                <th class="fixed-column student-column">Студент</th>
+                <th class="fixed-column basis-column">Основа обучения</th>
+                {% for discipline in disciplines %}
+                <th class="discipline-header">
+                    <div class="vertical-text">
+                        {{ discipline.name }}
+                    </div>
+                </th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+            <tr>
+                <td class="fixed-column number-column">{{ forloop.counter }}</td>
+                <td class="fixed-column student-column">{{ student.full_name }}</td>
+                <td class="fixed-column basis-column">{{ student.education_basis }}</td>
+                {% for discipline in disciplines %}
+                {% with grade=grades|get_item:student.id|get_item:discipline.id %}
+                <td class="{% if grade.gradebook.type_of_grade_book == 'Первичная сдача' and grade.grade != "Неудовлетворительно" and grade.grade != "Неявка" %}grade-primary
+                          {% elif grade.gradebook.type_of_grade_book == 'Пересдача' %}grade-retake
+                          {% elif grade.gradebook.type_of_grade_book == 'Комиссия' %}grade-commission
+                          {% elif grade.grade == "Неудовлетворительно" or grade.grade == "Неявка" %}grade-bad{% endif %}">
+                    {{ grade.grade|default:"-" }}
+                </td>
+                {% endwith %}
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

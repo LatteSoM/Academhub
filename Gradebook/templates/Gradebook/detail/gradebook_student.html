@@ -3,31 +3,27 @@
 {% load django_tables2 %}
 {% load util %}
 
-{% block detail-header %}
-<h1>
-    Ведомость {{object}}
-</h1>
+{% block extra_css %}
+    {{ block.super }}
+    <style>
+        .custom-red-btn {
+        background-color: #dc3545; /* Красный цвет */
+        color: white; /* Белый текст */
+        border: none; /* Убираем границу */
+        padding: 10px 20px; /* Отступы */
+        border-radius: 5px; /* Закругленные углы */
+        text-decoration: none; /* Убираем подчеркивание */
+        cursor: pointer; /* Курсор в виде указателя */
+    }
+
+    .custom-red-btn:hover {
+        background-color: #c82333; /* Темнее красный при наведении */
+    }
+    </style>
 {% endblock %}
 
-{% block actions-button %}
-    {% if user.is_superuser %}
-        <a class="btn-primary" href="{% url url_update pk=object.pk %}">
-        Изменить
-        </a>
-        {% if object.status == "Не заполнена" %}
-            <a href="{% url 'check_open_gradebook' pk=object.pk %}" 
-
-                {% if messages %}
-                    style="pointer-events: none; cursor: default; background-color: #565e66 ;"
-                {% endif %}
-
-             class="btn btn-primary">Открыть ведомость</a>
-        {% endif %}
-        {% if object.status == "Заполнена" %}
-            <a href="{% url 'download_report' pk=object.pk %}" class="btn btn-primary">Закрыть ведомость</a>
-        {% endif %}
-    {% else %}
-
-    {% endif %}
-
+{% block detail-header %}
+<h1>
+    {{object}}
+</h1>
 {% endblock %}
