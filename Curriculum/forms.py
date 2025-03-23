@@ -251,7 +251,7 @@ class GetPlxForm(forms.Form):
 
                         created_objects["disciplines"].append(discipline_obj.to_dict())
 
-                        for clock in discipline.get("clock_cells", []):
+                        for clock in discipline_cycle.get("clock_cells", []):
                             clock_cell_obj = ClockCellDict(
                                 code_of_type_work=clock.get("code_of_type_work"),
                                 code_of_type_hours=clock.get("code_of_type_hours"),
@@ -259,7 +259,7 @@ class GetPlxForm(forms.Form):
                                 term=clock.get("term"),
                                 count_of_clocks=int(clock.get("count_of_clocks") or 0),
                                 module=None,
-                                discipline=discipline_obj.discipline_name,
+                                discipline=f"{discipline_obj.code}.{discipline_obj.discipline_name}",
                                 curriculum=curriculum_obj,
                             ).to_dict()
                             created_objects["clock_cells"].append(clock_cell_obj)  # Добавляем в словарь
@@ -515,7 +515,7 @@ class EditableCurriculumForm(forms.Form):
         for discipline_id, d_data in enumerate(data_objects.get("disciplines", [])):
             discipline_data = disciplines_data[discipline_id]
 
-            prompt = Discipline.objects.filter(name=discipline_data['name'])
+            prompt = Discipline.objects.filter(name=discipline_data['name'], code=discipline_data['code'])
             discipline = prompt[0] if prompt else None
 
             if discipline:
@@ -549,7 +549,10 @@ class EditableCurriculumForm(forms.Form):
         for cc_data in data_objects.get("clock_cells", []):
             # Проверка на то, что ячейка имеет связь с модулем либо дисциплиной. Если и того и того нет - скипаем
             module = next((m for m in restored_modules if m.name == (cc_data["module"]["module_name"] if cc_data["module"] else None)), None)
-            discipline = next((d for d in restored_disciplines if d.name == (cc_data["discipline"] if cc_data["discipline"] else None)), None)
+            discipline = next((d for d in restored_disciplines if f"{d.code}.{d.name}" == (cc_data["discipline"] if cc_data["discipline"] else None)), None)
+
+
+            ccs = [i for i in data_objects.get("clock_cells", []) if i["discipline"] == "ОГСЭ.01.Основы философии" ]
 
             clock_cell_obj = ClockCell(
                 code_of_type_work=cc_data["code_of_type_work"],
