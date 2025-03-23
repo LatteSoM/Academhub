@@ -34,6 +34,8 @@ ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
 TIME_ZONE = "Europe/Moscow"
 USE_TZ = True
 
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 5000
+
 
 
 # Application definition
@@ -59,6 +61,7 @@ INSTALLED_APPS = [
     'bootstrap4',
     'Academhub',
     'widget_tweaks',
+
 ] + ACTIVE_APPS
 
 MIDDLEWARE = [

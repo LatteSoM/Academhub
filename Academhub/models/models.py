@@ -14,7 +14,6 @@ __all__ = (
     'Specialty',
     'TermPaper',
     'CustomUser',
-    'PracticeDate',
     'GroupStudents',
     'Qualification',
     'AcademHubModel',
@@ -236,22 +235,15 @@ class Qualification(AcademHubModel):
     def __str__(self):
         return self.name
 
-
-class Curriculum(models.Model):
-    qualification = models.ForeignKey(
-        Qualification,
-        on_delete=models.CASCADE,
-        verbose_name="Квалификация"
-    )
-    admission_year = models.PositiveIntegerField(verbose_name="Год поступления")
-
-    class Meta:
-        verbose_name = "Учебный план"
-        verbose_name_plural = "Учебные планы"
-        unique_together = ['qualification', 'admission_year']
-
-    def __str__(self):
-        return f"План для {self.qualification} ({self.admission_year} года)"
+    @classmethod
+    def from_dict(cls, data):
+        specialty_obj = Specialty.from_dict(data["specialty"])
+        obj, created = cls.objects.get_or_create(
+            short_name=data["short_name"],
+            name=data["name"],
+            specialty=specialty_obj
+        )
+        return obj
 
 
 class GroupStudents(AcademHubModel):

@@ -35,7 +35,8 @@ from .tables import AcademTable, ExpulsionTable, ContingentMovementTable
 from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 from .filters import AcademFilter, ExpulsionFilter, ContingentMovementFilter
 from .forms import AcademLeaveForm, AcademReturnForm, ExpellStudentForm, RecoverStudentForm, StudentImportForm
-from Academhub.generic import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView, ObjectTemplateView, ObjectTableImportView
+from Academhub.generic import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView, ObjectTemplateView, \
+    ObjectTableImportView, ImportViewMixin
 from Academhub.modules.documentGenPars import StatisticsTableGenerator, CourseTableGenerator, GroupTableGenerator, VacationTableGenerator, MovementTableGenerator
 
 __all__ = (
@@ -48,6 +49,7 @@ __all__ = (
     'EditRecordBookTemplateView',
     'generate_student_record_book',
     'generate_group_recordbooks',
+    'PromoteGroupStudentsView',
 
     'DisciplineTableView',
     'DisciplineDetailView',
@@ -177,6 +179,7 @@ class SpecialtyTableView(ObjectTableView):
     """
     table_class = SpecialtyTable
     filterset_class = SpecialtyFilter
+    queryset = Specialty.objects.all()
 
     buttons = [
         Button (
@@ -572,7 +575,7 @@ class StudentCreateView(ObjectCreateView):
         Button (
             id = 'to_list',
             name = 'К таблице',
-            link_name = getpattern(Student, 'list'),
+            link_name = getpattern(CurrentStudent, 'list'),
             permission = getpermission(Student, 'view')
         )
     ]

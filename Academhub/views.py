@@ -11,7 +11,10 @@ from .forms.form import CustomAuthenticationForm, CustomAuthenticationForm
 
 __all__ = (
     'HomeView',
-    'CustomLoginView'
+    'CustomLoginView',
+    'UserEmailChangeView',
+    'UserSettingsDetailView',
+    'UserPasswordChangeView',
 )
 
 class HomeView(ObjectTemplateView):

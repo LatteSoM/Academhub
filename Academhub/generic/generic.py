@@ -15,8 +15,8 @@ __all__  = [
   'ObjectCreateView',
   'ObjectDeleteView',
   'ObjectTemplateView',
+  'ObjectTableImportView',
 ]
-
 
 class ObjectTemplateView(TemplateView):
   '''
