@@ -1,3 +1,4 @@
+from encodings.uu_codec import uu_decode
 import os
 import re
 import sys
@@ -8,7 +9,6 @@ from django.db.models import Prefetch
 from openpyxl.styles import PatternFill, Font, Alignment, Side, Border
 from openpyxl.utils import get_column_letter
 from openpyxl.workbook import Workbook
-from unidecode import unidecode
 
 from Academhub.modules.documentGenPars import GradebookDocumentGenerator
 from Gradebook.forms import *
@@ -372,7 +372,7 @@ def export_grades(request):
                 cell.alignment = center_alignment
 
     # Формирование имени файла с unidecode
-    group_name_clean = unidecode(group.full_name)  # Изменено здесь
+    group_name_clean = uu_decode(group.full_name)  # Изменено здесь
     group_name_clean = re.sub(r'\W', '_', group_name_clean)[:50]
     filename = f"Vedomost_{group_name_clean}_sem{semester}.xlsx"
 

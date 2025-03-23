@@ -755,9 +755,7 @@ class GradebookStudents(AcademHubModel):
     grade = models.CharField(
         verbose_name='Оценка', 
         choices=ASSESSMENT_CHOICES, 
-        default=ASSESSMENT_CHOICES[0][1], 
         max_length=50,
-        blank=True
     )
 
     class Meta:

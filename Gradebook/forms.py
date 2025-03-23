@@ -124,12 +124,12 @@ class GradebookForm(forms.ModelForm):
 class GradebookStudentsForm(forms.ModelForm):
     ticket_number = forms.IntegerField(
         min_value=1,
-        label='Номер билета'
+        label='Номер билета',
+        required = False
     )
 
     grade = forms.ChoiceField(
         choices=GradebookStudents.ASSESSMENT_CHOICES,
-        initial=GradebookStudents.ASSESSMENT_CHOICES[0][1],
         label='Оценка'
     )
     

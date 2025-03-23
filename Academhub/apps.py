@@ -1,8 +1,4 @@
-
-
 from django.apps import AppConfig
-
-
 
 class AcademhubAppConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
