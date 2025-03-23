@@ -2,15 +2,12 @@ import json
 import os
 import re
 from collections import defaultdict
-from logging import exception
 
 from django import forms
-from django.db import models
 from pyaspeller import YandexSpeller
 
 from Academhub.models import Specialty, Qualification, Category, Curriculum, StudyCycle, Module, Discipline, \
     ClockCell
-from Сontingent.views import ExpelStudent
 from .models.models_dict_sesstion import *
 from .parser_for_plx import RUP_parser
 
