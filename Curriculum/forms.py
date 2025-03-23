@@ -1,6 +1,7 @@
 import json
 import os
 import re
+from collections import defaultdict
 from logging import exception
 
 from django import forms
@@ -204,7 +205,7 @@ class GetPlxForm(forms.Form):
                                 code_of_type_work=clock.get("code_of_type_work"),
                                 code_of_type_hours=clock.get("code_of_type_hours"),
                                 course=clock.get("course"),
-                                term=clock.get("term"),
+                                term=clock.get("course")*clock.get("term"),
                                 count_of_clocks=int(clock.get("count_of_clocks") or 0),
                                 module=None,
                                 discipline=discipline_obj.discipline_name,
@@ -256,7 +257,7 @@ class GetPlxForm(forms.Form):
                                 code_of_type_work=clock.get("code_of_type_work"),
                                 code_of_type_hours=clock.get("code_of_type_hours"),
                                 course=clock.get("course"),
-                                term=clock.get("term"),
+                                term=clock.get("course")*clock.get("term"),
                                 count_of_clocks=int(clock.get("count_of_clocks") or 0),
                                 module=None,
                                 discipline=discipline_obj.discipline_name,
@@ -313,7 +314,7 @@ class GetPlxForm(forms.Form):
         prefix = match.group(1)
         number_part = match.group(2)
 
-        valid_prefixes = ["ОГСЭ", "ЕН", "ОПЦ", "ПЦ", "ПМ", "МДК", "УП", "ПП", "ПДП"]
+        valid_prefixes = ["ОГСЭ", "ЕН", "ОПЦ", "ПЦ", "ПМ", "МДК", "УП", "ПП", "ПДП", "ОП"]
         if prefix not in valid_prefixes:
             return [f"Недопустимый префикс '{prefix}' в индексе '{index}'. Допустимые префиксы: {', '.join(valid_prefixes)}."]
 
@@ -387,17 +388,17 @@ class EditableCurriculumForm(forms.Form):
         clock_cells = self.data_objects.get('clock_cells', [])
 
         # Структура: { discipline_name: { term: суммарное_значение_count_of_clocks } }
-        clock_cell_lookup = {}
+        clock_cell_lookup = defaultdict(lambda: defaultdict(int))
         for cell in clock_cells:
             discipline_name = cell.get('discipline')
             if not discipline_name:
                 continue
             term = cell.get('term')
             count = cell.get('count_of_clocks', 0)
-            if discipline_name not in clock_cell_lookup:
-                clock_cell_lookup[discipline_name] = {}
-            # Суммируем, если по данной дисциплине и семестру найдено несколько записей.
-            clock_cell_lookup[discipline_name][term] = clock_cell_lookup[discipline_name].get(term, 0) + count
+            if cell.get("code_of_type_work") == 'Итого часов' and clock_cell_lookup[discipline_name][term] == 0:
+                clock_cell_lookup[discipline_name][term] += count
+            if discipline_name == "Основы философии":
+                pass
 
         # Генерация полей формы для каждой дисциплины
         for i, discipline_data in enumerate(disciplines_data):
@@ -431,6 +432,7 @@ class EditableCurriculumForm(forms.Form):
 
             disc_name = discipline_data.get('name')
 
+            # Генерация дополнительных полей для 8 семестров
             for semester in range(1, 9):
                 field_name = f'discipline_semester_{semester}_{i}'
 
@@ -442,6 +444,10 @@ class EditableCurriculumForm(forms.Form):
                     label=f'Семестр {semester}',
                     required=False
                 )
+                # Если у дисциплины есть предупреждения, устанавливаем их и для поля с часами
+                if discipline_data.get('warnings', False):
+                    self.fields[field_name].warnings = True
+                    self.fields[field_name].warning_description = discipline_data.get('warning_description', [])
 
     def get_disciplines_data_from_edit_field(self):
         disciplines_data = []
