@@ -1,15 +1,18 @@
-from encodings.uu_codec import uu_decode
+
 import os
 import re
 import sys
 from collections import defaultdict
 from pathlib import Path
 
-from django.db.models import Prefetch
+from django.core.mail import send_mail
+from django.db.models import Prefetch, Q
 from openpyxl.styles import PatternFill, Font, Alignment, Side, Border
 from openpyxl.utils import get_column_letter
 from openpyxl.workbook import Workbook
+from unidecode import unidecode
 
+from Academhub import settings
 from Academhub.modules.documentGenPars import GradebookDocumentGenerator
 from Gradebook.forms import *
 from Gradebook.forms import GenerateGradebookForm, GetStatisticksGradebookForm
@@ -25,7 +28,7 @@ from Gradebook.filters import GradeBookTeachersFilter
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import permission_required
 from Academhub.models import GradebookStudents, Gradebook, CustomUser, SubTable, Button, Discipline, Student, \
-    GroupStudents
+    GroupStudents, ClockCell, Curriculum
 from Academhub.generic import BulkUpdateView, ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView, \
     ObjectTemplateView
 
@@ -72,7 +75,7 @@ class GradebookStudentBulkUpdateView(BulkUpdateView):
                 Gradebook, 
                 pk=self.gradebook_pk
             )
-            gradebook.status = Gradebook.STATUS_CHOICE[1][1]
+            gradebook.status = Gradebook.STATUS_CHOICE[2][1]
             gradebook.save()
 
         return form
@@ -140,7 +143,7 @@ def fetch_group_semester_attestation_table(semester, group):
     """
     Функция для передачи данных на страницу статистики
     """
-    # TODO: Сейчас берутся дисциплины из ведомости, а должны из уч плана
+
     # 1. Получаем всех студентов группы
     students = Student.objects.filter(group=group).order_by('full_name')
 
@@ -155,25 +158,72 @@ def fetch_group_semester_attestation_table(semester, group):
         'discipline'
     )
 
-    # 3. Собираем все уникальные дисциплины
-    disciplines = Discipline.objects.filter(
-        gradebooks__in=gradebooks
-    ).distinct().order_by('name')
 
-    # 4. Создаем матрицу оценок: {student_id: {discipline_id: grade}}
-    grade_matrix = {student.id: {} for student in students}
+    curriculum = Curriculum.objects.filter(qualification_name=group.qualification.name, admission_year=group.year_create)
 
+    course = (int(semester) + 1) // 2
+    current_term = 1 if int(semester) % 2 == 1 else 2
+
+    curriculum_items = ClockCell.objects.filter(
+        curriculum=curriculum.first(),
+        module=None,
+        course=course,
+        term=current_term,
+    ).filter(
+        Q(
+            code_of_type_work__in=[
+                'Экзамен',
+                'Другие формы контроля',
+                'Зачет с оценкой',
+                'Курсовая работа'
+            ]
+        ) |
+        Q(
+            discipline__code__contains='ГИА',
+            discipline__name='Проведение государственных экзаменов'
+        ) |
+        Q(discipline__code__contains='ПДП')
+    )
+
+    disciplines = []
+    for item in curriculum_items:
+
+        if int(item.term) == current_term and item.discipline not in disciplines and int(item.course) == course:
+            disciplines.append(Discipline.objects.get(pk=item.discipline_id))
+            print(Discipline.objects.get(pk=item.discipline_id))
+
+    # Создаем матрицу студентов с ключами для всех дисциплин
+    grade_matrix = {}
+    for student in Student.objects.filter(group=group):
+        grade_matrix[student.id] = {
+            discipline.id: "-" for discipline in disciplines  # Инициализируем все дисциплины как None
+        }
+
+    # Проходим по всем ведомостям (gradebooks) и заполняем оценки
     for gb in gradebooks:
         discipline_id = gb.discipline.id
-        for grade_entry in GradebookStudents.objects.filter(gradebook=gb):
+
+        # Фильтруем ведомости по текущему семестру и группе
+        if gb.semester_number != int(semester) or gb.group != group:
+            continue
+
+        # Получаем все оценки из этой ведомости
+        grade_entries = GradebookStudents.objects.filter(gradebook=gb)
+
+        # Обновляем матрицу оценок
+        for grade_entry in grade_entries:
             student_id = grade_entry.student.id
             if student_id in grade_matrix:
+                # Заполняем оценку только если ведомость закрыта
                 if gb.status == "Закрыта":
                     grade_matrix[student_id][discipline_id] = grade_entry
+
         group = gb.group
 
+
     group = GroupStudents.objects.filter(full_name=group)
-    print(group)
+
+
 
     return {
         'students': students,
@@ -182,6 +232,7 @@ def fetch_group_semester_attestation_table(semester, group):
         'semestr': semester,
         'group': group,
         'gradebooks': gradebooks,
+        'curriculum_items': curriculum_items,
     }
 
 
@@ -210,6 +261,7 @@ class ViewStudentsGradesForSemester(ObjectTemplateView):
                     'grades': data['grades'],
                     'semestr': data['semestr'],
                     'group': data['group'],
+                    'curriculum_items': data['curriculum_items'],
                 })
 
             except Exception as e:
@@ -247,11 +299,12 @@ def export_grades(request):
     ws.title = "Сводная ведомость"
 
     # Стили оформления
+    thin_side = Side(style='thin')
     thin_border = Border(
-        left=Side(style='thin'),
-        right=Side(style='thin'),
-        top=Side(style='thin'),
-        bottom=Side(style='thin')
+        left=thin_side,
+        right=thin_side,
+        top=thin_side,
+        bottom=thin_side
     )
     center_alignment = Alignment(horizontal='center', vertical='center', wrap_text=True)
     header_fill = PatternFill(start_color='D9E1F2', fill_type='solid')
@@ -268,44 +321,65 @@ def export_grades(request):
     # Заголовок документа
     ws.merge_cells('A1:M1')
     title_cell = ws['A1']
-    title_cell.value = f"Сводная ведомость успеваемости студентов\nГруппа {group.full_name}\n Семестр {semester}"
+    title_cell.value = f"Сводная ведомость успеваемости студентов\nГруппа {group.full_name}\nСеместр {semester}"
     title_cell.alignment = Alignment(wrap_text=True, vertical='center', horizontal='center')
     title_cell.font = Font(bold=True, size=14)
+    ws.row_dimensions[1].height = 60
 
-    # Установка высоты строки заголовка
-    ws.row_dimensions[1].height = 60  # Высота в пунктах
 
-    # Группировка дисциплин по типам ведомостей
+    ws.cell(row=5, column=1, value="№ п/п").font = header_font
+    ws.cell(row=5, column=2, value="Ф.И.О. студента").font = header_font
+    ws.cell(row=5, column=3, value="Основа обучения").font = header_font
+
+    # Группировка дисциплин по типам аттестации из Curriculum
     TYPE_MAPPING = {
-        'Экзаменационная ведомость': 'Экзамены',
-        'Ведомость дифференцированного зачета': 'Диф. зачёты',
-        'Ведомость защиты курсового проекта': 'Другие',
-        'Ведомость результатов демонстрационного экзамена': 'Другие',
-        'Ведомость успеваемости': 'Другие'
+        'Экзамен': 'Экзамены',
+        'Зачет с оценкой': 'Диф. зачёты',
+        'Курсовая работа': 'Курсовые работы',
+        'Другие формы контроля': 'Другие формы'
     }
 
+    course = (semester_number + 1) // 2
+    current_term = 1 if semester_number % 2 == 1 else 2
+
     discipline_groups = defaultdict(list)
-    for gb in data['gradebooks']:
-        group_name = TYPE_MAPPING.get(gb.name, 'Другие')
-        if gb.discipline and gb.discipline not in [d.id for d in discipline_groups[group_name]]:
-            discipline_groups[group_name].append(gb.discipline)
+    for curriculum_item in data['curriculum_items']:
+
+        if curriculum_item.term != current_term or curriculum_item.course != course:
+            continue
+
+        discipline = curriculum_item.discipline
+        category = TYPE_MAPPING.get(
+            curriculum_item.code_of_type_work,
+            'Другие формы'
+        )
+
+        if discipline.id not in {d.id for d in discipline_groups[category]}:
+            discipline_groups[category].append(discipline)
 
     # Формирование структуры таблицы
     headers = ['№ п/п', 'Ф.И.О. студента', 'Основа обучения']
     column_map = {}
-    current_col = 3
+    current_col = 4
 
-    # Создание групповых заголовков
-    for group_name in ['Экзамены', 'Диф. зачёты', 'Другие']:
+    # Порядок отображения категорий
+    categories_order = [
+        'Экзамены',
+        'Диф. зачёты',
+        'Курсовые работы',
+        'Другие формы'
+    ]
+
+    for category in categories_order:
         disciplines = sorted(
-            [d for d in discipline_groups.get(group_name, [])],
+            discipline_groups.get(category, []),
             key=lambda x: x.name
         )
 
         if not disciplines:
             continue
 
-        # Объединение ячеек для названия группы
+        # Объединение ячеек для категории
         end_col = current_col + len(disciplines) - 1
         ws.merge_cells(
             start_row=4,
@@ -313,13 +387,13 @@ def export_grades(request):
             end_row=4,
             end_column=end_col
         )
-        cell = ws.cell(row=4, column=current_col, value=group_name)
+        cell = ws.cell(row=4, column=current_col, value=category)
         cell.alignment = center_alignment
         cell.fill = header_fill
         cell.font = header_font
         cell.border = thin_border
 
-        # Добавление названий дисциплин
+        # Добавление дисциплин
         for idx, disc in enumerate(disciplines, start=current_col):
             cell = ws.cell(row=5, column=idx, value=disc.name)
             cell.alignment = center_alignment
@@ -327,7 +401,6 @@ def export_grades(request):
             cell.font = header_font
             cell.border = thin_border
             column_map[disc.id] = idx
-            headers.append(disc.name)
 
         current_col += len(disciplines)
 
@@ -339,27 +412,31 @@ def export_grades(request):
         ws.cell(row=row_idx, column=3, value=student.education_basis).alignment = center_alignment
 
         # Оценки
-        for disc in data['disciplines']:
-            col = column_map.get(disc.id)
-            if not col:
-                continue
+        for category in categories_order:
+            for disc in discipline_groups.get(category, []):
+                col = column_map.get(disc.id)
+                if not col:
+                    continue
 
-            grade_info = data['grades'][student.id][disc.id]
-            grade_value = grade_info.grade
-            grade_type = grade_info.gradebook.type_of_grade_book
+                grade_entry = data['grades'].get(student.id, {}).get(disc.id)
 
-            cell = ws.cell(row=row_idx, column=col, value=grade_value)
-            cell.alignment = center_alignment
-            cell.border = thin_border
+                cell = ws.cell(row=row_idx, column=col)
+                cell.alignment = center_alignment
+                cell.border = thin_border
 
-            # Заливка ячеек
-            if str(grade_value).lower() in ['неудовлетворительно', 'неявка', 'н/я', '2']:
-                cell.fill = FILLS['неуд']
-            elif grade_type in FILLS:
-                cell.fill = FILLS[grade_type]
+                if grade_entry:
+                    if grade_entry == "-":
+                        cell.value = grade_entry
+                    else:
+                        cell.value = grade_entry.grade
+
+                        if str(grade_entry.grade).lower() in ['неудовлетворительно', 'неявка', 'н/я', '2']:
+                            cell.fill = FILLS['неуд']
+                        elif grade_entry.gradebook.type_of_grade_book in FILLS:
+                            cell.fill = FILLS[grade_entry.gradebook.type_of_grade_book]
 
     # Настройка ширины столбцов
-    for col_idx, header in enumerate(headers, 1):
+    for col_idx in range(1, len(headers) + 1):
         col_letter = get_column_letter(col_idx)
         ws.column_dimensions[col_letter].width = 20 if col_idx > 3 else 15
 
@@ -370,13 +447,14 @@ def export_grades(request):
             if cell.row > 5 and cell.column in [1, 3]:
                 cell.alignment = center_alignment
 
-    # Формирование имени файла с unidecode
-    group_name_clean = uu_decode(group.full_name)  # Изменено здесь
-    group_name_clean = re.sub(r'\W', '_', group_name_clean)[:50]
+    # Формирование имени файла
+    group_name_clean = unidecode(group.full_name)
+    group_name_clean = re.sub(r'\W+', '_', group_name_clean)[:50]
     filename = f"Vedomost_{group_name_clean}_sem{semester}.xlsx"
 
     response = HttpResponse(
-        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
     response['Content-Disposition'] = f'attachment; filename="{filename}"'
     wb.save(response)
     return response
@@ -571,7 +649,6 @@ class GradebookDetailView(ObjectDetailView):
         # Проверка основных полей
         required_fields = [
             gradebook.group_id,  # Проверка ForeignKey через id
-            gradebook.discipline_name,  # Проверка CharField
             gradebook.discipline_id,  # Проверка ForeignKey дисциплины
             gradebook.semester_number,  # Проверка IntegerField
             gradebook.status,  # Проверка CharField статуса
@@ -579,7 +656,6 @@ class GradebookDetailView(ObjectDetailView):
 
         # Проверка текстовых полей на непустые значения
         text_fields_valid = all([
-            gradebook.discipline_name and gradebook.discipline_name.strip(),
             gradebook.status and gradebook.status.strip(),
         ])
 

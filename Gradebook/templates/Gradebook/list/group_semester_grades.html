@@ -1,4 +1,5 @@
 {% extends 'base_view.html' %}
+{% load custom_filters %}
 {% load static %}
 {% load custom_filters %}
 
@@ -80,7 +81,7 @@
                 {% for discipline in disciplines %}
                 <th class="discipline-header">
                     <div class="vertical-text">
-                        {{ discipline.name }}
+                        {{ discipline.name }} {{ discipline.code }}
                     </div>
                 </th>
                 {% endfor %}
@@ -94,10 +95,10 @@
                 <td class="fixed-column basis-column">{{ student.education_basis }}</td>
                 {% for discipline in disciplines %}
                 {% with grade=grades|get_item:student.id|get_item:discipline.id %}
-                <td class="{% if grade.gradebook.type_of_grade_book == 'Первичная сдача' and grade.grade != "Неудовлетворительно" and grade.grade != "Неявка" %}grade-primary
+                <td class="{% if grade.gradebook.type_of_grade_book == 'Первичная сдача' and grade.grade != "2" and grade.grade != "Неявка" %}grade-primary
                           {% elif grade.gradebook.type_of_grade_book == 'Пересдача' %}grade-retake
                           {% elif grade.gradebook.type_of_grade_book == 'Комиссия' %}grade-commission
-                          {% elif grade.grade == "Неудовлетворительно" or grade.grade == "Неявка" %}grade-bad{% endif %}">
+                          {% elif grade.grade == "2" or grade.grade == "Неявка" %}grade-bad{% endif %}">
                     {{ grade.grade|default:"-" }}
                 </td>
                 {% endwith %}

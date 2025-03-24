@@ -740,22 +740,22 @@ class GradebookDocumentGenerator:
         footer_table2.rows[1].cells[4].text = 'в том числе «5» –'
         for paragraph in footer_table2.rows[1].cells[4].paragraphs:
             paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT  # Выравнивание по правому краю
-        footer_table2.rows[1].cells[5].text = str(GradebookStudents.objects.filter(gradebook=self.gradebook, grade="Отлично").count())
+        footer_table2.rows[1].cells[5].text = str(GradebookStudents.objects.filter(gradebook=self.gradebook, grade="5").count())
 
         footer_table2.rows[2].cells[4].text = '«4» –'
         for paragraph in footer_table2.rows[2].cells[4].paragraphs:
             paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT  # Выравнивание по правому краю
-        footer_table2.rows[2].cells[5].text = str(GradebookStudents.objects.filter(gradebook=self.gradebook, grade="Хорошо").count())
+        footer_table2.rows[2].cells[5].text = str(GradebookStudents.objects.filter(gradebook=self.gradebook, grade="4").count())
 
         footer_table2.rows[3].cells[4].text = '«3» –'
         for paragraph in footer_table2.rows[3].cells[4].paragraphs:
             paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT  # Выравнивание по правому краю
-        footer_table2.rows[3].cells[5].text = str(GradebookStudents.objects.filter(gradebook=self.gradebook, grade="Удовлетворительно").count())
+        footer_table2.rows[3].cells[5].text = str(GradebookStudents.objects.filter(gradebook=self.gradebook, grade="3").count())
 
         footer_table2.rows[4].cells[4].text = '«2» –'
         for paragraph in footer_table2.rows[4].cells[4].paragraphs:
             paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT  # Выравнивание по правому краю
-        footer_table2.rows[4].cells[5].text = str(GradebookStudents.objects.filter(gradebook=self.gradebook, grade="Неудовлетворительно").count())
+        footer_table2.rows[4].cells[5].text = str(GradebookStudents.objects.filter(gradebook=self.gradebook, grade="2").count())
 
         footer_table2.rows[5].cells[4].text = '«н/я» –'
         for paragraph in footer_table2.rows[5].cells[4].paragraphs:

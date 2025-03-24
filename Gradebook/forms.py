@@ -77,7 +77,7 @@ class GradebookForm(forms.ModelForm):
         """
         model = Gradebook
         fields = ['name', 'semester_number', 'type_of_grade_book', 'amount_of_days_for_closing', 'teachers', 'group',
-                  'name', 'students']
+                  'discipline', 'students']
 
     def __init__(self, *args, **kwargs):
         """
