@@ -209,57 +209,58 @@ class GetPlxForm(forms.Form):
                             ).to_dict()
                             created_objects["clock_cells"].append(clock_cell_obj)  # Добавляем в словарь
 
-                for discipline_cycle in cycle.get("children", []):
-                    for discipline in discipline_cycle.get("disciplines", []):
-                        discipline_name = discipline.get("discipline_name")
-                        discipline_code = discipline.get("code_of_discipline")
+            for discipline_cycle in cycle.get("children", []):
+                for discipline in discipline_cycle.get("disciplines", []):
+                    discipline_name = discipline.get("discipline_name")
+                    discipline_code = discipline.get("code_of_discipline")
 
-                        if discipline_name is not None:
-                            discipline_warnings = self.validate_text(discipline_name)
-                            if discipline_warnings:
-                                all_warnings.extend(discipline_warnings)
+                    if discipline_name is not None:
+                        discipline_warnings = self.validate_text(discipline_name)
+                        if discipline_warnings:
+                            all_warnings.extend(discipline_warnings)
 
-                        # Валидация индекса
-                        index_warnings = self.validate_discipline_index(discipline_code, previous_indices)
-                        if index_warnings:
-                            # print("=== Ошибки валидации индекса ===")
-                            for warning in index_warnings:
-                                pass
-                                # print(warning)
+                    # Валидация индекса
+                    index_warnings = self.validate_discipline_index(discipline_code, previous_indices)
+                    if index_warnings:
+                        # print("=== Ошибки валидации индекса ===")
+                        for warning in index_warnings:
+                            pass
+                            # print(warning)
 
-                        discipline_obj = DisciplineDict(
-                            discipline_name=discipline_name,
-                            code=discipline_code,
-                            specialty=specialty,
-                            cycle_relation=discipline.get("cycle_relation"),
-                            warnings=bool(discipline_warnings or index_warnings),
-                            warning_description=discipline_warnings + index_warnings if discipline_warnings and index_warnings else discipline_warnings or index_warnings
-                        )
+                    discipline_obj = DisciplineDict(
+                        discipline_name=discipline_name,
+                        code=discipline_code,
+                        specialty=specialty,
+                        cycle_relation=discipline.get("cycle_relation"),
+                        warnings=bool(discipline_warnings or index_warnings),
+                        warning_description=discipline_warnings + index_warnings if discipline_warnings and index_warnings else discipline_warnings or index_warnings
+                    )
 
-                        # Вызываем валидацию часов для дисциплины
-                        hour_warnings = self.validate_discipline_hours(discipline)
-                        if hour_warnings:
-                            all_warnings.extend(hour_warnings)
-                            discipline_obj.warning = True
-                            if discipline_obj.warning_description:
-                                discipline_obj.warning_description.extend(hour_warnings)
-                            else:
-                                discipline_obj.warning_description = hour_warnings
+                    # Вызываем валидацию часов для дисциплины
+                    hour_warnings = self.validate_discipline_hours(discipline)
+                    if hour_warnings:
+                        all_warnings.extend(hour_warnings)
+                        discipline_obj.warning = True
+                        if discipline_obj.warning_description:
+                            discipline_obj.warning_description.extend(hour_warnings)
+                        else:
+                            discipline_obj.warning_description = hour_warnings
 
-                        created_objects["disciplines"].append(discipline_obj.to_dict())
+                    created_objects["disciplines"].append(discipline_obj.to_dict())
 
-                        for clock in discipline.get("clock_cells", []):
-                            clock_cell_obj = ClockCellDict(
-                                code_of_type_work=clock.get("code_of_type_work"),
-                                code_of_type_hours=clock.get("code_of_type_hours"),
-                                course=clock.get("course"),
-                                term=clock.get("course")*clock.get("term"),
-                                count_of_clocks=int(clock.get("count_of_clocks") or 0),
-                                module=None,
-                                discipline=f"{discipline_obj.code}.{discipline_obj.discipline_name}",
-                                curriculum=curriculum_obj,
-                            ).to_dict()
-                            created_objects["clock_cells"].append(clock_cell_obj)  # Добавляем в словарь
+                    for clock in discipline.get("clock_cells", []):
+                        clock_cell_obj = ClockCellDict(
+                            code_of_type_work=clock.get("code_of_type_work"),
+                            code_of_type_hours=clock.get("code_of_type_hours"),
+                            course=clock.get("course"),
+                            term=clock.get("course")*clock.get("term"),
+                            count_of_clocks=int(clock.get("count_of_clocks") or 0),
+                            module=None,
+                            discipline=f"{discipline_obj.code}.{discipline_obj.discipline_name}",
+                            curriculum=curriculum_obj,
+                        ).to_dict()
+                        created_objects["clock_cells"].append(clock_cell_obj)  # Добавляем в словарь
+
 
         return created_objects # Возвращаем словарь с созданными объектами
 
