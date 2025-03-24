@@ -54,7 +54,7 @@ class GradebookForm(forms.ModelForm):
                 self.group_id = self.instance.group.pk
         else:
             self.group_id = properties.get('group_id', None)
-        
+
         if self.group_id:
             self.initial['group'] = self.group_id
             self.fields['students'].queryset = Student.objects.filter(group__id=self.group_id)

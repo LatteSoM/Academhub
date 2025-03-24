@@ -40,15 +40,15 @@ class CurriculumTableView(ImportViewMixin, ObjectTableView):
         Вызывается при успешной отправке формы импорта.
         Перенаправляет на страницу редактирования учебного плана.
         """
-        form.save() # сохраняем данные, хотя пока save method пустой
+        form.save()
         return HttpResponseRedirect(reverse('curriculum_edit_form'))
     
     def post(self, request, *args, **kwargs):
         """Обрабатывает POST-запрос, валидирует и сохраняет form."""
-
         self._form =  self.save_from_import(request.POST, request.FILES)
 
         if self._form.is_valid():
+
             return redirect('curriculum_edit_form')
 
 class CurricullumAddView(ObjectCreateView):

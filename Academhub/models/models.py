@@ -1149,8 +1149,8 @@ class ClockCell(AcademHubModel):
     term = models.IntegerField()
     count_of_clocks = models.IntegerField()
 
-    module = models.ForeignKey(Module, related_name='clock_cells', on_delete=models.CASCADE, null=True, blank=True)
-    discipline = models.ForeignKey(Discipline, related_name='clock_cells', on_delete=models.CASCADE, null=True, blank=True)
+    module = models.ForeignKey(Module, related_name='clock_cells', on_delete=models.CASCADE, null=True)
+    discipline = models.ForeignKey(Discipline, related_name='clock_cells', on_delete=models.CASCADE, null=True)
 
     curriculum = models.ForeignKey(Curriculum, related_name='clock_cells', on_delete=models.CASCADE)
 

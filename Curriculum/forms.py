@@ -97,7 +97,7 @@ class GetPlxForm(forms.Form):
             # Проверяем имя Category
             category_name = cycle.get("cycles")
             if category_name is not None:
-                category_warnings = self.validate_text(category_name)
+                category_warnings = None #Если хотим проверять - используем validate_text
                 if category_warnings:
                     all_warnings.extend(category_warnings)
 
@@ -114,7 +114,7 @@ class GetPlxForm(forms.Form):
                 # Проверяем имя StudyCycle
                 study_cycle_name = child.get("cycles")
                 if study_cycle_name is not None:
-                    study_cycle_warnings = self.validate_text(study_cycle_name)
+                    study_cycle_warnings = None #Если хотим проверять - используем validate_text
                     if study_cycle_warnings:
                         all_warnings.extend(study_cycle_warnings)
 
@@ -131,7 +131,7 @@ class GetPlxForm(forms.Form):
                     # Создаем Module из модуля
                     module_name = plan.get("module_name")
                     if module_name is not None:
-                        module_warnings = self.validate_text(module_name)
+                        module_warnings = None #Если хотим проверять - используем validate_text
                         if module_warnings:
                             all_warnings.extend(module_warnings)
                     module_obj = ModuleDict(
@@ -170,7 +170,6 @@ class GetPlxForm(forms.Form):
                         # Валидация индекса
                         index_warnings = self.validate_discipline_index(discipline_code, previous_indices)
                         if index_warnings:
-                            # print("=== Ошибки валидации индекса ===")
                             for warning in index_warnings:
                                 pass
                                 # print(warning)
@@ -205,7 +204,7 @@ class GetPlxForm(forms.Form):
                                 term=clock.get("course")*clock.get("term"),
                                 count_of_clocks=int(clock.get("count_of_clocks") or 0),
                                 module=None,
-                                discipline=discipline_obj.discipline_name,
+                                discipline=f"{discipline_obj.code}.{discipline_obj.discipline_name}",
                                 curriculum=curriculum_obj,
                             ).to_dict()
                             created_objects["clock_cells"].append(clock_cell_obj)  # Добавляем в словарь
@@ -257,7 +256,7 @@ class GetPlxForm(forms.Form):
                                 term=clock.get("course")*clock.get("term"),
                                 count_of_clocks=int(clock.get("count_of_clocks") or 0),
                                 module=None,
-                                discipline=discipline_obj.discipline_name,
+                                discipline=f"{discipline_obj.code}.{discipline_obj.discipline_name}",
                                 curriculum=curriculum_obj,
                             ).to_dict()
                             created_objects["clock_cells"].append(clock_cell_obj)  # Добавляем в словарь
@@ -394,8 +393,7 @@ class EditableCurriculumForm(forms.Form):
             count = cell.get('count_of_clocks', 0)
             if cell.get("code_of_type_work") == 'Итого часов' and clock_cell_lookup[discipline_name][term] == 0:
                 clock_cell_lookup[discipline_name][term] += count
-            if discipline_name == "Основы философии":
-                pass
+
 
         # Генерация полей формы для каждой дисциплины
         for i, discipline_data in enumerate(disciplines_data):
@@ -428,13 +426,13 @@ class EditableCurriculumForm(forms.Form):
 
 
             disc_name = discipline_data.get('name')
-
+            disc_code = discipline_data.get('code')
             # Генерация дополнительных полей для 8 семестров
             for semester in range(1, 9):
                 field_name = f'discipline_semester_{semester}_{i}'
 
                 # Получаем часы из clock_cell_lookup, если они есть
-                initial_value = clock_cell_lookup.get(disc_name, {}).get(semester, 0)
+                initial_value = clock_cell_lookup.get(f"{disc_code}.{disc_name}", {}).get(semester, 0)
 
                 self.fields[field_name] = forms.IntegerField(
                     initial=initial_value,
@@ -518,7 +516,7 @@ class EditableCurriculumForm(forms.Form):
         for discipline_id, d_data in enumerate(data_objects.get("disciplines", [])):
             discipline_data = disciplines_data[discipline_id]
 
-            prompt = Discipline.objects.filter(name=discipline_data['name'])
+            prompt = Discipline.objects.filter(name=discipline_data['name'], code=discipline_data['code'])
             discipline = prompt[0] if prompt else None
 
             if discipline:
@@ -552,7 +550,7 @@ class EditableCurriculumForm(forms.Form):
         for cc_data in data_objects.get("clock_cells", []):
             # Проверка на то, что ячейка имеет связь с модулем либо дисциплиной. Если и того и того нет - скипаем
             module = next((m for m in restored_modules if m.name == (cc_data["module"]["module_name"] if cc_data["module"] else None)), None)
-            discipline = next((d for d in restored_disciplines if d.name == (cc_data["discipline"] if cc_data["discipline"] else None)), None)
+            discipline = next((d for d in restored_disciplines if f"{d.code}.{d.name}" == cc_data["discipline"]), None)
 
             clock_cell_obj = ClockCell(
                 code_of_type_work=cc_data["code_of_type_work"],
