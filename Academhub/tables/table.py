@@ -8,15 +8,11 @@ __all__ = (
 )
 
 class BaseTable(tables.Table):
-    # selection = CheckBoxColumn(accessor='pk', orderable=False, verbose_name='')
-
     edition = ButtonLinkColumn(accessor='pk', text='Изменить', verbose_name='')
 
     view_detail = ButtonLinkColumn(accessor='pk', text='Просмотреть', verbose_name='')
 
     def __init__(self, *args, **kwargs):
-        # if 'selection' not in self._meta.fields:
-        #     self._meta.fields = ('selection',) + self._meta.fields
 
         super().__init__(*args, **kwargs)
 

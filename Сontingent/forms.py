@@ -1,4 +1,6 @@
 import os
+from cProfile import label
+
 from .utils import *
 from django import forms
 from datetime import datetime
@@ -16,6 +18,7 @@ __all__ = [
     'StudentImportForm',
     'QualificationForm',
     'PromoteGroupStudentsForm',
+    'PromoteStudentsForm'
 ]
 
 class DisciplineForm(forms.ModelForm):
@@ -374,11 +377,11 @@ class StudentImportForm(forms.Form):
 class ContingentStudentImportForm(StudentImportForm):
     def get_data_from_file(self, file):
         wb = load_workbook(file)
-        print(f"Листы в файле: {wb.sheetnames}")  # Проверяем список листов
+        # print(f"Листы в файле: {wb.sheetnames}")  # Проверяем список листов
 
         sheet_name = "1 курс (9 кл)"  # Строго задаем имя листа
         if sheet_name not in wb.sheetnames:
-            print(f"Лист {sheet_name} не найден!")
+            # print(f"Лист {sheet_name} не найден!")
             return
 
         ws = wb[sheet_name]  # Получаем лист
@@ -444,6 +447,125 @@ class ContingentStudentImportForm(StudentImportForm):
                 }
             )
             # print(f"{'Создан' if created else 'Обновлен'} студент: {student.full_name}")
+
+
+class PromoteStudentsForm(forms.ModelForm):
+    EDUCATION_BASE_CHOICES = (
+        ("", "Выберите базу образования"),  # Пустой вариант
+        ("основное общее", "Основное общее"),
+        ("среднее общее", "Среднее общее"),
+    )
+
+    EDUCATION_BASIS_CHOICES = (
+        ("", "Выберите основу обучения"),  # Пустой вариант
+        ("бюджет", 'Бюджет'),
+        ("внебюджет", "Внебюджет")
+    )
+
+    ACADEMIC_DEBTS = (
+        ("", "Выберите наличие задолженностей"),  # Пустой вариант
+        (True, 'Есть задолженности'),
+        (False, 'Нет задолженностей')
+    )
+
+    CURRENT_COURSE = (
+        ("", "Выберите курс"),  # Пустой вариант
+        (1, '1'),
+        (2, '2'),
+        (3, '3'),
+        (4, '4')
+    )
+
+    education_base = forms.ChoiceField(
+        label='База образования',
+        choices=EDUCATION_BASE_CHOICES,
+        required=False,
+    )
+    education_basis = forms.ChoiceField(
+        label='Основа обучения',
+        choices=EDUCATION_BASIS_CHOICES,
+        required=False
+    )
+    academic_debts = forms.ChoiceField(
+        label='Наличие академических задолженностей',
+        choices=ACADEMIC_DEBTS,
+        required=False
+    )
+    current_course = forms.ChoiceField(
+        label='Текущий курс',
+        choices=CURRENT_COURSE,
+        required=False
+    )
+
+    students = forms.ModelMultipleChoiceField(
+        queryset=Student.objects.none(),
+        label='Студенты',
+        widget=forms.CheckboxSelectMultiple,
+        required=False
+    )
+
+    order_number = forms.CharField(
+        label='Номер приказа',
+        widget=forms.TextInput(
+            attrs={
+                'placeholder': 'Номер переводного приказа'
+            }
+        )
+    )
+
+    class Meta:
+        model = CurrentStudent
+        fields = []
+
+    def __init__(self, *args, **kwargs):
+        properties = kwargs.pop('properties', {})
+        super().__init__(*args, **kwargs)
+        self._configure_new_instance(properties)
+
+    def _configure_new_instance(self, properties):
+        """Настройка для фильтрации студентов"""
+
+        # Получаем параметры фильтрации из properties
+        education_base = properties.get('education_base')
+        education_basis = properties.get('education_basis')
+        academic_debt = properties.get('academic_debts')
+        current_course = properties.get('current_course')
+
+        # Базовый пустой QuerySet
+        students_qs = Student.objects.none()
+
+        # Проверяем, указаны ли какие-либо параметры
+        if education_base or education_basis or academic_debt or current_course:
+            # Строим QuerySet постепенно
+            students_qs = Student.objects.all()
+
+            if education_base:
+                students_qs = students_qs.filter(education_base=education_base)
+
+            if education_basis:
+                students_qs = students_qs.filter(education_basis=education_basis)
+
+            if academic_debt != "":
+                has_debt = True if academic_debt == 'True' else False
+                students_qs = students_qs.filter(academic_debts=has_debt)
+
+            if current_course:
+                # students_qs = students_qs.filter(group__current_course=int(current_course))
+
+                if int(current_course) == 1:
+                    students_qs = students_qs.filter(transfer_to_2nd_year_order=None, transfer_to_3rd_year_order=None,
+                                                     transfer_to_4th_year_order=None)
+                if int(current_course) == 2:
+                    students_qs = students_qs.filter(transfer_to_2nd_year_order__isnull=False, transfer_to_3rd_year_order=None,
+                                                     transfer_to_4th_year_order=None)
+                if int(current_course) == 3:
+                    students_qs = students_qs.filter(transfer_to_2nd_year_order__isnull=False, transfer_to_3rd_year_order__isnull=False,
+                                                     transfer_to_4th_year_order=None)
+
+        # Устанавливаем отфильтрованный (или пустой) список студентов
+        self.fields['students'].queryset = students_qs.order_by('full_name')
+
+
 
 
 

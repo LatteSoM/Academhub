@@ -26,12 +26,12 @@ from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.http import HttpResponse
 from Academhub.models import SubTable
-from django.views.generic import UpdateView
+from django.views.generic import UpdateView, FormView
 from Academhub.utils import getpermission, getpattern
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.decorators import permission_required
-from .tables import AcademTable, ExpulsionTable, ContingentMovementTable
+from .tables import AcademTable, ExpulsionTable, ContingentMovementTable, StudentTransferTable
 from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 from .filters import AcademFilter, ExpulsionFilter, ContingentMovementFilter
 from .forms import AcademLeaveForm, AcademReturnForm, ExpellStudentForm, RecoverStudentForm, StudentImportForm, \
@@ -64,6 +64,9 @@ __all__ = (
     'StudentDetailView', 
     'StudentUpdateView', 
     'StudentCreateView',
+    'PromoteStudentsView',
+    # 'prepare_transfer_form',
+    # 'TransferStudentsView',
 
     'GroupTableView', 
     'GroupDetailView', 
@@ -501,8 +504,123 @@ class StudentTableView(ObjectTableImportView):
             name = 'Добавить',
             link_name = getpattern(CurrentStudent, 'add'),
             permission = getpermission(Student, 'add'),
+        ),
+    ]
+
+
+class PromoteStudentsView(FormView):
+    """
+    Класс для фильтрации и отображения студентов по параметрам.
+    """
+    model = CurrentStudent
+    form_class = PromoteStudentsForm
+    template_name = 'Contingent/transfer/transfer_students_form.html'
+
+    properties = ['education_base', 'education_basis', 'academic_debts', 'current_course']
+    success_url = reverse_lazy('transfer_students_form')
+
+    buttons = [
+        Button(
+            id='to_list',
+            name='К таблице',
+            link_name='transfer_students_list',
         )
     ]
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+
+        # Извлекаем параметры из URL
+        properties = {
+            'education_base': self.request.GET.get('education_base'),
+            'education_basis': self.request.GET.get('education_basis'),
+            'academic_debt': self.request.GET.get('academic_debts'),
+            'current_course': self.request.GET.get('current_course'),
+        }
+
+        # Передаем параметры в форму
+        kwargs['properties'] = properties
+        return kwargs
+
+    def get_form_kwargs(self):
+        """
+        Передаем параметры из URL в форму.
+        """
+        kwargs = super().get_form_kwargs()
+        kwargs['properties'] = self.request.GET.dict()
+        return kwargs
+
+    def form_valid(self, form):
+        """
+        Логика переводана студентов на следующий курс.
+        """
+        # Получаем список выбранных студентов
+        students = form.cleaned_data.get('students')
+        if not students:
+            form.add_error(None, "Вы не выбрали студентов для перевода.")
+            return self.form_invalid(form)
+
+        order_number = form.cleaned_data.get('order_number')
+
+        groups = set()
+
+        # Переводим студентов на следующий курс
+        for student in students:
+            groups.add(student.group)
+            if student.group.current_course == 1:
+                student.transfer_to_2nd_year_order = order_number
+            elif student.group.current_course == 2:
+                student.transfer_to_3rd_year_order = order_number
+            elif student.group.current_course == 3:
+                student.transfer_to_4th_year_order = order_number
+            elif student.group.current_course == 4:
+                student.expell_order = order_number
+                student.is_expelled = True
+
+            print(type(student))
+
+            create_transfer_log(order_number,student)
+            student.save()
+
+
+        groups_qr = GroupStudents.objects.all()
+        for group in groups_qr:
+            if group in groups:
+
+                # students.filter(group=group)
+                current_students = CurrentStudent.objects.filter(group=group)
+
+                current_course = group.current_course
+                students_count = len(current_students)
+                if current_course == 1:
+                    transfered_students = len(current_students.filter(transfer_to_2nd_year_order__isnull=False, transfer_to_3rd_year_order=None,
+                                                     transfer_to_4th_year_order=None))
+                    if students_count == transfered_students:
+                        group.current_course = 2
+                if current_course == 2:
+                    transfered_students = len(
+                        current_students.filter(transfer_to_2nd_year_order__isnull=False, transfer_to_3rd_year_order__isnull=False,
+                                                     transfer_to_4th_year_order=None))
+                    if students_count == transfered_students:
+                        group.current_course = 3
+                if current_course == 3:
+                    transfered_students = len(
+                        current_students.filter(transfer_to_2nd_year_order__isnull=False, transfer_to_3rd_year_order__isnull=False,
+                                                     transfer_to_4th_year_order__isnull=False))
+                    if students_count == transfered_students:
+                        group.current_course = 3
+
+                # group.current_course += 1
+                group.save()
+
+        return redirect(self.success_url)
+
+
+    def form_invalid(self, form):
+        """
+        Обработка ошибок формы.
+        """
+        return super().form_invalid(form)
 
 
 class StudentDetailView(ObjectDetailView):
@@ -659,12 +777,12 @@ class StatisticksView(ObjectTemplateView):
             if expelled:
                 continue
 
-            if base == "Основное общее":
+            if base == "основное общее":
                 base = 9
             else:
                 base = 11
 
-            if budget == "Бюджет":
+            if budget == "бюджет":
                 budget = True
             else:
                 budget = False

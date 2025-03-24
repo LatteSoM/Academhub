@@ -1,3 +1,4 @@
+from Academhub.tables.column import *
 import django_tables2 as table
 from django_tables2 import tables
 from Academhub.tables import BaseTable
@@ -59,11 +60,27 @@ class StudentTable(BaseTable):
     group = tables.Column(
         verbose_name='Группы',
     )
+    # selection = CheckBoxColumn(accessor='pk', orderable=False, verbose_name='')
 
     class Meta:
         model = CurrentStudent
         paginate_by = 10
-        fields = ('full_name', 'phone', 'birth_date', 'course', 'group')
+        # fields = ('full_name', 'phone', 'birth_date', 'course', 'group')
+        fields = ('full_name', 'education_base', 'education_basis', 'birth_date', 'course', 'group')
+
+
+class StudentTransferTable(BaseTable):
+    selection = CheckBoxColumn(accessor='pk', orderable=False, verbose_name='')
+
+    group = tables.Column(
+        verbose_name='Группы',
+    )
+
+    class Meta:
+        model = CurrentStudent
+        paginate_by = 10
+        fields = ('selection','full_name', 'education_base', 'education_basis', 'birth_date', 'course', 'group')
+
 
 class StudentTable2(BaseTable):
     class Meta:

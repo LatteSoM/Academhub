@@ -1,11 +1,13 @@
 from cProfile import label
+from lib2to3.pgen2.tokenize import group
 from random import choices
 
 from django import forms
 from django.db.models import Q
 from django.db.models.fields import DateField
 
-from Academhub.models import Qualification, Specialty, GroupStudents, Student, Discipline, ContingentMovement
+from Academhub.models import Qualification, Specialty, GroupStudents, Student, Discipline, ContingentMovement, \
+    CurrentStudent
 from django_filters import FilterSet, CharFilter, ModelChoiceFilter, ModelMultipleChoiceFilter, ChoiceFilter, \
     MultipleChoiceFilter, DateFilter
 
@@ -15,6 +17,7 @@ __all__ = (
     'SpecialtyFilter',
     'DisciplineFilter',
     'QualificationFilter',
+    'StudentTransferFilter',
 )
 
 class DisciplineFilter(FilterSet):
@@ -111,9 +114,53 @@ class StudentFilter(FilterSet):
         widget=forms.CheckboxSelectMultiple,
     )
 
+    # student = CurrentStudent.objects.filter(group__current_course__exact=)
+
     class Meta:
         model = Student
         fields = ['course', 'group', 'education_base', 'education_basis', 'academic_debts']
+
+    def filter_search(self, queryset, name, value):
+        return queryset.filter(
+            Q(full_name__icontains=value)
+            # Q(phone__icontains=value) |
+            # Q(group__current_course__exact=value)
+        )
+
+
+class StudentTransferFilter(FilterSet):
+
+    COURSE_CHOICES = (
+        ("1", 1),
+        ("2", 2),
+        ("3", 3),
+        ("4", 4)
+    )
+
+    ACADEMIC_DEBTS_CHOICE = (
+        (True, "Есть задолжности",),
+        (False, "Нет задолжностей",)
+    )
+
+    course = ChoiceFilter(choices=COURSE_CHOICES, label='Курс')
+
+    academic_debts = ChoiceFilter(choices=ACADEMIC_DEBTS_CHOICE, label='Наличие академических задолжностей')
+
+    education_base = MultipleChoiceFilter(
+        label='База образования',
+        widget=forms.CheckboxSelectMultiple,
+        choices = Student.EDUCATION_BASE_CHOICES
+    )
+
+    education_basis = MultipleChoiceFilter(
+        label='Основа образования',
+        choices = Student.EDUCATION_BASIS_CHOICES,
+        widget=forms.CheckboxSelectMultiple,
+    )
+
+    class Meta:
+        model = Student
+        fields = ['course', 'education_base', 'education_basis', 'academic_debts']
 
     def filter_search(self, queryset, name, value):
         return queryset.filter(
@@ -121,6 +168,7 @@ class StudentFilter(FilterSet):
             Q(phone__icontains=value) |
             Q(course__icontains=value)
         )
+
 
 class AcademFilter(FilterSet):
     search = CharFilter(method='filter_search', label='Поиск')

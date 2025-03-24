@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="page-container">
+        <div class="page-header">
+            <h2>Перевод студентов на следующий курс</h2>
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+            {% include 'inc/form/form.html' %}
+            <button type="submit" class="btn-primary">Перевести</button>
+        </form>
+
+{#        {% include 'inc/form/form.html' %}#}
+{#        <button type="submit" class="btn-primary">Перевести</button>#}
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    {{ block.super }}
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const selects = document.querySelectorAll("select"); // Находим все выпадающие списки
+
+            // При каждом изменении значения в любом select
+            selects.forEach(select => {
+                select.addEventListener("change", function (event) {
+                    let url = new URL(location.href);
+                    let paramName = event.target.name;  // Получаем имя параметра
+                    let paramValue = event.target.value;  // Получаем значение параметра
+
+                    // Обновляем параметр в URL
+                    url.searchParams.set(paramName, paramValue);
+
+                    // Обновляем страницу с новым параметром
+                    location.href = url.toString();
+                });
+            });
+
+            // При загрузке страницы — восстанавливаем значения в полях
+            const params = new URLSearchParams(window.location.search);
+            selects.forEach(select => {
+                let paramName = select.name;
+                if (params.has(paramName)) {
+                    select.value = params.get(paramName);
+                }
+            });
+        });
+
+
+
+
+    </script>
+{% endblock %}

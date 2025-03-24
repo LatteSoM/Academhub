@@ -869,6 +869,7 @@ class ContingentMovement(AcademHubModel):
     """
     ACTION_TYPES = (
         ('transfer', 'Перевод'),
+        ('transfer_course', 'Перевод на слующий курс'),
         ('expulsion', 'Отчисление'),
         ('academic_leave', 'Уход в академический отпуск'),
         ('academic_return', 'Выход из академического отпуска'),

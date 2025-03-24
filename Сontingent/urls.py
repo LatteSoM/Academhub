@@ -1,11 +1,13 @@
 from .views import *
 from django.urls import path
 from Academhub.utils import getpermission, getpattern
-from .views import AcademListView, AcademUpdateView, AcademReturn, ExpulsionListView, ExpelStudent, RecoverStudent, \
+from .views import (AcademListView, AcademUpdateView, AcademReturn, ExpulsionListView, ExpelStudent, RecoverStudent, \
     StatisticksView, generate_student_record_book, create_auto_record_book_template, \
     ContingentMovementTableView, generate_group_table, generate_course_table, generate_statistics_table, \
     generate_vacation_table, generate_movement_table, \
-    generate_student_record_book, create_auto_record_book_template, PromoteGroupStudentsView
+    generate_student_record_book, create_auto_record_book_template, PromoteGroupStudentsView,
+                    # StudentTransferView
+                    )
 
 urlpatterns = [
 
@@ -52,6 +54,7 @@ urlpatterns = [
      #
 
      path('student/list', StudentTableView.as_view(), name=getpattern('CurrentStudent', 'list')),
+     path('student/transfer/form', PromoteStudentsView.as_view(), name='transfer_students_form'),
      path('student/add', StudentCreateView.as_view(), name=getpattern('CurrentStudent', 'add')),
      path('student/<int:pk>', StudentDetailView.as_view(), name=getpattern('CurrentStudent', 'detail')),
      path('student/update/<int:pk>', StudentUpdateView.as_view(), name=getpattern('CurrentStudent', 'change')),

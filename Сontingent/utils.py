@@ -1,9 +1,8 @@
 import re
-
-from django.core.files.base import equals_lf
-
 from Academhub.models import *
 from django.db import transaction
+from django.utils import timezone
+from django.core.files.base import equals_lf
 
 
 def generate_unique_record_book_number(admission_year, student):
@@ -104,3 +103,14 @@ def transfer_group_students(group_id, transfer_order):
     #     return False, "Группа не найдена"
     # except Exception as e:
     #     return False, f"Ошибка при переводе: {str(e)}"
+
+
+def create_transfer_log(order_number, student):
+    ContingentMovement.objects.create(
+        order_number=order_number,
+        action_type='transfer_course',
+        action_date=timezone.now().date(),
+        previous_group=student.group,
+        new_group=None,
+        student=student,
+    )

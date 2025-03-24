@@ -38,6 +38,10 @@ navigation = Navigation(
                         url=getpattern('AcademStudent', 'list'),
                         permission_required=getpermission('AcademStudent', 'view')
                     ),
+                    ChildLink(
+                        name='Перевод на курс',
+                        url='transfer_students_form',
+                    ),
                 ]
             ),
             ChildLink(
