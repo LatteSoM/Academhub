@@ -5,7 +5,6 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
-from django.core.mail import send_mail
 from django.db.models import Prefetch, Q
 from openpyxl.styles import PatternFill, Font, Alignment, Side, Border
 from openpyxl.utils import get_column_letter
@@ -161,14 +160,12 @@ def fetch_group_semester_attestation_table(semester, group):
 
     curriculum = Curriculum.objects.filter(qualification_name=group.qualification.name, admission_year=group.year_create)
 
-    course = (int(semester) + 1) // 2
-    current_term = 1 if int(semester) % 2 == 1 else 2
+    # course = (int(semester) + 1) // 2
 
     curriculum_items = ClockCell.objects.filter(
         curriculum=curriculum.first(),
         module=None,
-        course=course,
-        term=current_term,
+        term=int(semester),
     ).filter(
         Q(
             code_of_type_work__in=[
@@ -188,7 +185,7 @@ def fetch_group_semester_attestation_table(semester, group):
     disciplines = []
     for item in curriculum_items:
 
-        if int(item.term) == current_term and item.discipline not in disciplines and int(item.course) == course:
+        if int(item.term) == int(semester) and item.discipline not in disciplines:
             disciplines.append(Discipline.objects.get(pk=item.discipline_id))
             print(Discipline.objects.get(pk=item.discipline_id))
 
