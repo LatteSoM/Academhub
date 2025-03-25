@@ -43,15 +43,17 @@ class CurriculumTableView(ImportViewMixin, ObjectTableView):
         """
         form.save()
         return HttpResponseRedirect(reverse('curriculum_edit_form'))
-    
+
     def post(self, request, *args, **kwargs):
         """Обрабатывает POST-запрос, валидирует и сохраняет form."""
-        self._form =  self.save_from_import(request.POST, request.FILES)
+        self._form = self.save_from_import(request.POST, request.FILES)
 
         if self._form.is_valid():
             return redirect('curriculum_edit_form')
         else:
-            raise ValidationError(self._form.errors["__all__"])
+            response = super().post(request, *args, **kwargs)
+            return response
+
 
 class CurricullumAddView(ObjectCreateView):
     model = Curriculum

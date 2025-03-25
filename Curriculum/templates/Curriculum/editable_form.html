@@ -3,7 +3,7 @@
 {% load widget_tweaks dict_extras %}
 
 {% block content %}
-<div class="container-fluid mt-4">
+<div class="container-fluid">
   <h1 class="text-white mb-4">Редактирование учебного плана</h1>
 
   <form method="post" novalidate id="editForm">
@@ -87,13 +87,14 @@
   }
 
   body.modal-open {
-        overflow-y: scroll;
-        padding-right: 0 !important;
-      }
+    overflow-y: scroll;
+    padding-right: 0 !important;
+  }
 
   .table-container {
     overflow-x: auto;
-    max-width: 100%;
+    overflow-y: auto; /* Включить вертикальный скролл */
+    max-height: 650px;
     border: 1px solid #2c3e50;
     border-radius: 8px;
     background-color: #374151;
@@ -107,15 +108,10 @@
   }
 
   .modal-content {
-        width: 450px;
-        max-width: 90%;
-        margin: auto; /* Центрируем модальное окно */
-      }
-
-      /* Исправляем позиционирование модального окна */
-      .modal {
-        padding-right: 0 !important;
-      }
+    width: 450px;
+    max-width: 90%;
+    margin: auto; /* Центрируем модальное окно */
+  }
 
   .data-table th {
     background-color: #4b5563;
@@ -202,7 +198,7 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background-color: #4b5563;
+    background-color: #f3f4f6;
     border-radius: 5px;
   }
 
@@ -226,12 +222,6 @@
     align-items: center;
     min-height: calc(100vh - 60px); /* Уменьшаем высоту для предотвращения скролла */
     margin: 30px auto; /* Добавляем отступы сверху и снизу */
-  }
-
-  .modal-content {
-    width: 450px;
-    max-width: 90%;
-    margin: auto; /* Центрируем модальное окно */
   }
 
   .spinner-border {
