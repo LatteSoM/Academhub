@@ -19,7 +19,11 @@ class GetPlxForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request', None)
+        # Глобальный кэш для результатов проверки текстов
+        self.SPELLER_CACHE = {}
+        self.speller = YandexSpeller()
         super().__init__(*args, **kwargs)
+
 
     def clean(self):
         super().clean()
@@ -309,21 +313,32 @@ class GetPlxForm(forms.Form):
         игнорируя слова из вайтлиста.
         Возвращает список ошибок или None, если ошибок нет.
         """
-        speller = YandexSpeller()
+        # Если текст уже проверялся – возвращаем результат из кэша
+        if text in self.SPELLER_CACHE:
+            return self.SPELLER_CACHE[text]
+
         try:
-            changes = speller.spell(text)
+            changes = self.speller.spell(text)
         except json.JSONDecodeError:
-            # Либо можно залогировать ошибку, либо вернуть пустой список
+            self.SPELLER_CACHE[text] = []
             return []
+
+        errors = []
         if changes:
-            errors = []
+            # Пример с использованием словаря whitelist (если понадобится)
             # whitelist_words = get_whitelist()
             for change in changes:
                 word_lower = change['word'].lower()
                 # if word_lower not in whitelist_words:
-                #     errors.append(f"Возможно ошибка в слове '{change['word']}' возможно это подходящее слово: {change['s']}")
-            return errors
-        return None
+                errors.append(
+                    f"Возможно ошибка в слове '{change['word']}', "
+                    f"возможно имелось в виду: {change['s']}"
+                )
+
+        # Если ошибок нет – возвращаем None, иначе список ошибок
+        result = errors if errors else None
+        self.SPELLER_CACHE[text] = result
+        return result
 
     def validate_discipline_index(self, index: str, previous_indices: dict):
         """
