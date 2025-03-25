@@ -6,6 +6,7 @@ from Academhub.models import CustomUser, PermissionProxy, GroupProxy
 
 __all__ = (
     'UserPasswordChangeForm',
+    'UserEmailChangeForm',
     'UserCreateForm',
     'UserUpdateForm',
     'PermissionForm',
@@ -16,6 +17,25 @@ class UserPasswordChangeForm(SetPasswordForm):
     """
     Форма изменения пароля
     """
+    def __init__(self, *args, **kwargs):
+        """
+        Обновление стилей формы
+        """
+        super().__init__(*args, **kwargs)
+        for field in self.fields:
+            self.fields[field].widget.attrs.update({
+                'class': 'form-control',
+                'autocomplete': 'off'
+            })
+
+class UserEmailChangeForm(forms.ModelForm):
+    """
+    Форма изменения email
+    """
+    class Meta:
+        model = CustomUser  # Используем вашу кастомную модель
+        fields = ['email']
+
     def __init__(self, *args, **kwargs):
         """
         Обновление стилей формы

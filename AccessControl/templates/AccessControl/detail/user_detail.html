@@ -6,15 +6,6 @@
     </h3>
 {% endblock %}
 
-{% block actions-button %}
-    <a class="btn-primary" href="{% url 'password_change' %}">
-        Изменить пароль
-    </a>
-    <a class="btn-primary" href="{% url url_update pk=object.pk %}">
-        Обновить
-    </a>
-{% endblock %}
-
 {% block permissions-list-header %}
     Права пользователя
 {% endblock %}

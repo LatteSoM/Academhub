@@ -2,14 +2,21 @@ import os
 import sys
 import django
 
+from django.utils.translation.trans_real import parse_accept_lang_header
+from docx.enum.table import WD_ALIGN_VERTICAL
 from openpyxl import Workbook
 from openpyxl.styles import Color, PatternFill
+
+from docx import Document
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.shared import Pt, RGBColor, Cm, Inches
+from docx.enum.style import WD_STYLE_TYPE
 
 # Определение среды Django для тестов
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Academhub.settings")
 django.setup()
-from Academhub.models import GroupStudents, Qualification, Specialty, Student
+from Academhub.models import ContingentMovement, GradebookStudents, GroupStudents, Qualification, Specialty, Student, Gradebook
 
 
 class GroupTableGenerator:
@@ -415,7 +422,7 @@ class VacationTableGenerator:
             worksheet["Q1"].value = "Примечание"
             
             entry_index = 2
-            for student in students:
+            for student in self.students:
                 if student.is_in_academ and not student.is_expelled:
                     worksheet.cell(row=entry_index, column=1).value = entry_index - 1
                     worksheet.cell(row=entry_index, column=2).value = student.full_name
@@ -503,6 +510,269 @@ class MovementTableGenerator:
 
             workbook.save(path)
 
+class GradebookDocumentGenerator:
+    def __init__(self, gradebook) -> None:
+        self.gradebook = gradebook
+        self.gradebook_name = gradebook.name
+        self.gradebook_number = gradebook.number
+        self.gradebook_discipline = gradebook.discipline
+        self.gradebook_semester = gradebook.semester_number
+        self.gradebook_course = gradebook.group.current_course
+        self.gradebook_group = gradebook.group.full_name
+        self.gradebook_students = gradebook.students
+        self.gradebook_specialty = gradebook.group.qualification.specialty
+        self.gradebook_teachers = [str(i[5]) for i in list(gradebook.teachers.values_list())]
+
+    def generate_document(self, path) -> None:
+        document = Document()
+        sections = document.sections
+        for section in sections:
+            section.page_width = Cm(21.0)
+            section.page_height = Cm(29.70)
+            section.left_margin = Cm(3.0)
+            section.right_margin = Cm(1.49)
+            section.top_margin = Cm(1.50)
+            section.bottom_margin = Cm(2.0)
+
+        styles = document.styles
+        # Определенние стилей:
+        # Heading 1
+        heading_style = styles.add_style('Our_Heading 1', WD_STYLE_TYPE.PARAGRAPH)
+        heading_style.base_style = styles['Heading 1']
+        heading_style.font.name = 'Times New Roman'
+        heading_style.font.size = Pt(12)
+        heading_style.font.color.rgb = RGBColor(0, 0, 0)
+
+        # Normal
+        normal_style = styles.add_style('Our_Normal', WD_STYLE_TYPE.PARAGRAPH)
+        normal_style.base_style = styles['Normal']
+        normal_style.font.name = 'Times New Roman'
+        normal_style.font.size = Pt(10)
+
+        # Subtitle
+        subtitle_style = styles.add_style('Our_subtitle', WD_STYLE_TYPE.PARAGRAPH)
+        subtitle_style.base_style = styles['Our_subtitle']
+        subtitle_style.font.name = 'Times New Roman'
+        subtitle_style.font.size = Pt(14)
+        subtitle_style.font.bold = True
+
+        # Отсюда идет форматирование самого документа
+        # Заголовок в начале документа
+        paragraph = document.add_paragraph('МИНИСТЕРСТВО НАУКИ И ВЫСШЕГО ОБРАЗОВАНИЯ РОССИЙСКОЙ ФЕДЕРАЦИИ\n', 'Our_Normal')
+        paragraph.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        paragraph.style.font.bold = True
+        paragraph.style.font.size = Pt(9)
+        run = paragraph.add_run('''федеральное государственное бюджетное образовательное учреждение высшего образования 
+        «Российский экономический университет имени Г.В. Плеханова»''')
+        run.bold = True
+        run.font.size = Pt(10)
+        paragraph.paragraph_format.space_after = 0
+
+        paragraph = document.add_heading('Московский приборостроительный техникум\n', 1)
+        paragraph.style = 'Our_Heading 1'
+        paragraph.paragraph_format.space_before = 0
+        paragraph.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+        # Subtitle с номером ведомости
+        paragraph = document.add_paragraph(f'{self.gradebook_name.upper()}   ', 'Our_subtitle')
+        paragraph.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        paragraph.add_run(f'№ {self.gradebook_number}').underline = True
+
+        # Параграф с описанием про кого и от кого ведомость (не закончено: нужно разобраться со стилями разных параграфов
+        # В случае если курсовой проект надо писать не "по дисциплине", а "курсовой проект"
+        if self.gradebook_name == 'Ведомость защиты курсового проекта':
+            paragraph = document.add_paragraph('Курсовой проект: ', 'Our_Normal')
+        else:
+            paragraph = document.add_paragraph('По дисциплине/МДК: ', 'Our_Normal')
+
+        paragraph.style.font.bold = False
+        paragraph.add_run(f'{self.gradebook_discipline}\n').font.size = Pt(12)
+        paragraph.add_run(str(self.gradebook_course)).bold = True
+        paragraph.add_run(' курс ').font.size = Pt(10)
+        paragraph.add_run(str(self.gradebook_semester)).bold = True
+        paragraph.add_run(' семестр ').font.size = Pt(10)
+        paragraph.add_run(self.gradebook_group).bold = True
+        paragraph.add_run(' группа\n').font.size = Pt(10)
+        paragraph.add_run('Специальность: ').font.size = Pt(10)
+        paragraph.add_run(f'{self.gradebook_specialty.code} "{self.gradebook_specialty.name}"\n').bold = True
+        paragraph.add_run('Форма обучения: ').font.size = Pt(10)
+        paragraph.add_run('Очная\n').bold = True
+        paragraph.add_run('Преподаватель: ').font.size = Pt(10)
+        paragraph.add_run(' '.join(self.gradebook_teachers))
+        paragraph.add_run('\n')
+        
+        # Сделать отсутствие колонки с билетами в случае если курсовой или успеваемость
+        
+        if self.gradebook_name == 'Ведомость успеваемости' or self.gradebook_name == 'Ведомость защиты курсового проекта':
+            table = document.add_table(rows=1, cols=4)
+            # Устанавливаем ширину столбцов (в дюймах)
+            column_widths = [
+                Inches(0.2),  # № П/П
+                Inches(10),  # ФИО
+                Inches(0.5),  # Оценка
+                Inches(0.5)  # Подпись
+            ]
+
+            for i, width in enumerate(column_widths):
+                table.columns[i].width = width
+
+            table.style = 'Table Grid'
+            table.style.font.name = "Times New Roman"
+            table.style.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            table.style.font.size = Pt(11)
+            # Заголовки таблицы
+            header_cells = table.rows[0].cells
+            header_cells[0].text = '№ П/П'
+            header_cells[1].text = 'Фамилия, имя, отчество студента'
+            header_cells[2].text = 'Оценка'
+            header_cells[3].text = 'Подпись экзаменатора'
+
+            # Выравнивание текста в заголовках
+            for cell in header_cells:
+                for paragraph in cell.paragraphs:
+                    paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            
+            counter = 1
+            for gradebook_student in GradebookStudents.objects.filter(gradebook=self.gradebook):
+                row_cells = table.add_row().cells
+                row_cells[0].text = str(counter)
+                row_cells[1].text = gradebook_student.student.full_name
+                row_cells[2].text = str(gradebook_student.grade)
+
+                # Выравнивание для ФИО
+                row_cells[1].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.LEFT
+
+                # Выравнивание для числовых колонок
+                for i in [0, 2, 3]:  # Колонки с числами
+                    row_cells[i].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+                    row_cells[i].paragraphs[0].alignment = WD_ALIGN_VERTICAL.CENTER
+
+                counter += 1
+        else:
+            table = document.add_table(rows=1, cols=5)
+            # Устанавливаем ширину столбцов (в дюймах)
+            column_widths = [
+                Inches(0.2),  # № П/П
+                Inches(0.2),  # № экз.билета
+                Inches(10),  # ФИО
+                Inches(0.5),  # Оценка
+                Inches(0.5)  # Подпись
+            ]
+
+            for i, width in enumerate(column_widths):
+                table.columns[i].width = width
+
+            table.style = 'Table Grid'
+            table.style.font.name = "Times New Roman"
+            table.style.font.size = Pt(11)
+            # Заголовки таблицы
+            header_cells = table.rows[0].cells
+            header_cells[0].text = '№ П/П'
+            header_cells[1].text = '№ экз.билета'
+            header_cells[2].text = 'Фамилия, имя, отчество студента'
+            header_cells[3].text = 'Оценка'
+            header_cells[4].text = 'Подпись экзаменатора'
+
+            # Выравнивание текста в заголовках
+            for cell in header_cells:
+                for paragraph in cell.paragraphs:
+                    paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            
+            counter = 1
+            for gradebook_student in GradebookStudents.objects.filter(gradebook=self.gradebook):
+                row_cells = table.add_row().cells
+                row_cells[0].text = str(counter)
+                row_cells[1].text = str(gradebook_student.ticket_number)
+                row_cells[2].text = gradebook_student.student.full_name
+                row_cells[3].text = str(gradebook_student.grade)
+
+                # Выравнивание для ФИО
+                row_cells[2].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.LEFT
+
+                # Выравнивание для числовых колонок
+                for i in [0, 1, 3]:  # Колонки с числами
+                    row_cells[i].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+                    row_cells[i].paragraphs[0].alignment = WD_ALIGN_VERTICAL.CENTER
+                counter += 1
+
+        paragraph = document.add_paragraph('\n')
+
+        footer_table = document.add_table(rows=1, cols=3)
+        footer_table.autofit = False  # Отключаем авто-подгонку
+        footer_table.rows[0].cells[1].width = Cm(8)
+        footer_table.rows[0].cells[2].width = Cm(4)
+
+        footer_table.rows[0].cells[0].text = '«      »         ' + str(self.gradebook.date_of_closing.year) + ' года'
+
+
+        footer_table.rows[0].cells[1].text = 'Подпись преподавателя:'
+        for paragraph in footer_table.rows[0].cells[1].paragraphs:
+            paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT  # Выравнивание по правому краю
+
+        footer_table.rows[0].cells[2].text = '_______________'
+        for paragraph in footer_table.rows[0].cells[2].paragraphs:
+            paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT  # Выравнивание по правому краю
+
+        # Устанавливаем стиль для ВСЕХ ячеек таблицы
+        for row in footer_table.rows:
+            for cell in row.cells:
+                # Настройка шрифта для каждого параграфа в ячейке
+                for paragraph in cell.paragraphs:
+                    run = paragraph.runs[0] if paragraph.runs else paragraph.add_run()
+                    run.font.name = "Times New Roman"
+                    run.font.size = Pt(10)
+
+
+        paragraph = document.add_paragraph('\n')
+
+        # Table for grades count
+        footer_table2 = document.add_table(rows=6, cols=6)
+
+        footer_table2.style.font.name = "Times New Roman"
+        footer_table2.autofit = False  # Отключаем авто-подгонку
+        footer_table2.rows[0].cells[4].width = Cm(4)
+
+        footer_table2.rows[0].cells[4].text = 'Всего оценок: '
+        for paragraph in footer_table2.rows[0].cells[4].paragraphs:
+            paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT  # Выравнивание по правому краю
+        footer_table2.rows[0].cells[5].text = str(GradebookStudents.objects.filter(gradebook=self.gradebook).count())
+
+        footer_table2.rows[1].cells[4].text = 'в том числе «5» –'
+        for paragraph in footer_table2.rows[1].cells[4].paragraphs:
+            paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT  # Выравнивание по правому краю
+        footer_table2.rows[1].cells[5].text = str(GradebookStudents.objects.filter(gradebook=self.gradebook, grade="5").count())
+
+        footer_table2.rows[2].cells[4].text = '«4» –'
+        for paragraph in footer_table2.rows[2].cells[4].paragraphs:
+            paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT  # Выравнивание по правому краю
+        footer_table2.rows[2].cells[5].text = str(GradebookStudents.objects.filter(gradebook=self.gradebook, grade="4").count())
+
+        footer_table2.rows[3].cells[4].text = '«3» –'
+        for paragraph in footer_table2.rows[3].cells[4].paragraphs:
+            paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT  # Выравнивание по правому краю
+        footer_table2.rows[3].cells[5].text = str(GradebookStudents.objects.filter(gradebook=self.gradebook, grade="3").count())
+
+        footer_table2.rows[4].cells[4].text = '«2» –'
+        for paragraph in footer_table2.rows[4].cells[4].paragraphs:
+            paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT  # Выравнивание по правому краю
+        footer_table2.rows[4].cells[5].text = str(GradebookStudents.objects.filter(gradebook=self.gradebook, grade="2").count())
+
+        footer_table2.rows[5].cells[4].text = '«н/я» –'
+        for paragraph in footer_table2.rows[5].cells[4].paragraphs:
+            paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT # Выравнивание по правому краю
+        footer_table2.rows[5].cells[5].text = str(GradebookStudents.objects.filter(gradebook=self.gradebook, grade="Неявка").count())
+
+        # Устанавливаем стиль для ВСЕХ ячеек таблицы
+        for row in footer_table2.rows:
+            for cell in row.cells:
+                # Настройка шрифта для каждого параграфа в ячейке
+                for paragraph in cell.paragraphs:
+                    run = paragraph.runs[0] if paragraph.runs else paragraph.add_run()
+                    run.font.name = "Times New Roman"
+                    run.font.size = Pt(10)
+
+        document.save(path)
+
 # def tableStudentsParse(path):
 #     ext = os.path.splitext(path)[1].lower()
 #     data = []
@@ -526,20 +796,32 @@ class MovementTableGenerator:
 #        student = Student(full_name=student_row[1], )
 
 if __name__ == "__main__":
-    students = Student.objects.all()
-    specialties = Specialty.objects.all()
-    qualifications = Qualification.objects.all()
-    groups = GroupStudents.objects.all()
+    # students = Student.objects.all()
+    # specialties = Specialty.objects.all()
+    # qualifications = Qualification.objects.all()
+    # groups = GroupStudents.objects.all()
+    # movements = ContingentMovement.objects.all()
+    #
+    # gtg = GroupTableGenerator(groups=groups)
+    # ctg = CourseTableGenerator(students=students, education_base="Основное общее", course="2")
+    # stg = StatisticsTableGenerator(specialties=specialties, qualifications=qualifications, students=students)
+    # vtg = VacationTableGenerator(students=students)
+    # mtg = MovementTableGenerator(movements=movements)
+    #
+    # gtg.generate_document("test_groups.xlsx")
+    # ctg.generate_document("test_course.xlsx")
+    # stg.generate_document("test_statistics.xlsx")
+    # vtg.generate_document("test_vacation.xlsx")
+    # mtg.generate_document("test_movement.xlsx")
+    #
 
-    gtg = GroupTableGenerator(groups=groups)
-    ctg = CourseTableGenerator(students=students, education_base="Основное общее", course="2")
-    stg = StatisticsTableGenerator(specialties=specialties, qualifications=qualifications, students=students)
-    vtg = VacationTableGenerator(students=students)
-    mtg = MovementTableGenerator(students=students)
+    gradebook_exam = Gradebook.objects.get(number="ааа1123")
+    gradebook_courseProject = Gradebook.objects.get(number="546NN")
 
-    gtg.generate_document("test_groups.xlsx")
-    ctg.generate_document("test_course.xlsx")
-    stg.generate_document("test_statistics.xlsx")
-    vtg.generate_document("test_vacation.xlsx")
-    mtg.generate_document("test_movement.xlsx")
-    
+    gdg = GradebookDocumentGenerator(gradebook_exam)
+
+    gdg.generate_document("test_gradebook_exam.docx")
+
+    gdg = GradebookDocumentGenerator(gradebook_courseProject)
+    gdg.generate_document("test_gradebook_courseProject.docx")
+

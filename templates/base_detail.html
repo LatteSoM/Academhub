@@ -15,10 +15,8 @@
             
         {% endblock %}
         <div class="header-actions">
-            <a class="btn-primary" href="{% url url_list %}">
-                Назад к таблице
-            </a>
-            {% block actions-button %}
+            {% block buttons %}
+                {% include 'inc/buttons.html' %}
             {% endblock %}
         </div>
     </div>

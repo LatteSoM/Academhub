@@ -1,9 +1,10 @@
+from ..utils import getpermission
 from django.http import JsonResponse
 from django_tables2 import SingleTableView
 from django_filters.views import FilterView
 from django.utils.translation import gettext as _
 from django.core.exceptions import ObjectDoesNotExist
-from .mixin import SubTablesMixin, BaseContextMixin
+from .mixin import SubTablesMixin, BaseContextMixin, ImportViewMixin, PermissionBaseMixin
 from django.views.generic import TemplateView, ListView, DetailView, UpdateView, CreateView, DeleteView, View
 
 __all__  = [
@@ -14,8 +15,8 @@ __all__  = [
   'ObjectCreateView',
   'ObjectDeleteView',
   'ObjectTemplateView',
+  'ObjectTableImportView',
 ]
-
 
 class ObjectTemplateView(TemplateView):
   '''
@@ -23,6 +24,18 @@ class ObjectTemplateView(TemplateView):
   Наследуется от NavigationContextMixin и TemplateView.
   Используется для отображения статических страниц с добавлением навигации.
   '''
+
+  permission = None
+
+  def dispatch(self, request, *args, **kwargs):
+    '''
+        Добавлена логика проверка прав.
+    '''
+    if self.permission:
+        if not request.user.has_perm(self.permission):
+            raise PermissionError()
+        
+    return super().dispatch(request, *args, **kwargs)
 
 
 class BaseObjectTableView(BaseContextMixin, SingleTableView):
@@ -49,6 +62,25 @@ class ObjectTableView(FilterView, BaseObjectTableView):
     template_name = 'base_view.html'
     paginate_by = 10
 
+class ObjectTableImportView(ImportViewMixin, FilterView, BaseObjectTableView):
+    '''
+      Базовый класс для представлений с таблицами и поддержкой импорта.
+      Наследуется от BaseContextMixin и SingleTableView (из django-tables2) и FilterView (из django-filter).
+      Используется для отображения данных в виде таблиц с фильтрации и поддержкой навигации.
+    '''
+    permission_import_required = 'import'
+    template_name = 'base_view_import.html'
+    paginate_by = 10
+
+    def get_permission_import(self):
+        object = self._get_class_object()
+
+        return getpermission(object, self.permission_import_required)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['permission_import'] = self.get_permission_import()
+        return context
 
 class ObjectListView(BaseContextMixin, ListView):
     '''

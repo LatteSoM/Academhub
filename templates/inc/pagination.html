@@ -8,8 +8,8 @@
     </div>
     <div class="pagination-controls">
         {% if page_obj.has_previous %}
-            <a href="?page=1" class="pagination-button">&laquo; Первая</a>
-            <a href="?page={{ page_obj.previous_page_number }}" class="pagination-button">Предыдущая</a>
+            <a href="?page=1&{{ request.GET.urlencode }}" class="pagination-button">&laquo; Первая</a>
+            <a href="?page={{ page_obj.previous_page_number }}&{{ request.GET.urlencode }}" class="pagination-button">Предыдущая</a>
         {% endif %}
 
         <div class="pagination-pages">
@@ -17,14 +17,14 @@
                 {% if num == page_obj.number %}
                     <span class="pagination-button active">{{ num }}</span>
                 {% else %}
-                    <a href="?page={{ num }}" class="pagination-button">{{ num }}</a>
+                    <a href="?page={{ num }}&{{ request.GET.urlencode }}" class="pagination-button">{{ num }}</a>
                 {% endif %}
             {% endfor %}
         </div>
 
         {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}" class="pagination-button">Следующая</a>
-            <a href="?page={{ page_obj.paginator.num_pages }}" class="pagination-button">Последняя &raquo;</a>
+            <a href="?page={{ page_obj.next_page_number }}&{{ request.GET.urlencode }}" class="pagination-button">Следующая</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}&{{ request.GET.urlencode }}" class="pagination-button">Последняя &raquo;</a>
         {% endif %}
     </div>
 </div>

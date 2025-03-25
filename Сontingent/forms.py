@@ -15,6 +15,7 @@ __all__ = [
     'DisciplineForm', 
     'StudentImportForm',
     'QualificationForm',
+    'PromoteGroupStudentsForm',
 ]
 
 class DisciplineForm(forms.ModelForm):
@@ -30,6 +31,29 @@ class DisciplineForm(forms.ModelForm):
             'code',
             'specialty',
         ]
+
+
+class PromoteGroupStudentsForm(forms.ModelForm):
+    """
+    Форма для перевода группы и студентов на следующий курс
+    """
+    transfer_order = forms.CharField(
+        label='Номер приказа о переводе',
+        max_length=255,
+        required=True,
+    )
+
+    class Meta:
+        model = GroupStudents
+        fields = []  # Пустой список, так как редактируем только transfer_order
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['transfer_order'].widget.attrs.update({
+            'class': 'form-control',
+            'autocomplete': 'off'
+        })
+
 
 class StudentForm(forms.ModelForm):
     birth_date = forms.DateField(
@@ -78,7 +102,7 @@ class StudentForm(forms.ModelForm):
     )
 
     class Meta:
-        model = Student
+        model = CurrentStudent
         fields = [
             'full_name',
             'phone',
@@ -118,7 +142,7 @@ class SpecialtyForm(forms.ModelForm ):
 class AcademLeaveForm(forms.ModelForm):
 
     class Meta:
-        model = Student
+        model = CurrentStudent
         fields = [
             'academ_leave_date',
             'academ_return_date',

@@ -5,6 +5,10 @@
 
 {% block detail-header %}
 <h1>
-    Специализация {{ object }}
+    Квалификация {{ object }}
 </h1>
+{% endblock %}
+
+{% block content %}
+    {{ block super }}
 {% endblock %}

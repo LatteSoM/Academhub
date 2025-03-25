@@ -3,10 +3,3 @@
 {% block form_title %}
     Обновить
 {% endblock %}
-
-{% block buttons %}
-    {{ block.super }}
-    <a class="btn-primary" style="display: inline-block; margin: 10px 0; margin-left: 10px;" href="{% url url_detail pk=object.pk %}">
-        К объекту
-    </a>
-{% endblock %}

@@ -96,14 +96,19 @@
 
 .sidebar-footer {
     padding: 1rem 1.5rem;
-    border-top: 1px solid var(--border-color);
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    align-items: start;
+    flex-direction: column;
+    border-top: 1px solid var(--border-color);
+}
+
+#username {
+    margin-bottom: 5px;
 }
 
 .user-section {
+    width: 100%;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    justify-content: space-between;
 }
