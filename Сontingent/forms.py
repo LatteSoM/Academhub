@@ -379,55 +379,78 @@ class ContingentStudentImportForm(StudentImportForm):
         wb = load_workbook(file)
         # print(f"Листы в файле: {wb.sheetnames}")  # Проверяем список листов
 
-        sheet_name = "1 курс (9 кл)"  # Строго задаем имя листа
-        if sheet_name not in wb.sheetnames:
-            # print(f"Лист {sheet_name} не найден!")
+        # sheet_name = "1 курс (9 кл)"  # Строго задаем имя листа
+        required_sheets = [
+            "1 курс (9 кл)",
+            '1 курс (11 кл)',
+            '2 курс (9 кл)',
+            '3 курс (9кл)',
+            '2 курс (11 кл) ',
+            '4 курс (9 кл.)  ',
+            '3 курс (11 кл)',
+            # 'Статистика',
+            # 'Движение ',
+            # 'Академический отпуск'
+        ]
+        if required_sheets not in wb.sheetnames:
+            # print(f"Лист {required_sheets} не найдены!")
             return
 
-        ws = wb[sheet_name]  # Получаем лист
+        for sheet_name in wb.sheetnames:
+            if sheet_name in required_sheets:
+                # if sheet_name == required_sheets[0] or sheet_name == required_sheets[1] or sheet_name == required_sheets[2] \
+                #         or sheet_name == required_sheets[3] or sheet_name == required_sheets[4] or sheet_name == required_sheets[5] \
+                #         or sheet_name == required_sheets[6]:
+                ws = wb[sheet_name]  # Получаем лист
 
-        # Заголовки
-        headers = {cell.value: idx for idx, cell in enumerate(ws[1]) if cell.value}
-        print(f"Заголовки в файле: {headers}")  # Проверяем заголовки
+                # Заголовки
+                headers = {cell.value: idx for idx, cell in enumerate(ws[1]) if cell.value}
+                # print(f"Заголовки в файле: {headers}")  # Проверяем заголовки
 
-        self.data_list = []
+                self.data_list = []
 
-        for row in ws.iter_rows(min_row=2, values_only=True):
-            if all(cell is None for cell in row):
-                continue  # Просто пропускаем пустые строки
+                for row in ws.iter_rows(min_row=2, values_only=True):
+                    if all(cell is None for cell in row):
+                        continue  # Просто пропускаем пустые строки
 
-            data = {
-                'full_name': row[headers.get("ФИО")],
-                'birth_date': None,
-                'group_number': row[headers.get("Группа")],
-                'education_base': row[headers.get("База образования (9 или 11 классов)")],
-                'education_basis': row[headers.get("Основа образования (бюджет, внебюджет)")],
-                'admission_order': row[headers.get("Приказ о зачислении")],
-                'expell_order': row[headers.get("Приказ об отчислении")] if headers.get("Приказ об отчислении") is not None else None,
-                'transfer_to_2nd_year_order': row[headers.get("Переводной приказ на 2 курс")] if headers.get("Переводной приказ на 2 курс") is not None else None,
-                'transfer_to_3rd_year_order': row[headers.get("Переводной приказ на 3 курс")] if headers.get("Переводной приказ на 3 курс") is not None else None,
-                'transfer_to_4th_year_order': row[headers.get("Переводной приказ на 4 курс")] if headers.get("Переводной приказ на 4 курс") is not None else None,
-            }
+                    data = {
+                        'full_name': row[headers.get("ФИО")],
+                        'birth_date': None,
+                        'group_number': row[headers.get("Группа")],
+                        'education_base': row[headers.get("База образования (9 или 11 классов)")],
+                        'education_basis': row[headers.get("Основа образования (бюджет, внебюджет)")],
+                        'admission_order': row[headers.get("Приказ о зачислении")],
+                        'expell_order': row[headers.get("Приказ об отчислении")] if headers.get("Приказ об отчислении") is not None else None,
+                        'transfer_to_2nd_year_order': row[headers.get("Переводной приказ на 2 курс")] if headers.get("Переводной приказ на 2 курс") is not None else None,
+                        'transfer_to_3rd_year_order': row[headers.get("Переводной приказ на 3 курс")] if headers.get("Переводной приказ на 3 курс") is not None else None,
+                        'transfer_to_4th_year_order': row[headers.get("Переводной приказ на 4 курс")] if headers.get("Переводной приказ на 4 курс") is not None else None,
+                    }
 
-            if headers.get("Дата рождения") is not None and row[headers.get("Дата рождения")]:
-                cell_value = row[headers.get("Дата рождения")]
-                if isinstance(cell_value, datetime):
-                    data['birth_date'] = cell_value.date()
-                else:
-                    try:
-                        data['birth_date'] = datetime.strptime(cell_value, "%d.%m.%Y").date()
-                    except ValueError:
-                        print(f"Ошибка даты у {data['full_name']}: {cell_value}")
+                    if headers.get("Дата рождения") is not None and row[headers.get("Дата рождения")]:
+                        cell_value = row[headers.get("Дата рождения")]
+                        if isinstance(cell_value, datetime):
+                            data['birth_date'] = cell_value.date()
+                        else:
+                            try:
+                                data['birth_date'] = datetime.strptime(cell_value, "%d.%m.%Y").date()
+                            except ValueError:
+                                print(f"Ошибка даты у {data['full_name']}: {cell_value}")
 
-            # Проверка группы
-            group_filter = GroupStudents.objects.filter(full_name=data['group_number'])
-            if group_filter.exists():
-                data['group'] = group_filter.first()
-            else:
-                raise ValidationError(f'Группы {data["group_number"]} не существует')
+                    # Проверка группы
+                    group_filter = GroupStudents.objects.filter(full_name=data['group_number'])
+                    if group_filter.exists():
+                        data['group'] = group_filter.first()
+                    else:
+                        raise ValidationError(f'Группы {data["group_number"]} не существует')
 
-            # print(f"Добавляем: {data}")
-            self.data_list.append(data)
+                    # print(f"Добавляем: {data}")
+                    self.data_list.append(data)
+                # elif sheet_name == required_sheets[7]:
+                #     pass
+                # elif sheet_name == required_sheets[8]:
+                #     pass
+                # elif sheet_name == required_sheets[9]:
+                #     pass
 
     def save(self):
         # print(f"Всего данных для сохранения: {len(self.data_list)}")
