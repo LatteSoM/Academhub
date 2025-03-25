@@ -16,8 +16,132 @@
             {% with form=form_import %}
                 {% include 'inc/form/form.html' %}
             {% endwith %}
-        <br>
-            <button type="submit" class="btn-primary">Загрузить</button>
+            <br>
+            <button type="submit" class="btn btn-primary" id="submitButton">Загрузить</button>
         </form>
     </div>
+
+    <style>
+      /* Фиксируем скроллбар и предотвращаем сдвиг контента */
+      body.modal-open {
+        overflow-y: scroll;
+        padding-right: 0 !important;
+      }
+
+      .modal-dark .modal-content {
+        background-color: #1f2937;
+        color: #f3f4f6;
+        border-radius: 12px;
+      }
+
+      .modal-dark .modal-header {
+        border-bottom: 1px solid #4b5563;
+      }
+
+      .modal-dark .btn-close {
+        display: none;
+      }
+
+      .modal-dialog {
+        display: flex;
+        align-items: center;
+        min-height: calc(100vh - 60px); /* Уменьшаем высоту для предотвращения скролла */
+        margin: 30px auto; /* Добавляем отступы сверху и снизу */
+      }
+
+      .modal-content {
+        width: 450px;
+        max-width: 90%;
+        margin: auto; /* Центрируем модальное окно */
+      }
+
+      /* Исправляем позиционирование модального окна */
+      .modal {
+        padding-right: 0 !important;
+      }
+
+      .spinner-border {
+        width: 4rem;
+        height: 4rem;
+        border-width: 6px;
+        color: #2563eb;
+        display: block;
+        margin: 20px auto;
+      }
+
+      .modal-body {
+        text-align: left;
+        padding: 20px;
+      }
+
+      .btn-primary.loading {
+        position: relative;
+        pointer-events: none;
+        opacity: 0.6;
+      }
+
+      .btn-primary.loading::after {
+        content: "";
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 16px;
+        height: 16px;
+        border: 3px solid transparent;
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 0.6s linear infinite;
+      }
+
+      @keyframes spin {
+        from { transform: translateY(-50%) rotate(0deg); }
+        to { transform: translateY(-50%) rotate(360deg); }
+      }
+    </style>
+
+    <div class="modal fade modal-dark" id="exampleModal" tabindex="-1"
+         aria-labelledby="exampleModalLabel" aria-hidden="true"
+         data-bs-backdrop="static" data-bs-keyboard="false">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Импорт данных</h1>
+          </div>
+          <div class="modal-body">
+            <p>Пожалуйста, подождите, идёт валидация данных...</p>
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        const form = document.querySelector("#import form");
+        const submitButton = document.getElementById("submitButton");
+        const modal = new bootstrap.Modal(document.getElementById("exampleModal"));
+
+        if (!form) {
+          console.error("Форма не найдена!");
+          return;
+        }
+
+        form.addEventListener("submit", function(event) {
+          event.preventDefault();
+
+          if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+          }
+
+          submitButton.classList.add("loading");
+          modal.show();
+
+          form.submit();
+        });
+      });
+    </script>
 {% endblock %}

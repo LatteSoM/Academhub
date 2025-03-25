@@ -1,5 +1,6 @@
 import json
 
+from django.core.exceptions import ValidationError
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.http import HttpResponseRedirect
@@ -48,8 +49,9 @@ class CurriculumTableView(ImportViewMixin, ObjectTableView):
         self._form =  self.save_from_import(request.POST, request.FILES)
 
         if self._form.is_valid():
-
             return redirect('curriculum_edit_form')
+        else:
+            raise ValidationError(self._form.errors["__all__"])
 
 class CurricullumAddView(ObjectCreateView):
     model = Curriculum
@@ -82,7 +84,7 @@ class CurriculumEditableFormView(TemplateView):
         form.save()
         messages.success(
             self.request,
-            "Успешное редактирование учебного плана"
+            "Успешное сохранение учебного плана"
         )
         return redirect('curriculum_list')
 

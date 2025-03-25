@@ -6,7 +6,7 @@
 <div class="container-fluid mt-4">
   <h1 class="text-white mb-4">Редактирование учебного плана</h1>
 
-  <form method="post" novalidate>
+  <form method="post" novalidate id="editForm">
     {% csrf_token %}
     <div class="table-container">
       <table class="data-table table">
@@ -34,9 +34,7 @@
                   {% render_field field class="form-control custom-input" %}
                 </td>
 
-                {# Сначала получаем индекс дисциплины (например, "0") из имени поля #}
                 {% with index=field.name|slice:"16:" %}
-                  {# Для каждого семестра формируем имя поля: discipline_semester_{{ sem }}_{{ index }} #}
                   {% for sem in semester_list %}
                     {% with sem_field="discipline_semester_"|add:sem|add:"_"|add:index %}
                       <td>
@@ -61,121 +59,223 @@
     </div>
 
     <div class="form-submit">
-      <button type="submit" class="btn btn-primary btn-lg">Сохранить</button>
+      <button type="submit" class="btn btn-primary btn-lg" id="submitButton">Сохранить</button>
     </div>
   </form>
 </div>
 
+<!-- Модальное окно -->
+<div class="modal fade modal-dark" id="editingModal" tabindex="-1" aria-labelledby="editingModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="editingModalLabel">Сохранение изменений</h1>
+      </div>
+      <div class="modal-body text-center">
+        <p>Пожалуйста, подождите, идёт сохранение данных...</p>
+        <div class="spinner-border" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <style>
-body {
-  background-color: #1e2a38;
-}
+  body {
+    background-color: #1e2a38;
+  }
 
-.table-container {
-  overflow-x: auto;
-  max-width: 100%;
-  border: 1px solid #2c3e50;
-  border-radius: 8px;
-  background-color: #374151;
-  padding-bottom: 10px;
-}
+  body.modal-open {
+        overflow-y: scroll;
+        padding-right: 0 !important;
+      }
 
-.data-table {
-  width: max-content; /* Таблица займет столько места, сколько нужно */
-  min-width: 100%; /* Минимальная ширина таблицы равна ширине контейнера */
-  border-collapse: collapse;
-}
-.data-table th {
-  background-color: #4b5563;
-  padding: 12px;
-  font-weight: 600;
-  color: #ffffff;
-  text-align: left;
-  white-space: nowrap;
-}
+  .table-container {
+    overflow-x: auto;
+    max-width: 100%;
+    border: 1px solid #2c3e50;
+    border-radius: 8px;
+    background-color: #374151;
+    padding-bottom: 10px;
+  }
 
-.data-table td {
-  border-top: 1px solid #2c3e50;
-  padding: 8px;
-  vertical-align: middle;
-  background-color: #374151;
-  color: #ecf0f1;
-  white-space: nowrap;
-}
+  .data-table {
+    width: max-content; /* Таблица займет столько места, сколько нужно */
+    min-width: 100%; /* Минимальная ширина таблицы равна ширине контейнера */
+    border-collapse: collapse;
+  }
 
-/* Поля ввода */
-.custom-input {
-  background-color: #4b5563;
-  border: 1px solid #6b7280;
-  border-radius: 4px;
-  padding: 8px 12px;
-  width: 100%;
-  font-size: 14px;
-  color: #ecf0f1;
-  box-sizing: border-box;
-}
+  .modal-content {
+        width: 450px;
+        max-width: 90%;
+        margin: auto; /* Центрируем модальное окно */
+      }
 
-.custom-input:focus {
-  background-color: #6b7280;
-  border-color: #60a5fa;
-  box-shadow: 0 0 0 0.2rem rgba(60, 165, 250, 0.25);
-  outline: none;
-}
+      /* Исправляем позиционирование модального окна */
+      .modal {
+        padding-right: 0 !important;
+      }
 
-/* Предупреждения */
-.has-warning {
-  background-color: #fbbf24 !important;
-}
+  .data-table th {
+    background-color: #4b5563;
+    padding: 12px;
+    font-weight: 600;
+    color: #ffffff;
+    text-align: left;
+    white-space: nowrap;
+  }
 
-.has-warning .custom-input {
-  background-color: #fde68a;
-  border-color: #fbbf24;
-  color: #1e2a38;
-}
+  .data-table td {
+    border-top: 1px solid #2c3e50;
+    padding: 8px;
+    vertical-align: middle;
+    background-color: #374151;
+    color: #ecf0f1;
+    white-space: nowrap;
+  }
 
-.warning-text {
-  color: #1e2a38;
-  font-size: 13px;
-  margin: 0;
-}
+  /* Поля ввода */
+  .custom-input {
+    background-color: #4b5563;
+    border: 1px solid #6b7280;
+    border-radius: 4px;
+    padding: 8px 12px;
+    width: 100%;
+    font-size: 14px;
+    color: #ecf0f1;
+    box-sizing: border-box;
+  }
 
-/* Кнопка */
-.form-submit {
-  text-align: center;
-  margin-top: 20px;
-  margin-bottom: 20px;
-}
+  .custom-input:focus {
+    background-color: #6b7280;
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 0.2rem rgba(60, 165, 250, 0.25);
+    outline: none;
+  }
 
-.btn-primary {
-  background-color: #3b82f6;
-  border-color: #3b82f6;
-  padding: 1rem 2rem;
-  font-size: 1.25rem;
-}
+  /* Предупреждения */
+  .has-warning {
+    background-color: #fbbf24 !important;
+  }
 
-.btn-primary:hover {
-  background-color: #2563eb;
-  border-color: #2563eb;
-}
+  .has-warning .custom-input {
+    background-color: #fde68a;
+    border-color: #fbbf24;
+    color: #1e2a38;
+  }
 
-/* Стилизация placeholder */
-.custom-input::placeholder {
-  color: #9ca3af;
-}
+  .warning-text {
+    color: #1e2a38;
+    font-size: 13px;
+    margin: 0;
+  }
 
-/* Стилизация скроллбара */
-::-webkit-scrollbar {
-  width: 10px;
-  background-color: #374151;
-}
+  /* Кнопка */
+  .form-submit {
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
 
-::-webkit-scrollbar-thumb {
-  background-color: #4b5563;
-  border-radius: 5px;
-}
+  .btn-primary {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+    padding: 1rem 2rem;
+    font-size: 1.25rem;
+  }
 
-::-webkit-scrollbar-thumb:hover {
-  background-color: #6b7280;
-}
+  .btn-primary:hover {
+    background-color: #2563eb;
+    border-color: #2563eb;
+  }
+
+  /* Стилизация placeholder */
+  .custom-input::placeholder {
+    color: #9ca3af;
+  }
+
+  /* Стилизация скроллбара */
+  ::-webkit-scrollbar {
+    width: 10px;
+    background-color: #374151;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: #4b5563;
+    border-radius: 5px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: #6b7280;
+  }
+
+  /* Стили модального окна */
+  .modal-dark .modal-content {
+    background-color: #1f2937;
+    color: #f3f4f6;
+    border-radius: 12px;
+  }
+
+  .modal-dark .modal-header {
+    border-bottom: 1px solid #4b5563;
+  }
+
+  .modal-dialog {
+    display: flex;
+    align-items: center;
+    min-height: calc(100vh - 60px); /* Уменьшаем высоту для предотвращения скролла */
+    margin: 30px auto; /* Добавляем отступы сверху и снизу */
+  }
+
+  .modal-content {
+    width: 450px;
+    max-width: 90%;
+    margin: auto; /* Центрируем модальное окно */
+  }
+
+  .spinner-border {
+    width: 4rem;
+    height: 4rem;
+    border-width: 6px;
+    color: #2563eb;
+    display: block;
+    margin: 20px auto;
+  }
+
 </style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const form = document.getElementById("editForm");
+  const submitButton = document.getElementById("submitButton");
+  const modal = new bootstrap.Modal(document.getElementById("editingModal"), {
+    backdrop: 'static',
+    keyboard: false
+  });
+
+  form.addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+
+    submitButton.classList.add("loading");
+    submitButton.disabled = true;
+    submitButton.innerHTML = `
+      <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+      Сохранение...
+    `;
+
+    modal.show();
+
+    // Задержка для демонстрации анимации
+    setTimeout(() => {
+      form.submit();
+    }, 300);
+  });
+});
+</script>
 {% endblock %}
