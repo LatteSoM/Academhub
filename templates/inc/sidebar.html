@@ -8,17 +8,22 @@
     </div>
     <nav class="sidebar-nav">
         <ul id="nav-menu">
+            
+            <a href="{% url 'personal_account'  %}" class="nav-item">
+                Личный кабинет
+            </a>
+
             {% for link in navigation %}
                 {% include "inc/navigation_item.html" with link=link %}
             {% endfor %}
         </ul>
     </nav>
     <div class="sidebar-footer">
-        <div id="theme-toggle" class="theme-toggle">
-            <span class="material-icons">dark_mode</span>
-        </div>
+        <span id="username">Привет {{ user.email }}</span>
         <div id="user-section" class="user-section">
-            <span id="username"></span>
+            <div id="theme-toggle" class="theme-toggle">
+                <span class="material-icons">dark_mode</span>
+            </div>
             <form method="POST" action="{% url 'logout' %}">
                 {% csrf_token %}
                 <button id="logout-btn" class="btn-secondary btn-red">Logout</button>
@@ -26,3 +31,25 @@
         </div>
     </div>
 </aside>
+
+<script>
+    let parents = []
+
+    let parents_div = document.querySelectorAll('div[name="parent"]');
+
+    parents_div.forEach(parent => {
+        let ul = parent.nextElementSibling;
+        let childrens_lenght = ul?.children.length;
+
+        console.log(childrens_lenght);
+
+        if (childrens_lenght == 0)
+        {
+            parent.remove();
+            ul.remove();   
+        }
+    });
+
+    console.log(parents)
+
+</script>

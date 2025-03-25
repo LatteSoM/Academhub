@@ -1,0 +1,36 @@
+{% extends 'base_view.html' %}
+{% load permission_tag %}
+
+{% has_perm permission_import as user_has_perm %}
+
+{% block tabs %}
+    {{ block.super }}
+    {% if user_has_perm %}
+        <button class="tab-button" data-tab="import">Импорт</button>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+
+    {{ block.super }}
+
+
+        <div id="import" class="tab-pane">
+            <div class="page-header">
+                <h2>
+                    {% block import_header %}
+                        Импорт {{ table_name }}
+                    {% endblock %}
+                </h2>
+            </div>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {% with form=form_import %}
+                    {% include 'inc/form/form.html' %}
+                {% endwith %}
+            <br>
+                <button type="submit" class="btn-primary">Сохранить</button>
+            </form>
+        </div>
+
+{% endblock %}

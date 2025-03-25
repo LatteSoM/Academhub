@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 import os
-import importlib
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -34,6 +33,8 @@ ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(",")
 
 TIME_ZONE = "Europe/Moscow"
 USE_TZ = True
+
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 5000
 
 
 
@@ -60,6 +61,7 @@ INSTALLED_APPS = [
     'bootstrap4',
     'Academhub',
     'widget_tweaks',
+
 ] + ACTIVE_APPS
 
 MIDDLEWARE = [

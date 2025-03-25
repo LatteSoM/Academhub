@@ -1,9 +1,12 @@
+from ..utils import getpermission
 from django.contrib import messages
 from django_tables2 import RequestConfig
 from django.views.generic.base import ContextMixin
-from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.core.exceptions import ImproperlyConfigured
+from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 
 __all__ = (
+    'ButtonsMixin',
     'SubTablesMixin',
     'ImportViewMixin',
     'BaseContextMixin',
@@ -11,11 +14,95 @@ __all__ = (
 
 class PermissionBaseMixin(PermissionRequiredMixin):
     '''
-        Базовый mixin для реализации прав доступа
+        Базовый mixin для ограничения доступа к странциам на основе прав доступа
     '''
-    pass
 
-class BaseContextMixin(ContextMixin):
+    def _get_class_object(self):
+        try:
+            if self.model is not None:
+                return self.model
+        except AttributeError:
+            pass
+
+        try:
+            if self.queryset is not None:
+                return self.queryset.model
+        except AttributeError:
+            pass
+
+        raise ImproperlyConfigured(
+            f"{self.__class__.__name__} is missing both 'model' and 'queryset' attributes. "
+            f"Define either {self.__class__.__name__}.model or {self.__class__.__name__}.queryset."
+        )
+
+    def get_permission_required(self):
+        if self.permission_required is None:
+            return None
+
+        model = self._get_class_object()
+
+        perm = getpermission(model, self.permission_required)
+
+        return [perm, ]
+    
+    def has_permission(self):
+        """
+        Override this method to customize the way permissions are checked.
+        """
+        perms = self.get_permission_required()
+        if not perms:
+            return True
+        return self.request.user.has_perms(perms)
+
+class ButtonsMixin:
+    """
+        Расширение позволяющие выводить на страницу кнопки с возможностью их  кастомизирования
+
+        Поддерживается вывод кнопок с помощью:
+
+        buttons = [
+            Button (
+                name = 'Название кнопки'
+                url = 'Url адресс'
+                permission_required = 'model_add'
+                id='unique_name'
+            )
+        ]
+    """
+
+    buttons = []
+
+    def get_buttons_object(self):
+
+        if hasattr(self, 'object'):
+            return self.object
+        
+        try:
+            return self.model
+        except AttributeError:
+            pass
+        
+        try:
+            return self.queryset.model
+        except AttributeError:
+            return None
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        obj = self.get_buttons_object()
+
+        buttons = []
+
+        for button in self.buttons:
+            if button.is_accessible(self.request.user) and button.is_visible(self.request.user, obj):
+                buttons.append(button)
+
+        context['buttons'] = buttons
+
+        return context
+
+class BaseContextMixin(PermissionBaseMixin, LoginRequiredMixin, ButtonsMixin, ContextMixin):
   """
   Базовый миксин для добавления навигации в контекст всех представлений и прав доступа.
   Наследуется от ContextMixin и добавляет ключ 'navigation' в контекст шаблона.

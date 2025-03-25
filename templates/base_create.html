@@ -17,9 +17,7 @@
                 {{ mobel_verbosename }} 
             </h2>
             {% block buttons %}
-                <a class="btn-primary" style="display: inline-block; margin: 10px 0;" href="{% url url_list %}">
-                    К таблице
-                </a>
+                {% include 'inc/buttons.html' %}
             {% endblock %}
         </div>
         <form id="edit-form" class="form" method="post">

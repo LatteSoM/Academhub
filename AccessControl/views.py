@@ -1,32 +1,29 @@
 from .form import *
+from .mixin import PermissionMixin
+from Academhub.models import Button
 from Academhub.models import SubTable
-from django.contrib.auth.views import PasswordChangeView
+from Academhub.utils import getpattern, getpermission
 from .filter import UserFilter, GroupFilter, PermissionFilter
-from django.contrib.messages.views import SuccessMessageMixin
 from Academhub.models import CustomUser, PermissionProxy, GroupProxy
 from .table import UserTable, PermissionTable, GroupTable, GroupUserTable
 from Academhub.generic import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView
 
-# Create your views here.
-
-class PermissionMixin:
-    '''
-        Расширение для объектоа имеющие права доступа
-    '''
-    def get_permissions(self):
-        '''
-            Получение объекта прав
-        '''
-        pass
+__all__ = (
+    'UserTableView',
+    'UserDetailView',
+    'UserUpdateView',
+    'UserCreateView',
     
-    def get_context_data(self, **kwargs):
-        '''
-            Добавляем в контекст права доступа
-        '''
-        context = super().get_context_data(**kwargs)
-        permissions = self.get_permissions()
-        context['permissions'] = permissions.as_context()
-        return context
+    'GroupTableView',
+    'GroupDetailView',
+    'GroupUpdateView',
+    'GroupCreateView',
+
+    'PermissionTableView',
+    'PermissionDetailView',
+    'PermissionUpdateView',
+    'PermissionCreateView',
+)
 
 #
 ## User
@@ -36,6 +33,15 @@ class UserTableView(ObjectTableView):
     table_class = UserTable
     filterset_class = UserFilter
     queryset = CustomUser.objects.all()
+
+    buttons = [
+        Button (
+            id='add',
+            name = 'Добавить',
+            link_name = getpattern(CustomUser, 'add'),
+            permission = getpermission(CustomUser, 'add'),
+        )
+    ]
 
 class UserDetailView(PermissionMixin, ObjectDetailView):
     model = CustomUser
@@ -61,24 +67,57 @@ class UserDetailView(PermissionMixin, ObjectDetailView):
         )
     ]
 
+    buttons = [
+        Button (
+            id='change',
+            name = 'Обновить',
+            link_params = ['pk'],
+            link_name = getpattern(CustomUser, 'change'),
+            permission= getpermission(CustomUser, 'change'),
+        ),
+        Button (
+            id='to_list',
+            name = 'К таблице',
+            link_name = getpattern(CustomUser, 'list'),
+            permission = getpermission(CustomUser, 'view'),
+        )
+    ]
+
     def get_permissions(self):
         return PermissionProxy.objects.filter(user__id=self.object.pk)
-
-class UserPasswordChangeView(SuccessMessageMixin, PasswordChangeView):
-    """
-    Изменение пароля пользователя
-    """
-    form_class = UserPasswordChangeForm
-    template_name = 'AccessControl/update/change_password.html'
-    success_message = 'Ваш пароль был успешно изменён!'
 
 class UserUpdateView(ObjectUpdateView):
     form_class = UserUpdateForm
     queryset = CustomUser.objects.all()
 
+    buttons = [
+        Button (
+            id='to_object',
+            name = 'К объекту',
+            link_params = ['pk'],
+            link_name = getpattern(CustomUser, 'detail'),
+            permission = getpermission(CustomUser, 'view'),
+        ),
+        Button (
+            id='to_list',
+            name = 'К таблице',
+            link_name = getpattern(CustomUser, 'list'),
+            permission = getpermission(CustomUser, 'view'),
+        )
+    ]
+
 class UserCreateView(ObjectCreateView):
     model = CustomUser
     form_class = UserCreateForm
+
+    buttons = [
+        Button (
+            id='to_list',
+            name = 'К таблице',
+            link_name = getpattern(CustomUser, 'list'),
+            permission = getpermission(CustomUser, 'view'),
+        )
+    ]
 
 #
 ## Group
@@ -88,6 +127,15 @@ class GroupTableView(ObjectTableView):
     table_class = GroupTable
     filterset_class = GroupFilter
     queryset = GroupProxy.objects.all()
+
+    buttons = [
+        Button (
+            id='add',
+            name = 'Добавить',
+            link_name = getpattern(GroupProxy, 'add'),
+            permission = getpermission(GroupProxy, 'add'),
+        )
+    ]
 
     def get_model_name(self):
         return 'Группы прав'
@@ -101,6 +149,22 @@ class GroupDetailView(PermissionMixin, ObjectDetailView):
             'name'
         ]
     }
+
+    buttons = [
+        Button(
+            id = 'change',
+            name = 'Обновить',
+            link_params = ['pk'],
+            link_name = getpattern(GroupProxy, 'change'),
+            permission = getpermission(GroupProxy, 'change'),
+        ),
+        Button (
+            id='to_list',
+            name = 'К таблице',
+            link_name = getpattern(GroupProxy, 'list'),
+            permission = getpermission(GroupProxy, 'view'),
+        )
+    ]
 
     def custom_user_filter(object, queryset):
         return object.user_set.all()
@@ -121,9 +185,34 @@ class  GroupUpdateView(ObjectUpdateView):
     form_class = GroupForm
     queryset = GroupProxy.objects.all()
 
+    buttons = [
+        Button (
+            id = 'to_object',
+            name = 'К объекту',
+            link_params = ['pk'],
+            link_name = getpattern(GroupProxy, 'detail'),
+            permission = getpermission(GroupProxy, 'view'),
+        ),
+        Button (
+            id = 'to_list',
+            name = 'К таблице', 
+            link_name = getpattern(GroupProxy, 'list'),
+            permission = getpermission(GroupProxy, 'view'),
+        )
+    ]
+
 class  GroupCreateView(ObjectCreateView):
     model = GroupProxy
     form_class = GroupForm
+
+    buttons = [
+        Button (
+            id = 'to_list',
+            name = 'К таблице', 
+            link_name = getpattern(GroupProxy, 'list'),
+            permission = getpermission(GroupProxy, 'view'),
+        )
+    ]
 
 #
 ## Permission
