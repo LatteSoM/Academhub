@@ -19,7 +19,11 @@ class GetPlxForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request', None)
+        # Глобальный кэш для результатов проверки текстов
+        self.SPELLER_CACHE = {}
+        self.speller = YandexSpeller()
         super().__init__(*args, **kwargs)
+
 
     def clean(self):
         super().clean()
@@ -197,11 +201,30 @@ class GetPlxForm(forms.Form):
                         created_objects["disciplines"].append(discipline_obj.to_dict())
 
                         for clock in discipline.get("clock_cells", []):
+                            course = clock.get("course")
+                            term = clock.get("term")
+
+                            if course == 2:
+                                if term == 1:
+                                    term = 3
+                                elif term == 2:
+                                    term = 4
+                            elif course == 3:
+                                if term == 1:
+                                    term = 5
+                                elif term == 2:
+                                    term = 6
+                            elif course == 4:
+                                if term == 1:
+                                    term = 7
+                                elif term == 2:
+                                    term = 8
+
                             clock_cell_obj = ClockCellDict(
                                 code_of_type_work=clock.get("code_of_type_work"),
                                 code_of_type_hours=clock.get("code_of_type_hours"),
-                                course=clock.get("course"),
-                                term=clock.get("course")*clock.get("term"),
+                                course=course,
+                                term=term,
                                 count_of_clocks=int(clock.get("count_of_clocks") or 0),
                                 module=None,
                                 discipline=f"{discipline_obj.code}.{discipline_obj.discipline_name}",
@@ -249,18 +272,38 @@ class GetPlxForm(forms.Form):
                     created_objects["disciplines"].append(discipline_obj.to_dict())
 
                     for clock in discipline.get("clock_cells", []):
+                        course = clock.get("course")
+                        term = clock.get("term")
+
+                        if course == 2:
+                            if term == 1:
+                                term = 3
+                            elif term == 2:
+                                term = 4
+                        elif course == 3:
+                            if term == 1:
+                                term = 5
+                            elif term == 2:
+                                term = 6
+                        elif course == 4:
+                            if term == 1:
+                                term = 7
+                            elif term == 2:
+                                term = 8
+
                         clock_cell_obj = ClockCellDict(
                             code_of_type_work=clock.get("code_of_type_work"),
                             code_of_type_hours=clock.get("code_of_type_hours"),
-                            course=clock.get("course"),
-                            term=clock.get("course")*clock.get("term"),
+                            course=course,
+                            term=term,
                             count_of_clocks=int(clock.get("count_of_clocks") or 0),
                             module=None,
                             discipline=f"{discipline_obj.code}.{discipline_obj.discipline_name}",
                             curriculum=curriculum_obj,
                         ).to_dict()
+                        if clock_cell_obj["term"] == 5:
+                            pass
                         created_objects["clock_cells"].append(clock_cell_obj)  # Добавляем в словарь
-
 
         return created_objects # Возвращаем словарь с созданными объектами
 
@@ -270,21 +313,32 @@ class GetPlxForm(forms.Form):
         игнорируя слова из вайтлиста.
         Возвращает список ошибок или None, если ошибок нет.
         """
-        speller = YandexSpeller()
+        # Если текст уже проверялся – возвращаем результат из кэша
+        if text in self.SPELLER_CACHE:
+            return self.SPELLER_CACHE[text]
+
         try:
-            changes = speller.spell(text)
+            changes = self.speller.spell(text)
         except json.JSONDecodeError:
-            # Либо можно залогировать ошибку, либо вернуть пустой список
+            self.SPELLER_CACHE[text] = []
             return []
+
+        errors = []
         if changes:
-            errors = []
+            # Пример с использованием словаря whitelist (если понадобится)
             # whitelist_words = get_whitelist()
             for change in changes:
                 word_lower = change['word'].lower()
                 # if word_lower not in whitelist_words:
-                #     errors.append(f"Возможно ошибка в слове '{change['word']}' возможно это подходящее слово: {change['s']}")
-            return errors
-        return None
+                errors.append(
+                    f"Возможно ошибка в слове '{change['word']}', "
+                    f"возможно имелось в виду: {change['s']}"
+                )
+
+        # Если ошибок нет – возвращаем None, иначе список ошибок
+        result = errors if errors else None
+        self.SPELLER_CACHE[text] = result
+        return result
 
     def validate_discipline_index(self, index: str, previous_indices: dict):
         """
@@ -391,6 +445,7 @@ class EditableCurriculumForm(forms.Form):
             if not discipline_name:
                 continue
             term = cell.get('term')
+
             count = cell.get('count_of_clocks', 0)
             if cell.get("code_of_type_work") == 'Итого часов' and clock_cell_lookup[discipline_name][term] == 0:
                 clock_cell_lookup[discipline_name][term] += count
