@@ -14,7 +14,7 @@ from .forms import GetPlxForm, EditableCurriculumForm  # Import EditableCurricul
 from Academhub.models import Curriculum, Specialty, Qualification, Category, StudyCycle, Module, Discipline, \
     ClockCell
 from .tables import CurriculumTable
-from Academhub.generic import ObjectTableView, ObjectCreateView, ImportViewMixin
+from Academhub.generic import ObjectTableView, ObjectCreateView, ImportViewMixin, ObjectTemplateView
 from .filters import CurriculumQualificationsFilter
 
 __all__ = (
@@ -89,5 +89,10 @@ class CurriculumEditableFormView(TemplateView):
             "Успешное сохранение учебного плана"
         )
         return redirect('curriculum_list')
+
+
+
+class AddTeacher2DisciplineOnTerm(ObjectTemplateView):
+
 
 
