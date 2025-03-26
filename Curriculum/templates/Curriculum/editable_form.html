@@ -93,7 +93,7 @@
 
   .table-container {
     overflow-x: auto;
-    overflow-y: auto; /* Включить вертикальный скролл */
+    overflow-y: auto; /* Вертикальный скролл */
     max-height: 650px;
     border: 1px solid #2c3e50;
     border-radius: 8px;
@@ -102,19 +102,17 @@
   }
 
   .data-table {
-    width: max-content; /* Таблица займет столько места, сколько нужно */
-    min-width: 100%; /* Минимальная ширина таблицы равна ширине контейнера */
+    width: max-content; /* Таблица занимает столько места, сколько нужно */
+    min-width: 100%;
     border-collapse: collapse;
   }
 
-  .modal-content {
-    width: 450px;
-    max-width: 90%;
-    margin: auto; /* Центрируем модальное окно */
-  }
-
-  .data-table th {
+  /* Фиксируем всю строку заголовка только по вертикали */
+  .data-table thead th {
+    position: sticky;
+    top: 0;
     background-color: #4b5563;
+    z-index: 2;
     padding: 12px;
     font-weight: 600;
     color: #ffffff;
@@ -122,6 +120,7 @@
     white-space: nowrap;
   }
 
+  /* Стили ячеек таблицы */
   .data-table td {
     border-top: 1px solid #2c3e50;
     padding: 8px;
@@ -142,7 +141,6 @@
     color: #ecf0f1;
     box-sizing: border-box;
   }
-
   .custom-input:focus {
     background-color: #6b7280;
     border-color: #60a5fa;
@@ -154,13 +152,11 @@
   .has-warning {
     background-color: #fbbf24 !important;
   }
-
   .has-warning .custom-input {
     background-color: #fde68a;
     border-color: #fbbf24;
     color: #1e2a38;
   }
-
   .warning-text {
     color: #1e2a38;
     font-size: 13px;
@@ -173,14 +169,12 @@
     margin-top: 20px;
     margin-bottom: 20px;
   }
-
   .btn-primary {
     background-color: #3b82f6;
     border-color: #3b82f6;
     padding: 1rem 2rem;
     font-size: 1.25rem;
   }
-
   .btn-primary:hover {
     background-color: #2563eb;
     border-color: #2563eb;
@@ -196,12 +190,10 @@
     width: 10px;
     background-color: #374151;
   }
-
   ::-webkit-scrollbar-thumb {
     background-color: #f3f4f6;
     border-radius: 5px;
   }
-
   ::-webkit-scrollbar-thumb:hover {
     background-color: #6b7280;
   }
@@ -212,18 +204,15 @@
     color: #f3f4f6;
     border-radius: 12px;
   }
-
   .modal-dark .modal-header {
     border-bottom: 1px solid #4b5563;
   }
-
   .modal-dialog {
     display: flex;
     align-items: center;
-    min-height: calc(100vh - 60px); /* Уменьшаем высоту для предотвращения скролла */
-    margin: 30px auto; /* Добавляем отступы сверху и снизу */
+    min-height: calc(100vh - 60px);
+    margin: 30px auto;
   }
-
   .spinner-border {
     width: 4rem;
     height: 4rem;
@@ -232,7 +221,6 @@
     display: block;
     margin: 20px auto;
   }
-
 </style>
 
 <script>
@@ -246,22 +234,17 @@ document.addEventListener("DOMContentLoaded", function() {
 
   form.addEventListener("submit", function(event) {
     event.preventDefault();
-
     if (!form.checkValidity()) {
       form.reportValidity();
       return;
     }
-
     submitButton.classList.add("loading");
     submitButton.disabled = true;
     submitButton.innerHTML = `
       <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
       Сохранение...
     `;
-
     modal.show();
-
-    // Задержка для демонстрации анимации
     setTimeout(() => {
       form.submit();
     }, 300);
