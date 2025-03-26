@@ -8,10 +8,10 @@ from django.shortcuts import redirect
 # from parser_for_plx import RUP_parser
 from django.shortcuts import render
 from django.urls import reverse
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, DetailView
 
-from Academhub.generic import ObjectTableView, ObjectCreateView, ImportViewMixin
-from Academhub.models import Curriculum
+from Academhub.generic import ObjectTableView, ObjectCreateView, ImportViewMixin, ObjectTemplateView, ObjectDetailView
+from Academhub.models import Curriculum, ClockCell
 from .filters import CurriculumQualificationsFilter
 from .forms.GetPlxForm import GetPlxForm
 from .forms.EditableCurriculumForm import EditableCurriculumForm
@@ -21,6 +21,7 @@ __all__ = (
     'CurriculumTableView',
     'CurricullumAddView',
     'CurriculumEditableFormView',
+    'AddTeacher2DisciplineOnTerm'
 )
 
 class CurriculumTableView(ImportViewMixin, ObjectTableView):
@@ -92,7 +93,16 @@ class CurriculumEditableFormView(TemplateView):
 
 
 
-class AddTeacher2DisciplineOnTerm(ObjectTemplateView):
+class AddTeacher2DisciplineOnTerm(ObjectDetailView):
+    template_name = 'Curriculum/detail/addTeacher2DisciplineOnTerm.html'
+    model = Curriculum
+    context_object_name = 'curriculum'
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['clock_cells'] = ClockCell.objects.filter(curriculum=self.object)
+        return context
 
 
 

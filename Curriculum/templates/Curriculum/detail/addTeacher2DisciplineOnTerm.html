@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <p>{{ curriculum.qualification }}</p>
+
+    {% for clock_cell in clock_cells %}
+
+        <p>{{ clock_cell.code_of_type_work }}</p>
+        <p>{{ clock_cell.code_of_type_hours }}</p>
+        <p>{{ clock_cell.count_of_clocks }}</p>
+
+    {% endfor %}
+
+{% endblock %}
