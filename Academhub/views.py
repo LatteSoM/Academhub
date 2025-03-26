@@ -13,8 +13,8 @@ __all__ = (
     'HomeView',
     'CustomLoginView',
     'UserEmailChangeView',
-    'UserPasswordChangeView',
     'UserSettingsDetailView',
+    'UserPasswordChangeView',
 )
 
 class HomeView(ObjectTemplateView):

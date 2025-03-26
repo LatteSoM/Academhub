@@ -16,7 +16,7 @@ def generate_unique_record_book_number(admission_year, student):
     """
     while True:
         prefix = 'Д'
-        suffix = 'Б' if student.education_base == 'Бюджет' else 'В'
+        suffix = 'Б' if student.education == 'Бюджет' else 'В'
         number = student.ancete_number if student.ancete_number else ''
         year_short = str(admission_year)[-2:]
         record_book_number = f"{prefix}{number}{suffix}/{year_short}/СПО"

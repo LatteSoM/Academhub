@@ -35,6 +35,29 @@ class DisciplineForm(forms.ModelForm):
             'specialty',
         ]
 
+
+class PromoteGroupStudentsForm(forms.ModelForm):
+    """
+    Форма для перевода группы и студентов на следующий курс
+    """
+    transfer_order = forms.CharField(
+        label='Номер приказа о переводе',
+        max_length=255,
+        required=True,
+    )
+
+    class Meta:
+        model = GroupStudents
+        fields = []  # Пустой список, так как редактируем только transfer_order
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['transfer_order'].widget.attrs.update({
+            'class': 'form-control',
+            'autocomplete': 'off'
+        })
+
+
 class StudentForm(forms.ModelForm):
     birth_date = forms.DateField(
         label='Дата рождения',
@@ -121,29 +144,6 @@ class GroupForm(forms.ModelForm):
             'education_base',
             'current_course',
         ]
-
-
-
-class PromoteGroupStudentsForm(forms.ModelForm):
-    """
-    Форма для перевода группы и студентов на следующий курс
-    """
-    transfer_order = forms.CharField(
-        label='Номер приказа о переводе',
-        max_length=255,
-        required=True,
-    )
-
-    class Meta:
-        model = GroupStudents
-        fields = []  # Пустой список, так как редактируем только transfer_order
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['transfer_order'].widget.attrs.update({
-            'class': 'form-control',
-            'autocomplete': 'off'
-        })
 
 class QualificationForm(forms.ModelForm):
     class Meta:
@@ -264,7 +264,7 @@ class StudentImportForm(forms.Form):
         file = cleaned_data['excel_file']
 
         if file:
-            file_extension = os.path.splitext(file.name)[1]
+            file_extension = os.path.splitext(file.discipline_name)[1]
 
             if file_extension.lower() != '.xlsx':
                 raise ValidationError("Файл должен быть в формате .xlsx")
@@ -272,7 +272,6 @@ class StudentImportForm(forms.Form):
             self.get_data_from_file(file)
 
         return file
-
 
     def get_data_from_file(self, file):
             wb = load_workbook(file)

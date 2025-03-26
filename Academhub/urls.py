@@ -14,23 +14,15 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-
 from .views import *
 from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth.views import LogoutView
 
-
-urlpatterns = [
-    # path("prometheus/", include("django_prometheus.urls")),
-    
+urlpatterns = [    
     path('admin/', admin.site.urls),
 
     path('', HomeView.as_view(), name='home'),
-
-    #
-    ## Авторизации django
-    #
 
     path('accounts/', include('django.contrib.auth.urls')),
     path('auth/', CustomLoginView.as_view(), name='login'),
@@ -48,7 +40,8 @@ urlpatterns = [
     ## Подкючение app
     #
 
-    path('Contingent/', include('Сontingent.urls')),
+    path('ContingentApp/', include('Сontingent.urls')),
     path('AccessControl/', include('AccessControl.urls')),
     path('GradeBook/', include('Gradebook.urls')),
+    path('CurriculumApp/', include('Curriculum.urls'))
 ]

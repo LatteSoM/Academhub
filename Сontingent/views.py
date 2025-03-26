@@ -37,6 +37,9 @@ from .filters import AcademFilter, ExpulsionFilter, ContingentMovementFilter
 from .forms import AcademLeaveForm, AcademReturnForm, ExpellStudentForm, RecoverStudentForm, StudentImportForm, \
     ContingentStudentImportForm
 from Academhub.generic import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView, ObjectTemplateView, ObjectTableImportView
+from .forms import AcademLeaveForm, AcademReturnForm, ExpellStudentForm, RecoverStudentForm, StudentImportForm
+from Academhub.generic import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView, ObjectTemplateView, \
+    ObjectTableImportView, ImportViewMixin
 from Academhub.modules.documentGenPars import StatisticsTableGenerator, CourseTableGenerator, GroupTableGenerator, VacationTableGenerator, MovementTableGenerator
 
 __all__ = (
@@ -49,6 +52,7 @@ __all__ = (
     'EditRecordBookTemplateView',
     'generate_student_record_book',
     'generate_group_recordbooks',
+    'PromoteGroupStudentsView',
 
     'DisciplineTableView',
     'DisciplineDetailView',
@@ -72,7 +76,6 @@ __all__ = (
     'GroupDetailView', 
     'GroupUpdateView', 
     'GroupCreateView',
-    'PromoteGroupStudentsView',
 
     'QualificationTableView',
     'QualificationCreateView',
@@ -180,9 +183,9 @@ class SpecialtyTableView(ObjectTableView):
     """
     Класс для отображения таблицы специальностей.
     """
-    queryset = Specialty.objects.all()
     table_class = SpecialtyTable
     filterset_class = SpecialtyFilter
+    queryset = Specialty.objects.all()
 
     buttons = [
         Button (
@@ -694,7 +697,7 @@ class StudentCreateView(ObjectCreateView):
         Button (
             id = 'to_list',
             name = 'К таблице',
-            link_name = getpattern(Student, 'list'),
+            link_name = getpattern(CurrentStudent, 'list'),
             permission = getpermission(Student, 'view')
         )
     ]
@@ -758,7 +761,7 @@ class StatisticksView(ObjectTemplateView):
         # Инициализируем все направления заранее
         for qualification in Qualification.objects.all():
             specialty_data[(
-            qualification.specialty.code, qualification.specialty.name, qualification.name)]  # Создаем пустые записи
+                qualification.specialty.code, qualification.specialty.name, qualification.name)]  # Создаем пустые записи
             all_specialties = [spec for spec in all_specialties if spec[0] != qualification.specialty.id]
 
         for specialty in all_specialties:
@@ -1037,7 +1040,7 @@ class EditRecordBookTemplateView(ObjectUpdateView):
         context['qualification'] = qualification
         context['admission_year'] = self.kwargs['admission_year']
         context['curriculum'] = self.object.curriculum
-        context['curriculum_disciplines'] = [{"id": d.id, "name": d.name} for d in self.object.curriculum.disciplines.all()]
+        context['curriculum_disciplines'] = [{"id": d.id, "name": d.discipline_name} for d in self.object.curriculum.disciplines.all()]
         context['url_list'] = 'qualification_list'
         context['mobel_verbosename'] = self.get_verbose_name()  # Совместимость с ObjectUpdateView
         return context
@@ -1222,11 +1225,11 @@ def create_auto_record_book_template(request, qualification_id, admission_year):
 
     # Автоматически заполняем компоненты зачётки из CurriculumItem
     for item in curriculum.items.all():
-        if item.item_type == 'discipline' and item.discipline:
+        if item.item_type == 'discipline' and item.module_name:
             # Создаём MiddleCertification для дисциплин
             middle_cert = MiddleCertification.objects.create(
                 semester=item.semester,
-                discipline=item.discipline,
+                discipline=item.module_name,
                 hours=item.hours,
                 is_exam=(item.attestation_form == 'exam')
             )

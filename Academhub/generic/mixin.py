@@ -10,7 +10,6 @@ __all__ = (
     'SubTablesMixin',
     'ImportViewMixin',
     'BaseContextMixin',
-    'PermissionBaseMixin',
 )
 
 class PermissionBaseMixin(PermissionRequiredMixin):
@@ -181,6 +180,7 @@ class ImportViewMixin:
         self._form =  self.save_from_import(request.POST, request.FILES)
 
         if self._form.is_valid():
+            print("=== form.is_valid() is True ===") # Debug print
             messages.success(
                 request,
                 "Успешный импорт"
@@ -196,7 +196,7 @@ class ImportViewMixin:
                 request,
                 error_message
             )
-            
+        
         return super().get(request, *args, **kwargs)
         
 

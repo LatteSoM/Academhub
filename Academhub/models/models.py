@@ -1,3 +1,4 @@
+import uuid
 from ..validators import *
 from django.db import models
 from django.urls import reverse
@@ -12,10 +13,7 @@ __all__ = (
     'Gradebook',
     'Specialty',
     'TermPaper',
-    'Curriculum',
-    'Discipline',
     'CustomUser',
-    'PracticeDate',
     'GroupStudents',
     'Qualification',
     'AcademHubModel',
@@ -26,10 +24,14 @@ __all__ = (
     'RecordBookTemplate',
     'ContingentMovement',
     'MiddleCertification',
-    'MiddleCertification',
-    'StudentRecordBook',
-    'RecordBookTemplate',
     'CalendarGraphicOfLearningProcess',
+
+    'Curriculum',
+    'Category',
+    'StudyCycle',
+    'Module',
+    'Discipline',
+    'ClockCell',
 )
 
 class AcademHubModel(UrlGenerateMixin, models.Model):
@@ -95,21 +97,6 @@ class CustomUser(AcademHubModel, AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.full_name
-
-
-class Discipline(AcademHubModel):
-    code = models.CharField(max_length=50, unique=False, verbose_name="Код", blank=True ,null=True)
-    name = models.CharField(max_length=255, verbose_name="Наименование")
-    specialty = models.ForeignKey(
-        'Specialty', on_delete=models.CASCADE, related_name="disciplines", verbose_name="Специальность"
-    )
-
-    class Meta:
-        verbose_name = "Дисциплина"
-        verbose_name_plural = "Дисциплины"
-
-    def __str__(self):
-        return self.name
 
 
 class MiddleCertification(AcademHubModel):
@@ -199,10 +186,6 @@ class TermPaper(AcademHubModel):
         verbose_name='Дисциплина'
     )
 
-    def __str__(self):
-        return self.name
-
-
 
 class Specialty(AcademHubModel):
     '''
@@ -216,8 +199,20 @@ class Specialty(AcademHubModel):
         verbose_name = "Специальность"
         verbose_name_plural = "Специальности"
 
+    @classmethod
+    def from_dict(cls, data):
+        obj, created = cls.objects.get_or_create(
+            code=data['code'],
+            name = data["name"],
+        )
+        if not created:
+            obj.discipline_name = data["name"]
+            obj.save()
+        return obj
+
     def __str__(self):
         return self.name
+
 
 class Qualification(AcademHubModel):
     '''
@@ -229,7 +224,7 @@ class Qualification(AcademHubModel):
     short_name = models.CharField(max_length=50, verbose_name="Сокращенное название")
     name = models.CharField(max_length=255, verbose_name="Наименование")
     specialty = models.ForeignKey(
-        Specialty, on_delete=models.CASCADE, related_name="qualifications", verbose_name="Специальность"
+        Specialty, on_delete=models.CASCADE, related_name="qualifications", null=True, verbose_name="Специальность"
     )
 
     class Meta:
@@ -239,22 +234,15 @@ class Qualification(AcademHubModel):
     def __str__(self):
         return self.name
 
-
-class Curriculum(models.Model):
-    qualification = models.ForeignKey(
-        Qualification,
-        on_delete=models.CASCADE,
-        verbose_name="Квалификация"
-    )
-    admission_year = models.PositiveIntegerField(verbose_name="Год поступления")
-
-    class Meta:
-        verbose_name = "Учебный план"
-        verbose_name_plural = "Учебные планы"
-        unique_together = ['qualification', 'admission_year']
-
-    def __str__(self):
-        return f"План для {self.qualification} ({self.admission_year} года)"
+    @classmethod
+    def from_dict(cls, data):
+        specialty_obj = Specialty.from_dict(data["specialty"])
+        obj, created = cls.objects.get_or_create(
+            short_name=data["short_name"],
+            name=data["name"],
+            specialty=specialty_obj
+        )
+        return obj
 
 
 class GroupStudents(AcademHubModel):
@@ -364,12 +352,29 @@ class CalendarGraphicOfLearningProcess(AcademHubModel):
     class Meta:
         verbose_name = "Календарный график учебного процесса"
         verbose_name_plural = "Календарные графики учебного процесса"
+    @classmethod
+    def from_dict(cls, data):
+        specialty_obj = Specialty.from_dict(data["specialty"])
+        obj, created = cls.objects.get_or_create(
+            short_name=data["short_name"],
+            name=data["name"],
+            specialty=specialty_obj
+        )
+        return obj
+
+    def to_dict(self):
+        return {
+            "short_name": self.short_name,
+            "name": self.name,
+            "specialty": self.specialty
+        }
 
     def __str__(self):
         return self.name
 
 
 # Модель для учебного плана (связывает дисциплины с группами по квалификации и году поступления)
+
 class CurriculumItem(models.Model):
     """
     Сводная таблица для хранения компонентов учебного плана: дисциплин, практик, модулей и курсовых.
@@ -386,6 +391,8 @@ class CurriculumItem(models.Model):
         ('exam', 'Экзамен'),
         ('credit', 'Зачёт'),
         ('none', 'Без аттестации'),  # Для практик или модулей без формы аттестации
+        ('learning_practice', 'Учебная практика'),
+        ('profession_practice', 'Производственная практика'),
         ('course_pr', 'Защита курсового проекта')
     )
 
@@ -447,13 +454,6 @@ class CurriculumItem(models.Model):
         default='none'
     )
 
-    practice_dates = models.ManyToManyField(
-        CalendarGraphicOfLearningProcess,
-        through='PracticeDate',
-        related_name='related_practices',
-        verbose_name="Календарные графики"
-    )
-
     class Meta:
         verbose_name = "Элемент учебного плана"
         verbose_name_plural = "Элементы учебного плана"
@@ -461,26 +461,14 @@ class CurriculumItem(models.Model):
     def __str__(self):
         if self.item_type == 'discipline' and self.discipline:
             return f"{self.discipline.name} ({self.get_attestation_form_display()})"
-        elif self.item_type == 'practice' and self.practice:
-            return f"{self.practice.practice_name} ({self.get_attestation_form_display()})"
-        elif self.item_type == 'professional_module' and self.professional_module:
-            return f"{self.professional_module.module_name} ({self.get_attestation_form_display()})"
-        elif self.item_type == 'term_paper' and self.term_paper:
-            return f"Курсовая по {self.term_paper.name} ({self.get_attestation_form_display()})"
+        elif self.item_type == 'practice' and self.discipline:
+            return f"{self.discipline.name} ({self.get_attestation_form_display()})"
+        elif self.item_type == 'professional_module' and self.discipline:
+            return f"{self.discipline.name} ({self.get_attestation_form_display()})"
+        elif self.item_type == 'term_paper' and self.discipline:
+            return f"Курсовая по {self.discipline.name} ({self.get_attestation_form_display()})"
         return "Неопределённый элемент"
 
-    # def clean(self):
-    #     super().clean()  # Вызов метода родительского класса
-    #
-    #     # если тип элемента - курсовая работа
-    #     if self.item_type == 'term_paper':
-    #         # Если семестр не пустой, то добавляем ошибку валидации
-    #         if self.semester is not None:
-    #             raise ValidationError({'semester': "Семестр не должен быть указан для курсовых работ."})
-    #     else:
-    #         # Для других типов элементов семестр должен быть указан
-    #         if self.semester is None:
-    #             raise ValidationError({'semester': "Семестр обязателен для данного типа элемента."})
 
 
 class RecordBookTemplate(AcademHubModel):
@@ -533,6 +521,80 @@ class RecordBookTemplate(AcademHubModel):
         return f"Шаблон для {self.qualification} ({self.admission_year})"
 
 
+# def get_years_choices():
+#     years = []
+#     for i in range(1990, timezone.now().year + 1):
+#         years.append((i, i))
+#     return years
+#
+# class GroupStudents(AcademHubModel):
+#     '''
+#         П50-9-21
+#     '''
+#
+#     EDUCATION_BASE_CHOICES = (
+#         ("Основное общее", "Основное общее"),
+#         ("Среднее общее", "Среднее общее"),
+#     )
+#
+#     COURCE_CHOICES = (
+#         (1,'1'),
+#         (2,'2'),
+#         (3,'3'),
+#         (4,'4')
+#     )
+#
+#     def get_default_number_value(self):
+#         return GroupStudents.objects.filter(
+#             year_create = self.year_create,
+#             qualification = self.qualification,
+#         ).count() + 1
+#
+#     full_name = models.CharField(blank=True, null=True, verbose_name='Полное название группы', max_length=1000, unique=True)
+#
+#     qualification = models.ForeignKey(
+#         Qualification, on_delete=models.CASCADE, related_name="groups", verbose_name="Квалификация"
+#     )
+#
+#     number = models.PositiveIntegerField(
+#         verbose_name='Порядковый номер группы в потоке',
+#     )
+#
+#     education_base = models.CharField(
+#         max_length=255,
+#         verbose_name="База образования",
+#         choices=EDUCATION_BASE_CHOICES,
+#         default=EDUCATION_BASE_CHOICES[0][1]
+#     )
+#
+#     year_create = models.PositiveIntegerField(
+#         verbose_name='Год создания',
+#         choices=get_years_choices(),
+#         default=timezone.now().year
+#     )
+#
+#     current_course = models.IntegerField(
+#         verbose_name="Курс",
+#         choices=COURCE_CHOICES,
+#         default=COURCE_CHOICES[0][1],
+#         null=False
+#     )
+#
+#
+#     class Meta:
+#         verbose_name = "Группа"
+#         verbose_name_plural = "Группы"
+#
+#     def __str__(self):
+#         return self.full_name
+#
+#     def save(self, *args, **kwargs):
+#         if not self.pk:
+#             self.number = self.get_default_number_value()
+#
+#         self.full_name = f"{self.qualification.short_name}-{self.number}-{str(self.year_create)[-2:]}"
+#
+#         return super().save(*args, **kwargs)
 
 class Student(AcademHubModel):
     EDUCATION_BASE_CHOICES = (
@@ -732,10 +794,10 @@ class StudentRecordBook(AcademHubModel):
 
 class GradebookStudents(AcademHubModel):
     ASSESSMENT_CHOICES = (
-        ('Отлично', '5'),
-        ('Хорошо', '4'),
-        ('Удовлетворительно', '3'),
-        ('Неудовлетворительно', '2'),
+        ('5', '5'),
+        ('4', '4'),
+        ('3', '3'),
+        ('2', '2'),
         ('Неявка', 'Неявка'),
     )
 
@@ -756,10 +818,8 @@ class GradebookStudents(AcademHubModel):
     )
     grade = models.CharField(
         verbose_name='Оценка', 
-        choices=ASSESSMENT_CHOICES, 
-        default=ASSESSMENT_CHOICES[0][1], 
+        choices=ASSESSMENT_CHOICES,
         max_length=50,
-        blank=True
     )
 
     class Meta:
@@ -840,8 +900,6 @@ class Gradebook(AcademHubModel):
         blank=False)
     semester_number = models.IntegerField(verbose_name="Номер семестра", choices=SEMESTER_CHOICES, default=SEMESTER_CHOICES[0][1])
 
-    # generated = models.BooleanField(verbose_name="Была ли ведомсть сгенерирована", default=False, null=False, blank=False)
-
     class Meta:
         verbose_name = "Ведомость"
         verbose_name_plural = "Ведомости"
@@ -856,7 +914,7 @@ class Gradebook(AcademHubModel):
         if not self.number:  # Если номер не задан
             settings = ProgramSettings.get_current_settings()
             settings.reset_counter_if_august()  # Проверяем, нужно ли сбросить счетчик
-            settings.reset_year_if_new() # Проверяем, нужно ли обновить год
+            settings.reset_year_if_new()  # Проверяем, нужно ли обновить год
             settings.increment_counter()
             self.number = settings.generate_gradebook_number()
         super().save(*args, **kwargs)
@@ -1044,4 +1102,420 @@ class ProgramSettings(models.Model):
         settings = cls.get_current_settings()
         if current_year != settings.current_year:
             settings.reset_counter()
+
+# class CalendarGraphicOfLearningProcess(AcademHubModel):
+#
+#     name = models.CharField(max_length=255, verbose_name="Название")
+#
+#     group = models.ForeignKey(
+#         GroupStudents,
+#         on_delete=models.CASCADE,
+#         related_name="learning_process_calendars",
+#         verbose_name="Группа"
+#     )
+#
+#     start_exam_date_first_semester = models.DateField(null=False, blank=False, verbose_name="Дата начала сессии первого семестра")
+#     date_of_pm_first_semester = models.DateField(null=True, blank=True, verbose_name="Дата экзамена по профессиональному модулю первого семестра")
+#     start_exam_date_second_semester = models.DateField(null=False, blank=False, verbose_name="Дата начала сессии второго семестра")
+#     date_of_pm_second_semester = models.DateField(null=True, blank=True, verbose_name="Дата экзамена по профессиональному модулю второго семестра")
+#
+#     class Meta:
+#         verbose_name = "Календарный график учебного процесса"
+#         verbose_name_plural = "Календарные графики учебного процесса"
+#
+#     def __str__(self):
+#         return self.name
+
+
+# class ContingentMovement(AcademHubModel):
+#     """
+#     Модель для отслеживания движения контингента: переводы, отчисления, академические отпуска.
+#     """
+#     ACTION_TYPES = (
+#         ('transfer', 'Перевод'),
+#         ('expulsion', 'Отчисление'),
+#         ('academic_leave', 'Уход в академический отпуск'),
+#         ('academic_return', 'Выход из академического отпуска'),
+#         ('reinstatement', 'Восстановление'),
+#     )
+#
+#     order_number = models.CharField(
+#         max_length=50,
+#         unique=True,
+#         verbose_name="Номер приказа"
+#     )
+#     action_type = models.CharField(
+#         max_length=20,
+#         choices=ACTION_TYPES,
+#         verbose_name="Тип действия"
+#     )
+#     action_date = models.DateField(
+#         verbose_name="Дата действия"
+#     )
+#     previous_group = models.CharField(
+#         max_length=1000,
+#         blank=True,
+#         null=True,
+#         verbose_name="Предыдущая группа"
+#     )
+#     new_group = models.CharField(
+#         max_length=1000,
+#         blank=True,
+#         null=True,
+#         verbose_name="Новая группа"
+#     )
+#     student = models.ForeignKey(
+#         'Student',
+#         on_delete=models.CASCADE,
+#         related_name="movements",
+#         verbose_name="Студент"
+#     )
+#
+#     class Meta:
+#         verbose_name = "Движение контингента"
+#         verbose_name_plural = "Движения контингента"
+#         ordering = ['-action_date']  # Сортировка по убыванию даты действия
+#         permissions = [
+#             ('export_contingentmovement', 'Export ContingentMovement')
+#         ]
+#
+#     def __str__(self):
+#         return f"{self.get_action_type_display()} - {self.student.full_name} ({self.action_date})"
+#
+
+"""
+#
+## Здесь все таблицы относящиеся к учебному плану
+#
+"""
+class Curriculum(AcademHubModel):
+    qualification_name = models.CharField(max_length=255, null=True)
+    warnings = models.BooleanField(default=False)
+    warning_description = models.JSONField(null=True, blank=True)
+    qualification = models.ForeignKey(
+        Qualification, on_delete=models.CASCADE, verbose_name="Квалификация"
+    )
+    admission_year = models.PositiveIntegerField(verbose_name="Год поступления")
+
+    class Meta:
+        verbose_name = "Учебный план"
+        verbose_name_plural = "Учебные планы"
+        unique_together = ['qualification', 'admission_year']
+
+    @classmethod
+    def from_dict(cls, data):
+        qual_obj = Qualification.from_dict(data["qualification"])
+        obj, created = cls.objects.get_or_create(
+            qualification=qual_obj,
+            admission_year=data["admission_year"],
+            qualification_name = qual_obj.name,
+        )
+        if not created:
+            obj.qualification_name = data.get("qualification_name", obj.qualification_name)
+            obj.warnings = data.get("warnings", obj.warnings)
+            obj.warning_description = data.get("warning_description", obj.warning_description)
+            obj.save()
+        return obj
+
+    def to_dict(self):
+        return {
+            "qualification": self.qualification,
+            "admission_year": self.admission_year,
+            "warnings": self.warnings,
+            "warning_description": self.warning_description
+        }
+
+
+class Category(AcademHubModel):
+    identificator = models.CharField(max_length=50)
+    cycles = models.CharField(max_length=255)
+    curriculum = models.ForeignKey(Curriculum, related_name='categories', on_delete=models.CASCADE)
+    warnings = models.BooleanField(default=False)
+    warning_description = models.JSONField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Категория"
+        verbose_name_plural = "Категории"
+
+    @classmethod
+    def from_dict(cls, data):
+        # Предполагается, что учебный план уже сохранён в БД
+        curriculum_obj = Curriculum.objects.get(id=data["curriculum"])
+        obj, created = cls.objects.get_or_create(
+            id=data['id'],
+            defaults={
+                "identificator": data["identificator"],
+                "cycles": data["cycles"],
+                "curriculum": curriculum_obj,
+                "warnings": data.get("warnings", False),
+                "warning_description": data.get("warning_description")
+            }
+        )
+        if not created:
+            obj.identificator = data["identificator"]
+            obj.cycles = data["cycles"]
+            obj.curriculum = curriculum_obj
+            obj.warnings = data.get("warnings", obj.warnings)
+            obj.warning_description = data.get("warning_description", obj.warning_description)
+            obj.save()
+        return obj
+
+    def to_dict(self):
+        return {
+            "id": str(self.id),
+            "identificator": self.identificator,
+            "cycles": self.cycles,
+            "curriculum": self.curriculum,
+            "warnings": self.warnings,
+            "warning_description": self.warning_description
+        }
+
+
+class StudyCycle(AcademHubModel):
+    identificator = models.CharField(max_length=50)
+    cycles = models.CharField(max_length=255)
+    categories = models.ForeignKey(Category, related_name='study_cycles', on_delete=models.CASCADE)
+    warnings = models.BooleanField(default=False)
+    warning_description = models.JSONField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Образовательный цикл"
+        verbose_name_plural = "Образовательные циклы"
+
+    @classmethod
+    def from_dict(cls, data):
+        category_obj = Category.objects.get(id=data["categories"])
+        obj, created = cls.objects.get_or_create(
+            id=data["id"],
+            defaults={
+                "identificator": data["identificator"],
+                "cycles": data["cycles"],
+                "categories": category_obj,
+                "warnings": data.get("warnings", False),
+                "warning_description": data.get("warning_description")
+            }
+        )
+        if not created:
+            obj.identificator = data["identificator"]
+            obj.cycles = data["cycles"]
+            obj.categories = category_obj
+            obj.warnings = data.get("warnings", obj.warnings)
+            obj.warning_description = data.get("warning_description", obj.warning_description)
+            obj.save()
+        return obj
+
+    def to_dict(self):
+        return {
+            "id": str(self.id),
+            "identificator": self.identificator,
+            "cycles": self.cycles,
+            "categories": self.categories,
+            "warnings": self.warnings,
+            "warning_description": self.warning_description
+        }
+
+
+class Module(AcademHubModel):
+    name = models.CharField(max_length=255)
+    code_of_discipline = models.CharField(max_length=50)
+    code_of_cycle_block = models.CharField(max_length=50)
+    study_cycles = models.ForeignKey(StudyCycle, related_name='modules', on_delete=models.CASCADE)
+    warnings = models.BooleanField(default=False)
+    warning_description = models.JSONField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Модуль"
+        verbose_name_plural = "Модули"
+
+    @classmethod
+    def from_dict(cls, data):
+        study_cycle_obj = StudyCycle.objects.get(id=data["study_cycles"])
+        obj, created = cls.objects.get_or_create(
+            id=data["id"],
+            defaults={
+                "name": data["module_name"],
+                "code_of_discipline": data["code_of_discipline"],
+                "code_of_cycle_block": data["code_of_cycle_block"],
+                "study_cycles": study_cycle_obj,
+                "warnings": data.get("warnings", False),
+                "warning_description": data.get("warning_description")
+            }
+        )
+        if not created:
+            obj.module_name = data["name"]
+            obj.code_of_discipline = data["code_of_discipline"]
+            obj.code_of_cycle_block = data["code_of_cycle_block"]
+            obj.study_cycles = study_cycle_obj
+            obj.warnings = data.get("warnings", obj.warnings)
+            obj.warning_description = data.get("warning_description", obj.warning_description)
+            obj.save()
+        return obj
+
+    def to_dict(self):
+        return {
+            "id": str(self.id),
+            "name": self.name,
+            "code_of_discipline": self.code_of_discipline,
+            "code_of_cycle_block": self.code_of_cycle_block,
+            "study_cycles": self.study_cycles,
+            "warnings": self.warnings,
+            "warning_description": self.warning_description
+        }
+
+
+class Discipline(AcademHubModel):
+    code = models.CharField(max_length=50, blank=True, null=True, verbose_name="Код")
+    name = models.CharField(max_length=255, verbose_name="Наименование")
+    specialty = models.ForeignKey(
+        Specialty, on_delete=models.CASCADE,
+        related_name="disciplines", verbose_name="Специальность"
+    )
+    warnings = models.BooleanField(default=False)
+    warning_description = models.JSONField(null=True, blank=True)
+
+    modules = models.ManyToManyField(Module, related_name="disciplines")
+    study_cycles = models.ManyToManyField(StudyCycle, related_name="disciplines")
+
+    class Meta:
+        verbose_name = "Дисциплина"
+        verbose_name_plural = "Дисциплины"
+
+    @classmethod
+    def from_dict(cls, data):
+        specialty_obj = Specialty.objects.get(id=data["specialty"])
+        module_obj = Module.objects.get(id=data["module"])
+        obj, created = cls.objects.get_or_create(
+            id=data["id"],
+            defaults={
+                "code": data["code"],
+                "name": data["name"],
+                "specialty": specialty_obj,
+                "warnings": data.get("warnings", False),
+                "warning_description": data.get("warning_description")
+            }
+        )
+        if not created:
+            obj.code = data["code"]
+            obj.discipline_name = data["name"]
+            obj.specialty = specialty_obj
+            obj.warnings = data.get("warnings", obj.warnings)
+            obj.warning_description = data.get("warning_description", obj.warning_description)
+            obj.save()
+        # Если в словаре присутствует информация о связанных учебных планах:
+        if "curriculums" in data:
+            curriculum_objs = []
+            for cur_data in data["curriculums"]:
+                cur_obj = Curriculum.from_dict(cur_data)
+                curriculum_objs.append(cur_obj)
+            obj.curriculums.set(curriculum_objs)
+        return obj
+
+    def to_dict(self):
+        return {
+            "id": str(self.id),
+            "code": self.code,
+            "name": self.name,
+            "specialty": self.specialty,
+            "warnings": self.warnings,
+            "warning_description": self.warning_description
+        }
+
+    def __str__(self):
+        return self.name
+
+
+class ClockCell(AcademHubModel):
+    warnings = models.BooleanField(default=False)
+    warning_description = models.JSONField(null=True, blank=True)
+
+    code_of_type_work = models.CharField(max_length=100)
+    code_of_type_hours = models.CharField(max_length=100)
+    course = models.IntegerField()
+    term = models.IntegerField()
+    count_of_clocks = models.IntegerField()
+
+    module = models.ForeignKey(Module, related_name='clock_cells', on_delete=models.CASCADE, null=True)
+    discipline = models.ForeignKey(Discipline, related_name='clock_cells', on_delete=models.CASCADE, null=True)
+
+    curriculum = models.ForeignKey(Curriculum, related_name='clock_cells', on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = "Ячейка часов"
+        verbose_name_plural = "Ячейки часов"
+
+    @classmethod
+    def from_dict(cls, data):
+        obj, created = cls.objects.get_or_create(
+            defaults={
+                "code_of_type_work": data["code_of_type_work"],
+                "code_of_type_hours": data["code_of_type_hours"],
+                "course": data["course"],
+                "term": data["term"],
+                "count_of_clocks": data["count_of_clocks"],
+                "warnings": data.get("warnings", False),
+                "warning_description": data.get("warning_description"),
+                "curriculum": Curriculum.objects.get(id=data["curriculum"]),
+            }
+        )
+
+        if not created:
+            obj.code_of_type_work = data["code_of_type_work"]
+            obj.code_of_type_hours = data["code_of_type_hours"]
+            obj.course = data["course"]
+            obj.term = data["term"]
+            obj.count_of_clocks = data["count_of_clocks"]
+            obj.warnings = data.get("warnings", obj.warnings)
+            obj.warning_description = data.get("warning_description", obj.warning_description)
+            obj.curriculum = Curriculum.objects.get(id=data["curriculum"])
+            obj.save()
+        return obj
+
+    def to_dict(self):
+        return {
+            "id": str(self.id),
+            "code_of_type_work": self.code_of_type_work,
+            "code_of_type_hours": self.code_of_type_hours,
+            "course": self.course,
+            "term": self.term,
+            "count_of_clocks": self.count_of_clocks,
+            "warnings": self.warnings,
+            "warning_description": self.warning_description,
+            "curriculum": self.curriculum,
+        }
+
+
+class TeacherDicsciplineCurriculum(AcademHubModel):
+    """
+    Модель создаёт связь преподавателя с дисциплиной в конкретном семестре? конкретного учебного плана,
+    """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    teacher = models.ForeignKey(CustomUser, related_name='disciplines', on_delete=models.CASCADE)
+    course = models.IntegerField(null=False),
+    term = models.IntegerField(null=False),
+    discipline = models.ForeignKey(Discipline, related_name='teachers', on_delete=models.CASCADE)
+    curriculum = models.ForeignKey(Curriculum, related_name='teachers_dicsciplines', on_delete=models.CASCADE)
+
+
+    class Meta:
+        verbose_name = "Преподаватель дисциплины в семестре"
+        verbose_name_plural = "Преподаватели дисциплины в семестре"
+
+    @classmethod
+    def from_dict(cls, data):
+        return cls(
+            id=data["id"],
+            teacher=CustomUser.objects.get(id=data["teacher"]),
+            discipline=Discipline.objects.get(id=data["discipline"]),
+            curriculum=Curriculum.objects.get(id=data["curriculum"]),
+        )
+
+    def to_dict(self):
+        return {
+            "id": str(self.id),
+            "teacher": self.teacher,
+            "course": self.course,
+            "term": self.term,
+            "discipline": self.discipline,
+            "curriculum": self.curriculum,
+        }
 

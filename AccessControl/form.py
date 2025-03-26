@@ -1,12 +1,12 @@
 from django import forms
 from Academhub.forms import PermissionSelectField
-from django.contrib.auth.hashers import make_password
 from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.contenttypes.models import ContentType
 from Academhub.models import CustomUser, PermissionProxy, GroupProxy
 
 __all__ = (
     'UserPasswordChangeForm',
+    'UserEmailChangeForm',
     'UserCreateForm',
     'UserUpdateForm',
     'PermissionForm',
@@ -17,6 +17,25 @@ class UserPasswordChangeForm(SetPasswordForm):
     """
     Форма изменения пароля
     """
+    def __init__(self, *args, **kwargs):
+        """
+        Обновление стилей формы
+        """
+        super().__init__(*args, **kwargs)
+        for field in self.fields:
+            self.fields[field].widget.attrs.update({
+                'class': 'form-control',
+                'autocomplete': 'off'
+            })
+
+class UserEmailChangeForm(forms.ModelForm):
+    """
+    Форма изменения email
+    """
+    class Meta:
+        model = CustomUser  # Используем вашу кастомную модель
+        fields = ['email']
+
     def __init__(self, *args, **kwargs):
         """
         Обновление стилей формы
@@ -65,15 +84,6 @@ class UserCreateForm(forms.ModelForm):
     class Meta:
         model = CustomUser
         fields = ['email', 'full_name', 'password', 'user_permissions', 'groups', 'is_staff', 'is_teacher']
-    
-    def clean(self):
-        cleaned_data = super().clean()
-
-        password = cleaned_data['password']
-
-        password = make_password(password)
-
-        cleaned_data['password'] = password
 
 class UserUpdateForm(forms.ModelForm):
     email = forms.EmailField(
@@ -138,24 +148,3 @@ class PermissionForm(forms.ModelForm):
     class Meta:
         model = PermissionProxy
         fields = '__all__'
-
-
-class UserEmailChangeForm(forms.ModelForm):
-    """
-    Форма изменения email
-    """
-    class Meta:
-        model = CustomUser  # Используем вашу кастомную модель
-        fields = ['email']
-
-    def __init__(self, *args, **kwargs):
-        """
-        Обновление стилей формы
-        """
-        super().__init__(*args, **kwargs)
-        for field in self.fields:
-            self.fields[field].widget.attrs.update({
-                'class': 'form-control',
-                'autocomplete': 'off'
-            })
-

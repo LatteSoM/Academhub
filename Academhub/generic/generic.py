@@ -18,7 +18,6 @@ __all__  = [
   'ObjectTableImportView',
 ]
 
-
 class ObjectTemplateView(TemplateView):
   '''
   Переопределенный класс TemplateView для поддержки навигации на странице.
@@ -45,8 +44,6 @@ class BaseObjectTableView(BaseContextMixin, SingleTableView):
     Наследуется от BaseContextMixin и SingleTableView (из django-tables2).
     Используется для отображения данных в виде таблиц с поддержкой навигации.
     '''
-
-    permission_required = 'view'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -110,9 +107,6 @@ class ObjectDetailView(BaseContextMixin, SubTablesMixin, DetailView):
         
         Поддерживает вывод дополнительных таблиц благодаря SubTablesMixin.
     '''
-
-    permission_required = 'view'
-
     paginate_by  = 10
     template_name = 'base_detail.html'
 
@@ -143,9 +137,6 @@ class ObjectUpdateView(BaseContextMixin, UpdateView):
     Наследуется от BaseContextMixin и UpdateView.
     Используется для редактирования существующего объекта с поддержкой навигации.
     '''
-
-    permission_required = 'change'
-
     template_name = 'base_update.html'
 
     def get_context_data(self, **kwargs):
@@ -163,9 +154,6 @@ class ObjectCreateView(BaseContextMixin, CreateView):
     Наследуется от BaseContextMixin и CreateView.
     Используется для создания нового объекта с поддержкой навигации.
     '''
-
-    permission_required = 'add'
-
     template_name = 'base_create.html'
 
     def get_context_data(self, **kwargs):

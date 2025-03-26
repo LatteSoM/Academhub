@@ -53,3 +53,16 @@
 .mobile-table {
     display: none; /* Скрыта на ПК */
 }
+
+/* Column widths */
+.discipline-name-col {
+    width: 50%; /* Шире для названия дисциплины */
+}
+
+.discipline-code-col {
+    width: 20%; /* Средняя ширина для кода */
+}
+
+.errors-col {
+    width: 30%; /* Уже для ошибок */
+}

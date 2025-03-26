@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+{% load static widget_tweaks %}
+{% load widget_tweaks dict_extras %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+  <h1 class="text-white mb-4">Редактирование учебного плана</h1>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+    <div class="table-container">
+      <table class="data-table table">
+        <thead>
+          <tr>
+            <th width="10%">Дисциплина</th>
+            <th width="5%">Код дисциплины</th>
+            {% for sem in semester_list %}
+              <th width="2%">Семестр {{ sem }}</th>
+            {% endfor %}
+            <th width="10%">Ошибки</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for field in editable_form %}
+            {% if field.name|slice:"0:14" == "discipline_id_" %}
+              {{ field.as_hidden }}
+            {% elif field.name|slice:"0:16" == "discipline_name_" %}
+              <tr>
+                <td class="{% if field.field.warnings %}has-warning{% endif %}">
+                  {% render_field field class="form-control custom-input" %}
+                </td>
+            {% elif field.name|slice:"0:16" == "discipline_code_" %}
+                <td class="{% if field.field.warnings %}has-warning{% endif %}">
+                  {% render_field field class="form-control custom-input" %}
+                </td>
+
+                {# Сначала получаем индекс дисциплины (например, "0") из имени поля #}
+                {% with index=field.name|slice:"16:" %}
+                  {# Для каждого семестра формируем имя поля: discipline_semester_{{ sem }}_{{ index }} #}
+                  {% for sem in semester_list %}
+                    {% with sem_field="discipline_semester_"|add:sem|add:"_"|add:index %}
+                      <td>
+                        {% render_field editable_form|get_field:sem_field class="form-control custom-input" %}
+                      </td>
+                    {% endwith %}
+                  {% endfor %}
+                {% endwith %}
+
+                <td class="{% if field.field.warnings %}has-warning{% endif %}">
+                  {% if field.field.warnings %}
+                    <div class="warning-text">
+                      {{ field.field.warning_description|join:", " }}
+                    </div>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="form-submit">
+      <button type="submit" class="btn btn-primary btn-lg">Сохранить</button>
+    </div>
+  </form>
+</div>
+
+<style>
+body {
+  background-color: #1e2a38;
+}
+
+.table-container {
+  overflow-x: auto;
+  max-width: 100%;
+  border: 1px solid #2c3e50;
+  border-radius: 8px;
+  background-color: #374151;
+  padding-bottom: 10px;
+}
+
+.data-table {
+  width: max-content; /* Таблица займет столько места, сколько нужно */
+  min-width: 100%; /* Минимальная ширина таблицы равна ширине контейнера */
+  border-collapse: collapse;
+}
+.data-table th {
+  background-color: #4b5563;
+  padding: 12px;
+  font-weight: 600;
+  color: #ffffff;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.data-table td {
+  border-top: 1px solid #2c3e50;
+  padding: 8px;
+  vertical-align: middle;
+  background-color: #374151;
+  color: #ecf0f1;
+  white-space: nowrap;
+}
+
+/* Поля ввода */
+.custom-input {
+  background-color: #4b5563;
+  border: 1px solid #6b7280;
+  border-radius: 4px;
+  padding: 8px 12px;
+  width: 100%;
+  font-size: 14px;
+  color: #ecf0f1;
+  box-sizing: border-box;
+}
+
+.custom-input:focus {
+  background-color: #6b7280;
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 0.2rem rgba(60, 165, 250, 0.25);
+  outline: none;
+}
+
+/* Предупреждения */
+.has-warning {
+  background-color: #fbbf24 !important;
+}
+
+.has-warning .custom-input {
+  background-color: #fde68a;
+  border-color: #fbbf24;
+  color: #1e2a38;
+}
+
+.warning-text {
+  color: #1e2a38;
+  font-size: 13px;
+  margin: 0;
+}
+
+/* Кнопка */
+.form-submit {
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.btn-primary {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+  padding: 1rem 2rem;
+  font-size: 1.25rem;
+}
+
+.btn-primary:hover {
+  background-color: #2563eb;
+  border-color: #2563eb;
+}
+
+/* Стилизация placeholder */
+.custom-input::placeholder {
+  color: #9ca3af;
+}
+
+/* Стилизация скроллбара */
+::-webkit-scrollbar {
+  width: 10px;
+  background-color: #374151;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #4b5563;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #6b7280;
+}
+</style>
+{% endblock %}
