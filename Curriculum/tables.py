@@ -1,5 +1,4 @@
 from Academhub.tables import BaseTable
-import django_tables2 as table
 from Academhub.models import Curriculum
 
 __all__ = (
@@ -9,5 +8,5 @@ __all__ = (
 class CurriculumTable(BaseTable):
     class Meta:
         model = Curriculum
-        pagination_by = 30
+        pagination_by = 10
         fields = ('qualification', 'admission_year')

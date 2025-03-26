@@ -4,18 +4,18 @@ from django.core.exceptions import ValidationError
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.http import HttpResponseRedirect
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect
 # from parser_for_plx import RUP_parser
 from django.shortcuts import render
 from django.urls import reverse
 from django.views.generic import TemplateView
 
-from .forms import GetPlxForm, EditableCurriculumForm  # Import EditableCurriculumForm
-from Academhub.models import Curriculum, Specialty, Qualification, Category, StudyCycle, Module, Discipline, \
-    ClockCell
-from .tables import CurriculumTable
-from Academhub.generic import ObjectTableView, ObjectCreateView, ImportViewMixin, ObjectTemplateView
+from Academhub.generic import ObjectTableView, ObjectCreateView, ImportViewMixin
+from Academhub.models import Curriculum
 from .filters import CurriculumQualificationsFilter
+from .forms.GetPlxForm import GetPlxForm
+from .forms.EditableCurriculumForm import EditableCurriculumForm
+from .tables import CurriculumTable
 
 __all__ = (
     'CurriculumTableView',
