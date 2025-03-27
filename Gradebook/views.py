@@ -48,6 +48,18 @@ __all__ = (
     'GradebookStudentBulkUpdateView',
 )
 
+
+def check_students_for_academic_debts(group, semester):
+    for student in Student.objects.filter(group=group, is_in_academ=False, is_expelled=False):
+        if len(GradebookStudents.objects.filter(student=student, gradebook__semester_number=semester, gradebook__group=group, grade__in=["2", "Неявка"])) != 0:
+            student.academic_debts = True
+            student.save()
+            print("Student has debts")
+        else:
+            student.academic_debts = False
+            student.save()
+            print("Student doesn't have debts")
+
 class GradebookStudentBulkUpdateView(BulkUpdateView):
     model = GradebookStudents
     form_class = GradebookStudentsForm
@@ -74,6 +86,9 @@ class GradebookStudentBulkUpdateView(BulkUpdateView):
                 Gradebook, 
                 pk=self.gradebook_pk
             )
+
+            check_students_for_academic_debts(gradebook.group, gradebook.semester_number)
+
             gradebook.status = Gradebook.STATUS_CHOICE[2][1]
             gradebook.save()
 
