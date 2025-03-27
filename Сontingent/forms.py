@@ -264,7 +264,7 @@ class StudentImportForm(forms.Form):
         file = cleaned_data['excel_file']
 
         if file:
-            file_extension = os.path.splitext(file.discipline_name)[1]
+            file_extension = os.path.splitext(file.name)[1]
 
             if file_extension.lower() != '.xlsx':
                 raise ValidationError("Файл должен быть в формате .xlsx")
@@ -274,76 +274,76 @@ class StudentImportForm(forms.Form):
         return file
 
     def get_data_from_file(self, file):
-            wb = load_workbook(file)
-            ws = wb.active
+        wb = load_workbook(file)
+        ws = wb.active
 
-            headers = {
-                cell.value: idx for idx, cell in enumerate(ws[1]) if cell.value
-            }
+        headers = {
+            cell.value: idx for idx, cell in enumerate(ws[1]) if cell.value
+        }
 
-            self.data_list = []
+        self.data_list = []
 
-            for row in ws.iter_rows(min_row=2, values_only=True):
-                if all(cell is None for cell in row):
-                    return  # Пропускаем пустые строки
+        for row in ws.iter_rows(min_row=2, values_only=True):
+            if all(cell is None for cell in row):
+                return  # Пропускаем пустые строки
 
-                data = {}  # Создаем словарь для хранения данных текущей строки
+            data = {}  # Создаем словарь для хранения данных текущей строки
 
-                last_name = row[headers.get("Фамилия")]
-                first_name = row[headers.get("Имя")]
-                middle_name = row[headers.get("Отчество")]
-                data['full_name'] = f"{last_name} {first_name} {middle_name}".strip() if last_name and first_name else None
-                data['group_number'] = row[headers.get("Академическая группа")]
-                course_str = row[headers.get("Курс")]
-                data['course'] = int(course_str[0]) if course_str and course_str[0].isdigit() else None
-                data['education_basis'] = row[headers.get("Основы обучения")]
-                data['birth_date'] = (
-                    row[headers.get("Дата рождения")].date() if isinstance(row[headers.get("Дата рождения")], datetime)
-                    else datetime.strptime(row[headers.get("Дата рождения")], "%d.%m.%Y").date()) if row[
-                    headers.get("Дата рождения")] else None
+            last_name = row[headers.get("Фамилия")]
+            first_name = row[headers.get("Имя")]
+            middle_name = row[headers.get("Отчество")]
+            data['full_name'] = f"{last_name} {first_name} {middle_name}".strip() if last_name and first_name else None
+            data['group_number'] = row[headers.get("Академическая группа")]
+            course_str = row[headers.get("Курс")]
+            data['course'] = int(course_str[0]) if course_str and course_str[0].isdigit() else None
+            data['education_basis'] = row[headers.get("Основы обучения")]
+            data['birth_date'] = (
+                row[headers.get("Дата рождения")].date() if isinstance(row[headers.get("Дата рождения")], datetime)
+                else datetime.strptime(row[headers.get("Дата рождения")], "%d.%m.%Y").date()) if row[
+                headers.get("Дата рождения")] else None
 
-                data['phone'] = row[headers.get("Телефон мобильный")]
-                data['admission_order'] = row[headers.get("Приказ о зачислении")]
-                data['expell_order'] = row[headers.get("Приказ об отчислении")] if row[
-                    headers.get("Приказ об отчислении")] else None
-                data['date_of_expelling'] = (
-                    row[headers.get("Приказ об отчислении дата ОТ")].date() if isinstance(row[headers.get("Приказ об отчислении дата ОТ")], datetime)
-                    else datetime.strptime(row[headers.get("Приказ об отчислении дата ОТ")], "%d.%m.%Y").date()) if row[
-                    headers.get("Приказ об отчислении дата ОТ")] else None
-                data['academ_leave_date'] = parse_date(str(row[headers.get("Дата начала последнего академ отпуска")])) if \
-                row[headers.get("Дата начала последнего академ отпуска")] else None
-                data['academ_return_date'] = parse_date(
-                    str(row[headers.get("Дата окончания последнего академ отпуска")])) if row[
-                    headers.get("Дата окончания последнего академ отпуска")] else None
-                data['registration_addres'] = row[headers.get("Адрес по прописке")] if row[headers.get("Адрес по прописке")] else None
-                data['actual_addres'] = row[headers.get("Адрес проживания")] if row[headers.get("Адрес проживания")] else None
-                data['snils'] = row[headers.get("СПС")] if row[headers.get("СПС")] else None
-                data['ancete_number'] = extract_application_number(row[headers.get("Анкета абитуриента")])
-                data['expelled_due_to_graduation'] = False
-                data['is_expelled'] = False
-                data['reason_of_expelling'] = None
-                data['note'] = None
+            data['phone'] = row[headers.get("Телефон мобильный")]
+            data['admission_order'] = row[headers.get("Приказ о зачислении")]
+            data['expell_order'] = row[headers.get("Приказ об отчислении")] if row[
+                headers.get("Приказ об отчислении")] else None
+            data['date_of_expelling'] = (
+                row[headers.get("Приказ об отчислении дата ОТ")].date() if isinstance(row[headers.get("Приказ об отчислении дата ОТ")], datetime)
+                else datetime.strptime(row[headers.get("Приказ об отчислении дата ОТ")], "%d.%m.%Y").date()) if row[
+                headers.get("Приказ об отчислении дата ОТ")] else None
+            data['academ_leave_date'] = parse_date(str(row[headers.get("Дата начала последнего академ отпуска")])) if \
+            row[headers.get("Дата начала последнего академ отпуска")] else None
+            data['academ_return_date'] = parse_date(
+                str(row[headers.get("Дата окончания последнего академ отпуска")])) if row[
+                headers.get("Дата окончания последнего академ отпуска")] else None
+            data['registration_addres'] = row[headers.get("Адрес по прописке")] if row[headers.get("Адрес по прописке")] else None
+            data['actual_addres'] = row[headers.get("Адрес проживания")] if row[headers.get("Адрес проживания")] else None
+            data['snils'] = row[headers.get("СПС")] if row[headers.get("СПС")] else None
+            data['ancete_number'] = extract_application_number(row[headers.get("Анкета абитуриента")])
+            data['expelled_due_to_graduation'] = False
+            data['is_expelled'] = False
+            data['reason_of_expelling'] = None
+            data['note'] = None
 
-                if data['expell_order']:
-                    data['is_expelled'] = True
-                    if 'окончании' in data['expell_order']:
-                        data['expelled_due_to_graduation'] = True
-                        data['reason_of_expelling'] = "Окончание обучения"
-                        data['note'] = 'Отчислен в связи с окончанием обучения'
+            if data['expell_order']:
+                data['is_expelled'] = True
+                if 'окончании' in data['expell_order']:
+                    data['expelled_due_to_graduation'] = True
+                    data['reason_of_expelling'] = "Окончание обучения"
+                    data['note'] = 'Отчислен в связи с окончанием обучения'
 
-                # Проверяем группу
-                group_filter = GroupStudents.objects.filter(
-                    full_name=data['group_number']
+            # Проверяем группу
+            group_filter = GroupStudents.objects.filter(
+                full_name=data['group_number']
+            )
+
+            if group_filter.exists():
+                data['group'] = group_filter.first()
+            else:
+                raise ValidationError(
+                    f'Группы {data["group_number"]} не существует'
                 )
 
-                if group_filter.exists():
-                    data['group'] = group_filter.first()
-                else:
-                    raise ValidationError(
-                        f'Группы {data["group_number"]} не существует'
-                    )
-
-                self.data_list.append(data)  # Добавляем словарь в массив
+            self.data_list.append(data)  # Добавляем словарь в массив
 
     def save(self):
         for data in self.data_list:  # Перебираем массив данных
@@ -379,6 +379,7 @@ class ContingentStudentImportForm(StudentImportForm):
         # print(f"Листы в файле: {wb.sheetnames}")  # Проверяем список листов
 
         # sheet_name = "1 курс (9 кл)"  # Строго задаем имя листа
+        self.data_list = []
         required_sheets = [
             "1 курс (9 кл)",
             '1 курс (11 кл)',
@@ -391,9 +392,6 @@ class ContingentStudentImportForm(StudentImportForm):
             # 'Движение ',
             # 'Академический отпуск'
         ]
-        if required_sheets not in wb.sheetnames:
-            # print(f"Лист {required_sheets} не найдены!")
-            return
 
         for sheet_name in wb.sheetnames:
             if sheet_name in required_sheets:
@@ -405,8 +403,6 @@ class ContingentStudentImportForm(StudentImportForm):
                 # Заголовки
                 headers = {cell.value: idx for idx, cell in enumerate(ws[1]) if cell.value}
                 # print(f"Заголовки в файле: {headers}")  # Проверяем заголовки
-
-                self.data_list = []
 
                 for row in ws.iter_rows(min_row=2, values_only=True):
                     if all(cell is None for cell in row):
