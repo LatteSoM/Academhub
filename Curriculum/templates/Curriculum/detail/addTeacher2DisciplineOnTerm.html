@@ -4,12 +4,12 @@
 
     <p>{{ curriculum.qualification }}</p>
 
-    {% for clock_cell in clock_cells %}
-
-        <p>{{ clock_cell.code_of_type_work }}</p>
-        <p>{{ clock_cell.code_of_type_hours }}</p>
-        <p>{{ clock_cell.count_of_clocks }}</p>
-
-    {% endfor %}
+    <p>{{ clock_cells }}</p>
+    <p>{{ modules }}</p>
+    <p>{{ study_cycles }}</p>
+    <p>{{ categories }}</p>
+    <p>{{ study_cycle_disciplines }}</p>
+    <p>{{ modules_disciplines }}</p>
+    <p>{{ clock_cells }}</p>
 
 {% endblock %}

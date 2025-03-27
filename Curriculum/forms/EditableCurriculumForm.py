@@ -197,5 +197,17 @@ class EditableCurriculumForm(forms.Form):
                 discipline=discipline,
                 curriculum=restored_curriculum,
             )
-            clock_cell_obj.save()
-            restored_clock_cells.append(clock_cell_obj)
+
+            if not ClockCell.objects.filter(
+                code_of_type_work=clock_cell_obj.code_of_type_work,
+                code_of_type_hours=clock_cell_obj.code_of_type_hours,
+                course=clock_cell_obj.course,
+                term=clock_cell_obj.term,
+                count_of_clocks=clock_cell_obj.count_of_clocks,
+                module=clock_cell_obj.module,
+                discipline=clock_cell_obj.discipline,
+                curriculum=clock_cell_obj.curriculum,
+                                        ) :
+
+                clock_cell_obj.save()
+                restored_clock_cells.append(clock_cell_obj)

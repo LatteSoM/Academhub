@@ -11,7 +11,7 @@ from django.urls import reverse
 from django.views.generic import TemplateView, DetailView
 
 from Academhub.generic import ObjectTableView, ObjectCreateView, ImportViewMixin, ObjectTemplateView, ObjectDetailView
-from Academhub.models import Curriculum, ClockCell
+from Academhub.models import Curriculum, ClockCell, Category, StudyCycle, Discipline
 from .filters import CurriculumQualificationsFilter
 from .forms.GetPlxForm import GetPlxForm
 from .forms.EditableCurriculumForm import EditableCurriculumForm
@@ -101,7 +101,31 @@ class AddTeacher2DisciplineOnTerm(ObjectDetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
+
+        categories = Category.objects.filter(curriculum=self.object)
+
+        study_cycles = []
+        for category in categories:
+            study_cycles += StudyCycle.objects.filter(categories=category)
+
+        study_cycle_disciplines = []
+        modules = []
+        for study_cycle in study_cycles:
+            study_cycle_disciplines += study_cycle.disciplines.all()
+            modules += study_cycle.modules.all()
+
+        modules_disciplines = []
+        for module in modules:
+            modules_disciplines += module.disciplines.all()
+
+        context['categories'] = categories
+        context['study_cycles'] = study_cycles
+        context['modules'] = modules
+        context['study_cycle_disciplines'] = study_cycle_disciplines
+        context['modules_disciplines'] = modules_disciplines
         context['clock_cells'] = ClockCell.objects.filter(curriculum=self.object)
+
         return context
 
 
