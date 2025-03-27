@@ -16,12 +16,25 @@
     </li>
 {% else %}
     {# Получаем результат проверки прав #}
-    {% has_perm link.permission_required as user_has_perm %}
-    {% if user_has_perm %}
+
+    {% if link.teacher and user.is_teacher %}
         <li>
             <a href="{% url link.url %}" class="nav-item">
                 {{ link.name }}
             </a>
         </li>
+    {% else %}
+
+        {% has_perm link.permission_required as user_has_perm %}
+
+        {% if user_has_perm %}
+            <li>
+                <a href="{% url link.url %}" class="nav-item">
+                    {{ link.name }}
+                </a>
+            </li>
+        {% endif %}
+
     {% endif %}
+    
 {% endif %}

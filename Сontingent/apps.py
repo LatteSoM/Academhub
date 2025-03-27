@@ -7,4 +7,4 @@ class СontingentConfig(AppConfig):
 
     def get_navigation(self, user):
         from .navigation import navigation
-        return  navigation.get()
+        return navigation.get()

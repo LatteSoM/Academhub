@@ -16,8 +16,7 @@ class UnifiedPermissionQyerySet(models.QuerySet):
 
         for permission in self.select_related('content_type'):
             model_name = permission.content_type.name
-            print(permission.codename)
-            codename = permission.codename.split('_')[0]
+            codename = permission.name
             
             if not context.get(model_name, None):
                 context[model_name] = []

@@ -4,6 +4,10 @@ class AcademhubAppConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "Academhub"
 
+    def ready(self):
+        from .signals import setup_signals
+        setup_signals()
+
     # def ready(self, daily_task=None):
     #     # Импортируем модель здесь, внутри метода ready()
     #     from Academhub.models import GroupStudents

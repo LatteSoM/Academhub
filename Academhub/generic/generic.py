@@ -18,7 +18,7 @@ __all__  = [
   'ObjectTableImportView',
 ]
 
-class ObjectTemplateView(TemplateView):
+class ObjectTemplateView(PermissionBaseMixin, TemplateView):
   '''
   Переопределенный класс TemplateView для поддержки навигации на странице.
   Наследуется от NavigationContextMixin и TemplateView.
@@ -68,7 +68,6 @@ class ObjectTableImportView(ImportViewMixin, FilterView, BaseObjectTableView):
       Наследуется от BaseContextMixin и SingleTableView (из django-tables2) и FilterView (из django-filter).
       Используется для отображения данных в виде таблиц с фильтрации и поддержкой навигации.
     '''
-    permission_import_required = 'import'
     template_name = 'base_view_import.html'
     paginate_by = 10
 

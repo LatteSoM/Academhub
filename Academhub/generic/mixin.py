@@ -1,8 +1,7 @@
-from ..utils import getpermission
 from django.contrib import messages
+from collections.abc import Iterable
 from django_tables2 import RequestConfig
 from django.views.generic.base import ContextMixin
-from django.core.exceptions import ImproperlyConfigured
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 
 __all__ = (
@@ -10,6 +9,7 @@ __all__ = (
     'SubTablesMixin',
     'ImportViewMixin',
     'BaseContextMixin',
+    'PermissionBaseMixin',
 )
 
 class PermissionBaseMixin(PermissionRequiredMixin):
@@ -17,33 +17,14 @@ class PermissionBaseMixin(PermissionRequiredMixin):
         Базовый mixin для ограничения доступа к странциам на основе прав доступа
     '''
 
-    def _get_class_object(self):
-        try:
-            if self.model is not None:
-                return self.model
-        except AttributeError:
-            pass
-
-        try:
-            if self.queryset is not None:
-                return self.queryset.model
-        except AttributeError:
-            pass
-
-        raise ImproperlyConfigured(
-            f"{self.__class__.__name__} is missing both 'model' and 'queryset' attributes. "
-            f"Define either {self.__class__.__name__}.model or {self.__class__.__name__}.queryset."
-        )
-
     def get_permission_required(self):
         if self.permission_required is None:
             return None
 
-        model = self._get_class_object()
-
-        perm = getpermission(model, self.permission_required)
-
-        return [perm, ]
+        if isinstance(self.permission_required, Iterable):
+            return self.permission_required
+        else:
+            return [self.permission_required, ]
     
     def has_permission(self):
         """

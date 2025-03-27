@@ -16,8 +16,7 @@ class PermissionSelectWidget(forms.Widget):
 
         for permission in permissions:
             model_name = permission.content_type.name
-            codename = permission.codename.split('_')[:-1]
-            codename = '_'.join(codename)
+            codename = permission.name
             
             if not models.get(model_name, None):
                 models[model_name] = []
@@ -33,7 +32,7 @@ class PermissionSelectWidget(forms.Widget):
         for perm in permissions:
             if str(perm.pk) in selected_ids:
                 model_name = perm.content_type.model
-                codename = perm.codename.split('_')[0]
+                codename = perm.name
                 selected_permissions.append({
                     'model': model_name,
                     'name': codename,

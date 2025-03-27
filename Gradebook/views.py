@@ -97,6 +97,8 @@ class GradebookGenerateView(ObjectTemplateView):
     """Отдельный класс для обработки генерации"""
     template_name = 'Gradebook/inc/generate_form.html'
 
+    permission_required = getpermission('Gradebook', 'create_gradebook')
+
     def get(self, request):
         form = GenerateGradebookForm()
         return render(request, self.template_name, {'form': form})
@@ -236,6 +238,8 @@ def fetch_group_semester_attestation_table(semester, group):
 class ViewStudentsGradesForSemester(ObjectTemplateView):
     """Отдельный класс для обработки статистической таблицы студентов"""
     template_name = 'Gradebook/inc/statisticks_form.html'
+
+    permission_required = getpermission('Gradebook', 'view_student_statick')
 
     def get(self, request):
         form = GetStatisticksGradebookForm()
@@ -461,23 +465,24 @@ class GradebookTableView(ObjectTableView):
     """
     table_class = GradebookTable
     filterset_class = GradebookFilter
-    queryset = Gradebook.objects.all()
+    queryset = Gradebook.objects.exclude(status=Gradebook.STATUS_CHOICE[3][1])
+
+    permission_required = getpermission('Gradebook', 'view_gradebook')
 
     buttons = [
         Button (
             id='add',
             name = 'Добавить',
             link_name = getpattern(Gradebook, 'add'),
-            permission = getpermission(Gradebook, 'add'),
+            permission = getpermission('Gradebook', 'create_gradebook'),
         ),
         Button(
             id = 'generate',
             name = 'Сгенерировать ведомости',
             link_name = 'gradebook_generate',
-            permission = getpermission(Gradebook, 'add'),
+            permission = getpermission('Gradebook', 'create_gradebook'),
         )
     ]
-    queryset = Gradebook.objects.exclude(status=Gradebook.STATUS_CHOICE[3][1])
 
     def get_table_class(self):
         if self.request.GET.get("mobile") == "1":
@@ -508,13 +513,14 @@ class GradebookClosedList(ObjectTableView):
     queryset = Gradebook.objects.filter(status=Gradebook.STATUS_CHOICE[3][1])
     properties = {}
 
+    permission_required = getpermission('Gradebook', 'view_gradebook')
+
     def get_table_class(self):
         if self.request.GET.get("mobile") == "1":
             return GradebookMobileTable
         return GradebookTable
 
 class TeachersGradeBookTableView(ObjectTableView):
-    permission_required = None
     table_class = TeacherGradeBookTable
     filterset_class = GradeBookTeachersFilter
     queryset = Gradebook.objects.all() 
@@ -562,6 +568,7 @@ class GradebookDetailView(ObjectDetailView):
     model= Gradebook
     paginate_by   = 30
     template_name = 'Gradebook/detail/gradebook_student.html'
+    permission_required = getpermission('Gradebook', 'view_gradebook')
 
     fieldset = {
         'Основная информация': [
@@ -579,31 +586,34 @@ class GradebookDetailView(ObjectDetailView):
             name = 'Обновить',
             link_params = ['pk'],
             link_name = getpattern(Gradebook, 'change'),
-            permission = getpermission(Gradebook, 'change'),
+            permission = getpermission('Gradebook', 'update_gradebook'),
         ),
         Button (
             id = 'to_list',
             name = 'К таблице',
             link_name = getpattern(Gradebook, 'list'),
-            permission = getpermission(Gradebook, 'view')
+            permission = getpermission('Gradebook', 'view_gradebook')
         ),
         Button (
             link_params = ['pk'],
             name = 'Открыть ведомость',
             link_name = 'check_open_gradebook',
-            condition = lambda obj, user: obj.status == "Не заполнена"
+            condition = lambda obj, user: obj.status == "Не заполнена",
+            permission = getpermission('Gradebook', 'open_gradebook'),
         ),
         Button (
             link_params = ['pk'],
             name = 'Закрыть ведомость',
             link_name = 'download_report',
-            condition = lambda obj, user: obj.status == "Заполнена"
+            condition = lambda obj, user: obj.status == "Заполнена",
+            permission = getpermission('Gradebook', 'close_gradebook'),
         ),
         Button (
             link_params = ['pk'],
             name = 'Скачать документ',
             link_name = 'download_report',
-            condition = lambda obj, user: obj.status == "Закрыта"
+            condition = lambda obj, user: obj.status == "Закрыта",
+            permission = getpermission('Gradebook', 'download_gradebook'),
         )
     ]
 
@@ -681,22 +691,23 @@ class GradebookUpdateView(GradeBookMixin, ObjectUpdateView):
     queryset = Gradebook.objects.all()
     properties = {}
 
+    permission_required = getpermission('Gradebook', 'update_gradebook'),
+
     buttons = [
         Button (
             id='to_object',
             name = 'К объекту',
             link_params = ['pk'],
             link_name = getpattern(Gradebook, 'detail'),
-            permission = getpermission(Gradebook, 'view')
+            permission = getpermission('Gradebook', 'view_gradebook'),
         ),
         Button (
             id = 'to_list',
             name = 'К таблице',
             link_name = getpattern(Gradebook, 'list'),
-            permission = getpermission(Gradebook, 'view')
+            permission = getpermission('Gradebook', 'view_gradebook'),
         )
     ]
-
 
 
 class GradebookCreateView(GradeBookMixin, ObjectCreateView):
@@ -708,12 +719,14 @@ class GradebookCreateView(GradeBookMixin, ObjectCreateView):
     template_name = 'Gradebook/create/grade_book.html'
     properties = ['group_id']
 
+    permission_required = getpermission('Gradebook', 'create_gradebook')
+
     buttons = [
         Button (
             id = 'to_list',
             name = 'К таблице',
             link_name = getpattern(Gradebook, 'list'),
-            permission = getpermission(Gradebook, 'view')
+            permission = getpermission('Gradebook', 'view_gradebook')
         )
     ]
 
@@ -762,7 +775,7 @@ def get_download_path() -> Path:
     # Fallback: текущая директория
     return Path.cwd()
 
-@permission_required(getpermission(Gradebook, 'view'))
+@permission_required(getpermission('Gradebook', 'download_gradebook'))
 def download_report(request, pk):
     gradebook = get_object_or_404(Gradebook, pk=pk)
 
@@ -774,13 +787,12 @@ def download_report(request, pk):
         gradebook.save()
 
     path = get_download_path()
-    print(path)
     generator = GradebookDocumentGenerator(gradebook)
     generator.generate_document(f"{path}/{gradebook.name}_{gradebook.discipline.name}_{gradebook.semester_number}_семестр_{gradebook.group.full_name}.docx")
 
     return response
 
-@permission_required(getpermission(Gradebook, 'view'))
+@permission_required(getpermission('Gradebook', 'view_gradebook'))
 def check_and_open_gradebook(request, pk):
     """
     Проверяет заполненность всех обязательных полей ведомости,
