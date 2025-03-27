@@ -19,9 +19,20 @@ class GenerateGradebookForm(forms.Form):
         (8, 8),
     )
 
+    TYPE_CHOICES = (
+        ("Первичная сдача", "Первичная сдача"),
+        ("Пересдача", "Пересдача"),
+        ("Комиссия", "Комиссия")
+    )
+
     semester = forms.ChoiceField(
         choices=SEMESTER_NUMBERS,
         label="Выберите семестр"
+    )
+
+    type_of_gradebook = forms.ChoiceField(
+        choices=TYPE_CHOICES,
+        label="Выберите тип ведомости"
     )
 
 
