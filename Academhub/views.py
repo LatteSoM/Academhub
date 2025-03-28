@@ -2,6 +2,7 @@ from django.urls import reverse_lazy
 from AccessControl.table import GroupTable
 from django.views.generic import UpdateView
 from AccessControl.mixin import PermissionMixin
+from Academhub.models.help.button import Button
 from django.contrib.messages.views import SuccessMessageMixin
 from Academhub.generic import ObjectTemplateView, ObjectDetailView
 from django.contrib.auth.views import LoginView, PasswordChangeView
@@ -38,6 +39,17 @@ class UserSettingsDetailView(PermissionMixin, ObjectDetailView):
             'is_teacher',
         ],
     }
+
+    buttons = [
+        Button (
+            name = 'Изменить почту',
+            link_name = 'user_email_change',
+        ),
+        Button (
+            name = 'Изменить пароль',
+            link_name = 'user_password_change'
+        )
+    ]
 
     tables = [
         SubTable (
