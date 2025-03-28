@@ -1095,6 +1095,8 @@ class Curriculum(AcademHubModel):
     )
     admission_year = models.PositiveIntegerField(verbose_name="Год поступления")
 
+    basis_of_admission = models.PositiveIntegerField(verbose_name="Основа поступления")
+
     class Meta:
         verbose_name = "Учебный план"
         verbose_name_plural = "Учебные планы"
@@ -1107,11 +1109,13 @@ class Curriculum(AcademHubModel):
             qualification=qual_obj,
             admission_year=data["admission_year"],
             qualification_name = qual_obj.name,
+            basis_of_admission=data['basis_of_admission']
         )
         if not created:
             obj.qualification_name = data.get("qualification_name", obj.qualification_name)
             obj.warnings = data.get("warnings", obj.warnings)
             obj.warning_description = data.get("warning_description", obj.warning_description)
+            obj.basis_of_admission = data.get("basis_of_admission", obj.basis_of_admission)
             obj.save()
         return obj
 
@@ -1120,7 +1124,8 @@ class Curriculum(AcademHubModel):
             "qualification": self.qualification,
             "admission_year": self.admission_year,
             "warnings": self.warnings,
-            "warning_description": self.warning_description
+            "warning_description": self.warning_description,
+            "basis_of_admission": self.basis_of_admission
         }
 
 

@@ -17,6 +17,14 @@ class GetPlxForm(forms.Form):
     specialty = forms.ModelChoiceField(
         queryset=Specialty.objects.all(), required=True, label="Специальность"
     )
+
+    basises = [
+        (9, '9 класс'),
+        (11, '11 класс'),
+    ]
+
+    basis_of_admission = forms.ChoiceField(choices=basises, label='Выберите основу обучения')
+
     parser = RUP_parser()
 
     def __init__(self, *args, **kwargs):
@@ -33,6 +41,7 @@ class GetPlxForm(forms.Form):
         super().clean()
         result = self.cleaned_data.get('file')
         specialty = self.cleaned_data.get('specialty')
+        basis_of_admission = self.cleaned_data.get('basis_of_admission')
 
         if result:
             file_extension = os.path.splitext(result.name)[1]
@@ -40,7 +49,7 @@ class GetPlxForm(forms.Form):
                 raise forms.ValidationError("Файл должен быть в формате .plx")
 
             self.get_file_data(result)
-            created_objects = self.load_json_to_models(self.parser.plan_data_json, specialty)
+            created_objects = self.load_json_to_models(self.parser.plan_data_json, specialty, basis_of_admission)
             self.request.session['uploaded_data'] = json.dumps(created_objects, default=str) # Сериализуем и сохраняем в сессию
 
     def get_file_data(self, file):
@@ -57,7 +66,7 @@ class GetPlxForm(forms.Form):
         """
         pass
 
-    def load_json_to_models(self, rup_data, specialty):
+    def load_json_to_models(self, rup_data, specialty, basis_of_admission):
         """
         Загружает данные из JSON-структуры, полученной из PLX-файла,
         в структуры данных Python (словари и списки).
@@ -90,7 +99,8 @@ class GetPlxForm(forms.Form):
         curriculum_obj = CurriculumDict(
             qualification_name=qualification_obj.name,
             qualification=qualification_obj.to_dict(),
-            admission_year=int(rup_data.get("admission_year", 0))  # Преобразуем строку в число
+            admission_year=int(rup_data.get("admission_year", 0)), # Преобразуем строку в число
+            basis_of_admission=int(basis_of_admission)
         )
         curriculum_obj = curriculum_obj.to_dict()
 
