@@ -103,6 +103,10 @@ PERMISSIONS = [
         'codename': 'return_expulsion_student',
         'name': 'Восстановить студента'
     },
+    {
+        'codename': 'export_student',
+        'name': 'Экспорт студентов'
+    },
 
     #
     ## Зачетная книжка

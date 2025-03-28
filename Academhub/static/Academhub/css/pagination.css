@@ -1,19 +1,21 @@
 /* Pagination */
 .pagination {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 1.5rem;
+    align-items: start;
     padding-top: 1rem;
+    margin-top: 1.5rem;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .pagination-info {
     color: var(--secondary-color);
+    margin-bottom: 10px;
 }
 
 .pagination-controls {
-    display: flex;
     gap: 0.5rem;
+    display: flex;
     align-items: center;
 }
 

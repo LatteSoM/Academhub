@@ -71,14 +71,9 @@ class ObjectTableImportView(ImportViewMixin, FilterView, BaseObjectTableView):
     template_name = 'base_view_import.html'
     paginate_by = 10
 
-    def get_permission_import(self):
-        object = self._get_class_object()
-
-        return getpermission(object, self.permission_import_required)
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['permission_import'] = self.get_permission_import()
+        context['permission_import'] = self.permission_import_required
         return context
 
 class ObjectListView(BaseContextMixin, ListView):

@@ -535,6 +535,7 @@ class StudentTableView(ObjectTableImportView):
     queryset = CurrentStudent.objects.all()
 
     permission_required = getpermission('Contingent', 'view_current_student')
+    permission_import_required = getpermission('Contingent', 'export_student')
 
     buttons = [
         Button (
