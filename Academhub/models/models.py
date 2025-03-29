@@ -1393,8 +1393,8 @@ class TeacherDicsciplineCurriculum(AcademHubModel):
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
     teacher = models.ForeignKey(CustomUser, related_name='disciplines', on_delete=models.CASCADE)
-    course = models.IntegerField(null=False),
-    term = models.IntegerField(null=False),
+    course = models.IntegerField(null=False)
+    term = models.IntegerField(null=False)
     discipline = models.ForeignKey(Discipline, related_name='teachers', on_delete=models.CASCADE)
     curriculum = models.ForeignKey(Curriculum, related_name='teachers_dicsciplines', on_delete=models.CASCADE)
 
@@ -1408,6 +1408,8 @@ class TeacherDicsciplineCurriculum(AcademHubModel):
         return cls(
             id=data["id"],
             teacher=CustomUser.objects.get(id=data["teacher"]),
+            course=data['course'],
+            term=data['term'],
             discipline=Discipline.objects.get(id=data["discipline"]),
             curriculum=Curriculum.objects.get(id=data["curriculum"]),       
         )

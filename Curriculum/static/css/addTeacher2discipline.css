@@ -1,0 +1,30 @@
+.teachers {
+    width: 30vw; /* Ширина блока */
+    max-height: 400px; /* Высота блока */
+    overflow-y: scroll; /* Прокрутка по вертикали при переполнении */
+    overflow-x: scroll;
+    padding: 10px; /* Внутренние отступы */
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1); /* Тень */
+    background-color: #374151;
+    border-radius: 5px;
+}
+
+.teacher {
+    margin: 5px 0; /* Отступы между записями */
+    display: flex;
+    justify-content: space-between;
+}
+
+.buttons_container{
+    display: flex;
+    justify-content: space-around;
+}
+
+.margin_buttons{
+    margin-left: 5px;
+}
+
+.teachers_select_container{
+    display: flex;
+    justify-content: space-between;
+}

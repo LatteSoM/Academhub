@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'Academhub/css/sidebar.css' %}">
+    <link rel="stylesheet" href="{% static 'Academhub/css/responsive.css' %}">
+    <link rel="stylesheet" href="{% static 'Academhub/css/messages.css' %}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="{% static 'Academhub/css/table.css' %}">
+    <link rel="stylesheet" href="{% static '/css/addTeacher2discipline.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="container mt-4">
+        <h2>Добавление преподавателей к дисциплине:</h2>
+        <h4>{{ discipline.name }}</h4>
+        <h6>Курс: {{ course_number }}</h6>
+        <h6>Семестр: {{ term_number }}</h6>
+        
+        <hr>
+        <div class="teachers_select_container">
+            <div>
+                <p>Добавить возможность вести дисциплину в этом семестре</p>
+
+                <div class="teachers">
+                    <hr>
+                    {% for teacher in teachers %}
+                        <div class="teacher">
+                            <p >{{ teacher.full_name }}</p>
+        
+                            <div class="buttons_container">
+                                <form class="margin_button" method="post" action="{% url 'add_teacher_to_discipline' curriculum.id discipline.id course_number term_number teacher.id %}">
+                                    {% csrf_token %}
+                                    <input type="submit" value="Добавить" />
+                                </form>                         
+                            </div>
+                        </div>
+                        <hr>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div>
+                <p>Убрать возможность вести дисциплину в этом семестре</p>
+
+                <div class="teachers"> 
+                    <hr>
+                    {% for teacher in teachers_of_discipline %}
+                        <div class="teacher">
+                            <p >{{ teacher.teacher.full_name }}</p>
+        
+                            <div class="buttons_container">
+                                <form class="margin_button" method="post" action="{% url 'remove_teacher_from_discipline' curriculum.id discipline.id course_number term_number teacher.teacher.id %}">
+                                    {% csrf_token %}
+                                    <input type="submit" value="Удалить" />
+                                </form>                         
+                            </div>
+                        </div>
+                        <hr>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Подключение Select2 для поиска в выпадающем списке -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    // Инициализация Select2
+    $('.select2').select2({
+        placeholder: "Выберите преподавателя...",
+        allowClear: true,
+        width: '100%'
+    });
+    
+    // Подтверждение удаления
+    $('.btn-danger').click(function() {
+        return confirm('Вы уверены, что хотите удалить этого преподавателя из дисциплины?');
+    });
+});
+</script>
+{% endblock %}

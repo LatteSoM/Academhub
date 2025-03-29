@@ -1,0 +1,44 @@
+.main_container{
+    display: flex;
+    flex-direction: column;
+}
+
+.headers_container{
+    display: flex;
+    justify-content: space-between;
+}
+
+.data_headers_container{
+    margin-right: 50px;
+}
+
+.p_headers{
+    font-size: 18px;
+}
+
+.disciplines {
+    width: 70vw; /* Ширина блока */
+    height: 600px; /* Высота блока */
+    overflow-y: scroll; /* Прокрутка по вертикали при переполнении */
+    overflow-x: scroll;
+    padding: 10px; /* Внутренние отступы */
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1); /* Тень */
+    background-color: #374151;
+    border-radius: 5px;
+}
+
+.discipline {
+    margin: 5px 0; /* Отступы между записями */
+    display: flex;
+    justify-content: space-between;
+    width: 110%;
+}
+
+.terms_container{
+    display: flex;
+    justify-content: space-around;
+}
+
+.margin_term{
+    margin-left: 5px;
+}

@@ -9,4 +9,4 @@ class CurriculumTable(BaseTable):
     class Meta:
         model = Curriculum
         pagination_by = 10
-        fields = ('qualification', 'admission_year')
+        fields = ('qualification', 'admission_year', 'basis_of_admission')
