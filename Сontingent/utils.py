@@ -16,12 +16,29 @@ def generate_unique_record_book_number(admission_year, student):
     """
     while True:
         prefix = 'Д'
-        suffix = 'Б' if student.education == 'Бюджет' else 'В'
+        suffix = 'Б' if student.education_basis == 'бюджет' else 'В'
         number = student.ancete_number if student.ancete_number else ''
         year_short = str(admission_year)[-2:]
         record_book_number = f"{prefix}{number}{suffix}/{year_short}/СПО"
         if not StudentRecordBook.objects.filter(record_book_number=record_book_number).exists():
             return record_book_number
+
+
+def create_recordbook_template(qualification: Qualification):
+    curiculum = qualification.study_plan
+
+    #1) список дисциплин
+    #2) + форма аттестации
+    #3) + количество часов
+    clock_cells = ClockCell.objects.filter(curiculum=curiculum, code_of_type_work='Итого часов', discipline__isnull=False)
+    # disciplines =
+    professional_modules = clock_cells.filter(module_id__isnull=False, discipline__isnull=True)
+    for module in professional_modules:
+        module.module.name
+
+
+
+
 
 
 def extract_application_number(text):
