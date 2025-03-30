@@ -80,8 +80,6 @@ urlpatterns = [
      # Страница статистики
 
      path('statisticks/', StatisticksView.as_view(), name='statisticks'),
-     path('qualification/<int:qualification_id>/<int:admission_year>/record-book/view/', ViewRecordBookTemplateView.as_view(),
-          name='view_record_book_template'),
      path('qualification/<int:qualification_id>/<int:admission_year>/<int:student_id>/record-book-student/view/', ViewRecordBookView.as_view(),
           name='view_record_book'),
 
