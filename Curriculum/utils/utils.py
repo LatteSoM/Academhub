@@ -1,8 +1,9 @@
 import json
-from functools import lru_cache
 import re
+from collections import defaultdict
 
 from pyaspeller import YandexSpeller
+
 
 class MyValidator:
     def __init__(self):
@@ -47,73 +48,46 @@ class MyValidator:
         """
         Проверяет формат индекса дисциплины и последовательность индексов,
         учитывая двусоставные индексы модулей (МДК.01.01).
-
-        Args:
-            index: Индекс дисциплины (например, "МДК.01.01").
-            previous_indices: Словарь, хранящий предыдущие индексы.
-                            Ключи - комбинация префикса и номера модуля (МДК.01, МДК.1).
-
-        Returns:
-            Список ошибок или None, если ошибок нет.
         """
         if not index:
             return ["Индекс дисциплины отсутствует."]
 
         index = index.strip()
+        index = index.replace("M", "М")  # Заменяем латинскую M на кириллическую М
 
-        match = re.match(r"([А-Я]+)\.(\d{1,2}(?:\.\d{1,2})?)", index)
+        if index == "ПОО" or index == "ПДП":
+            return None
+
+        match = re.match(r"([\w]+)\.(\d{1,2})(?:\.(\d{1,2}|ЭК))?", index)
         if not match:
-            return [f"Неверный формат индекса '{index}'. Ожидается формат 'Префикс.Число' или 'Префикс.Число.Число'."]
+            return [f"Неверный формат индекса '{index}'. Ожидается формат 'Префикс.Число' или 'Префикс.Число.Число' или 'Префикс.Число.ЭК'."]
 
         prefix = match.group(1)
         number_part = match.group(2)
+        number_part2 = match.group(3)
 
-        valid_prefixes = ["ОГСЭ", "ЕН", "ОПЦ", "ПЦ", "ПМ", "МДК", "УП", "ПП", "ПДП", "ОП"]
+        valid_prefixes = {"ОГСЭ", "ЕН", "ОПЦ", "ПЦ", "ПМ", "МДК", "УП", "ПП", "ПДП", "ОП", "ООД", "ГИА", "ПДП", "ПОО"}
         if prefix not in valid_prefixes:
             return [
                 f"Недопустимый префикс '{prefix}' в индексе '{index}'. Допустимые префиксы: {', '.join(valid_prefixes)}."]
 
-        if "." in number_part:
-            main_number_str, secondary_number_str = number_part.split(".")
-            main_number, secondary_number = int(main_number_str), int(secondary_number_str)
-        else:
-            main_number_str = number_part
-            main_number = int(main_number_str)
-            secondary_number = None
 
         # Создаем ключ, включающий номер модуля (МДК.01, МДК.1 и т.д.)
-        module_key = f"{prefix}.{main_number_str}"
-
-        if module_key not in previous_indices:
-            previous_indices[module_key] = (None, None)  # Инициализируем запись
-
-        prev_main, prev_secondary = previous_indices[module_key]
-
-        if prev_main is None:  # Первый индекс для данного модуля
-            if secondary_number is None and main_number != int(
-                    main_number_str):  # проверка на валидность индекса, если он без подчасти
-                return [f"Неверная последовательность индекса '{index}'. Ожидается '{prefix}.1' или '{prefix}.01'."]
-            if secondary_number is not None and secondary_number != 1:
-                return [
-                    f"Неверная последовательность индекса '{index}'. Ожидается '{prefix}.{main_number_str}.1' или '{prefix}.0{main_number_str}.01'."]
-            previous_indices[module_key] = (main_number, secondary_number)
-        else:  # Индекс для данного модуля уже существует
-            if secondary_number is None:  # Если текущий индекс - "Префикс.Число"
-                if prev_secondary is not None:
-                    return [
-                        f"Неверная последовательность индекса '{index}'. Индекс с одной цифрой не может идти после индекса с двумя."]
-                if main_number != prev_main + 1:
-                    return [f"Неверная последовательность индекса '{index}'. Ожидается '{prefix}.{prev_main + 1}'."]
-                previous_indices[module_key] = (main_number, None)
-            else:  # Если текущий индекс - "Префикс.Число.Число"
-                if prev_secondary is None:
-                    if main_number != prev_main or secondary_number != 1:
-                        return [f"Неверная последовательность индекса '{index}'. Ожидается '{prefix}.{prev_main}.1'."]
+        module_key = f"{prefix}.{number_part}"
+        if module_key in previous_indices:
+            previus_discipline_index = previous_indices[module_key][-1]
+            if previus_discipline_index == number_part2:
+                return [f"{index} уже был в учебном плане"]
+            elif int(previus_discipline_index)+1 != int(number_part2):
+                if int(previus_discipline_index) >= 10:
+                    expected_index = str(int(previus_discipline_index))
                 else:
-                    if main_number != prev_main or secondary_number != prev_secondary + 1:
-                        return [
-                            f"Неверная последовательность индекса '{index}'. Ожидается '{prefix}.{prev_main}.{prev_secondary + 1}'."]
-                previous_indices[module_key] = (main_number, secondary_number)
+                    expected_index = "0" + str(int(previus_discipline_index)+1)
+                return [f"Неверная последовательность индекса '{index}'. Ожидается '{prefix}.{number_part}.{expected_index}', так как он должен идти следующим по порядку"]
+            else:
+                previous_indices[module_key].append(number_part2)
+        else:
+            previous_indices[module_key].append(number_part2)
 
         return None
 
@@ -122,17 +96,22 @@ class MyValidator:
         Проверяет, что суммарное количество часов за семестр у дисциплины
         равняется сумме часов по всем ячейкам, кроме итоговой.
         """
-        for course in discipline.get("clock_cells", []):
-            for term in course.get('terms', []):
-                total_hours = 0
-                max_hours = 0
-                for clock in term.get('clock_cells', []):
-                    count_of_clocks = clock.get("count_of_clocks", 0)
-                    total_hours += count_of_clocks
-                    if count_of_clocks > max_hours:
-                        max_hours = count_of_clocks
+        total_hours = 0
+        all_hours = defaultdict(list)
+        itogo_hours = defaultdict(int)
+        for cc in discipline.get("clock_cells", []):
+            hours = cc.get("count_of_clocks")
+            if cc.get("code_of_type_work") == "Итого часов":
+                itogo_hours[(cc.get("course"),cc.get("term"))] = hours
+            elif hours > 1:
+                all_hours[(cc.get("course"),cc.get("term"))].append(hours)
 
-                if total_hours - max_hours != max_hours:
-                    return [
-                        f"Сумма часов по ячейкам ({total_hours - max_hours}) не совпадает с итоговым количеством часов ({max_hours}) за семестр {term['term_number']} курса {course['course_number']} у дисциплины '{discipline.get('discipline')}'."]
+
+        for course_term, hours in all_hours.items():
+            itogo = itogo_hours[course_term]
+            total_hours = sum(hours)
+
+            if total_hours != itogo:
+                return [
+                    f"Обратите внимание на часы дисциплины. Предположительно в ячейке {course_term[0]} курс {course_term[1]} семестр ошибка в часах. Т.к сумма всех ячеек не совпадает с итоговым числом часов"]
         return None

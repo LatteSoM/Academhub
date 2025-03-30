@@ -1,5 +1,7 @@
 import json
 import os
+from collections import defaultdict
+from typing import DefaultDict
 
 from django import forms
 
@@ -105,7 +107,7 @@ class GetPlxForm(forms.Form):
         curriculum_obj = curriculum_obj.to_dict()
 
         all_warnings = []  # Список для хранения всех опечаток
-        previous_indices = {}  # Словарь для хранения предыдущих индексов
+        previous_indices = defaultdict(list)  # Словарь для хранения предыдущих индексов
 
         created_objects = {  # Словарь для хранения созданных объектов и дальнейшей передачи в сессию
             "curriculum": [curriculum_obj],
@@ -195,10 +197,6 @@ class GetPlxForm(forms.Form):
 
                         # Валидация индекса
                         index_warnings = self.validator.validate_discipline_index(discipline_code, previous_indices)
-                        if index_warnings:
-                            for warning in index_warnings:
-                                pass
-                                # print(warning)
 
                         discipline_obj = DisciplineDict(
                             discipline_name=discipline_name,
@@ -213,7 +211,6 @@ class GetPlxForm(forms.Form):
                         # Вызываем валидацию часов для дисциплины
                         hour_warnings = self.validator.validate_discipline_hours(discipline)
                         if hour_warnings:
-                            all_warnings.extend(hour_warnings)
                             discipline_obj.warning = True
                             if discipline_obj.warning_description:
                                 discipline_obj.warning_description.extend(hour_warnings)
@@ -266,11 +263,6 @@ class GetPlxForm(forms.Form):
 
                     # Валидация индекса
                     index_warnings = self.validator.validate_discipline_index(discipline_code, previous_indices)
-                    if index_warnings:
-                        # print("=== Ошибки валидации индекса ===")
-                        for warning in index_warnings:
-                            pass
-                            # print(warning)
 
                     discipline_obj = DisciplineDict(
                         discipline_name=discipline_name,
@@ -284,7 +276,6 @@ class GetPlxForm(forms.Form):
                     # Вызываем валидацию часов для дисциплины
                     hour_warnings = self.validator.validate_discipline_hours(discipline)
                     if hour_warnings:
-                        all_warnings.extend(hour_warnings)
                         discipline_obj.warning = True
                         if discipline_obj.warning_description:
                             discipline_obj.warning_description.extend(hour_warnings)
