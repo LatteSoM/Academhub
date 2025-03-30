@@ -63,7 +63,7 @@ class StudentTable(BaseTable):
     # selection = CheckBoxColumn(accessor='pk', orderable=False, verbose_name='')
 
     class Meta:
-        model = CurrentStudent
+        model = Student
         paginate_by = 10
         # fields = ('full_name', 'phone', 'birth_date', 'course', 'group')
         fields = ('full_name', 'education_base', 'education_basis', 'birth_date', 'course', 'group')
@@ -77,21 +77,21 @@ class StudentTransferTable(BaseTable):
     )
 
     class Meta:
-        model = CurrentStudent
+        model = Student
         paginate_by = 10
         fields = ('selection','full_name', 'education_base', 'education_basis', 'birth_date', 'course', 'group')
 
 
 class StudentTable2(BaseTable):
     class Meta:
-        model = CurrentStudent
+        model = Student
         paginate_by=30
         fields = ('full_name', 'course',)
 
 class AcademTable(BaseTable):
 
     class Meta:
-        model = CurrentStudent
+        model = Student
         paginate_by = 10
         table_name = 'Академический отпуск'
         fields = ('full_name', 'birth_date', 'group', 'left_course', 'academ_leave_date',
@@ -101,7 +101,7 @@ class ExpulsionTable(BaseTable):
     specialty = tables.Column(accessor='group.qualification.specialty.code', verbose_name="Специальность")
 
     class Meta:
-        model = CurrentStudent
+        model = Student
         paginate_by = 10
         table_name = 'Отчисленные'
         fields = ('date_of_expelling', 'reason_of_expelling', 'full_name', 'birth_date', 'specialty',

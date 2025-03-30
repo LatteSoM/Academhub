@@ -105,7 +105,7 @@ class StudentForm(forms.ModelForm):
     )
 
     class Meta:
-        model = CurrentStudent
+        model = Student
         fields = [
             'full_name',
             'phone',

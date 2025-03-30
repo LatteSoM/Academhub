@@ -20,7 +20,7 @@ class SubTable:
         self.name = name  # Название таблицы, по умолчанию пустая строка
         self.buttons = buttons or []  # Список кнопок, по умолчанию пустой список
         self.table_class = table  # Класс таблицы (например, из django-tables2)
-        self.queryset = queryset  # Набор данных (QuerySet) для таблицы
+        self.queryset_subtable = queryset  # Набор данных (QuerySet) для таблицы
         self.filter_key = filter_key  # Ключ для простой фильтрации QuerySet
         self.filter_func = filter_func  # Функция для сложной фильтрации (опционально)
     
@@ -36,7 +36,8 @@ class SubTable:
     def filter_queryset(self, object):
         # Метод для фильтрации QuerySet на основе объекта
         if self.filter_func:  # Если указана функция сложной фильтрации
-            self.queryset = self.filter_func(object, self.queryset)  # Применяем функцию
+            self.queryset = self.filter_func(object, self.queryset_subtable)  # Применяем функцию
         elif self.filter_key:  # Если указан ключ для простой фильтрации
             filter_kwargs = {self.filter_key: object}  # Формируем словарь для фильтрации
-            self.queryset = self.queryset.filter(**filter_kwargs)  # Применяем фильтр к QuerySet
+            self.queryset = self.queryset_subtable.filter(**filter_kwargs)  # Применяем фильтр к QuerySet
+        print(self.queryset)

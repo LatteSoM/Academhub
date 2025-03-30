@@ -410,6 +410,8 @@ class GroupTableView(ObjectTableView):
         )
     ]
 
+    # create_template_recordbook_view(StudentRecordBook.objects.first())
+
 class GroupDetailView(ObjectDetailView):
     """
     Класс для отображения детальной информации о группе.
@@ -430,7 +432,7 @@ class GroupDetailView(ObjectDetailView):
             name='Студенты',
             filter_key='group',
             table=StudentTable2,
-            queryset=Student.objects.filter(is_expelled=False, is_in_academ=False),
+            queryset=CurrentStudent.objects.all(),
         ),
     ]
 
@@ -541,7 +543,7 @@ class StudentTableView(ObjectTableImportView):
         Button (
             id='add',
             name = 'Добавить',
-            link_name = getpattern(CurrentStudent, 'add'),
+            link_name = getpattern(Student, 'add'),
             permission = getpermission('Contingent', 'create_student'),
         ),
     ]
@@ -690,7 +692,7 @@ class StudentDetailView(ObjectDetailView):
             id = 'change',
             name = 'Обновить',
             link_params = ['pk'],
-            link_name = getpattern(CurrentStudent, 'change'),
+            link_name = getpattern(Student, 'change'),
             permission = getpermission('Contingent', 'update_student')
         ),
     ]
@@ -710,7 +712,7 @@ class StudentUpdateView(ObjectUpdateView):
             id='to_object',
             name = 'К объекту',
             link_params = ['pk'],
-            link_name = getpattern(CurrentStudent, 'detail'),
+            link_name = getpattern(Student, 'detail'),
             permission = getpermission('Contingent', 'update_student')
         ),
     ]
@@ -720,7 +722,7 @@ class StudentCreateView(ObjectCreateView):
     """
     Класс для создания нового студента.
     """
-    model = CurrentStudent
+    model = Student
     form_class = StudentForm
     
     buttons = [
@@ -741,7 +743,7 @@ class AcademUpdateView(ObjectUpdateView):
     Класс для отправки студента в академ.
     """
     form_class = AcademLeaveForm
-    queryset = CurrentStudent.objects.all()
+    queryset = Student.objects.filter(is_in_academ=False, is_expelled=False)
 
     permission_required = getpermission('Contingent', 'update_currentstudent')
 
@@ -756,8 +758,11 @@ class AcademListView(ObjectTableView):
     permission_required = getpermission('Contingent', 'view_academ_student')
 
 class AcademReturn(ObjectUpdateView):
+    """
+    Класс для возвращения студента из академа
+    """
     form_class = AcademReturnForm
-    queryset = AcademStudent.objects.all()
+    queryset = Student.objects.filter(is_in_academ=True, is_expelled=False)
 
     permission_required = getpermission('Contingent', 'return_currentstudent')
 
@@ -768,20 +773,20 @@ class AcademReturn(ObjectUpdateView):
 class ExpulsionListView(ObjectTableView):
     table_class = ExpulsionTable
     filterset_class = ExpulsionFilter
-    queryset = ExpulsionStudent.objects.all()
+    queryset = Student.objects.filter(is_expelled=True, is_in_academ=False)
 
     permission_required = getpermission('Contingent', 'view_expulsion_student')
 
 class ExpelStudent(ObjectUpdateView):
     form_class = ExpellStudentForm
-    queryset = CurrentStudent.objects.all()
+    queryset = Student.objects.filter(is_in_academ=False, is_expelled=True)
 
     permission_required = getpermission('Contingent', 'update_expulsion_student')
 
 
 class RecoverStudent(ObjectUpdateView):
     form_class = RecoverStudentForm
-    queryset = ExpulsionStudent.objects.filter()
+    queryset = Student.objects.filter(is_in_academ=False, is_expelled=True)
 
     permission_required = getpermission('Contingent', 'return_expulsion_student')
 
@@ -1036,23 +1041,26 @@ class ViewRecordBookView(ObjectTemplateView):
         # Получаем объекты
         qualification = get_object_or_404(Qualification, id=self.kwargs['qualification_id'])
         record_book = get_object_or_404(StudentRecordBook, student_id=self.kwargs['student_id'])
+        context_record_book_object = create_template_recordbook_view(record_book)
 
         # Задаём контекст
-        context['object'] = record_book  # Передаём как object для base_detail.html
+        context['record_book'] = record_book  # Для основных данных студента
         context['qualification'] = qualification
         context['admission_year'] = self.kwargs['admission_year']
         context['url_list'] = 'student_list'
-        context['is_student_gradebook'] = True  # Исправлено gradebbok -> gradebook
+        context['is_student_gradebook'] = True
         context['student_id'] = self.kwargs['student_id']
+
+        # Передаем данные из словаря напрямую
+        context['middle_certifications'] = context_record_book_object['middle_certifications']
+        context['professional_modules'] = context_record_book_object['professional_modules']
+        context['practices'] = context_record_book_object['practices']
+        context['term_papers'] = context_record_book_object['term_papers']
+        context['semesters'] = context_record_book_object['semesters']
 
         # Определяем fieldset для табов
         context['fieldset'] = {
-            'Информация': [
-                # 'student_name',
-                # 'record_book_number',
-                # 'admission_order',
-                # 'issue_date',
-            ],
+            'Информация': [],  # Поля будем отображать вручную в шаблоне
             'Промежуточная аттестация': ['middle_certifications'],
             'Профессиональные модули': ['professional_modules'],
             'Практики': ['practices'],
@@ -1060,6 +1068,38 @@ class ViewRecordBookView(ObjectTemplateView):
         }
 
         return context
+
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #
+    #     # Получаем объекты
+    #     qualification = get_object_or_404(Qualification, id=self.kwargs['qualification_id'])
+    #     record_book = get_object_or_404(StudentRecordBook, student_id=self.kwargs['student_id'])
+    #     context_record_book_object = create_template_recordbook_view(record_book)
+    #
+    #     # Задаём контекст
+    #     context['object'] = context_record_book_object  # Передаём как object для base_detail.html
+    #     context['qualification'] = qualification
+    #     context['admission_year'] = self.kwargs['admission_year']
+    #     context['url_list'] = 'student_list'
+    #     context['is_student_gradebook'] = True  # Исправлено gradebbok -> gradebook
+    #     context['student_id'] = self.kwargs['student_id']
+    #
+    #     # Определяем fieldset для табов
+    #     context['fieldset'] = {
+    #         'Информация': [
+    #             # 'student_name',
+    #             # 'record_book_number',
+    #             # 'admission_order',
+    #             # 'issue_date',
+    #         ],
+    #         'Промежуточная аттестация': ['middle_certifications'],
+    #         'Профессиональные модули': ['professional_modules'],
+    #         'Практики': ['practices'],
+    #         'Курсовые работы': ['term_papers'],
+    #     }
+    #
+    #     return context
 
 class EditRecordBookTemplateView(ObjectUpdateView):
     """
@@ -1228,10 +1268,10 @@ def generate_student_record_book(request, pk):
     )
     print(new_record_book)
     # Копируем ManyToMany-поля из шаблона
-    new_record_book.middle_certifications.set(template.middle_certifications.all())
-    new_record_book.professional_modules.set(template.professional_modules.all())
-    new_record_book.practices.set(template.practices.all())
-    new_record_book.term_papers.set(template.term_papers.all())
+    # new_record_book.middle_certifications.set(template.middle_certifications.all())
+    # new_record_book.professional_modules.set(template.professional_modules.all())
+    # new_record_book.practices.set(template.practices.all())
+    # new_record_book.term_papers.set(template.term_papers.all())
 
     # Связываем зачётку со студентом
     student.record_book = new_record_book
@@ -1265,25 +1305,26 @@ def create_auto_record_book_template(request, qualification_id, admission_year):
     )
 
     # Автоматически заполняем компоненты зачётки из CurriculumItem
-    for item in curriculum.items.all():
-        if item.item_type == 'discipline' and item.module_name:
-            # Создаём MiddleCertification для дисциплин
-            middle_cert = MiddleCertification.objects.create(
-                semester=item.semester,
-                discipline=item.module_name,
-                hours=item.hours,
-                is_exam=(item.attestation_form == 'exam')
-            )
-            template.middle_certifications.add(middle_cert)
-        elif item.item_type == 'practice' and item.practice:
-            # Связываем существующую практику
-            template.practices.add(item.practice)
-        elif item.item_type == 'professional_module' and item.professional_module:
-            # Связываем существующий модуль
-            template.professional_modules.add(item.professional_module)
-        elif item.item_type == 'term_paper' and item.term_paper:
-            # Связываем существующую курсовую
-            template.term_papers.add(item.term_paper)
+
+    # for item in curriculum.items.all():
+    #     if item.item_type == 'discipline' and item.module_name:
+    #         # Создаём MiddleCertification для дисциплин
+    #         middle_cert = MiddleCertification.objects.create(
+    #             semester=item.semester,
+    #             discipline=item.module_name,
+    #             hours=item.hours,
+    #             is_exam=(item.attestation_form == 'exam')
+    #         )
+    #         template.middle_certifications.add(middle_cert)
+    #     elif item.item_type == 'practice' and item.practice:
+    #         # Связываем существующую практику
+    #         template.practices.add(item.practice)
+    #     elif item.item_type == 'professional_module' and item.professional_module:
+    #         # Связываем существующий модуль
+    #         template.professional_modules.add(item.professional_module)
+    #     elif item.item_type == 'term_paper' and item.term_paper:
+    #         # Связываем существующую курсовую
+    #         template.term_papers.add(item.term_paper)
 
     return redirect('view_record_book_template', qualification_id=qualification_id, admission_year=admission_year)
 
@@ -1305,8 +1346,8 @@ def generate_group_recordbooks(request, group_id):
     students = group.students.all()
 
     for student in students:
-        if student.record_book:  # Пропускаем студентов с уже существующей зачёткой
-            continue
+        # if student.record_book:  # Пропускаем студентов с уже существующей зачёткой
+        #     continue
 
         record_book_number = generate_unique_record_book_number(admission_year, student)
         new_record_book = StudentRecordBook.objects.create(
@@ -1321,11 +1362,11 @@ def generate_group_recordbooks(request, group_id):
         )
 
         # Копируем данные из шаблона
-        new_record_book.middle_certifications.set(template.middle_certifications.all())
-        new_record_book.professional_modules.set(template.professional_modules.all())
-        new_record_book.practices.set(template.practices.all())
-        new_record_book.term_papers.set(template.term_papers.all())
-
+        # new_record_book.middle_certifications.set(template.middle_certifications.all())
+        # new_record_book.professional_modules.set(template.professional_modules.all())
+        # new_record_book.practices.set(template.practices.all())
+        # new_record_book.term_papers.set(template.term_papers.all())
+        #
         student.record_book = new_record_book
         student.save()
 
