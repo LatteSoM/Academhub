@@ -23,6 +23,56 @@ def generate_unique_record_book_number(admission_year, student):
         if not StudentRecordBook.objects.filter(record_book_number=record_book_number).exists():
             return record_book_number
 
+def get_term_papers_for_recordbook(clock_cells):
+    """
+        Фильтруем только часы курсовых работ
+    """
+    term_papers = []
+
+    for clock_cell in clock_cells:
+        try:
+            ClockCell.objects.get(
+                disciplin=clock_cell.discipline,
+                code_of_type_work = "Курсовая работа"
+            )
+
+            term_papers.append(clock_cell)
+        except:
+            pass
+    
+    return term_papers
+
+def get_professional_modules_for_recordbook(clock_cells):
+    """
+        Фильтруем только часы профессиональных модулей
+    """
+    return clock_cells.filter(
+        module_id__isnull=False, 
+        discipline__isnull=True, 
+    )
+
+def get_disciplines_and_practices_for_recordbook(clock_cells, term_papers):
+    """
+        Фильтруем дисциплины и практики
+    """
+    clock_cells_disciplines = []
+    clock_cells_practices = []
+
+    clock_cells_disciplines_and_practices = clock_cells.filter(
+        module_id__isnull=False, 
+        discipline__isnull=True, 
+    )
+
+    for clock_cell in clock_cells_disciplines_and_practices:
+        if clock_cell in term_papers:
+            continue
+        
+        if clock_cell.discipline.code in "УП" or clock_cell.discipline.code in "ПП":
+            clock_cells_practices.append(clock_cell)
+        else:
+            clock_cells_disciplines.append(clock_cell)
+
+    return clock_cells_disciplines, clock_cells_practices
 
 def create_recordbook_template(qualification: Qualification):
     curiculum = qualification.study_plan
@@ -30,14 +80,9 @@ def create_recordbook_template(qualification: Qualification):
     #1) список дисциплин
     #2) + форма аттестации
     #3) + количество часов
-    clock_cells = ClockCell.objects.filter(curiculum=curiculum, code_of_type_work='Итого часов', discipline__isnull=False)
-    # disciplines =
-    professional_modules = clock_cells.filter(module_id__isnull=False, discipline__isnull=True)
-    for module in professional_modules:
-        module.module.name
-
-
-
+    
+    # Все часы учебного плана
+    clock_cells = ClockCell.objects.filter(curiculum=curiculum, code_of_type_work='Итого часов')
 
 
 

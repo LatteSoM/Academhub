@@ -1456,19 +1456,24 @@ class RecordBookTemplate(AcademHubModel):
         verbose_name="Учебный план"
     )
 
-    disciplines = models.ManyToManyField(Discipline, verbose_name="Дисциплины", related_name="record_books_disciplines", blank=True)
+    disciplines = models.ManyToManyField(
+        'ClockCell', 
+        verbose_name="Дисциплины", 
+        related_name="record_books_disciplines", 
+        blank=True
+    )
     practice = models.ManyToManyField(
-        Discipline,
+        'ClockCell',
         blank=True,
         verbose_name="Практика"
     )
     professional_module = models.ManyToManyField(
-        Discipline,
+        'ClockCell',
         blank=True,
         verbose_name="Профессиональный модуль"
     )
     term_paper = models.ManyToManyField(
-        Discipline,
+        'ClockCell',
         blank=True,
         verbose_name="Курсовая работа"
     )
