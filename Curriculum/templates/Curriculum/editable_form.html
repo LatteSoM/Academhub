@@ -5,9 +5,22 @@
 {% block content %}
 <div class="container-fluid">
   <h1 class="text-white mb-4">Редактирование учебного плана</h1>
-
   <form method="post" novalidate id="editForm">
     {% csrf_token %}
+      <!-- Блок для редактирования года поступления и квалификации -->
+    <div class="row mb-3">
+      <div class="col-md-6">
+            <label class="text-white">Квалификация</label>
+            <div class="form-control custom-input disabled-preview">
+                {{ editable_form.qualification_name.value }}
+            </div>
+        </div>
+      <div class="col-md-6 text-md-right">
+        <label for="{{ editable_form.admission_year.id_for_label }}" class="text-white">Год поступления</label>
+        {% render_field editable_form.admission_year class="form-control custom-input" %}
+      </div>
+    </div>
+
     <div class="table-container">
       <table class="data-table table">
         <thead>
@@ -20,7 +33,7 @@
             <th width="10%">Ошибки</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody id="disciplinesTableBody">
           {% for field in editable_form %}
             {% if field.name|slice:"0:14" == "discipline_id_" %}
               {{ field.as_hidden }}
@@ -33,7 +46,6 @@
                 <td class="{% if field.field.warnings %}has-warning{% endif %}">
                   {% render_field field class="form-control custom-input" %}
                 </td>
-
                 {% with index=field.name|slice:"16:" %}
                   {% for sem in semester_list %}
                     {% with sem_field="discipline_semester_"|add:sem|add:"_"|add:index %}
@@ -43,7 +55,6 @@
                     {% endwith %}
                   {% endfor %}
                 {% endwith %}
-
                 <td class="{% if field.field.warnings %}has-warning{% endif %}">
                   {% if field.field.warnings %}
                     <div class="warning-text">
@@ -57,14 +68,35 @@
         </tbody>
       </table>
     </div>
-
+    <!-- Кнопка для добавления новой строки -->
+{#    <button type="button" id="addRowButton" class="btn btn-secondary mt-2">Добавить дисциплину</button>#}
     <div class="form-submit">
-      <button type="submit" class="btn btn-primary btn-lg" id="submitButton">Сохранить</button>
+      <button type="submit" class="btn btn-primary btn-lg mt-3" id="submitButton">Сохранить</button>
     </div>
   </form>
 </div>
 
-<!-- Модальное окно -->
+{#<!-- Шаблон для новой строки дисциплины (скрытый) -->#}
+{#<table style="display: none;">#}
+{#  <tbody>#}
+{#    <tr id="disciplineTemplate">#}
+{#      <td>#}
+{#        <input type="text" name="discipline_name_NEW" class="form-control custom-input" placeholder="Название дисциплины">#}
+{#      </td>#}
+{#      <td>#}
+{#        <input type="text" name="discipline_code_NEW" class="form-control custom-input" placeholder="Код дисциплины">#}
+{#      </td>#}
+{#      {% for sem in semester_list %}#}
+{#      <td>#}
+{#        <input type="number" name="discipline_semester_{{ sem }}_NEW" class="form-control custom-input" placeholder="Часы">#}
+{#      </td>#}
+{#      {% endfor %}#}
+{#      <td class="error-cell"></td>#}
+{#    </tr>#}
+{#  </tbody>#}
+{#</table>#}
+
+<!-- Модальное окно для отображения процесса сохранения -->
 <div class="modal fade modal-dark" id="editingModal" tabindex="-1" aria-labelledby="editingModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -85,29 +117,24 @@
   body {
     background-color: #1e2a38;
   }
-
   body.modal-open {
     overflow-y: scroll;
     padding-right: 0 !important;
   }
-
   .table-container {
     overflow-x: auto;
-    overflow-y: auto; /* Вертикальный скролл */
+    overflow-y: auto;
     max-height: 650px;
     border: 1px solid #2c3e50;
     border-radius: 8px;
     background-color: #374151;
     padding-bottom: 10px;
   }
-
   .data-table {
-    width: max-content; /* Таблица занимает столько места, сколько нужно */
+    width: max-content;
     min-width: 100%;
     border-collapse: collapse;
   }
-
-  /* Фиксируем всю строку заголовка только по вертикали */
   .data-table thead th {
     position: sticky;
     top: 0;
@@ -119,8 +146,6 @@
     text-align: left;
     white-space: nowrap;
   }
-
-  /* Стили ячеек таблицы */
   .data-table td {
     border-top: 1px solid #2c3e50;
     padding: 8px;
@@ -129,8 +154,6 @@
     color: #ecf0f1;
     white-space: nowrap;
   }
-
-  /* Поля ввода */
   .custom-input {
     background-color: #4b5563;
     border: 1px solid #6b7280;
@@ -148,7 +171,12 @@
     outline: none;
   }
 
-  /* Предупреждения */
+  .custom-input:disabled {
+    opacity: 0.6; /* Немного затемнить */
+    cursor: not-allowed; /* Запрет курсора */
+
+  }
+
   .has-warning {
     background-color: #fbbf24 !important;
   }
@@ -162,8 +190,6 @@
     font-size: 13px;
     margin: 0;
   }
-
-  /* Кнопка */
   .form-submit {
     text-align: center;
     margin-top: 20px;
@@ -179,13 +205,6 @@
     background-color: #2563eb;
     border-color: #2563eb;
   }
-
-  /* Стилизация placeholder */
-  .custom-input::placeholder {
-    color: #9ca3af;
-  }
-
-  /* Стилизация скроллбара */
   ::-webkit-scrollbar {
     width: 10px;
     background-color: #374151;
@@ -197,8 +216,6 @@
   ::-webkit-scrollbar-thumb:hover {
     background-color: #6b7280;
   }
-
-  /* Стили модального окна */
   .modal-dark .modal-content {
     background-color: #1f2937;
     color: #f3f4f6;
@@ -231,6 +248,19 @@ document.addEventListener("DOMContentLoaded", function() {
     backdrop: 'static',
     keyboard: false
   });
+  {#const addRowButton = document.getElementById("addRowButton");#}
+  {#const tableBody = document.getElementById("disciplinesTableBody");#}
+  {#const template = document.getElementById("disciplineTemplate");#}
+  {##}
+  {#addRowButton.addEventListener("click", function() {#}
+  {#  // Клонируем шаблон и убираем id, чтобы не было дубликатов#}
+  {#  const newRow = template.cloneNode(true);#}
+  {#  newRow.removeAttribute("id");#}
+  {#  // Определяем новый индекс по количеству строк в таблице#}
+  {#  const currentRows = tableBody.querySelectorAll("tr").length;#}
+  {#  // Заменяем плейсхолдер NEW на новый индекс для всех input-ов в строке#}
+  {#  newRow.innerHTML = newRow.innerHTML.replace(/NEW/g, currentRows);#}
+  {#  tableBody.appendChild(newRow);#}
 
   form.addEventListener("submit", function(event) {
     event.preventDefault();

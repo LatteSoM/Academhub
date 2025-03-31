@@ -81,7 +81,7 @@ class CurriculumEditableFormView(TemplateView):
 
     def post(self, request, *args, **kwargs):
         uploaded_data_json = request.session.get('uploaded_data')
-        form = EditableCurriculumForm(uploaded_data_json, request.POST)
+        form = EditableCurriculumForm(uploaded_data_json, data=request.POST)
         if self.form_valid(form):
             return redirect('curriculum_list')
         else:
