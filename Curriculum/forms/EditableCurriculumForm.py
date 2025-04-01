@@ -1,32 +1,24 @@
 import json
 from collections import defaultdict
-
 from django import forms
-
-from Academhub.models import Specialty, Category, Curriculum, StudyCycle, Module, Discipline, \
-    ClockCell
-
+from Academhub.models import Specialty, Category, Curriculum, StudyCycle, Module, Discipline, ClockCell
 
 class EditableCurriculumForm(forms.Form):
     def __init__(self, json_data, data=None, *args, **kwargs):
         self.data_objects = json.loads(json_data) if isinstance(json_data, str) else json_data
-        # Передаём data (то есть request.POST) в базовый класс,
-        # чтобы self.data был заполнен bound-данными
         super().__init__(data, *args, **kwargs)
         self.generate_fields_for_edit_descipline()
 
     def generate_fields_for_edit_descipline(self):
-        # 1. Добавляем поля для Curriculum (год поступления, квалификация)
+        # 1. Поля для Curriculum (год поступления, квалификация)
         curriculum_list = self.data_objects.get("curriculum", [])
         if curriculum_list:
-            curriculum_data = curriculum_list[0]  # берем первый объект
-            # Год поступления
+            curriculum_data = curriculum_list[0]
             self.fields["admission_year"] = forms.IntegerField(
                 initial=curriculum_data.get("admission_year", 0),
                 label="Год поступления",
                 required=False
             )
-            # Квалификация (если нужно только имя, берем qualification['name'])
             qualification_data = curriculum_data.get("qualification", {})
             self.fields["qualification_name"] = forms.CharField(
                 initial=qualification_data.get("name", ""),
@@ -34,72 +26,66 @@ class EditableCurriculumForm(forms.Form):
                 required=False
             )
 
+        # 2. Поля для дисциплин
         disciplines_data = self.data_objects.get('disciplines', [])
         clock_cells = self.data_objects.get('clock_cells', [])
-
-        # Структура: { discipline_name: { term: суммарное_значение_count_of_clocks } }
         clock_cell_lookup = defaultdict(lambda: defaultdict(int))
         for cell in clock_cells:
             discipline_name = cell.get('discipline')
             if not discipline_name:
                 continue
             term = cell.get('term')
-
             count = cell.get('count_of_clocks', 0)
             if cell.get("code_of_type_work") == 'Итого часов' and clock_cell_lookup[discipline_name][term] == 0:
                 clock_cell_lookup[discipline_name][term] += count
 
-
-        # Генерация полей формы для каждой дисциплины
+        # Генерация полей для каждой дисциплины
         for i, discipline_data in enumerate(disciplines_data):
-            # Скрытое поле для ID дисциплины
             self.fields[f'discipline_id_{i}'] = forms.CharField(
                 initial=discipline_data.get('id'),
                 widget=forms.HiddenInput()
             )
-
-            # Поле для названия дисциплины
             self.fields[f'discipline_name_{i}'] = forms.CharField(
                 initial=discipline_data.get('name', ''),
                 label=f'Дисциплина №{i}',
                 required=True
             )
-
-            # Поле для кода дисциплины
             self.fields[f'discipline_code_{i}'] = forms.CharField(
                 initial=discipline_data.get('code', ''),
                 label=f'Код дисциплины №{i}',
                 required=True
             )
-
-            # Установка атрибутов предупреждений, если они есть
+            # Если для дисциплины задано предупреждение, задаём его для полей имени и кода
             if discipline_data.get('warnings', False):
                 self.fields[f'discipline_name_{i}'].warnings = True
                 self.fields[f'discipline_name_{i}'].warning_description = discipline_data.get('warning_description', [])
                 self.fields[f'discipline_code_{i}'].warnings = True
                 self.fields[f'discipline_code_{i}'].warning_description = discipline_data.get('warning_description', [])
-
-
             disc_name = discipline_data.get('name')
             disc_code = discipline_data.get('code')
-            # Генерация дополнительных полей для 8 семестров
+            # Для каждого семестра
+            # В методе generate_fields_for_edit_descipline после создания полей семестров
             for semester in range(1, 9):
                 field_name = f'discipline_semester_{semester}_{i}'
-
-                # Получаем часы из clock_cell_lookup, если они есть
                 initial_value = clock_cell_lookup.get(f"{disc_code}.{disc_name}", {}).get(semester, 0)
-
                 self.fields[field_name] = forms.IntegerField(
                     initial=initial_value,
                     label=f'Семестр {semester}',
                     required=False
                 )
-                # Если у дисциплины есть предупреждения, устанавливаем их и для поля с часами
+
                 if discipline_data.get('warnings', False):
                     self.fields[field_name].warnings = True
-                    self.fields[field_name].warning_description = discipline_data.get('warning_description', [])
+                    # Добавляем специфичное описание для часов, если оно есть
+                    hours_warning = next((warn for warn in discipline_data.get('warning_description', [])
+                                          if f'семестр {semester}' in warn.lower()), None)
+                    if hours_warning:
+                        self.fields[field_name].warning_description = [hours_warning]
+                    else:
+                        self.fields[field_name].warning_description = discipline_data.get('warning_description', [])
 
     def get_disciplines_data_from_edit_field(self):
+        # Если пришли динамические данные – добавляем недостающие поля
         if self.data:
             for key in self.data.keys():
                 if key.startswith("discipline_name_") and key not in self.fields:
@@ -120,7 +106,6 @@ class EditableCurriculumForm(forms.Form):
                             label=f"Семестр {sem}",
                             required=False
                         )
-
         disciplines_data = []
         for field_name, field in self.fields.items():
             if field_name.startswith('discipline_id_'):
@@ -129,7 +114,6 @@ class EditableCurriculumForm(forms.Form):
                     'id': self.data.get(f'discipline_id_{index}'),
                     'name': self.data.get(f'discipline_name_{index}'),
                     'code': self.data.get(f'discipline_code_{index}'),
-                    # Собираем данные по семестрам в отдельный словарь
                     'clock_cell': {
                         f'semester_{s}': self.data.get(f'discipline_semester_{s}_{index}')
                         for s in range(1, 9)
@@ -139,24 +123,18 @@ class EditableCurriculumForm(forms.Form):
         return disciplines_data
 
     def save(self):
-        # Достаем введённые пользователем данные
         disciplines_data = self.get_disciplines_data_from_edit_field()
         data_objects = self.data_objects
 
-        # Сохраняем общий Curriculum
         restored_curriculum = Curriculum.from_dict(data_objects.get("curriculum")[0])
-        # Из self.data или self.cleaned_data берём поля
         admission_year = self.data.get("admission_year")
         qualification_name = self.data.get("qualification_name")
         if admission_year:
             restored_curriculum.admission_year = admission_year
-
         if hasattr(restored_curriculum, "qualification") and isinstance(restored_curriculum.qualification, dict):
             restored_curriculum.qualification.name = qualification_name
-
         restored_curriculum.save()
 
-        # Сохраняем Categories
         restored_categories = []
         for cat_data in data_objects.get("categories", []):
             category_obj = Category(
@@ -169,49 +147,39 @@ class EditableCurriculumForm(forms.Form):
             category_obj.save()
             restored_categories.append(category_obj)
 
-        # Сохраняем StudyCycles
         restored_study_cycles = []
         for sc_data in data_objects.get("study_cycles", []):
             study_cycle_obj = StudyCycle(
                 identificator=sc_data["identificator"],
                 cycles=sc_data["cycles"],
-                categories=next(
-                    (cat for cat in restored_categories if cat.identificator == sc_data["categories"]["identificator"]),
-                    None),
+                categories=next((cat for cat in restored_categories if cat.identificator == sc_data["categories"]["identificator"]), None),
                 warnings=sc_data["warnings"],
                 warning_description=sc_data["warning_description"]
             )
             study_cycle_obj.save()
             restored_study_cycles.append(study_cycle_obj)
 
-        # Сохраняем Modules
         restored_modules = []
         for m_data in data_objects.get("modules", []):
             module_obj = Module(
                 name=m_data["module_name"],
                 code_of_discipline=m_data["code_of_discipline"],
                 code_of_cycle_block=m_data["code_of_cycle_block"],
-                study_cycles=next(
-                    (sc for sc in restored_study_cycles if sc.identificator == m_data["study_cycles"]["identificator"]),
-                    None),
+                study_cycles=next((sc for sc in restored_study_cycles if sc.identificator == m_data["study_cycles"]["identificator"]), None),
                 warnings=m_data["warnings"],
                 warning_description=m_data["warning_description"]
             )
             module_obj.save()
             restored_modules.append(module_obj)
 
-        # Сохраняем Disciplines
         restored_disciplines = []
         for discipline_id, d_data in enumerate(data_objects.get("disciplines", [])):
             discipline_data = disciplines_data[discipline_id]
             prompt = Discipline.objects.filter(name=discipline_data['name'], code=discipline_data['code'])
             discipline = prompt[0] if prompt else None
-
             if discipline:
-                discipline.modules.set([m for m in restored_modules if
-                                        m.name == (d_data["module"]["module_name"] if d_data["module"] else None)])
-                discipline.study_cycles.set(
-                    [rsc for rsc in restored_study_cycles if rsc.cycles == d_data["cycle_relation"]])
+                discipline.modules.set([m for m in restored_modules if m.name == (d_data["module"]["module_name"] if d_data["module"] else None)])
+                discipline.study_cycles.set([rsc for rsc in restored_study_cycles if rsc.cycles == d_data["cycle_relation"]])
                 discipline.save()
                 restored_disciplines.append(discipline)
             else:
@@ -223,21 +191,15 @@ class EditableCurriculumForm(forms.Form):
                     warning_description=d_data["warning_description"]
                 )
                 discipline_obj.save()
-
-                discipline_obj.modules.set([m for m in restored_modules if
-                                            m.name == (d_data["module"]["module_name"] if d_data["module"] else None)])
-                discipline_obj.study_cycles.set(
-                    [rsc for rsc in restored_study_cycles if rsc.cycles == d_data["cycle_relation"]])
+                discipline_obj.modules.set([m for m in restored_modules if m.name == (d_data["module"]["module_name"] if d_data["module"] else None)])
+                discipline_obj.study_cycles.set([rsc for rsc in restored_study_cycles if rsc.cycles == d_data["cycle_relation"]])
                 discipline_obj.save()
                 restored_disciplines.append(discipline_obj)
 
-        # Сохраняем ClockCells
         restored_clock_cells = []
         for cc_data in data_objects.get("clock_cells", []):
-            module = next((m for m in restored_modules if
-                           m.name == (cc_data["module"]["module_name"] if cc_data["module"] else None)), None)
+            module = next((m for m in restored_modules if m.name == (cc_data["module"]["module_name"] if cc_data["module"] else None)), None)
             discipline = next((d for d in restored_disciplines if f"{d.code}.{d.name}" == cc_data["discipline"]), None)
-
             clock_cell_obj = ClockCell(
                 code_of_type_work=cc_data["code_of_type_work"],
                 code_of_type_hours=cc_data["code_of_type_hours"],
@@ -249,14 +211,14 @@ class EditableCurriculumForm(forms.Form):
                 curriculum=restored_curriculum,
             )
             if not ClockCell.objects.filter(
-                    code_of_type_work=clock_cell_obj.code_of_type_work,
-                    code_of_type_hours=clock_cell_obj.code_of_type_hours,
-                    course=clock_cell_obj.course,
-                    term=clock_cell_obj.term,
-                    count_of_clocks=clock_cell_obj.count_of_clocks,
-                    module=clock_cell_obj.module,
-                    discipline=clock_cell_obj.discipline,
-                    curriculum=clock_cell_obj.curriculum,
+                code_of_type_work=clock_cell_obj.code_of_type_work,
+                code_of_type_hours=clock_cell_obj.code_of_type_hours,
+                course=clock_cell_obj.course,
+                term=clock_cell_obj.term,
+                count_of_clocks=clock_cell_obj.count_of_clocks,
+                module=clock_cell_obj.module,
+                discipline=clock_cell_obj.discipline,
+                curriculum=clock_cell_obj.curriculum,
             ):
                 clock_cell_obj.save()
                 restored_clock_cells.append(clock_cell_obj)

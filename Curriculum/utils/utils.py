@@ -106,12 +106,20 @@ class MyValidator:
             elif hours > 1:
                 all_hours[(cc.get("course"),cc.get("term"))].append(hours)
 
-
+        all_bad_hour = set()
+        all_warning_description = ""
         for course_term, hours in all_hours.items():
             itogo = itogo_hours[course_term]
             total_hours = sum(hours)
 
             if total_hours != itogo:
-                return [
-                    f"Обратите внимание на часы дисциплины. Предположительно в ячейке {course_term[0]} курс {course_term[1]} семестр ошибка в часах. Т.к сумма всех ячеек не совпадает с итоговым числом часов"]
-        return None
+                all_bad_hour.add((course_term[0],course_term[1]))
+
+        tmp = ""
+        if len(all_bad_hour) > 0:
+            for course_term in all_bad_hour:
+                all_warning_description += "Курс " + str(course_term[0]) + " cеместр " + str(course_term[1]) + "; "
+            all_warning_description += "Предположительно в этих ячейках могут быть ошибки в часах "
+            all_warning_description += f"Т.к сумма всех ячеек работ внутри семестра не совпадает с итоговым числом часов. Если итоговое число за семестр ошибочно - замените его. "
+
+        return all_bad_hour, [all_warning_description]

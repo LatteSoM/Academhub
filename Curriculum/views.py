@@ -75,6 +75,8 @@ class CurriculumEditableFormView(TemplateView):
         if uploaded_data_json:
             form = EditableCurriculumForm(uploaded_data_json)
             context['editable_form'] = form
+            disciplines = json.loads(uploaded_data_json).get('disciplines', [])
+            context['discipline_indices'] = range(len(disciplines))
 
         context['semester_list'] = ["1", "2", "3", "4", "5", "6", "7", "8"]
         return context

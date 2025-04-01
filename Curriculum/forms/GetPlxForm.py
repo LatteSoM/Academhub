@@ -197,6 +197,8 @@ class GetPlxForm(forms.Form):
 
                         # Валидация индекса
                         index_warnings = self.validator.validate_discipline_index(discipline_code, previous_indices)
+                        # Вызываем валидацию часов для дисциплины
+                        all_bad_hour, all_warning_description = self.validator.validate_discipline_hours(discipline)
 
                         discipline_obj = DisciplineDict(
                             discipline_name=discipline_name,
@@ -204,18 +206,16 @@ class GetPlxForm(forms.Form):
                             specialty=specialty,
                             module=module_obj,
                             cycle_relation=discipline.get("cycle_relation"),
-                            warnings=bool(discipline_warnings or index_warnings),
-                            warning_description=discipline_warnings + index_warnings if discipline_warnings and index_warnings else discipline_warnings or index_warnings
+                            warnings=bool(discipline_warnings or index_warnings or len(all_bad_hour) > 0),
+                            warning_description=discipline_warnings + index_warnings + all_warning_description if discipline_warnings and index_warnings else discipline_warnings or index_warnings
                         )
 
-                        # Вызываем валидацию часов для дисциплины
-                        hour_warnings = self.validator.validate_discipline_hours(discipline)
-                        if hour_warnings:
+                        if len(all_bad_hour) > 0:
                             discipline_obj.warning = True
                             if discipline_obj.warning_description:
-                                discipline_obj.warning_description.extend(hour_warnings)
+                                discipline_obj.warning_description.extend(all_warning_description)
                             else:
-                                discipline_obj.warning_description = hour_warnings
+                                discipline_obj.warning_description = all_warning_description
 
                         created_objects["disciplines"].append(discipline_obj.to_dict())
 
@@ -248,6 +248,8 @@ class GetPlxForm(forms.Form):
                                 module=None,
                                 discipline=f"{discipline_obj.code}.{discipline_obj.discipline_name}",
                                 curriculum=curriculum_obj,
+                                warnings=True if (course, term) in all_bad_hour else False,
+                                warning_description="Описание в описании дисциплины",
                             ).to_dict()
                             created_objects["clock_cells"].append(clock_cell_obj)  # Добавляем в словарь
 
@@ -264,23 +266,25 @@ class GetPlxForm(forms.Form):
                     # Валидация индекса
                     index_warnings = self.validator.validate_discipline_index(discipline_code, previous_indices)
 
+                    # Вызываем валидацию часов для дисциплины
+                    all_bad_hour, all_warning_description = self.validator.validate_discipline_hours(discipline)
+
                     discipline_obj = DisciplineDict(
                         discipline_name=discipline_name,
                         code=discipline_code,
                         specialty=specialty,
+                        module=module_obj,
                         cycle_relation=discipline.get("cycle_relation"),
-                        warnings=bool(discipline_warnings or index_warnings),
-                        warning_description=discipline_warnings + index_warnings if discipline_warnings and index_warnings else discipline_warnings or index_warnings
+                        warnings=bool(discipline_warnings or index_warnings or len(all_bad_hour) > 0),
+                        warning_description=discipline_warnings + index_warnings + all_warning_description if discipline_warnings and index_warnings else discipline_warnings or index_warnings
                     )
 
-                    # Вызываем валидацию часов для дисциплины
-                    hour_warnings = self.validator.validate_discipline_hours(discipline)
-                    if hour_warnings:
+                    if len(all_bad_hour) > 0:
                         discipline_obj.warning = True
                         if discipline_obj.warning_description:
-                            discipline_obj.warning_description.extend(hour_warnings)
+                            discipline_obj.warning_description.extend(all_warning_description)
                         else:
-                            discipline_obj.warning_description = hour_warnings
+                            discipline_obj.warning_description = all_warning_description
 
                     created_objects["disciplines"].append(discipline_obj.to_dict())
 
@@ -313,9 +317,9 @@ class GetPlxForm(forms.Form):
                             module=None,
                             discipline=f"{discipline_obj.code}.{discipline_obj.discipline_name}",
                             curriculum=curriculum_obj,
+                            warnings=True if (course, term) in all_bad_hour else False,
+                            warning_description="Описание в описании дисциплины",
                         ).to_dict()
-                        if clock_cell_obj["term"] == 5:
-                            pass
                         created_objects["clock_cells"].append(clock_cell_obj)  # Добавляем в словарь
 
         return created_objects # Возвращаем словарь с созданными объектами
