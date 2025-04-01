@@ -82,28 +82,6 @@ class RUP_parser:
                     })
 
     def get_clock_cells(self, child_object, child_code_xml):
-
-        true_type_of_works = {
-            'Итого часов',
-            'Лекционные занятия',
-            'Практические занятия',
-            'Самостоятельная работа',
-            'Курсовое проектирование',
-            'Часы на контроль',
-            'Экзамен',
-            'Зачет',
-            'Зачет с оценкой',
-            'Курсовой проект',
-            'Курсовая работа',
-            'Контрольная работа',
-            'Контрольная работа',
-            'Домашняя контрольная работа',
-            'Оценка',
-            'Эссе',
-            'Реферат',
-            'Расчетно-графическая работа',
-            'Другие формы контроля',
-        }
         
         for hour in self.plany_novie_chasy:
             new_hour_parent_id = hour.get("КодОбъекта")
@@ -112,7 +90,7 @@ class RUP_parser:
             code_of_type_hourse = self.spravochnik_tipa_chasov.get((hour.get("КодТипаЧасов")))
 
             if new_hour_parent_id == child_code_xml and int(hour.get("Количество")):
-                if code_of_type_hourse == 'Часы в объемных показателях' and code_of_type_work in true_type_of_works:
+                if code_of_type_hourse == 'Часы в объемных показателях':
                     course = int(hour.get("Курс"))
                     term = int(hour.get("Семестр"))
                     if child_object.get('module_name'):
