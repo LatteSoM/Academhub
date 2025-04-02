@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="{% static 'Academhub/css/table.css' %}">
     <link rel="stylesheet" href="{% static '/css/curriculum_detail.css' %}">
+    <link rel="stylesheet" href="{% static '/css/addTeacher2discipline.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -20,13 +21,19 @@
                 <p class="p_headers">Год поступления: {{ curriculum.admission_year }}</p>
                 <p class="p_headers">Осова образования: {{ curriculum.basis_of_admission }}</p>
             </div>
-            
+
         </div>
+
+        <div class="search_container" style="text-align: center; margin-bottom: 20px;">
+            <input type="text" id="disciplineSearch" class="form-input" placeholder="Поиск дисциплины">
+            <button id="searchButton" type="button" class="btn btn-primary" style="margin-left: 10px;">Поиск</button>
+        </div>
+
 
         <div class="disciplines">
             <hr>
             {% for table_discipline in table_disciplines %}
-                <div class="discipline">
+                <div class="discipline" class="discipline-item">
                     <p >{{ table_discipline.code }}.{{ table_discipline.name }}</p>
 
                     <div class="terms_container">
@@ -34,12 +41,48 @@
                             <form class="margin_term" method="get" action="{% url 'curriculum_add_teacher' curriculum.id table_discipline.id course_and_term.course course_and_term.term %}">
                                 {% csrf_token %}
                                 <input type="submit" value="{{ course_and_term.course }} курс {{ course_and_term.term }} семестр" />
-                            </form>                        
-                        {% endfor %}    
+                            </form>
+                        {% endfor %}
                     </div>
                 </div>
                 <hr>
             {% endfor %}
         </div>
     </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuzzysearch/0.2.2/fuzzysearch.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            function filterDisciplines() {
+                var searchText = $('#disciplineSearch').val().toLowerCase().trim();
+                console.log('filterDisciplines function called. Search text:', searchText);
+
+                $('.disciplines .discipline-item').each(function (index) {
+                    var disciplineName = $(this).find('p').text().toLowerCase();
+                    console.log('Before fuzzysearch - Discipline:', disciplineName, 'SearchText:', searchText); // Debug log
+                    var isMatch = searchText === '' || fuzzysearch(searchText, disciplineName);
+                    console.log('After fuzzysearch - Discipline:', disciplineName, 'Match:', isMatch); // Debug log
+                    if (isMatch) {
+                        console.log('Discipline SHOW:', disciplineName); // Debug log
+                        $(this).show();
+                    } else {
+                        console.log('Discipline HIDE:', disciplineName); // Debug log
+                        $(this).hide();
+                    }
+                });
+            }
+
+            $(document).on('click', '#searchButton', function(e) {
+                e.preventDefault();
+                console.log("Search button clicked event triggered");
+                filterDisciplines();
+            });
+
+             $('#disciplineSearch').on('keyup', function() {
+                 filterDisciplines();
+             });
+        });
+    </script>
 {% endblock %}
