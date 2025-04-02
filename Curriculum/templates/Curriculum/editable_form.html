@@ -3,32 +3,32 @@
 {% load widget_tweaks dict_extras %}
 
 {% block content %}
-<div class="container-fluid">
-    <h1 class="text-white mb-4">Редактирование учебного плана</h1>
+<div class="container-fluid detail-container">
+    <h1 class="text-white mb-4 theme-text">Редактирование учебного плана</h1>
     <form method="post" novalidate id="editForm">
         {% csrf_token %}
         <!-- Блок для редактирования года поступления и квалификации -->
         <div class="row mb-3">
             <div class="col-md-6">
-                <label class="text-white">Квалификация</label>
-                <div class="form-control custom-input disabled-preview">
+                <label class="text-white theme-text">Квалификация</label>
+                <div class="form-control custom-input disabled-preview form-input theme-input">
                     {{ editable_form.qualification_name.value }}
                 </div>
             </div>
             <div class="col-md-6 text-md-right">
-                <label for="{{ editable_form.admission_year.id_for_label }}" class="text-white">Год поступления</label>
-                {% render_field editable_form.admission_year class="form-control custom-input" %}
+                <label for="{{ editable_form.admission_year.id_for_label }}" class="text-white theme-text">Год поступления</label>
+                {% render_field editable_form.admission_year class="form-control custom-input form-input theme-input" %}
             </div>
         </div>
 
-        <div class="table-container">
-            <table class="data-table table">
+        <div class="table-container custom-table-container">
+            <table class="data-table desktop-table theme-surface theme-text">
                 <thead>
-                    <tr>
+                    <tr class="theme-bg">
                         <th width="10%">Дисциплина</th>
                         <th width="5%">Код дисциплины</th>
                         {% for sem in semester_list %}
-                        <th width="2%">Семестр {{ sem }}</th>
+                        <th width="2%" class="theme-bg">Семестр {{ sem }}</th>
                         {% endfor %}
                         <th width="10%">Ошибки</th>
                     </tr>
@@ -38,26 +38,26 @@
                     {% if field.name|slice:"0:14" == "discipline_id_" %}
                     {{ field.as_hidden }}
                     {% elif field.name|slice:"0:16" == "discipline_name_" %}
-                    <tr class="{% if field.field.warnings %}has-warning{% endif %}">
+                    <tr class="{% if field.field.warnings %}has-warning{% endif %} theme-bg">
                         <td>
-                            {% render_field field class="form-control custom-input" %}
+                            {% render_field field class="form-control custom-input form-input theme-input" %}
                         </td>
                     {% elif field.name|slice:"0:16" == "discipline_code_" %}
                         <td>
-                            {% render_field field class="form-control custom-input" %}
+                            {% render_field field class="form-control custom-input form-input theme-input" %}
                         </td>
                         {% with index=field.name|slice:"16:" %}
                         {% for sem in semester_list %}
                         {% with sem_field="discipline_semester_"|add:sem|add:"_"|add:index %}
                         <td>
-                            {% render_field editable_form|get_field:sem_field class="form-control custom-input" %}
+                            {% render_field editable_form|get_field:sem_field class="form-control custom-input form-input theme-input" %}
                         </td>
                         {% endwith %}
                         {% endfor %}
                         {% endwith %}
-                        <td>
+                        <td class="theme-text theme-bg">
                             {% if field.field.warnings %}
-                            <div class="warning-text">
+                            <div class="warning-text theme-text">
                                 {{ field.field.warning_description|join:", " }}
                             </div>
                             {% endif %}
@@ -69,13 +69,13 @@
             </table>
         </div>
         <div class="form-submit">
-            <button type="submit" class="btn btn-primary btn-lg mt-3" id="submitButton">Сохранить</button>
+            <button type="submit" class="btn btn-primary btn-lg mt-3 form-btn" id="submitButton">Сохранить</button>
         </div>
     </form>
 </div>
 
 <!-- Модальное окно для отображения процесса сохранения -->
-<div class="modal fade modal-dark" id="editingModal" tabindex="-1" aria-labelledby="editingModalLabel" aria-hidden="true"
+<div class="modal fade detail-modal theme-surface" id="editingModal" tabindex="-1" aria-labelledby="editingModalLabel" aria-hidden="true"
     data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -92,92 +92,7 @@
     </div>
 </div>
 
-<style>
-    body {
-        background-color: #1e2a38;
-    }
-
-    body.modal-open {
-        overflow-y: scroll;
-        padding-right: 0 !important;
-    }
-
-    .table-container {
-        overflow-x: auto;
-        overflow-y: auto;
-        max-height: 650px;
-        border: 1px solid #2c3e50;
-        border-radius: 8px;
-        background-color: #374151;
-        padding-bottom: 10px;
-    }
-
-    .data-table {
-        width: max-content;
-        min-width: 100%;
-        border-collapse: collapse;
-    }
-
-    .data-table thead th {
-        position: sticky;
-        top: 0;
-        background-color: #4b5563;
-        z-index: 2;
-        padding: 12px;
-        font-weight: 600;
-        color: #ffffff;
-        text-align: left;
-        white-space: nowrap;
-    }
-
-    .data-table td {
-        border-top: 1px solid #2c3e50;
-        padding: 8px;
-        vertical-align: middle;
-        background-color: #374151;
-        color: #ecf0f1;
-        white-space: nowrap;
-    }
-
-    .custom-input {
-        background-color: #4b5563;
-        border: 1px solid #6b7280;
-        border-radius: 4px;
-        padding: 8px 12px;
-        width: 100%;
-        font-size: 14px;
-        color: #ecf0f1;
-        box-sizing: border-box;
-    }
-
-    .custom-input:focus {
-        background-color: #6b7280;
-        border-color: #60a5fa;
-        box-shadow: 0 0 0 0.2rem rgba(60, 165, 250, 0.25);
-        outline: none;
-    }
-
-    .custom-input:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-    }
-
-    .has-warning td {
-        background-color: #fbbf24 !important;
-    }
-
-    .has-warning .custom-input {
-        background-color: #fde68a;
-        border-color: #fbbf24;
-        color: #1e2a38;
-    }
-
-    .warning-text {
-        color: #1e2a38;
-        font-size: 13px;
-        margin: 0;
-    }
-</style>
+<link rel="stylesheet" href="{% static 'Curriculum/css/editable_form.css' %}">
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {

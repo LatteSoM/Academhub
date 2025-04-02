@@ -34,3 +34,13 @@ body {
 .theme-toggle .material-icons {
     color: var(--text-color);
 }
+/* Theme text color */
+.theme-text {
+    color: var(--text-color);
+}
+
+/* Theme background color for elements like table rows */
+.theme-bg {
+    background-color: var(--surface-color);
+}
+

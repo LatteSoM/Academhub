@@ -1,0 +1,119 @@
+/* Styles for editable_form.html */
+
+body {
+    background-color: var(--bg-color);
+}
+
+body.modal-open {
+    overflow-y: scroll;
+    padding-right: 0 !important;
+}
+
+.custom-table-container {
+    overflow-x: auto;
+    overflow-y: auto;
+    max-height: 800px; /* Increased max-height for taller table */
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: var(--surface-color);
+    padding-bottom: 10px;
+}
+
+.desktop-table {
+    width: max-content;
+    min-width: 100%;
+    border-collapse: collapse;
+}
+
+.desktop-table thead th {
+    position: sticky;
+    top: 0;
+    background-color: var(--surface-color);
+    z-index: 2;
+    padding: 12px;
+    font-weight: 600;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.theme-light .desktop-table thead th {
+    color: #000; /* Black text for header in light mode */
+}
+
+.theme-light .desktop-table td {
+    background-color: var(--light-surface) !important;
+    color: #000 !important; /* Black text for table cells in light mode */
+}
+
+.desktop-table td {
+    border-top: 1px solid var(--border-color);
+    padding: 8px;
+    vertical-align: middle;
+    background-color: var(--surface-color) !important; /* Cell background color */
+    color: var(--text-color); /* Cell text color */
+    white-space: nowrap;
+}
+
+.theme-light .desktop-table td {
+    background-color: var(--light-surface) !important;
+}
+
+.form-input {
+    background-color: var(--secondary-color);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 8px 12px;
+    width: 100%;
+    font-size: 14px;
+    color: var(--text-color);
+    box-sizing: border-box;
+}
+
+.theme-light .form-input {
+    background-color: var(--light-surface) !important;
+}
+
+.form-input:focus {
+    background-color: var(--secondary-color);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.25);
+    outline: none;
+}
+
+.form-input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.has-warning td {
+    background-color: #ffc857 !important; /* Darker yellow for stronger warning highlight */
+}
+
+.theme-light .has-warning td {
+    background-color: #ffe393 !important; /* Darker yellow for stronger warning highlight */
+}
+
+.has-warning .form-input {
+    background-color: #fde68a;
+    border-color: #fbbf24;
+    color: #1e2a38;
+}
+
+.warning-text {
+    color: #1e2a38;
+    font-size: 13px;
+    margin: 0;
+}
+
+.theme-light .theme-text {
+    color: #000 !important; /* Black text for theme-text in light mode */
+}
+
+.form-submit {
+    text-align: center; /* Centered submit button */
+}
+
+#submitButton {
+    font-size: 1.2rem; /* Larger submit button */
+    padding: 10px 25px; /* Larger submit button */
+}
