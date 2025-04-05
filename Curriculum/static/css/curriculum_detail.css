@@ -47,7 +47,7 @@
 /* Контейнер со списком дисциплин */
 .disciplines {
     width: 100%;
-    max-height: 635px;      
+    max-height: 635px;
     overflow-y: auto;
     overflow-x: auto;
     padding: 10px;
