@@ -1,7 +1,8 @@
 import json
+from lib2to3.fixes.fix_input import context
 
 from django.core.exceptions import ValidationError
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
@@ -11,10 +12,10 @@ from django.urls import reverse
 from django.views import View
 from django.views.generic import TemplateView, DetailView
 
-from Academhub.models.models import TeacherDicsciplineCurriculum
+from Academhub.models.models import TeacherDicsciplineCurriculum, Specialty
 from .models.curriculum_datail_objects import *
 from Academhub.generic import ObjectTableView, ObjectCreateView, ImportViewMixin, ObjectTemplateView, ObjectDetailView
-from Academhub.models import Curriculum, ClockCell, Category, StudyCycle, Discipline, CustomUser
+from Academhub.models import Curriculum, ClockCell, Category, StudyCycle, Discipline, CustomUser, Qualification
 from .filters import CurriculumQualificationsFilter
 from .forms.GetPlxForm import GetPlxForm
 from .forms.EditableCurriculumForm import EditableCurriculumForm
@@ -27,7 +28,7 @@ __all__ = (
     'CurriculumDetail',
     'AddTeacher2DisciplineOnTerm',
     'RemoveTeacherFromDiscipline',
-    'AddTeacherToDiscipline'
+    'AddTeacherToDiscipline',
 )
 
 class CurriculumTableView(ImportViewMixin, ObjectTableView):
@@ -98,6 +99,18 @@ class CurriculumEditableFormView(TemplateView):
             "Успешное сохранение учебного плана"
         )
         return redirect('curriculum_list')
+
+
+
+class CompleteSetCurriculum(ObjectTemplateView):
+    template_name = 'Curriculum/complete_set/view.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["specialties"] = Specialty.objects.all()
+        context['courses'] = [i + 1 for i in range(4)]
+        return context
 
 
 

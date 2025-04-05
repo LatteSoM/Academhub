@@ -1091,7 +1091,7 @@ class Curriculum(AcademHubModel):
     warnings = models.BooleanField(default=False)
     warning_description = models.JSONField(null=True, blank=True)
     qualification = models.ForeignKey(
-        Qualification, on_delete=models.CASCADE, verbose_name="Квалификация"
+        Qualification, on_delete=models.CASCADE, related_name='curriculums', verbose_name="Квалификация"
     )
     admission_year = models.PositiveIntegerField(verbose_name="Год поступления")
 
