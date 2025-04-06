@@ -1,10 +1,16 @@
 document.getElementById('specialty').addEventListener('change', function() {
     const specialtyId = this.value;
     const studyPlanSelect = document.getElementById('study_plan');
+    const courseSelect = document.getElementById('course');
+    const groupsContainer = document.getElementById('groups');
 
-    if (!specialtyId) {
+    if (!specialtyId || specialtyId === 'Выберите специальность') {
         studyPlanSelect.innerHTML = '<option>Сначала выберите специальность</option>';
         studyPlanSelect.disabled = true;
+        courseSelect.innerHTML = '<option selected>Сначала выберите специальность и учебный план</option>';
+        courseSelect.disabled = true;
+
+        groupsContainer.innerHTML = '';
         return;
     }
 
@@ -12,6 +18,11 @@ document.getElementById('specialty').addEventListener('change', function() {
     fetch(`/CurriculumApp/api/study-plans/?specialty_id=${specialtyId}`)
         .then(response => response.json())
         .then(data => {
+            courseSelect.innerHTML = '<option selected>Сначала выберите учебный план</option>';
+            courseSelect.disabled = true;
+
+            groupsContainer.innerHTML = '';
+
             studyPlanSelect.innerHTML = '<option selected>Выберите учебный план</option>';
             data.forEach(plan => {
                 const option = document.createElement('option');
@@ -60,6 +71,7 @@ document.getElementById('study_plan').addEventListener('change', function () {
                 input.type = 'checkbox';
                 input.className = 'form-check-input';
                 input.id = `group${study_group.id}`;
+                input.checked = true;
 
                 const label = document.createElement('label');
                 label.className = 'form-check-label';
@@ -75,4 +87,78 @@ document.getElementById('study_plan').addEventListener('change', function () {
             groupsContainer.innerHTML = '<div class="text-danger">Ошибка загрузки данных</div>';
             console.error('Error:', error);
         });
+})
+
+
+document.getElementById('course').addEventListener('change', function () {
+    const termValue = document.getElementById('termSelect').value
+    const curriculumValue = document.getElementById('study_plan').value
+    const tbody = document.getElementById('disciplines-body');
+
+    if (curriculumValue === 'Выберите учебный план' || this.value === 'Выберите курс'){
+        return
+    }
+
+    fetch(
+        `/CurriculumApp/api/disciplines_by_curriculum_course_term/?curriculum_id=${curriculumValue}&course=${this.value}&term=${termValue}`
+    )
+        .then(response => response.json())
+        .then(data => {
+            console.log(data)
+
+
+            tbody.innerHTML = '';
+
+            if (data.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4">Нет данных для отображения</td>
+                    </tr>`;
+                return;
+            }
+
+
+
+            data.forEach(discipline => {
+                const row = document.createElement('tr');
+                // Колонка с кодом дисциплины
+                const codeCell = document.createElement('td');
+                codeCell.textContent = discipline.discipline_code;
+                row.appendChild(codeCell);
+
+                // Колонка с названием дисциплины
+                const nameCell = document.createElement('td');
+                nameCell.textContent = discipline.discipline_name;
+                row.appendChild(nameCell);
+
+                // Колонка с преподавателями
+                const teachersCell = document.createElement('td');
+                const teachersDiv = document.createElement('div');
+                teachersDiv.style.height = '100px';
+                teachersDiv.style.overflowY = 'auto';
+                teachersDiv.className = 'teachers-list';
+                teachersDiv.dataset.disciplineId = discipline.discipline_id;
+                teachersCell.appendChild(teachersDiv);
+                row.appendChild(teachersCell);
+
+                // Колонка с выбором преподавателя
+                const selectCell = document.createElement('td');
+                const select = document.createElement('select');
+                select.className = 'form-select teacher-select';
+                select.dataset.disciplineId = discipline.discipline_id;
+
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.textContent = 'Выберите преподавателя';
+                defaultOption.selected = true;
+                select.appendChild(defaultOption);
+
+                selectCell.appendChild(select);
+                row.appendChild(selectCell);
+
+                tbody.appendChild(row);
+            })
+
+        })
+
 })

@@ -16,8 +16,11 @@ urlpatterns = [
 
 
     path("curriculum/complete_set", CompleteSetCurriculum.as_view(), name='curriculum_complete_set'),
+
+    #AJAX API
     path('api/study-plans/', get_study_plans, name='get_study_plans'),
     path('api/courses_and_groups/', get_courses_for_study_plan, name='get_courses_for_study_plan'),
+    path('api/disciplines_by_curriculum_course_term/', get_disciplines_by_curriculum_course_term, name='get_disciplines_by_curriculum_course_term'),
 
 
     path('curriculum/<int:pk>/discipline/<int:discipline_id>/course/<int:course_number>/term/<int:term_number>', AddTeacher2DisciplineOnTerm.as_view(), name='curriculum_add_teacher'),

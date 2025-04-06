@@ -33,38 +33,30 @@
 
     <!-- Правая колонка -->
     <div style="flex: 2;">
-        <!-- Таблица с дисциплинами и преподавателями -->
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th style="width: 30%;">Дисциплина</th>
-                    <th style="width: 40%;">Преподаватели</th>
-                    <th style="width: 30%;">Выбор преподавателя</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for discipline in disciplines %}
-                <tr>
-                    <td>{{ discipline.name }}</td>
-                    <td>
-                        <div style="height: 100px; overflow-y: auto;">
-                            {% for teacher in discipline.teachers.all %}
-                            <div>{{ teacher.full_name }}</div>
-                            {% endfor %}
-                        </div>
-                    </td>
-                    <td>
-                        <select class="form-select">
-                            <option selected>Выберите преподавателя</option>
-                            {% for teacher in discipline.teachers.all %}
-                            <option value="{{ teacher.id }}">{{ teacher.full_name }}</option>
-                            {% endfor %}
-                        </select>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div>
+            <p>Выбор семестра</p>
+           <select class="form-select" id="termSelect" style="margin-top: 10px;">
+                <option selected>1</option>
+                <option>2</option>
+           </select>
+        </div>
+
+        <div class="table-container">
+            <!-- Таблица с дисциплинами и преподавателями -->
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th style="width: 30%;">Код Дисциплины</th>
+                        <th style="width: 30%;">Дисциплина</th>
+                        <th style="width: 40%;">Преподаватели</th>
+                        <th style="width: 30%;">Выбор преподавателя</th>
+                    </tr>
+                </thead>
+                <tbody id="disciplines-body">
+                </tbody>
+            </table>
+        </div>
+
 
         <!-- Кнопки управления -->
         <div style="margin-top: 20px; display: flex; gap: 10px;">
@@ -80,10 +72,16 @@
         margin-bottom: 10px;
     }
     .table {
-        margin-top: 20px;
+
     }
     .form-check {
         margin-bottom: 5px;
+    }
+
+    .table-container {
+        height: 400px;
+        overflow-y: scroll;
+        margin-top: 20px;
     }
 </style>
 
