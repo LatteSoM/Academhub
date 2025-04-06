@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load dict_extras %}
+
+{% block content %}
+<div class="container-fluid detail-container">
+    <div class="form-actions mb-4">
+        <a href="{% url 'curriculum_list' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Вернуться
+        </a>
+    </div>
+    <h1 class="mb-4 theme-text">Просмотр учебного плана</h1>
+
+    <!-- Основная информация -->
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <label class="theme-text">Квалификация</label>
+            <div class="form-input theme-input">
+                {{ curriculum_data.qualification.name }}
+            </div>
+        </div>
+        <div class="col-md-4">
+            <label class="theme-text">Год поступления</label>
+            <div class="form-input theme-input">
+                {{ curriculum_data.admission_year }}
+            </div>
+        </div>
+        <div class="col-md-4">
+            <label class="theme-text">Основа поступления</label>
+            <div class="form-input theme-input">
+                {{ curriculum_data.basis_of_admission }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Таблица дисциплин (без изменений) -->
+    <div class="table-container custom-table-container">
+        <table class="data-table desktop-table theme-surface theme-text">
+            <thead>
+                <tr class="theme-bg">
+                    <th width="25%">Дисциплина</th>
+                    <th width="10%">Код</th>
+                    {% for sem in semester_list %}
+                    <th width="5%">Сем. {{ sem }}</th>
+                    {% endfor %}
+                    <th width="20%">Ошибки</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for discipline in disciplines_data %}
+                    <tr class="{% if discipline.warnings %}has-warning{% endif %}">
+                        <td>{{ discipline.name }}</td>
+                        <td>{{ discipline.code }}</td>
+                        {% for sem in semester_list %}
+                        <td>{{ discipline.semesters|get_item:sem }}</td>
+                        {% endfor %}
+                        <td>
+                            {% if discipline.warnings %}
+                            <div class="warning-text">
+                                {{ discipline.warning_description|join:", "|default:"Нет ошибок" }}
+                            </div>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Дополнительные стили для полей и кнопок -->
+<style>
+    /* Фон для полей вывода данных */
+    .form-input {
+        background-color: var(--surface-color);
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        padding: 8px 12px;
+        width: 100%;
+        font-size: 14px;
+        color: var(--text-color);
+        box-sizing: border-box;
+    }
+    /* Для тёмной темы можно задать отдельный фон, если требуется */
+    .theme-dark .form-input {
+        background-color: var(--dark-surface-color, #2d3748);
+    }
+
+    /* Стили для кнопки (переопределяем стандартные цвета для тёмной темы) */
+    .btn-secondary {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        color: var(--button-text-color, #fff);
+        transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+    .btn-secondary:hover,
+    .btn-secondary:focus {
+        background-color: var(--primary-color-hover, #0056b3);
+        border-color: var(--primary-color-hover, #0056b3);
+        color: var(--button-text-color, #fff);
+    }
+</style>
+{% endblock %}

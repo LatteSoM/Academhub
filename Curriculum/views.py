@@ -1,8 +1,9 @@
 import json
-from lib2to3.fixes.fix_input import context
+from collections import defaultdict
 
 from django.core.exceptions import ValidationError
-from django.http import HttpResponseRedirect, JsonResponse
+from django.db.models import Count
+from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
@@ -11,11 +12,16 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.views import View
 from django.views.generic import TemplateView, DetailView
+from django.views.generic import DeleteView
+from unicodedata import category
 
-from Academhub.models.models import TeacherDicsciplineCurriculum, Specialty
+from Academhub.models import Curriculum
+from django.urls import reverse_lazy
+
+from Academhub.models.models import TeacherDicsciplineCurriculum, Module
 from .models.curriculum_datail_objects import *
 from Academhub.generic import ObjectTableView, ObjectCreateView, ImportViewMixin, ObjectTemplateView, ObjectDetailView
-from Academhub.models import Curriculum, ClockCell, Category, StudyCycle, Discipline, CustomUser, Qualification
+from Academhub.models import Curriculum, ClockCell, Category, StudyCycle, Discipline, CustomUser
 from .filters import CurriculumQualificationsFilter
 from .forms.GetPlxForm import GetPlxForm
 from .forms.EditableCurriculumForm import EditableCurriculumForm
@@ -24,11 +30,12 @@ from .tables import CurriculumTable
 __all__ = (
     'CurriculumTableView',
     'CurricullumAddView',
+    'CurriculumDeleteView',
     'CurriculumEditableFormView',
     'CurriculumDetail',
     'AddTeacher2DisciplineOnTerm',
     'RemoveTeacherFromDiscipline',
-    'AddTeacherToDiscipline',
+    'AddTeacherToDiscipline'
 )
 
 class CurriculumTableView(ImportViewMixin, ObjectTableView):
@@ -61,6 +68,20 @@ class CurriculumTableView(ImportViewMixin, ObjectTableView):
         else:
             response = super().post(request, *args, **kwargs)
             return response
+        
+class CurriculumDeleteView(DeleteView):
+    model = Curriculum
+    success_url = reverse_lazy('curriculum_list')  # URL для перенаправления после удаления
+    template_name = 'confirmation_delete.html'  # Опционально, если нужно подтверждение
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        # Проверка данных (например, через POST-параметры)
+        if (request.POST.get('year') == str(self.object.admission_year) and
+            request.POST.get('qualification') == self.object.qualification):
+            return super().delete(request, *args, **kwargs)
+        else:
+            return HttpResponseForbidden("Неверные данные для удаления!")
 
 
 class CurricullumAddView(ObjectCreateView):
@@ -101,18 +122,44 @@ class CurriculumEditableFormView(TemplateView):
         return redirect('curriculum_list')
 
 
-
-class CompleteSetCurriculum(ObjectTemplateView):
-    template_name = 'Curriculum/complete_set/view.html'
+class CurriculumPreviewView(ObjectDetailView):
+    model = Curriculum
+    template_name = 'Curriculum/detail/preview_form.html'
+    context_object_name = 'curriculum_data'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        curriculum = self.object
 
-        context["specialties"] = Specialty.objects.all()
-        context['courses'] = [i + 1 for i in range(4)]
+        # Получаем все связанные объекты
+        category_list = Category.objects.filter(curriculum=curriculum)
+        study_cycle_list = StudyCycle.objects.filter(categories__in=category_list)
+        module_list = Module.objects.filter(study_cycles__in=study_cycle_list)
+
+        # Формируем данные дисциплин
+        disciplines_data = []
+        for disc in Discipline.objects.filter(study_cycles__in=study_cycle_list).distinct():
+            # Для каждого объекта Discipline создаем словарь
+            disc_data = {
+                'name': disc.name,
+                'code': disc.code,
+                'warnings': disc.warnings,
+                'warning_description': disc.warning_description or [],
+                'semesters': defaultdict(int)
+            }
+
+            # Собираем часы по семестрам
+            for cell in disc.clock_cells.all():
+                if cell.term:
+                    disc_data['semesters'][cell.term] += cell.count_of_clocks
+
+            disciplines_data.append(disc_data)
+
+        context.update({
+            'disciplines_data': disciplines_data,
+            'semester_list': list(range(1, 9)),
+        })
         return context
-
-
 
 class CurriculumDetail(ObjectDetailView):
     """

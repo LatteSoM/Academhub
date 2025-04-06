@@ -9,7 +9,7 @@
     {{ block.super }}
     <div id="import" class="tab-pane">
         <div class="page-header">
-            <h2>Импорт учебных план из .plx</h2>
+            <h2>Импорт учебных планов из .plx</h2>
         </div>
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
@@ -19,6 +19,53 @@
             <br>
             <button type="submit" class="btn btn-primary" id="submitButton">Загрузить</button>
         </form>
+    </div>
+
+    <!-- Модальное окно подтверждения удаления -->
+    <div class="modal fade {% if 'theme-dark' in request.COOKIES.theme %}modal-dark{% else %}modal-light{% endif %}" id="confirmDeleteModal" tabindex="-1"
+         aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="confirmDeleteModalLabel">Подтверждение удаления</h5>
+          </div>
+          <div class="modal-body">
+            <p>Для подтверждения удаления введите:</p>
+            <div class="mb-3">
+              <label for="confirmQualification" class="form-label">Квалификация учебного плана</label>
+              <input type="text" class="form-control" id="confirmQualification" required>
+            </div>
+            <div class="mb-3">
+              <label for="confirmAdmissionYear" class="form-label">Год поступления</label>
+              <input type="text" class="form-control" id="confirmAdmissionYear" required>
+            </div>
+            <div class="alert alert-danger d-none" id="deleteError"></div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+            <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Удалить</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Модальное окно загрузки -->
+    <div class="modal fade {% if 'theme-dark' in request.COOKIES.theme %}modal-dark{% else %}modal-light{% endif %}" id="exampleModal" tabindex="-1"
+         aria-labelledby="exampleModalLabel" aria-hidden="true"
+         data-bs-backdrop="static" data-bs-keyboard="false">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Импорт данных</h1>
+          </div>
+          <div class="modal-body">
+            <p>Пожалуйста, подождите, идёт валидация данных...</p>
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <style>
@@ -43,35 +90,33 @@
       }
 
       .modal-light .modal-content {
-        background-color: var(--light-surface); /* Light background for light mode */
-        color: #000; /* Black text for light mode */
+        background-color: var(--light-surface);
+        color: #000;
         border-radius: 12px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Optional shadow for light mode */
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
       }
 
       .modal-light .modal-header {
-        border-bottom: 1px solid #dee2e6; /* Light border for header in light mode */
+        border-bottom: 1px solid #dee2e6;
       }
 
       .modal-light .btn-close {
-        display: none; /* Keep close button hidden - consistent with dark mode */
+        display: none;
       }
-
 
       .modal-dialog {
         display: flex;
         align-items: center;
-        min-height: calc(100vh - 60px); /* Уменьшаем высоту для предотвращения скролла */
-        margin: 30px auto; /* Добавляем отступы сверху и снизу */
+        min-height: calc(100vh - 60px);
+        margin: 30px auto;
       }
 
       .modal-content {
         width: 450px;
         max-width: 90%;
-        margin: auto; /* Центрируем модальное окно */
+        margin: auto;
       }
 
-      /* Исправляем позиционирование модального окна */
       .modal {
         padding-right: 0 !important;
       }
@@ -96,6 +141,24 @@
         opacity: 0.6;
       }
 
+      /* Стили для кнопки удаления */
+      .btn-danger {
+        padding: 8px 16px;
+        font-size: 14px;
+        background-color: #dc3545;
+        border: none;
+        border-radius: 4px;
+        color: white;
+      }
+      .btn-danger:hover {
+        background-color: #bb2d3b;
+      }
+
+      /* Скрываем заголовок колонки Actions */
+      th.no-header {
+        display: none;
+      }
+
       .btn-primary.loading::after {
         content: "";
         position: absolute;
@@ -116,47 +179,74 @@
       }
     </style>
 
-    <div class="modal fade {% if 'theme-dark' in request.COOKIES.theme %}modal-dark{% else %}modal-light{% endif %}" id="exampleModal" tabindex="-1"
-         aria-labelledby="exampleModalLabel" aria-hidden="true"
-         data-bs-backdrop="static" data-bs-keyboard="false">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h1 class="modal-title fs-5" id="exampleModalLabel">Импорт данных</h1>
-          </div>
-          <div class="modal-body">
-            <p>Пожалуйста, подождите, идёт валидация данных...</p>
-            <div class="spinner-border" role="status">
-              <span class="visually-hidden">Loading...</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <script>
       document.addEventListener("DOMContentLoaded", function() {
+        // Обработка формы импорта
         const form = document.querySelector("#import form");
         const submitButton = document.getElementById("submitButton");
-        const modal = new bootstrap.Modal(document.getElementById("exampleModal"));
+        const importModal = new bootstrap.Modal(document.getElementById("exampleModal"));
 
-        if (!form) {
-          console.error("Форма не найдена!");
-          return;
+        if (form) {
+          form.addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            if (!form.checkValidity()) {
+              form.reportValidity();
+              return;
+            }
+
+            submitButton.classList.add("loading");
+            importModal.show();
+            form.submit();
+          });
         }
 
-        form.addEventListener("submit", function(event) {
-          event.preventDefault();
+        // Глобальные переменные для удаления
+        let currentDeleteUrl = '';
+        let currentQualification = '';
+        let currentAdmissionYear = '';
 
-          if (!form.checkValidity()) {
-            form.reportValidity();
+        // Функция для подтверждения удаления
+        window.confirmDelete = function(url, qualification, admissionYear) {
+          currentDeleteUrl = url;
+          currentQualification = qualification;
+          currentAdmissionYear = admissionYear.toString();
+
+          const deleteModal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
+          document.getElementById('confirmQualification').value = '';
+          document.getElementById('confirmAdmissionYear').value = '';
+          document.getElementById('deleteError').classList.add('d-none');
+          deleteModal.show();
+        };
+
+        // Обработчик кнопки подтверждения удаления
+        document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+          const inputQualification = document.getElementById('confirmQualification').value.trim();
+          const inputAdmissionYear = document.getElementById('confirmAdmissionYear').value.trim();
+          const errorElement = document.getElementById('deleteError');
+
+          if (inputQualification !== currentQualification || inputAdmissionYear !== currentAdmissionYear) {
+            errorElement.textContent = "Введенные данные не совпадают с учебным планом!";
+            errorElement.classList.remove('d-none');
             return;
           }
 
-          submitButton.classList.add("loading");
-          modal.show();
-
-          form.submit();
+          fetch(currentDeleteUrl, {
+            method: 'POST',
+            headers: {
+              'X-CSRFToken': '{{ csrf_token }}',
+            },
+          }).then(response => {
+            if (response.ok) {
+              window.location.reload();
+            } else {
+              errorElement.textContent = "Ошибка при удалении!";
+              errorElement.classList.remove('d-none');
+            }
+          }).catch(error => {
+            errorElement.textContent = "Ошибка сети!";
+            errorElement.classList.remove('d-none');
+          });
         });
       });
     </script>

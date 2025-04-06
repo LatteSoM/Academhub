@@ -4,9 +4,7 @@ navigation = Navigation(
     ParentLink(
         'Учебные планы',
         sub_links=[
-            ChildLink('Учебные планы', 'curriculum_list'),
-            ChildLink("Укомплектация учебных планов", 'curriculum_complete_set')
+            ChildLink('Учебные планы', 'curriculum_list')
         ]
-    ),
-
+    )
 )

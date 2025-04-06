@@ -17,3 +17,5 @@ class CurriculumQualificationsFilter(filters.FilterSet):
     class Meta:
         model = Curriculum
         fields = ['qualification']
+
+
