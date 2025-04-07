@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container" style="display: flex; gap: 20px; margin-top: 20px;">
+    <!-- Левая колонка -->
+    <div style="flex: 1;">
+        <!-- Выпадающие списки -->
+        <div style="margin-bottom: 20px;">
+            <select class="form-select" id="specialty">
+                <option selected>Выберите специальность</option>
+                {% for specialty in specialties %}
+                <option value="{{ specialty.id }}">{{ specialty.name }}</option>
+                {% endfor %}
+            </select>
+
+            <select class="form-select" id="study_plan" style="margin-top: 10px;" disabled>
+                <option selected>Сначала выберите специальность</option>
+            </select>
+
+            <select class="form-select" id="course" style="margin-top: 10px;" disabled>
+                <option selected>Сначала выберите учебный план</option>
+            </select>
+        </div>
+
+        <!-- Блок групп с чекбоксами -->
+        <div id="groups" style="border: 1px solid #ddd; padding: 10px; height: 300px; overflow-y: auto;">
+        </div>
+
+        <!-- Кнопка импорта -->
+        <button class="btn btn-primary mt-3">Импортировать преподавателей</button>
+    </div>
+
+    <!-- Правая колонка -->
+    <div style="flex: 2;">
+        <div>
+            <p>Выбор семестра</p>
+           <select class="form-select" id="termSelect" style="margin-top: 10px;">
+                <option selected>1</option>
+                <option>2</option>
+           </select>
+        </div>
+
+        <div class="table-container">
+            <!-- Таблица с дисциплинами и преподавателями -->
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th style="width: 30%;">Код Дисциплины</th>
+                        <th style="width: 30%;">Дисциплина</th>
+                        <th style="width: 40%;">Преподаватели</th>
+                        <th style="width: 30%;">Выбор преподавателя</th>
+                    </tr>
+                </thead>
+                <tbody id="disciplines-body">
+                </tbody>
+            </table>
+        </div>
+
+
+        <!-- Кнопки управления -->
+        <div style="margin-top: 20px; display: flex; gap: 10px;">
+            <button class="btn btn-success">Сохранить преподавателей</button>
+            <button class="btn btn-warning">Сохранить период аттестации</button>
+            <button class="btn btn-info">Проверить комплектность</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-select {
+        margin-bottom: 10px;
+    }
+    .table {
+
+    }
+    .form-check {
+        margin-bottom: 5px;
+    }
+
+    .table-container {
+        height: 400px;
+        overflow-y: scroll;
+        margin-top: 20px;
+    }
+</style>
+
+<script src="{% static 'js/complete_set/view.js' %}"></script>
+{% endblock %}
