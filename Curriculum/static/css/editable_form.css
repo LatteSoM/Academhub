@@ -12,7 +12,7 @@
     .custom-table-container {
         overflow-x: auto;
         overflow-y: auto;
-        max-height: 800px; /* Increased max-height for taller table */
+        max-height: 700px; /* Increased max-height for taller table */
         border: 1px solid var(--border-color);
         border-radius: 8px;
         background-color: var(--surface-color);

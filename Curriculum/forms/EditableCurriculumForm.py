@@ -178,8 +178,8 @@ class EditableCurriculumForm(forms.Form):
             prompt = Discipline.objects.filter(name=discipline_data['name'], code=discipline_data['code'])
             discipline = prompt[0] if prompt else None
             if discipline:
-                discipline.modules.set([m for m in restored_modules if m.name == (d_data["module"]["module_name"] if d_data["module"] else None)])
-                discipline.study_cycles.set([rsc for rsc in restored_study_cycles if rsc.cycles == d_data["cycle_relation"]])
+                discipline.modules.add(*[m for m in restored_modules if m.name == (d_data["module"]["module_name"] if d_data["module"] else None)])
+                discipline.study_cycles.add(*[rsc for rsc in restored_study_cycles if rsc.cycles == d_data["cycle_relation"]])
                 discipline.save()
                 restored_disciplines.append(discipline)
             else:
@@ -191,8 +191,8 @@ class EditableCurriculumForm(forms.Form):
                     warning_description=d_data["warning_description"]
                 )
                 discipline_obj.save()
-                discipline_obj.modules.set([m for m in restored_modules if m.name == (d_data["module"]["module_name"] if d_data["module"] else None)])
-                discipline_obj.study_cycles.set([rsc for rsc in restored_study_cycles if rsc.cycles == d_data["cycle_relation"]])
+                discipline_obj.modules.add(*[m for m in restored_modules if m.name == (d_data["module"]["module_name"] if d_data["module"] else None)])
+                discipline_obj.study_cycles.add(*[rsc for rsc in restored_study_cycles if rsc.cycles == d_data["cycle_relation"]])
                 discipline_obj.save()
                 restored_disciplines.append(discipline_obj)
 

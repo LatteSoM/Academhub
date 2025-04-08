@@ -18,6 +18,7 @@ document.getElementById('specialty').addEventListener('change', function() {
     fetch(`/CurriculumApp/api/study-plans/?specialty_id=${specialtyId}`)
         .then(response => response.json())
         .then(data => {
+            console.log(data)
             courseSelect.innerHTML = '<option selected>Сначала выберите учебный план</option>';
             courseSelect.disabled = true;
 

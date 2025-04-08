@@ -1,9 +1,7 @@
 import json
 from collections import defaultdict
 
-from django.core.exceptions import ValidationError
-from django.db.models import Count
-from django.http import HttpResponseRedirect, HttpResponseForbidden
+from django.http import HttpResponseForbidden
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
@@ -18,7 +16,7 @@ from unicodedata import category
 from Academhub.models import Curriculum
 from django.urls import reverse_lazy
 
-from Academhub.models.models import TeacherDicsciplineCurriculum, Module
+from Academhub.models.models import Module, Specialty
 from .models.curriculum_datail_objects import *
 from Academhub.generic import ObjectTableView, ObjectCreateView, ImportViewMixin, ObjectTemplateView, ObjectDetailView
 from Academhub.models import Curriculum, ClockCell, Category, StudyCycle, Discipline, CustomUser
@@ -32,10 +30,8 @@ __all__ = (
     'CurricullumAddView',
     'CurriculumDeleteView',
     'CurriculumEditableFormView',
-    'CurriculumDetail',
-    'AddTeacher2DisciplineOnTerm',
-    'RemoveTeacherFromDiscipline',
-    'AddTeacherToDiscipline'
+    'CurriculumPreviewView',
+    'CompleteSetCurriculum',
 )
 
 class CurriculumTableView(ImportViewMixin, ObjectTableView):
@@ -161,9 +157,22 @@ class CurriculumPreviewView(ObjectDetailView):
         })
         return context
 
+
+class CompleteSetCurriculum(ObjectTemplateView):
+    template_name = 'Curriculum/complete_set/view.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["specialties"] = Specialty.objects.all()
+
+        return context
+
+
+
 class CurriculumDetail(ObjectDetailView):
     """
-    Этот класс нужен для вывода данных по конкретному учебному плану. 
+    Этот класс нужен для вывода данных по конкретному учебному плану.
     На данный момент просто собирает все данные по уч плану, никак не используя их.
     Потом будет выводить табличку полноценную.
 
@@ -193,7 +202,7 @@ class CurriculumDetail(ObjectDetailView):
         modules_disciplines = []
         for module in modules:
             modules_disciplines += module.disciplines.all()
-        
+
         all_clock_cells = ClockCell.objects.filter(curriculum=self.object)
 
         table_disciplines = []
@@ -213,9 +222,9 @@ class CurriculumDetail(ObjectDetailView):
                                     clock_cell.term
                                 )
                             )
-            
+
             table_disciplines.append(discipline_view)
-        
+
 
         for discipline in modules_disciplines:
             discipline_view = DisciplineView(
@@ -233,7 +242,7 @@ class CurriculumDetail(ObjectDetailView):
                                     clock_cell.term
                                 )
                             )
-            
+
             table_disciplines.append(discipline_view)
 
         context['categories'] = categories
@@ -247,89 +256,89 @@ class CurriculumDetail(ObjectDetailView):
 
         return context
 
-
-
-class AddTeacher2DisciplineOnTerm(ObjectTemplateView):
-    """
-    Этот класс нужен для добавления преподавателям возможность вести дисциплину в конретномсеместре
-    """
-    template_name = 'Curriculum/create/addTeacher2DisciplineOnTerm.html'
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        
-        curriculum = Curriculum.objects.get(id=context["pk"])
-        discipline = Discipline.objects.get(id=context["discipline_id"])
-        teachers = CustomUser.objects.filter(is_teacher=True)
-        teachers_of_discipline = TeacherDicsciplineCurriculum.objects.filter(
-            curriculum=curriculum,
-            course=context['course_number'],
-            term=context['term_number'],
-            discipline=discipline
-        )
-
-        techers_who_not_lead_discipline = []
-
-        for teacher in teachers:
-            lead = False
-            for teacher_of_discipline in teachers_of_discipline:
-                if teacher.id == teacher_of_discipline.teacher.id:
-                    lead = True
-                    break
-            
-            if not lead:
-                techers_who_not_lead_discipline.append(teacher)
-
-        context['discipline'] = discipline
-        context['curriculum'] = curriculum
-        context['teachers_of_discipline'] = teachers_of_discipline
-        context['teachers'] = techers_who_not_lead_discipline
-        
-
-        return context
-        
-
-class AddTeacherToDiscipline(View):
-    """
-    Класс который обрабатывает запрос на добавление из AddTeacher2DisciplineOnTerm
-    """
-    def post(self, request, pk, discipline_id, course_number, term_number, teacher_id):
-        discipline = Discipline.objects.get(id=discipline_id)
-        teacher = CustomUser.objects.get(id=teacher_id)
-        curriculum = Curriculum.objects.get(id=pk)
-
-        new_teacher_for_discipline = TeacherDicsciplineCurriculum(
-            teacher=teacher,
-            course=course_number,
-            term=term_number,
-            discipline=discipline,
-            curriculum=curriculum
-        )
-
-        new_teacher_for_discipline.save()
-        messages.success(request, f'Преподаватель {teacher} успешно добавлен')
-        return redirect('curriculum_add_teacher', pk=pk, discipline_id=discipline_id, course_number=course_number, term_number=term_number)
-
-
-class RemoveTeacherFromDiscipline(View):
-    """
-    Класс обрабатывает запрос на удаление из класса AddTeacher2DisciplineOnTerm
-    """
-    def post(self, request, pk, discipline_id, course_number, term_number, teacher_id):
-        discipline = Discipline.objects.get(id=discipline_id)
-        teacher = CustomUser.objects.get(id=teacher_id)
-        curriculum = Curriculum.objects.get(id=pk)
-
-        teacher_discipline = TeacherDicsciplineCurriculum.objects.get(
-            teacher=teacher,
-            course=course_number,
-            term=term_number,
-            discipline=discipline,
-            curriculum=curriculum
-        )
-        teacher_discipline.delete()
-        messages.success(request, f'Преподаватель {teacher.full_name} больше не может вести дисциплину {discipline.name}')
-        return redirect('curriculum_add_teacher', pk=pk, discipline_id=discipline_id, course_number=course_number, term_number=term_number)
+##### Легаси обработчики - не работают после изменения TeachersForDisciplineAndCurriculum в models
+#
+# class AddTeacher2DisciplineOnTerm(ObjectTemplateView):
+#     """
+#     Этот класс нужен для добавления преподавателям возможность вести дисциплину в конретномсеместре
+#     """
+#     template_name = 'Curriculum/create/addTeacher2DisciplineOnTerm.html'
+#
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#
+#         curriculum = Curriculum.objects.get(id=context["pk"])
+#         discipline = Discipline.objects.get(id=context["discipline_id"])
+#         teachers = CustomUser.objects.filter(is_teacher=True)
+#         teachers_of_discipline = TeachersForDisciplineAndCurriculum.objects.filter(
+#             curriculum=curriculum,
+#             course=context['course_number'],
+#             term=context['term_number'],
+#             discipline=discipline
+#         )
+#
+#         techers_who_not_lead_discipline = []
+#
+#         for teacher in teachers:
+#             lead = False
+#             for teacher_of_discipline in teachers_of_discipline:
+#                 if teacher.id == teacher_of_discipline.teacher.id:
+#                     lead = True
+#                     break
+#
+#             if not lead:
+#                 techers_who_not_lead_discipline.append(teacher)
+#
+#         context['discipline'] = discipline
+#         context['curriculum'] = curriculum
+#         context['teachers_of_discipline'] = teachers_of_discipline
+#         context['teachers'] = techers_who_not_lead_discipline
+#
+#
+#         return context
+#
+#
+# class AddTeacherToDiscipline(View):
+#     """
+#     Класс который обрабатывает запрос на добавление из AddTeacher2DisciplineOnTerm
+#     """
+#     def post(self, request, pk, discipline_id, course_number, term_number, teacher_id):
+#         discipline = Discipline.objects.get(id=discipline_id)
+#         teacher = CustomUser.objects.get(id=teacher_id)
+#         curriculum = Curriculum.objects.get(id=pk)
+#
+#         new_teacher_for_discipline = TeachersForDisciplineAndCurriculum(
+#             teacher=teacher,
+#             course=course_number,
+#             term=term_number,
+#             discipline=discipline,
+#             curriculum=curriculum
+#         )
+#
+#         new_teacher_for_discipline.save()
+#         messages.success(request, f'Преподаватель {teacher} успешно добавлен')
+#         return redirect('curriculum_add_teacher', pk=pk, discipline_id=discipline_id, course_number=course_number, term_number=term_number)
+#
+#
+# class RemoveTeacherFromDiscipline(View):
+#     """
+#     Класс обрабатывает запрос на удаление из класса AddTeacher2DisciplineOnTerm
+#     """
+#     def post(self, request, pk, discipline_id, course_number, term_number, teacher_id):
+#         discipline = Discipline.objects.get(id=discipline_id)
+#         teacher = CustomUser.objects.get(id=teacher_id)
+#         curriculum = Curriculum.objects.get(id=pk)
+#
+#         teacher_discipline = TeachersForDisciplineAndCurriculum.objects.get(
+#             teacher=teacher,
+#             course=course_number,
+#             term=term_number,
+#             discipline=discipline,
+#             curriculum=curriculum
+#         )
+#         teacher_discipline.delete()
+#         messages.success(request, f'Преподаватель {teacher.full_name} больше не может вести дисциплину {discipline.name}')
+#         return redirect('curriculum_add_teacher', pk=pk, discipline_id=discipline_id, course_number=course_number, term_number=term_number)
 
     
 
