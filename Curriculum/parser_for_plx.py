@@ -12,10 +12,60 @@ __all__ = (
 
 class RUP_parser:
 
-    def add_file(self, file):
-        self.tree = et.parse(file)
-        self.root = self.tree.getroot()
-        self.root_child = self.root[0][0]
+    def add_file(self, file_path):
+        # Try common encodings for XML files, especially those from Windows systems
+        encodings_to_try = ['utf-8', 'cp1251', 'utf-16']
+        xml_content_str = None
+        detected_encoding = None
+
+        for enc in encodings_to_try:
+            try:
+                with open(file_path, 'rb') as f_bytes:
+                    xml_content_bytes = f_bytes.read()
+                
+                # Attempt decoding
+                xml_content_str = xml_content_bytes.decode(enc)
+                
+                # Basic check if decoding looks reasonable (e.g., starts with XML declaration)
+                # Remove BOM if present (especially for utf-8)
+                if xml_content_str.startswith('\ufeff'):
+                    xml_content_str = xml_content_str[1:]
+                
+                if xml_content_str.strip().startswith('<?xml'):
+                    detected_encoding = enc
+                    # print(f"Successfully decoded with {enc}") # Optional: for debugging
+                    break # Stop trying once a successful decode happens
+            except (UnicodeDecodeError, LookupError):
+                # print(f"Failed to decode with {enc}") # Optional: for debugging
+                continue # Try next encoding
+            except Exception as e:
+                # Catch other potential file reading errors
+                print(f"Error reading file {file_path} with encoding {enc}: {e}")
+                continue
+
+        if xml_content_str is None:
+            raise ValueError(f"Could not decode file {file_path} with any of the attempted encodings: {encodings_to_try}")
+
+        # Parse the decoded string content
+        try:
+            # Use fromstring to parse the decoded string
+            self.root = et.fromstring(xml_content_str)
+            # Reconstruct a minimal tree if needed, although direct root access is often sufficient
+            self.tree = et.ElementTree(self.root)
+        except et.ParseError as e:
+             raise et.ParseError(f"XML ParseError in {file_path} (detected encoding: {detected_encoding}): {e}")
+
+        # Check the structure before accessing children
+        if len(self.root) > 0 and len(self.root[0]) > 0:
+             self.root_child = self.root[0][0] # This assumes the diffgram/dsMMISDB structure
+        else:
+             # Handle cases where the structure is different or the file is minimal/empty
+             # Option 1: Raise an error if the structure is mandatory
+             # raise ValueError(f"Unexpected XML structure in {file_path}. Expected root[0][0] to exist.")
+             # Option 2: Set root_child to None or a sensible default and let later methods handle it
+             print(f"Warning: Unexpected XML structure in {file_path}. root[0][0] not found. Proceeding cautiously.")
+             self.root_child = None # Or potentially self.root[0] if dsMMISDB is the direct child
+
 
         self.plan_dict = []
         self.rup = {}

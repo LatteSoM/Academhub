@@ -1,40 +1,47 @@
 import django_tables2 as tables
+from django_tables2 import TemplateColumn
 from django.urls import reverse_lazy
 from django.utils.html import format_html
 from Academhub.models import Curriculum
+from Academhub.tables import BaseTable
+from Academhub.tables.column import ButtonLinkColumn # Import ButtonLinkColumn
 
 
-class CurriculumTable(tables.Table):
-    actions = tables.Column(
-        empty_values=(),
-        orderable=False,
-        verbose_name="",
-        attrs={
-            "th": {"class": "no-header"},
-            "td": {"class": "actions-column"}
-        }
+class CurriculumTable(BaseTable):  # Inherit from BaseTable
+    # Define view_detail column (url_name will be set in __init__)
+    view_detail = ButtonLinkColumn(
+        accessor='pk',
+        text='Просмотреть',
+        verbose_name=''
     )
+
+    # Add a delete column using TemplateColumn
+    delete = TemplateColumn(
+        template_code='''
+            <button class="btn btn-danger btn-sm"
+                    onclick="confirmDelete('{% url 'curriculum_delete' pk=record.pk %}', '{{ record.qualification.name }}', '{{ record.admission_year }}')">
+                Удалить
+            </button>
+        ''',
+        verbose_name="",
+        orderable=False,
+        attrs={
+             "th": {"class": "no-header"},
+             "td": {"class": "actions-column"} # Keep similar styling if needed
+         }
+    )
+
+    # Add __init__ to set the correct URL name after BaseTable.__init__ runs
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Explicitly set the URL name for the view_detail button
+        self.columns['view_detail'].column._set_url_name('curriculum_preview')
 
     class Meta:
         model = Curriculum
-        fields = ('qualification', 'admission_year', 'basis_of_admission')
+        # Add view_detail, edition (from BaseTable), and delete to fields
+        fields = ('qualification', 'admission_year', 'basis_of_admission', 'view_detail', 'edition', 'delete')
         template_name = "django_tables2/bootstrap5.html"
         attrs = {"class": "table table-bordered table-hover"}
 
-    def render_actions(self, record):
-        preview_url = reverse_lazy('curriculum_preview', kwargs={'pk': record.pk})
-        delete_url = reverse_lazy('curriculum_delete', kwargs={'pk': record.pk})
-
-        return format_html(
-            '''
-            <div class="btn-group" role="group">
-                <a href="{}" class="btn btn-info btn-sm">Просмотреть</a>
-                <button class="btn btn-danger btn-sm" 
-                        onclick="confirmDelete('{}', '{}', '{}')">Удалить</button>
-            </div>
-            ''',
-            preview_url,
-            delete_url,
-            record.qualification.name,
-            record.admission_year
-        )
+    # render_actions method is no longer needed
