@@ -27,4 +27,7 @@ urlpatterns = [
     # path('curriculum/<int:pk>/<int:discipline_id>/<int:course_number>/<int:term_number>/add/<int:teacher_id>', AddTeacherToDiscipline.as_view(), name='add_teacher_to_discipline'),
     path('<int:pk>/preview/', CurriculumPreviewView.as_view(), name='curriculum_preview'),
     path('<int:pk>/delete/', CurriculumDeleteView.as_view(), name='curriculum_delete'),
+
+    # URL for importing teachers from Excel
+    path('import-teachers-excel/', import_teachers_excel_view, name='import_teachers_excel'),
 ]
