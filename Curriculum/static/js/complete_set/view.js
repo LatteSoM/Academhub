@@ -233,3 +233,36 @@ document.getElementById('termSelect').addEventListener('change', function () {
             })
         })
 })
+
+
+
+document.getElementById('fileUploadForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const fileInput = document.getElementById('fileInput');
+  const formData = new FormData();
+
+  // Добавляем файл и CSRF-токен
+  formData.append('excel_file', fileInput.files[0]);
+  formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+  try {
+    const response = await fetch('/upload/', {
+      method: 'POST',
+      body: formData,
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data)
+        })
+
+    if (response.ok) {
+      const data = await response.json();
+      document.getElementById('result').innerHTML = `Файл ${data.filename} загружен!`;
+    } else {
+      throw new Error('Ошибка сервера');
+    }
+  } catch (error) {
+    console.error('Ошибка:', error);
+  }
+})

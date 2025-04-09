@@ -31,7 +31,7 @@ from .tables import CurriculumTable
 
 __all__ = (
     'CurriculumTableView',
-    'CurricullumAddView',
+    'CurriculumAddView',
     'CurriculumDeleteView',
     'CurriculumEditableFormView',
     'CurriculumPreviewView',
@@ -85,7 +85,7 @@ class CurriculumDeleteView(DeleteView):
             return HttpResponseForbidden("Неверные данные для удаления!")
 
 
-class CurricullumAddView(ObjectCreateView):
+class CurriculumAddView(ObjectCreateView):
     model = Curriculum
     form_class = GetPlxForm
 
@@ -335,7 +335,7 @@ class CurriculumDetail(ObjectDetailView):
 #         messages.success(request, f'Преподаватель {teacher.full_name} больше не может вести дисциплину {discipline.name}')
 #         return redirect('curriculum_add_teacher', pk=pk, discipline_id=discipline_id, course_number=course_number, term_number=term_number)
 
-    
+
 
 def import_teachers_excel_view(request):
     if request.method == 'POST':
@@ -374,7 +374,7 @@ def import_teachers_excel_view(request):
 
                     full_name = str(full_name_raw).strip() if pd.notna(full_name_raw) else None
                     email = str(email_raw).strip() if pd.notna(email_raw) else None
-                    cmk = str(cmk_raw).strip() if pd.notna(cmk_raw) else None
+                    cmc = str(cmk_raw).strip() if pd.notna(cmk_raw) else None
 
                     if not all([full_name, email]):
                         errors.append(f"Строка {index + 2}: Отсутствуют обязательные данные (ФИО или email).")
@@ -399,7 +399,8 @@ def import_teachers_excel_view(request):
                     #TODO Придумать где хранить связи с ЦМК
                     user, created = CustomUser.objects.update_or_create(
                         email=email,
-                        defaults=user_defaults
+                        defaults=user_defaults,
+                        cmc=cmc
                     )
 
                     if created:

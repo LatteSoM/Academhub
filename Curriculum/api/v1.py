@@ -1,7 +1,9 @@
 from enum import unique
+from http.client import responses
 
+import pandas as pd
 from django.http import JsonResponse
-from Academhub.models import Specialty, Qualification, Curriculum, GroupStudents, ClockCell
+from Academhub.models import Specialty, Qualification, Curriculum, GroupStudents, ClockCell, CustomUser
 
 __all__ = (
     'get_study_plans',
@@ -95,4 +97,115 @@ def get_disciplines_by_curriculum_course_term(request):
     return JsonResponse(response, safe=False)
 
 
+
+def import_teachers_excel_view(request):
+    response = {}
+    if request.method == 'POST':
+        excel_file = request.FILES.get('excel_file')
+
+        if not excel_file:
+            response['message'] = "Не был выбран файл Excel."
+            return JsonResponse(response, safe=False)
+
+        if not excel_file.name.endswith(('.xls', '.xlsx')):
+             response['message'] = "Неверный формат файла. Пожалуйста, загрузите файл Excel (.xls или .xlsx)."
+             return JsonResponse(response, safe=False)
+
+        try:
+            df = pd.read_excel(excel_file, sheet_name=0)
+
+            required_columns = ['ФИО','email', 'ЦМК']
+
+            if not all(col in df.columns for col in required_columns):
+                missing_cols = [col for col in required_columns if col not in df.columns]
+                response['message'] = f"В файле отсутствуют необходимые столбцы: {', '.join(missing_cols)}"
+                return JsonResponse(response, safe=False)
+
+            created_count = 0
+            updated_count = 0
+            skipped_count = 0
+            errors = []
+            users_list = []
+
+            for index, row in df.iterrows():
+                try:
+                    full_name_raw = row.get('ФИО')
+                    email_raw = row.get('email')
+                    cmc_raw = row.get('ЦМК')
+
+                    full_name = str(full_name_raw).strip() if pd.notna(full_name_raw) else None
+                    email = str(email_raw).strip() if pd.notna(email_raw) else None
+                    cmc = str(cmc_raw).strip() if pd.notna(cmc_raw) else None
+
+                    if not all([full_name, email]):
+                        errors.append(f"Строка {index + 2}: Отсутствуют обязательные данные (ФИО или email).")
+                        skipped_count += 1
+                        continue
+
+                    name_parts = full_name.split()
+                    last_name = name_parts[0] if len(name_parts) > 0 else ''
+                    first_name = name_parts[1] if len(name_parts) > 1 else ''
+                    middle_name = ' '.join(name_parts[2:]) if len(name_parts) > 2 else '' # Handle multiple middle names/parts
+
+                    if not last_name or not first_name:
+                         errors.append(f"Строка {index + 2}: Не удалось разобрать ФИО '{full_name}'. Ожидается как минимум Фамилия и Имя.")
+                         skipped_count += 1
+                         continue
+
+                    user_defaults = {
+                        'full_name': full_name,
+                        'is_teacher': True,
+                    }
+
+                    #TODO Придумать где хранить связи с ЦМК
+                    user, created = CustomUser.objects.update_or_create(
+                        email=email,
+                        defaults=user_defaults,
+                        cmc=cmc
+                    )
+
+                    if created:
+                        email_part = str(email.split("@")[0])
+                        against_overkill_par = "123456789"
+                        user.set_password(email_part + against_overkill_par)
+                        user.save()
+                        created_count += 1
+
+                        users_list.append({
+                            'teacher_id': user.id,
+                            'teacher_name': user.full_name,
+                            'cmc': user.cmc,
+                        })
+                    else:
+                        updated_count += 1
+
+                except Exception as e:
+                    errors.append(f"Строка {index + 2}: Ошибка обработки - {e}")
+                    skipped_count += 1
+
+            # --- feedback to the user ---
+            if created_count > 0 or updated_count > 0:
+                 success_msg = f"Импорт завершен. Создано: {created_count}, Обновлено: {updated_count}."
+                 if skipped_count > 0:
+                     success_msg += f" Пропущено из-за ошибок: {skipped_count}."
+                 response['message'] = success_msg
+                 return JsonResponse(response, safe=False)
+            else:
+                response['message'] = f"Импорт завершен. Нет созданных или обновленных записей. Пропущено из-за ошибок: {skipped_count}."
+                return JsonResponse(response, safe=False)
+
+            if errors:
+                for error in errors:
+                    messages.error(request, error)
+
+        except Exception as e:
+            messages.error(request, f"Произошла ошибка при обработке файла: {e}")
+
+
+        referer_url = request.META.get('HTTP_REFERER', reverse('curriculum_list'))
+        return redirect(referer_url)
+
+    else:
+        response['message'] = "Недопустимый метод запроса."
+        return JsonResponse(response, safe=False)
 

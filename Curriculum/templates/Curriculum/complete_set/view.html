@@ -36,7 +36,7 @@
                 </div>
             </div>
 
-            <form method="post" action="{% url 'import_teachers_excel' %}" enctype="multipart/form-data">
+            <form id="fileUploadForm" method="post" action="{% url 'import_teachers_excel' %}" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div class="mb-3">
                     <label for="excel_file_import" class="form-label theme-text">Обновить преподавателей из файла Excel:</label>

@@ -83,6 +83,11 @@ class CustomUser(AcademHubModel, AbstractBaseUser, PermissionsMixin):
         verbose_name='ФИО'
     )
 
+    cmc = models.CharField(
+        max_length=255,
+        verbose_name='ЦМК '
+    )
+
     is_active = models.BooleanField(default=True, verbose_name='Активный?')
     is_staff = models.BooleanField(default=False, verbose_name='Персонал?')
     is_teacher = models.BooleanField(default=False, verbose_name='Учитель?')
