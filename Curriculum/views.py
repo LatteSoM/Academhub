@@ -335,8 +335,6 @@ class CurriculumDetail(ObjectDetailView):
 #         messages.success(request, f'Преподаватель {teacher.full_name} больше не может вести дисциплину {discipline.name}')
 #         return redirect('curriculum_add_teacher', pk=pk, discipline_id=discipline_id, course_number=course_number, term_number=term_number)
 
-    
-
 def import_teachers_excel_view(request):
     if request.method == 'POST':
         excel_file = request.FILES.get('excel_file')
@@ -350,9 +348,15 @@ def import_teachers_excel_view(request):
              referer_url = request.META.get('HTTP_REFERER', reverse('curriculum_list'))
              return redirect(referer_url)
 
+        created_count = 0
+        updated_count = 0
+        skipped_count = 0
+        deactivated_count = 0
+        errors = []
+        excel_emails = set()
+
         try:
             df = pd.read_excel(excel_file, sheet_name=0)
-
             required_columns = ['ФИО','email', 'ЦМК']
 
             if not all(col in df.columns for col in required_columns):
@@ -360,11 +364,6 @@ def import_teachers_excel_view(request):
                 messages.error(request, f"В файле отсутствуют необходимые столбцы: {', '.join(missing_cols)}")
                 referer_url = request.META.get('HTTP_REFERER', reverse('curriculum_list'))
                 return redirect(referer_url)
-
-            created_count = 0
-            updated_count = 0
-            skipped_count = 0
-            errors = []
 
             for index, row in df.iterrows():
                 try:
@@ -384,23 +383,27 @@ def import_teachers_excel_view(request):
                     name_parts = full_name.split()
                     last_name = name_parts[0] if len(name_parts) > 0 else ''
                     first_name = name_parts[1] if len(name_parts) > 1 else ''
-                    middle_name = ' '.join(name_parts[2:]) if len(name_parts) > 2 else '' # Handle multiple middle names/parts
+                    # middle_name = ' '.join(name_parts[2:]) if len(name_parts) > 2 else '' # Not used currently based on user edits
 
                     if not last_name or not first_name:
                          errors.append(f"Строка {index + 2}: Не удалось разобрать ФИО '{full_name}'. Ожидается как минимум Фамилия и Имя.")
                          skipped_count += 1
                          continue
 
+
                     user_defaults = {
                         'full_name': full_name,
                         'is_teacher': True,
+                        'is_active': True
                     }
 
-                    #TODO Придумать где хранить связи с ЦМК
+                    #TODO Придумать где хранить связи с ЦМК (user_defaults['cmk'] = cmk)
+
                     user, created = CustomUser.objects.update_or_create(
                         email=email,
                         defaults=user_defaults
                     )
+
 
                     if created:
                         email_part = str(email.split("@")[0])
@@ -411,26 +414,50 @@ def import_teachers_excel_view(request):
                     else:
                         updated_count += 1
 
+                    excel_emails.add(email)
+
                 except Exception as e:
                     errors.append(f"Строка {index + 2}: Ошибка обработки - {e}")
                     skipped_count += 1
 
-            # --- feedback to the user ---
-            if created_count > 0 or updated_count > 0:
-                 success_msg = f"Импорт завершен. Создано: {created_count}, Обновлено: {updated_count}."
-                 if skipped_count > 0:
-                     success_msg += f" Пропущено из-за ошибок: {skipped_count}."
-                 messages.success(request, success_msg)
-            else:
-                 messages.warning(request, f"Импорт завершен. Нет созданных или обновленных записей. Пропущено из-за ошибок: {skipped_count}.")
+            existing_teacher_emails = set(CustomUser.objects.filter(is_teacher=True, is_active=True).values_list('email', flat=True))
+            emails_to_deactivate = existing_teacher_emails - excel_emails
 
-            if errors:
-                for error in errors:
-                    messages.error(request, error)
+            if emails_to_deactivate:
+                users_to_deactivate = CustomUser.objects.filter(email__in=emails_to_deactivate, is_teacher=True)
+                for user in users_to_deactivate:
+                    user.is_active = False
+                    user.save()
+                    deactivated_count += 1
 
         except Exception as e:
             messages.error(request, f"Произошла ошибка при обработке файла: {e}")
+            referer_url = request.META.get('HTTP_REFERER', reverse('curriculum_list'))
+            return redirect(referer_url)
 
+        final_message_parts = []
+        if created_count > 0:
+            final_message_parts.append(f"Создано: {created_count}")
+        if updated_count > 0:
+            final_message_parts.append(f"Обновлено/Подтверждено: {updated_count}")
+        if deactivated_count > 0:
+            final_message_parts.append(f"Деактивировано (не найдены в файле): {deactivated_count}")
+        if skipped_count > 0:
+            final_message_parts.append(f"Пропущено строк из-за ошибок: {skipped_count}")
+
+        if final_message_parts:
+             final_message = "Импорт завершен. " + ", ".join(final_message_parts) + "."
+             if created_count > 0 or updated_count > 0 or deactivated_count > 0:
+                 messages.success(request, final_message)
+             else:
+                 messages.warning(request, final_message)
+        else:
+             messages.info(request, "Файл обработан, но не найдено данных для создания, обновления или деактивации.")
+
+        if errors:
+            messages.warning(request, "Обнаружены следующие ошибки в строках:")
+            for error in errors:
+                messages.error(request, error)
 
         referer_url = request.META.get('HTTP_REFERER', reverse('curriculum_list'))
         return redirect(referer_url)
@@ -438,5 +465,3 @@ def import_teachers_excel_view(request):
     else:
         messages.error(request, "Недопустимый метод запроса.")
         return redirect(reverse('curriculum_list'))
-
-
