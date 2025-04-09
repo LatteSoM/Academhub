@@ -1,3 +1,5 @@
+let myTeachers = []
+
 document.getElementById('specialty').addEventListener('change', function() {
     const specialtyId = this.value;
     const studyPlanSelect = document.getElementById('study_plan');
@@ -43,7 +45,7 @@ document.getElementById('study_plan').addEventListener('change', function () {
     const groupsContainer = document.getElementById('groups');
     const courseSelect = document.getElementById('course');
 
-    if (!studyPlanId){
+    if (studyPlanId === 'Выберите учебный план'){
         courseSelect.innerHTML = '<option>Сначала выберите учебный план</option>';
         courseSelect.disabled = true;
         return;
@@ -118,8 +120,6 @@ document.getElementById('course').addEventListener('change', function () {
                 return;
             }
 
-
-
             data.forEach(discipline => {
                 const row = document.createElement('tr');
                 // Колонка с кодом дисциплины
@@ -178,7 +178,7 @@ document.getElementById('termSelect').addEventListener('change', function () {
     )
         .then(response => response.json())
         .then(data => {
-            console.log(data)
+            console.log(myTeachers)
 
             tbody.innerHTML = '';
 
@@ -189,9 +189,6 @@ document.getElementById('termSelect').addEventListener('change', function () {
                     </tr>`;
                 return;
             }
-
-
-
             data.forEach(discipline => {
                 const row = document.createElement('tr');
                 // Колонка с кодом дисциплины
@@ -236,32 +233,36 @@ document.getElementById('termSelect').addEventListener('change', function () {
 
 
 
-document.getElementById('fileUploadForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
+document.getElementById('sendFileBtn').addEventListener('click', function () {
 
-  const fileInput = document.getElementById('fileInput');
+  const fileInput = document.getElementById('excel_file_import');
   const formData = new FormData();
+  const curriculum = document.getElementById('study_plan');
+  const course = document.getElementById('course');
 
-  // Добавляем файл и CSRF-токен
   formData.append('excel_file', fileInput.files[0]);
-  formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+  const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+  formData.append('csrfmiddlewaretoken', csrfToken);
+
 
   try {
-    const response = await fetch('/upload/', {
-      method: 'POST',
-      body: formData,
+    const response = fetch('/CurriculumApp/api/import-teachers-excel/', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': csrfToken  // Альтернативный способ передачи токена
+        }
     })
         .then(response => response.json())
         .then(data => {
             console.log(data)
-        })
+            window.alert(data.message)
+            myTeachers = data.teachers
 
-    if (response.ok) {
-      const data = await response.json();
-      document.getElementById('result').innerHTML = `Файл ${data.filename} загружен!`;
-    } else {
-      throw new Error('Ошибка сервера');
-    }
+            if (curriculum !== 'Выберите учебный план' && course !== 'Выберите курс') {
+
+            }
+        })
   } catch (error) {
     console.error('Ошибка:', error);
   }

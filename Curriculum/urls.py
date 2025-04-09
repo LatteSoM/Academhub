@@ -19,7 +19,7 @@ urlpatterns = [
     path('api/study-plans/', get_study_plans, name='get_study_plans'),
     path('api/courses_and_groups/', get_courses_for_study_plan, name='get_courses_for_study_plan'),
     path('api/disciplines_by_curriculum_course_term/', get_disciplines_by_curriculum_course_term, name='get_disciplines_by_curriculum_course_term'),
-
+    path('api/import-teachers-excel/', import_teachers_excel_view, name='import_teachers_excel'),
 
     #### Легаси обработчики - не работают после изменения TeachersForDisciplineAndCurriculum в models
     # path('curriculum/<int:pk>/discipline/<int:discipline_id>/course/<int:course_number>/term/<int:term_number>', AddTeacher2DisciplineOnTerm.as_view(), name='curriculum_add_teacher'),
@@ -27,7 +27,4 @@ urlpatterns = [
     # path('curriculum/<int:pk>/<int:discipline_id>/<int:course_number>/<int:term_number>/add/<int:teacher_id>', AddTeacherToDiscipline.as_view(), name='add_teacher_to_discipline'),
     path('<int:pk>/preview/', CurriculumPreviewView.as_view(), name='curriculum_preview'),
     path('<int:pk>/delete/', CurriculumDeleteView.as_view(), name='curriculum_delete'),
-
-    # URL for importing teachers from Excel
-    path('import-teachers-excel/', import_teachers_excel_view, name='import_teachers_excel'),
 ]

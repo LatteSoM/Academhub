@@ -36,21 +36,19 @@
                 </div>
             </div>
 
-            <form id="fileUploadForm" method="post" action="{% url 'import_teachers_excel' %}" enctype="multipart/form-data">
-                {% csrf_token %}
-                <div class="mb-3">
-                    <label for="excel_file_import" class="form-label theme-text">Обновить преподавателей из файла Excel:</label>
-                    <div class="input-group">
-                        <input class="form-control theme-input" type="file" id="excel_file_import" name="excel_file" accept=".xlsx, .xls" style="display: none;">
-                        <label for="excel_file_import" class="btn btn-outline-secondary theme-button-outline d-flex align-items-center"> <!-- Removed file-input-label class -->
-                            <i class="material-icons me-2">attach_file</i>
-                            <span id="file-chosen-text" class="d-inline-block text-truncate" style="max-width: 150px;">Выберите файл</span> <!-- Added classes and style for truncation -->
-                        </label>
-                        <button type="submit" class="btn btn-primary theme-button">Загрузить</button>
-                    </div>
-                    <small class="form-text theme-text-secondary">Допустимые форматы: .xlsx, .xls</small>
+            <div class="mb-3">
+                <label for="excel_file_import" class="form-label theme-text">Обновить преподавателей из файла Excel:</label>
+                <div class="input-group">
+                    <input class="form-control theme-input" type="file" id="excel_file_import" name="excel_file" accept=".xlsx, .xls" style="display: none;">
+                    <label for="excel_file_import" class="btn btn-outline-secondary theme-button-outline d-flex align-items-center"> <!-- Removed file-input-label class -->
+                        <i class="material-icons me-2">attach_file</i>
+                        <span id="file-chosen-text" class="d-inline-block text-truncate" style="max-width: 150px;">Выберите файл</span> <!-- Added classes and style for truncation -->
+                    </label>
+                    <button id="sendFileBtn" class="btn btn-primary theme-button">Загрузить</button>
                 </div>
-            </form>
+                <small class="form-text theme-text-secondary">Допустимые форматы: .xlsx, .xls</small>
+            </div>
+
         </div>
 
         <!-- Правая колонка -->

@@ -1,3 +1,4 @@
+from email.policy import default
 from enum import unique
 from http.client import responses
 
@@ -9,6 +10,7 @@ __all__ = (
     'get_study_plans',
     'get_courses_for_study_plan',
     'get_disciplines_by_curriculum_course_term',
+    'import_teachers_excel_view',
 )
 
 
@@ -102,7 +104,6 @@ def import_teachers_excel_view(request):
     response = {}
     if request.method == 'POST':
         excel_file = request.FILES.get('excel_file')
-
         if not excel_file:
             response['message'] = "Не был выбран файл Excel."
             return JsonResponse(response, safe=False)
@@ -111,9 +112,16 @@ def import_teachers_excel_view(request):
              response['message'] = "Неверный формат файла. Пожалуйста, загрузите файл Excel (.xls или .xlsx)."
              return JsonResponse(response, safe=False)
 
+        created_count = 0
+        updated_count = 0
+        found_count = 0
+        skipped_count = 0
+        deactivated_count = 0
+        errors = []
+        excel_emails = set()
+
         try:
             df = pd.read_excel(excel_file, sheet_name=0)
-
             required_columns = ['ФИО','email', 'ЦМК']
 
             if not all(col in df.columns for col in required_columns):
@@ -121,21 +129,16 @@ def import_teachers_excel_view(request):
                 response['message'] = f"В файле отсутствуют необходимые столбцы: {', '.join(missing_cols)}"
                 return JsonResponse(response, safe=False)
 
-            created_count = 0
-            updated_count = 0
-            skipped_count = 0
-            errors = []
-            users_list = []
-
+            teachers_list = []
             for index, row in df.iterrows():
                 try:
                     full_name_raw = row.get('ФИО')
                     email_raw = row.get('email')
-                    cmc_raw = row.get('ЦМК')
+                    cmk_raw = row.get('ЦМК')
 
                     full_name = str(full_name_raw).strip() if pd.notna(full_name_raw) else None
                     email = str(email_raw).strip() if pd.notna(email_raw) else None
-                    cmc = str(cmc_raw).strip() if pd.notna(cmc_raw) else None
+                    cmc = str(cmk_raw).strip() if pd.notna(cmk_raw) else None
 
                     if not all([full_name, email]):
                         errors.append(f"Строка {index + 2}: Отсутствуют обязательные данные (ФИО или email).")
@@ -145,7 +148,7 @@ def import_teachers_excel_view(request):
                     name_parts = full_name.split()
                     last_name = name_parts[0] if len(name_parts) > 0 else ''
                     first_name = name_parts[1] if len(name_parts) > 1 else ''
-                    middle_name = ' '.join(name_parts[2:]) if len(name_parts) > 2 else '' # Handle multiple middle names/parts
+                    # middle_name = ' '.join(name_parts[2:]) if len(name_parts) > 2 else '' # Not used currently based on user edits
 
                     if not last_name or not first_name:
                          errors.append(f"Строка {index + 2}: Не удалось разобрать ФИО '{full_name}'. Ожидается как минимум Фамилия и Имя.")
@@ -158,54 +161,89 @@ def import_teachers_excel_view(request):
                     }
 
                     #TODO Придумать где хранить связи с ЦМК
-                    user, created = CustomUser.objects.update_or_create(
-                        email=email,
-                        defaults=user_defaults,
-                        cmc=cmc
-                    )
 
-                    if created:
-                        email_part = str(email.split("@")[0])
-                        against_overkill_par = "123456789"
-                        user.set_password(email_part + against_overkill_par)
-                        user.save()
-                        created_count += 1
+                    filter_user = CustomUser.objects.filter(email=email, full_name=full_name, is_teacher=True)
 
-                        users_list.append({
+                    if len(filter_user) == 0:
+                        user, created = CustomUser.objects.update_or_create(
+                            email=email,
+                            defaults=user_defaults,
+                            cmc=cmc
+                        )
+
+                        teachers_list.append({
                             'teacher_id': user.id,
-                            'teacher_name': user.full_name,
+                            'full_name': user.full_name,
                             'cmc': user.cmc,
                         })
+                        if created:
+                            email_part = str(email.split("@")[0])
+                            against_overkill_par = "123456789"
+                            user.set_password(email_part + against_overkill_par)
+                            user.save()
+                            created_count += 1
+                        else:
+                            updated_count += 1
+
+                        excel_emails.add(email)
+
                     else:
-                        updated_count += 1
+                        found_count += 1
+                        teachers_list.append({
+                            'teacher_id': filter_user[0].id,
+                            'full_name': filter_user[0].full_name,
+                            'cmc': filter_user[0].cmc,
+                        })
 
                 except Exception as e:
                     errors.append(f"Строка {index + 2}: Ошибка обработки - {e}")
                     skipped_count += 1
 
-            # --- feedback to the user ---
-            if created_count > 0 or updated_count > 0:
-                 success_msg = f"Импорт завершен. Создано: {created_count}, Обновлено: {updated_count}."
-                 if skipped_count > 0:
-                     success_msg += f" Пропущено из-за ошибок: {skipped_count}."
-                 response['message'] = success_msg
-                 return JsonResponse(response, safe=False)
-            else:
-                response['message'] = f"Импорт завершен. Нет созданных или обновленных записей. Пропущено из-за ошибок: {skipped_count}."
-                return JsonResponse(response, safe=False)
+            existing_teacher_emails = set(CustomUser.objects.filter(is_teacher=True, is_active=True).values_list('email', flat=True))
+            emails_to_deactivate = existing_teacher_emails - excel_emails
 
-            if errors:
-                for error in errors:
-                    messages.error(request, error)
+            if emails_to_deactivate:
+                users_to_deactivate = CustomUser.objects.filter(email__in=emails_to_deactivate, is_teacher=True)
+                for user in users_to_deactivate:
+                    user.is_active = False
+                    user.save()
+                    deactivated_count += 1
 
         except Exception as e:
-            messages.error(request, f"Произошла ошибка при обработке файла: {e}")
+            response['message'] = f"Произошла ошибка при обработке файла: {e}"
+            return JsonResponse(response, safe=False)
 
+        final_message_parts = []
+        if created_count > 0:
+            final_message_parts.append(f"Создано: {created_count}")
+        if updated_count > 0:
+            final_message_parts.append(f"Обновлено/Подтверждено: {updated_count}")
+        if deactivated_count > 0:
+            final_message_parts.append(f"Деактивировано (не найдены в файле): {deactivated_count}")
+        if skipped_count > 0:
+            final_message_parts.append(f"Пропущено строк из-за ошибок: {skipped_count}")
+        if found_count > 0:
+            final_message_parts.append(f"НАйдено преподавателей: {found_count}")
 
-        referer_url = request.META.get('HTTP_REFERER', reverse('curriculum_list'))
-        return redirect(referer_url)
+        if final_message_parts:
+             final_message = "Импорт завершен. " + ", ".join(final_message_parts) + "."
+             if created_count > 0 or updated_count > 0 or deactivated_count > 0:
+                 response['message'] = final_message
+                 response['techers'] = teachers_list
+                 return JsonResponse(response, safe=False)
+             else:
+                 response['message'] = final_message
+                 response['teachers'] = teachers_list
+                 return JsonResponse(response, safe=False)
+        else:
+            response['message'] = "Файл обработан, но не найдено данных для создания, обновления или деактивации."
+            return JsonResponse(response, safe=False)
 
     else:
         response['message'] = "Недопустимый метод запроса."
         return JsonResponse(response, safe=False)
+
+
+
+
 
