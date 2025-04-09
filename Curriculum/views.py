@@ -126,39 +126,21 @@ class CurriculumPreviewView(ObjectDetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         curriculum = self.object
-
-        # # Получаем все связанные объекты
-        # category_list = Category.objects.filter(curriculum=curriculum)
-        # study_cycle_list = StudyCycle.objects.filter(categories__in=category_list)
-        # module_list = Module.objects.filter(study_cycles__in=study_cycle_list)
-
-        # Формируем данные дисциплин
         disciplines_data = []
-        # for disc in Discipline.objects.filter(study_cycles__in=study_cycle_list).distinct():
-        #     # Для каждого объекта Discipline создаем словарь
-        #     disc_data = {
-        #         'name': disc.name,
-        #         'code': disc.code,
-        #         'warnings': disc.warnings,
-        #         'warning_description': disc.warning_description or [],
-        #         'semesters': defaultdict(int)
-        #     }
-        #
-        #     # Собираем часы по семестрам
-        #     for cell in disc.clock_cells.all():
-        #         if cell.term:
-        #             disc_data['semesters'][cell.term] += cell.count_of_clocks
-        #
-        #     disciplines_data.append(disc_data)
         unique_disciplines: set = set()
 
         for clock_cell in ClockCell.objects.filter(curriculum=curriculum.id, module__isnull=True):
             if clock_cell.discipline is not None:
+                tmp = Discipline.objects.filter(id=clock_cell.discipline.id).get().to_dict()
                 if clock_cell.discipline.name not in unique_disciplines:
                     unique_disciplines.add(clock_cell.discipline.name)
+                    tmp["semesters"] = defaultdict(int)
+                    disciplines_data.append(tmp)
+                if clock_cell.code_of_type_work == 'Итого часов':
+                    for i, disc in enumerate(disciplines_data):
+                        if disc.get("name") == clock_cell.discipline.name:
+                            disciplines_data[i]["semesters"][clock_cell.term] = clock_cell.count_of_clocks
 
-                    disciplines_data.append(Discipline.objects.filter(id=clock_cell.discipline.id).get())
-                    print(disciplines_data)
         context.update({
             'disciplines_data': disciplines_data,
             'semester_list': list(range(1, 9)),
