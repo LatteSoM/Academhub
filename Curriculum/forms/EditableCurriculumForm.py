@@ -166,8 +166,6 @@ class EditableCurriculumForm(forms.Form):
                 code_of_discipline=m_data["code_of_discipline"],
                 code_of_cycle_block=m_data["code_of_cycle_block"],
                 study_cycles=next((sc for sc in restored_study_cycles if sc.identificator == m_data["study_cycles"]["identificator"]), None),
-                warnings=m_data["warnings"],
-                warning_description=m_data["warning_description"]
             )
             module_obj.save()
             restored_modules.append(module_obj)
@@ -187,8 +185,6 @@ class EditableCurriculumForm(forms.Form):
                     code=discipline_data["code"],
                     name=discipline_data["name"],
                     specialty=Specialty.from_dict(d_data["specialty"]),
-                    warnings=d_data["warnings"],
-                    warning_description=d_data["warning_description"]
                 )
                 discipline_obj.save()
                 discipline_obj.modules.add(*[m for m in restored_modules if m.name == (d_data["module"]["module_name"] if d_data["module"] else None)])

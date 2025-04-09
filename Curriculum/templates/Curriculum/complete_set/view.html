@@ -2,88 +2,286 @@
 {% load static %}
 
 {% block content %}
-<div class="container" style="display: flex; gap: 20px; margin-top: 20px;">
-    <!-- Левая колонка -->
-    <div style="flex: 1;">
-        <!-- Выпадающие списки -->
-        <div style="margin-bottom: 20px;">
-            <select class="form-select" id="specialty">
-                <option selected>Выберите специальность</option>
-                {% for specialty in specialties %}
-                <option value="{{ specialty.id }}">{{ specialty.name }}</option>
-                {% endfor %}
-            </select>
+<div class="container mt-4"> <!-- Added container for centering and top margin -->
+<div class="theme-surface p-4 rounded shadow-sm"> <!-- Removed container-fluid -->
+    <div class="d-flex gap-4 flex-column flex-lg-row">
+        <!-- Левая колонка -->
+        <div class="flex-grow-1" style="min-width: 320px;">
+            <h5 class="mb-3 theme-text">Выбор группы</h5>
+            <div class="mb-3">
+                <div class="d-flex flex-column gap-3">
+                    <select class="form-select theme-input theme-text" id="specialty">
+                        <option selected value="">Выберите специальность</option>
+                        {% for specialty in specialties %}
+                        <option value="{{ specialty.id }}" class="theme-text">{{ specialty.name }}</option>
+                        {% endfor %}
+                    </select>
 
-            <select class="form-select" id="study_plan" style="margin-top: 10px;" disabled>
-                <option selected>Сначала выберите специальность</option>
-            </select>
+                    <select class="form-select theme-input theme-text" id="study_plan" disabled>
+                        <option selected value="">Сначала выберите специальность</option>
+                    </select>
 
-            <select class="form-select" id="course" style="margin-top: 10px;" disabled>
-                <option selected>Сначала выберите учебный план</option>
-            </select>
+                    <select class="form-select theme-input theme-text" id="course" disabled>
+                        <option selected value="">Сначала выберите учебный план</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="groups" class="form-label theme-text">Группы:</label>
+                <div id="groups-container" class="theme-surface rounded border p-3" style="height: 250px; border-color: var(--border-color) !important;">
+                    <div id="groups" class="h-100 overflow-y-auto pe-2 theme-text">
+                        <em class="theme-text-secondary">Выберите курс для отображения групп.</em>
+                    </div>
+                </div>
+            </div>
+
+            <form method="post" action="{% url 'import_teachers_excel' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="excel_file_import" class="form-label theme-text">Обновить преподавателей из файла Excel:</label>
+                    <div class="input-group">
+                        <input class="form-control theme-input" type="file" id="excel_file_import" name="excel_file" accept=".xlsx, .xls" style="display: none;">
+                        <label for="excel_file_import" class="btn btn-outline-secondary theme-button-outline d-flex align-items-center"> <!-- Removed file-input-label class -->
+                            <i class="material-icons me-2">attach_file</i>
+                            <span id="file-chosen-text" class="d-inline-block text-truncate" style="max-width: 150px;">Выберите файл</span> <!-- Added classes and style for truncation -->
+                        </label>
+                        <button type="submit" class="btn btn-primary theme-button">Загрузить</button>
+                    </div>
+                    <small class="form-text theme-text-secondary">Допустимые форматы: .xlsx, .xls</small>
+                </div>
+            </form>
         </div>
 
-        <!-- Блок групп с чекбоксами -->
-        <div id="groups" style="border: 1px solid #ddd; padding: 10px; height: 300px; overflow-y: auto;">
-        </div>
+        <!-- Правая колонка -->
+        <!-- Правая колонка - Flex container -->
+        <div class="flex-grow-1 d-flex flex-column" style="min-width: 60%;"> <!-- Removed fixed height -->
+             <h5 class="mb-3 theme-text">Назначение преподавателей</h5>
+            <div class="mb-3">
+                <div class="d-flex align-items-center gap-2">
+                    <label for="termSelect" class="form-label theme-text mb-0">Семестр:</label>
+                    <select class="form-select theme-input theme-text w-auto" id="termSelect">
+                        <option value="1" selected>1</option>
+                        <option value="2">2</option>
+                    </select>
+                </div>
+            </div>
 
-        <!-- Кнопка импорта -->
-        <button class="btn btn-primary mt-3">Импортировать преподавателей</button>
+            <!-- Table container - Flex item (grows) -->
+            <div class="custom-table-container theme-surface rounded border flex-grow-1" style="border-color: var(--border-color) !important;"> <!-- Added flex-grow-1 -->
+                <table class="table table-hover w-100 mb-0">
+                    <thead class="sticky-top theme-bg">
+                        <tr>
+                            <th class="theme-text" style="min-width: 180px;">Код Дисциплины</th>
+                            <th class="theme-text" style="min-width: 280px;">Дисциплина</th>
+                            <th class="theme-text" style="min-width: 300px;">Преподаватели</th>
+                            <th class="theme-text" style="min-width: 220px;">Выбор преподавателя</th>
+                        </tr>
+                    </thead>
+                    <tbody id="disciplines-body">
+                        <tr class="theme-surface empty-placeholder"><td colspan="4" class="text-center theme-text-secondary"><i>Выберите группу и семестр для отображения дисциплин.</i></td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Button container - Flex item (bottom) -->
+            <div class="d-flex gap-2 w-100 pt-3"> <!-- Removed justify-content-end, mt-4; Added w-100, pt-3 -->
+                <button class="btn btn-secondary theme-button-secondary flex-grow-1">Заполнить периоды аттестации</button> <!-- Added flex-grow-1 -->
+                <button class="btn btn-success theme-button-success flex-grow-1">Проверить комплектность</button> <!-- Added flex-grow-1 -->
+            </div>
+        </div>
     </div>
-
-    <!-- Правая колонка -->
-    <div style="flex: 2;">
-        <div>
-            <p>Выбор семестра</p>
-           <select class="form-select" id="termSelect" style="margin-top: 10px;">
-                <option selected>1</option>
-                <option>2</option>
-           </select>
-        </div>
-
-        <div class="table-container">
-            <!-- Таблица с дисциплинами и преподавателями -->
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th style="width: 30%;">Код Дисциплины</th>
-                        <th style="width: 30%;">Дисциплина</th>
-                        <th style="width: 40%;">Преподаватели</th>
-                        <th style="width: 30%;">Выбор преподавателя</th>
-                    </tr>
-                </thead>
-                <tbody id="disciplines-body">
-                </tbody>
-            </table>
-        </div>
-
-
-        <!-- Кнопки управления -->
-        <div style="margin-top: 20px; display: flex; gap: 10px;">
-            <button class="btn btn-success">Сохранить преподавателей</button>
-            <button class="btn btn-warning">Сохранить период аттестации</button>
-            <button class="btn btn-info">Проверить комплектность</button>
-        </div>
-    </div>
+    </div> <!-- Closed the centering container -->
 </div>
 
 <style>
-    .form-select {
-        margin-bottom: 10px;
+    /* Container for the table with scrolling */
+    .custom-table-container {
+        max-height: 450px; /* Set max-height to align with left column content */
+        min-height: 300px; /* Minimum height */
+        overflow-y: auto;
+        overflow-x: auto; /* Add horizontal scroll if needed */
+        border: 1px solid var(--border-color); /* Use theme variable */
+        border-radius: 0.375rem; /* Standard Bootstrap radius */
     }
+
+    /* Table styling */
     .table {
+        table-layout: fixed; /* Prevent column width changes */
+        width: 100%; /* Ensure table takes full width */
+    }
+    /* Table header styling */
+    .table thead th {
+        background-color: var(--surface-color); /* Theme surface color */
+        color: var(--text-color); /* Theme text color */
+        padding: 0.75rem 1rem;
+        border-bottom: 2px solid var(--border-color); /* Theme border color */
+        white-space: nowrap;
+        position: sticky; /* Keep header visible */
+        top: 0; /* Stick to the top of the container */
+        z-index: 10; /* Ensure header is above body */
+    }
 
-    }
-    .form-check {
-        margin-bottom: 5px;
+    /* Table body cell styling */
+    .table tbody td {
+        padding: 0.75rem 1rem;
+        border-top: 1px solid var(--border-color); /* Theme border color */
+        background-color: var(--surface-color); /* Use theme surface color */
+        color: var(--text-color); /* Use theme text color */
+        vertical-align: middle;
+        white-space: normal; /* Allow text wrapping */
+        overflow: hidden; /* Hide overflow */
+        text-overflow: ellipsis; /* Add ellipsis for overflow */
     }
 
-    .table-container {
-        height: 400px;
-        overflow-y: scroll;
-        margin-top: 20px;
+    /* Ensure selects within table cells use theme */
+    .table .form-select {
+        background-color: var(--bg-color); /* Use background for contrast */
+        border-color: var(--border-color);
+        color: var(--text-color);
     }
+
+    /* Scrollbar styling for theme consistency */
+    #groups::-webkit-scrollbar,
+    .custom-table-container::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    #groups::-webkit-scrollbar-track,
+    .custom-table-container::-webkit-scrollbar-track {
+        background: var(--surface-color); /* Scrollbar track */
+        border-radius: 4px;
+    }
+
+    #groups::-webkit-scrollbar-thumb,
+    .custom-table-container::-webkit-scrollbar-thumb {
+        background-color: var(--border-color); /* Scrollbar handle */
+        border-radius: 4px;
+        border: 2px solid var(--surface-color); /* Padding around thumb */
+    }
+
+    #groups::-webkit-scrollbar-thumb:hover,
+    .custom-table-container::-webkit-scrollbar-thumb:hover {
+        background-color: var(--text-color); /* Darker on hover */
+    }
+
+    /* General form select styling */
+    .form-select.theme-input {
+        background-color: var(--surface-color); /* Use surface color */
+        border: 1px solid var(--border-color);
+        color: var(--text-color);
+        min-width: 200px; /* Adjust as needed */
+        /* Rely on Bootstrap 5 default SVG arrow which uses currentColor */
+    }
+
+    .form-select.theme-input:disabled {
+        background-color: var(--bg-color); /* Different background when disabled */
+        opacity: 0.7;
+    }
+
+    /* Input group styling */
+    .input-group .btn {
+        z-index: 1; /* Ensure buttons are clickable over hidden input */
+    }
+
+    /* Removed .file-input-label rule */
+
+    /* Theme buttons */
+    .theme-button {
+        background-color: var(--bs-primary); /* Example: Use Bootstrap primary */
+        border-color: var(--bs-primary);
+        color: white; /* Adjust if primary color is light */
+    }
+    .theme-button-secondary {
+        background-color: var(--bs-secondary);
+        border-color: var(--bs-secondary);
+        color: white;
+    }
+     .theme-button-success {
+        background-color: var(--bs-success);
+        border-color: var(--bs-success);
+        color: white;
+    }
+    .theme-button-outline {
+        color: var(--text-color);
+        border-color: var(--border-color);
+    }
+    .theme-button-outline:hover {
+        background-color: var(--surface-color);
+        color: var(--text-color);
+    }
+
+    /* Secondary text color utility */
+    .theme-text-secondary {
+        color: var(--text-secondary, #6c757d); /* Fallback color */
+        opacity: 0.8;
+    }
+
+    /* Placeholder row styling */
+    .empty-placeholder td {
+        height: 300px; /* Match min-height of container */
+        text-align: center; /* Horizontal center */
+        vertical-align: middle; /* Vertical center */
+    }
+    /* Removed extra closing brace that was here */
+
+    /* Responsive adjustments */
+    @media (max-width: 991.98px) { /* Use Bootstrap's lg breakpoint */
+        .container-fluid {
+            padding: 1rem !important; /* Reduce padding on smaller screens */
+        }
+
+        .d-flex.flex-column.flex-lg-row {
+            gap: 1.5rem !important; /* Reduce gap */
+        }
+
+        .table th,
+        .table td {
+            min-width: 150px; /* Adjust min-width for smaller screens */
+            font-size: 0.9rem; /* Slightly smaller font */
+        }
+        /* Remove max-height override on smaller screens if flex handles it */
+        /* .custom-table-container {
+             max-height: calc(100vh - 470px);
+        } */
+         /* Removed extra closing brace that was here */
+    }
+
+    @media (max-width: 767.98px) { /* md breakpoint */
+        .table th,
+        .table td {
+            min-width: 120px;
+            font-size: 0.85rem;
+        }
+         .d-flex.gap-2.w-100.pt-3 { /* Adjusted selector */
+            flex-direction: column; /* Stack buttons vertically */
+            align-items: stretch;
+         }
+         .d-flex.justify-content-end.gap-2.mt-4 .btn {
+            width: 100%; /* Make buttons full width */
+         }
+    } /* Removed potential extra closing brace from the end of the style block if present */
 </style>
 
 <script src="{% static 'js/complete_set/view.js' %}"></script>
+
+<script>
+    // File input interaction
+    const fileInput = document.getElementById('excel_file_import');
+    const fileChosenText = document.getElementById('file-chosen-text'); // Target the span inside the label
+
+    // Removed click listener for separate browse button
+
+    // Update display text when file changes
+    if (fileInput && fileChosenText) {
+        fileInput.addEventListener('change', function() {
+            if (this.files && this.files.length > 0) {
+                fileChosenText.textContent = this.files[0].name;
+            } else {
+                fileChosenText.textContent = 'Выберите файл'; // Reset text
+            }
+        });
+    }
+</script>
 {% endblock %}

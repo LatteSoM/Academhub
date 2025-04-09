@@ -43,7 +43,6 @@
                     {% for sem in semester_list %}
                     <th width="5%">Сем. {{ sem }}</th>
                     {% endfor %}
-                    <th width="20%">Ошибки</th>
                 </tr>
             </thead>
             <tbody>
@@ -54,13 +53,6 @@
                         {% for sem in semester_list %}
                         <td>{{ discipline.semesters|get_item:sem }}</td>
                         {% endfor %}
-                        <td>
-                            {% if discipline.warnings %}
-                            <div class="warning-text">
-                                {{ discipline.warning_description|join:", "|default:"Нет ошибок" }}
-                            </div>
-                            {% endif %}
-                        </td>
                     </tr>
                 {% endfor %}
             </tbody>

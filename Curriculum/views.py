@@ -12,8 +12,12 @@ from django.views import View
 from django.views.generic import TemplateView, DetailView
 from django.views.generic import DeleteView
 from unicodedata import category
+import pandas as pd # Import pandas for Excel processing
 
-from Academhub.models import Curriculum
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.views import View
+from Academhub.models import Curriculum, CustomUser # Add CustomUser
 from django.urls import reverse_lazy
 
 from Academhub.models.models import Module, Specialty
@@ -32,6 +36,7 @@ __all__ = (
     'CurriculumEditableFormView',
     'CurriculumPreviewView',
     'CompleteSetCurriculum',
+    'import_teachers_excel_view', # Add the new view to __all__
 )
 
 class CurriculumTableView(ImportViewMixin, ObjectTableView):
@@ -126,39 +131,21 @@ class CurriculumPreviewView(ObjectDetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         curriculum = self.object
-
-        # # Получаем все связанные объекты
-        # category_list = Category.objects.filter(curriculum=curriculum)
-        # study_cycle_list = StudyCycle.objects.filter(categories__in=category_list)
-        # module_list = Module.objects.filter(study_cycles__in=study_cycle_list)
-
-        # Формируем данные дисциплин
         disciplines_data = []
-        # for disc in Discipline.objects.filter(study_cycles__in=study_cycle_list).distinct():
-        #     # Для каждого объекта Discipline создаем словарь
-        #     disc_data = {
-        #         'name': disc.name,
-        #         'code': disc.code,
-        #         'warnings': disc.warnings,
-        #         'warning_description': disc.warning_description or [],
-        #         'semesters': defaultdict(int)
-        #     }
-        #
-        #     # Собираем часы по семестрам
-        #     for cell in disc.clock_cells.all():
-        #         if cell.term:
-        #             disc_data['semesters'][cell.term] += cell.count_of_clocks
-        #
-        #     disciplines_data.append(disc_data)
         unique_disciplines: set = set()
 
         for clock_cell in ClockCell.objects.filter(curriculum=curriculum.id, module__isnull=True):
             if clock_cell.discipline is not None:
+                tmp = Discipline.objects.filter(id=clock_cell.discipline.id).get().to_dict()
                 if clock_cell.discipline.name not in unique_disciplines:
                     unique_disciplines.add(clock_cell.discipline.name)
+                    tmp["semesters"] = defaultdict(int)
+                    disciplines_data.append(tmp)
+                if clock_cell.code_of_type_work == 'Итого часов':
+                    for i, disc in enumerate(disciplines_data):
+                        if disc.get("name") == clock_cell.discipline.name:
+                            disciplines_data[i]["semesters"][clock_cell.term] = clock_cell.count_of_clocks
 
-                    disciplines_data.append(Discipline.objects.filter(id=clock_cell.discipline.id).get())
-                    print(disciplines_data)
         context.update({
             'disciplines_data': disciplines_data,
             'semester_list': list(range(1, 9)),
@@ -349,4 +336,107 @@ class CurriculumDetail(ObjectDetailView):
 #         return redirect('curriculum_add_teacher', pk=pk, discipline_id=discipline_id, course_number=course_number, term_number=term_number)
 
     
+
+def import_teachers_excel_view(request):
+    if request.method == 'POST':
+        excel_file = request.FILES.get('excel_file')
+        if not excel_file:
+            messages.error(request, "Не был выбран файл Excel.")
+            referer_url = request.META.get('HTTP_REFERER', reverse('curriculum_list'))
+            return redirect(referer_url)
+
+        if not excel_file.name.endswith(('.xls', '.xlsx')):
+             messages.error(request, "Неверный формат файла. Пожалуйста, загрузите файл Excel (.xls или .xlsx).")
+             referer_url = request.META.get('HTTP_REFERER', reverse('curriculum_list'))
+             return redirect(referer_url)
+
+        try:
+            df = pd.read_excel(excel_file, sheet_name=0)
+
+            required_columns = ['ФИО','email', 'ЦМК']
+
+            if not all(col in df.columns for col in required_columns):
+                missing_cols = [col for col in required_columns if col not in df.columns]
+                messages.error(request, f"В файле отсутствуют необходимые столбцы: {', '.join(missing_cols)}")
+                referer_url = request.META.get('HTTP_REFERER', reverse('curriculum_list'))
+                return redirect(referer_url)
+
+            created_count = 0
+            updated_count = 0
+            skipped_count = 0
+            errors = []
+
+            for index, row in df.iterrows():
+                try:
+                    full_name_raw = row.get('ФИО')
+                    email_raw = row.get('email')
+                    cmk_raw = row.get('ЦМК')
+
+                    full_name = str(full_name_raw).strip() if pd.notna(full_name_raw) else None
+                    email = str(email_raw).strip() if pd.notna(email_raw) else None
+                    cmk = str(cmk_raw).strip() if pd.notna(cmk_raw) else None
+
+                    if not all([full_name, email]):
+                        errors.append(f"Строка {index + 2}: Отсутствуют обязательные данные (ФИО или email).")
+                        skipped_count += 1
+                        continue
+
+                    name_parts = full_name.split()
+                    last_name = name_parts[0] if len(name_parts) > 0 else ''
+                    first_name = name_parts[1] if len(name_parts) > 1 else ''
+                    middle_name = ' '.join(name_parts[2:]) if len(name_parts) > 2 else '' # Handle multiple middle names/parts
+
+                    if not last_name or not first_name:
+                         errors.append(f"Строка {index + 2}: Не удалось разобрать ФИО '{full_name}'. Ожидается как минимум Фамилия и Имя.")
+                         skipped_count += 1
+                         continue
+
+                    user_defaults = {
+                        'full_name': full_name,
+                        'is_teacher': True,
+                    }
+
+                    #TODO Придумать где хранить связи с ЦМК
+                    user, created = CustomUser.objects.update_or_create(
+                        email=email,
+                        defaults=user_defaults
+                    )
+
+                    if created:
+                        email_part = str(email.split("@")[0])
+                        against_overkill_par = "123456789"
+                        user.set_password(email_part + against_overkill_par)
+                        user.save()
+                        created_count += 1
+                    else:
+                        updated_count += 1
+
+                except Exception as e:
+                    errors.append(f"Строка {index + 2}: Ошибка обработки - {e}")
+                    skipped_count += 1
+
+            # --- feedback to the user ---
+            if created_count > 0 or updated_count > 0:
+                 success_msg = f"Импорт завершен. Создано: {created_count}, Обновлено: {updated_count}."
+                 if skipped_count > 0:
+                     success_msg += f" Пропущено из-за ошибок: {skipped_count}."
+                 messages.success(request, success_msg)
+            else:
+                 messages.warning(request, f"Импорт завершен. Нет созданных или обновленных записей. Пропущено из-за ошибок: {skipped_count}.")
+
+            if errors:
+                for error in errors:
+                    messages.error(request, error)
+
+        except Exception as e:
+            messages.error(request, f"Произошла ошибка при обработке файла: {e}")
+
+
+        referer_url = request.META.get('HTTP_REFERER', reverse('curriculum_list'))
+        return redirect(referer_url)
+
+    else:
+        messages.error(request, "Недопустимый метод запроса.")
+        return redirect(reverse('curriculum_list'))
+
 
