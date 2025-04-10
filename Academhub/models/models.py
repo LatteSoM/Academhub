@@ -83,6 +83,11 @@ class CustomUser(AcademHubModel, AbstractBaseUser, PermissionsMixin):
         verbose_name='ФИО'
     )
 
+    cmc = models.CharField(
+        max_length=255,
+        verbose_name='ЦМК '
+    )
+
     is_active = models.BooleanField(default=True, verbose_name='Активный?')
     is_staff = models.BooleanField(default=False, verbose_name='Персонал?')
     is_teacher = models.BooleanField(default=False, verbose_name='Учитель?')
@@ -1396,6 +1401,7 @@ class TeachersForDisciplineAndCurriculum(AcademHubModel):
     term = models.IntegerField(null=False)
     discipline = models.ForeignKey(Discipline, related_name='teachers_for_curriculum_and_discipline', on_delete=models.CASCADE)
     curriculum = models.ForeignKey(Curriculum, related_name='teachers_disciplines', on_delete=models.CASCADE)
+    groups = models.ManyToManyField(GroupStudents, 'teachers_for_groups')
 
 
     class Meta:
@@ -1428,6 +1434,7 @@ class AttestationPeriodForDisciplines(AcademHubModel):
     term = models.IntegerField(null=False)
     discipline = models.ForeignKey(Discipline, related_name='attestations_periods', on_delete=models.CASCADE)
     curriculum = models.ForeignKey(Curriculum, related_name='attestations_periods_disciplines', on_delete=models.CASCADE)
+    groups = models.ManyToManyField(GroupStudents, 'teachers_for_groups_attestation')
     start_date = models.DateField(null=False)
     end_date = models.DateField(null=False)
 

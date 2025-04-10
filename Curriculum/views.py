@@ -1,6 +1,7 @@
 import json
 from collections import defaultdict
 
+from django.core.exceptions import FieldError
 from django.http import HttpResponseForbidden
 from django.contrib import messages
 from django.http import HttpResponseRedirect
@@ -38,7 +39,6 @@ __all__ = (
     'CurriculumEditableFormView',
     'CurriculumPreviewView',
     'CompleteSetCurriculum',
-    'SetAttestationPeriodView', # Add placeholder view
     'import_teachers_excel_view', # Add the new view to __all__
 )
 
