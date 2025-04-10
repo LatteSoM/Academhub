@@ -45,7 +45,7 @@ def get_courses_for_study_plan(request):
 
     curriculum = Curriculum.objects.get(id=curriculum_id)
     basis_of_admission = 'Основное общее'
-    if curriculum.admission_year == 11:
+    if curriculum.basis_of_admission == 11:
         response["courses"] = [1, 2, 3]
         basis_of_admission = 'Среднее общее'
 

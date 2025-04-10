@@ -1,5 +1,5 @@
 let teachers = []
-let disciplines
+let disciplines = []
 
 document.getElementById('specialty').addEventListener('change', function() {
     const specialtyId = this.value;
@@ -100,6 +100,7 @@ document.getElementById('course').addEventListener('change', function () {
     const tbody = document.getElementById('disciplines-body');
 
     if (curriculumValue === 'Выберите учебный план' || this.value === 'Выберите курс'){
+        tbody.innerHTML = ''
         return
     }
 
@@ -108,8 +109,6 @@ document.getElementById('course').addEventListener('change', function () {
     )
         .then(response => response.json())
         .then(data => {
-            console.log(data)
-
 
             tbody.innerHTML = '';
 
@@ -123,6 +122,11 @@ document.getElementById('course').addEventListener('change', function () {
 
             disciplines = data
 
+            if (teachers.length !== 0){
+                add_teachers_to_disciplines()
+            }
+
+            console.log(disciplines)
             renderDisciplinesTable(tbody)
         })
 })
@@ -143,7 +147,6 @@ document.getElementById('termSelect').addEventListener('change', function () {
     )
         .then(response => response.json())
         .then(data => {
-            console.log(myTeachers)
 
             tbody.innerHTML = '';
 
@@ -155,6 +158,12 @@ document.getElementById('termSelect').addEventListener('change', function () {
                 return;
             }
             disciplines = data
+
+            if (teachers.length !== 0){
+                add_teachers_to_disciplines()
+            }
+
+            console.log(disciplines)
             renderDisciplinesTable(tbody)
         })
 })
@@ -167,6 +176,7 @@ document.getElementById('sendFileBtn').addEventListener('click', function () {
   const formData = new FormData();
   const curriculum = document.getElementById('study_plan');
   const course = document.getElementById('course');
+  const tbody = document.getElementById('disciplines-body')
 
   formData.append('excel_file', fileInput.files[0]);
   const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
@@ -187,6 +197,13 @@ document.getElementById('sendFileBtn').addEventListener('click', function () {
             window.alert(data.message)
             teachers = data.teachers
 
+            if (disciplines.length !== 0){
+                add_teachers_to_disciplines()
+                renderDisciplinesTable(tbody)
+            }
+
+            console.log(disciplines)
+
             if (curriculum !== 'Выберите учебный план' && course !== 'Выберите курс') {
                 
             }
@@ -197,10 +214,10 @@ document.getElementById('sendFileBtn').addEventListener('click', function () {
 })
 
 
-function renderDisciplinesTable(tbody){
-    console.log(disciplines)
+function renderDisciplinesTable(tbody) {
     disciplines.forEach(discipline => {
         const row = document.createElement('tr');
+
         // Колонка с кодом дисциплины
         const codeCell = document.createElement('td');
         codeCell.textContent = discipline.discipline_code;
@@ -218,6 +235,21 @@ function renderDisciplinesTable(tbody){
         teachersDiv.style.overflowY = 'auto';
         teachersDiv.className = 'teachers-list';
         teachersDiv.dataset.disciplineId = discipline.discipline_id;
+
+        // Добавляем преподавателей в блок
+        if (discipline.teachers && discipline.teachers.length > 0) {
+            discipline.teachers.forEach(teacher => {
+                const teacherBlock = document.createElement('div');
+                teacherBlock.className = 'teacher-block';
+                teacherBlock.innerHTML = `
+                    <div class="teacher-name">${teacher.full_name}</div>
+                `;
+                teachersDiv.appendChild(teacherBlock);
+            });
+        } else {
+            teachersDiv.textContent = 'Нет преподавателей';
+        }
+
         teachersCell.appendChild(teachersDiv);
         row.appendChild(teachersCell);
 
@@ -233,9 +265,43 @@ function renderDisciplinesTable(tbody){
         defaultOption.selected = true;
         select.appendChild(defaultOption);
 
+        // Добавляем преподавателей в выпадающий список
+        if (teachers.length !== 0) {
+            teachers.forEach(teacher => {
+                const option = document.createElement('option');
+                option.value = teacher.id;
+                option.textContent = `${teacher.full_name}`;
+                select.appendChild(option);
+            });
+        }
+
         selectCell.appendChild(select);
         row.appendChild(selectCell);
 
         tbody.appendChild(row);
+    });
+}
+
+
+function add_teachers_to_disciplines(){
+    disciplines.forEach(discipline => {
+        teachers.forEach(teacher => {
+
+            discipline_cmc = discipline.discipline_code.split('.')[0].replaceAll(' ', '')
+
+            if (discipline_cmc === teacher.cmc){
+                console.log(discipline_cmc)
+                already_exist = false;
+                for (let discipline_teacher in discipline.teachers){
+                    if (discipline_teacher.full_name === teacher.full_name && discipline_teacher.cmc === teacher.cmc){
+                        already_exist = true;
+                    }
+                }
+
+                if (!already_exist){
+                    discipline.teachers.push(teacher)
+                }
+            }
+        })
     })
 }
