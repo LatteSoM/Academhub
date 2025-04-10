@@ -93,7 +93,8 @@ def get_disciplines_by_curriculum_course_term(request):
                 response.append({
                     "discipline_id": clock_cell.discipline.id,
                     'discipline_name': clock_cell.discipline.name,
-                    'discipline_code': clock_cell.discipline.code
+                    'discipline_code': clock_cell.discipline.code,
+                    'teachers': [],
                 })
 
     return JsonResponse(response, safe=False)
@@ -229,7 +230,7 @@ def import_teachers_excel_view(request):
              final_message = "Импорт завершен. " + ", ".join(final_message_parts) + "."
              if created_count > 0 or updated_count > 0 or deactivated_count > 0:
                  response['message'] = final_message
-                 response['techers'] = teachers_list
+                 response['teachers'] = teachers_list
                  return JsonResponse(response, safe=False)
              else:
                  response['message'] = final_message

@@ -1,4 +1,5 @@
-let myTeachers = []
+let teachers = []
+let disciplines
 
 document.getElementById('specialty').addEventListener('change', function() {
     const specialtyId = this.value;
@@ -120,45 +121,9 @@ document.getElementById('course').addEventListener('change', function () {
                 return;
             }
 
-            data.forEach(discipline => {
-                const row = document.createElement('tr');
-                // Колонка с кодом дисциплины
-                const codeCell = document.createElement('td');
-                codeCell.textContent = discipline.discipline_code;
-                row.appendChild(codeCell);
+            disciplines = data
 
-                // Колонка с названием дисциплины
-                const nameCell = document.createElement('td');
-                nameCell.textContent = discipline.discipline_name;
-                row.appendChild(nameCell);
-
-                // Колонка с преподавателями
-                const teachersCell = document.createElement('td');
-                const teachersDiv = document.createElement('div');
-                teachersDiv.style.height = '100px';
-                teachersDiv.style.overflowY = 'auto';
-                teachersDiv.className = 'teachers-list';
-                teachersDiv.dataset.disciplineId = discipline.discipline_id;
-                teachersCell.appendChild(teachersDiv);
-                row.appendChild(teachersCell);
-
-                // Колонка с выбором преподавателя
-                const selectCell = document.createElement('td');
-                const select = document.createElement('select');
-                select.className = 'form-select teacher-select';
-                select.dataset.disciplineId = discipline.discipline_id;
-
-                const defaultOption = document.createElement('option');
-                defaultOption.value = '';
-                defaultOption.textContent = 'Выберите преподавателя';
-                defaultOption.selected = true;
-                select.appendChild(defaultOption);
-
-                selectCell.appendChild(select);
-                row.appendChild(selectCell);
-
-                tbody.appendChild(row);
-            })
+            renderDisciplinesTable(tbody)
         })
 })
 
@@ -189,45 +154,8 @@ document.getElementById('termSelect').addEventListener('change', function () {
                     </tr>`;
                 return;
             }
-            data.forEach(discipline => {
-                const row = document.createElement('tr');
-                // Колонка с кодом дисциплины
-                const codeCell = document.createElement('td');
-                codeCell.textContent = discipline.discipline_code;
-                row.appendChild(codeCell);
-
-                // Колонка с названием дисциплины
-                const nameCell = document.createElement('td');
-                nameCell.textContent = discipline.discipline_name;
-                row.appendChild(nameCell);
-
-                // Колонка с преподавателями
-                const teachersCell = document.createElement('td');
-                const teachersDiv = document.createElement('div');
-                teachersDiv.style.height = '100px';
-                teachersDiv.style.overflowY = 'auto';
-                teachersDiv.className = 'teachers-list';
-                teachersDiv.dataset.disciplineId = discipline.discipline_id;
-                teachersCell.appendChild(teachersDiv);
-                row.appendChild(teachersCell);
-
-                // Колонка с выбором преподавателя
-                const selectCell = document.createElement('td');
-                const select = document.createElement('select');
-                select.className = 'form-select teacher-select';
-                select.dataset.disciplineId = discipline.discipline_id;
-
-                const defaultOption = document.createElement('option');
-                defaultOption.value = '';
-                defaultOption.textContent = 'Выберите преподавателя';
-                defaultOption.selected = true;
-                select.appendChild(defaultOption);
-
-                selectCell.appendChild(select);
-                row.appendChild(selectCell);
-
-                tbody.appendChild(row);
-            })
+            disciplines = data
+            renderDisciplinesTable(tbody)
         })
 })
 
@@ -257,13 +185,57 @@ document.getElementById('sendFileBtn').addEventListener('click', function () {
         .then(data => {
             console.log(data)
             window.alert(data.message)
-            myTeachers = data.teachers
+            teachers = data.teachers
 
             if (curriculum !== 'Выберите учебный план' && course !== 'Выберите курс') {
-
+                
             }
         })
   } catch (error) {
     console.error('Ошибка:', error);
   }
 })
+
+
+function renderDisciplinesTable(tbody){
+    console.log(disciplines)
+    disciplines.forEach(discipline => {
+        const row = document.createElement('tr');
+        // Колонка с кодом дисциплины
+        const codeCell = document.createElement('td');
+        codeCell.textContent = discipline.discipline_code;
+        row.appendChild(codeCell);
+
+        // Колонка с названием дисциплины
+        const nameCell = document.createElement('td');
+        nameCell.textContent = discipline.discipline_name;
+        row.appendChild(nameCell);
+
+        // Колонка с преподавателями
+        const teachersCell = document.createElement('td');
+        const teachersDiv = document.createElement('div');
+        teachersDiv.style.height = '100px';
+        teachersDiv.style.overflowY = 'auto';
+        teachersDiv.className = 'teachers-list';
+        teachersDiv.dataset.disciplineId = discipline.discipline_id;
+        teachersCell.appendChild(teachersDiv);
+        row.appendChild(teachersCell);
+
+        // Колонка с выбором преподавателя
+        const selectCell = document.createElement('td');
+        const select = document.createElement('select');
+        select.className = 'form-select teacher-select';
+        select.dataset.disciplineId = discipline.discipline_id;
+
+        const defaultOption = document.createElement('option');
+        defaultOption.value = '';
+        defaultOption.textContent = 'Выберите преподавателя';
+        defaultOption.selected = true;
+        select.appendChild(defaultOption);
+
+        selectCell.appendChild(select);
+        row.appendChild(selectCell);
+
+        tbody.appendChild(row);
+    })
+}
