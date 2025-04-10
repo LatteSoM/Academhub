@@ -3,17 +3,20 @@ from django.urls import path
 from Academhub.utils import getpattern
 from .views import *
 from .api.v1 import *
+from .views import SetAttestationPeriodView
 
 urlpatterns = [
     #    ## Curriculum
     #
 
     path('curriculum/list', CurriculumTableView.as_view(), name='curriculum_list'),
-    path('curriculum/add', CurriculumAddView.as_view(), name='curriculum_create'),
+    path('curriculum/add', CurricullumAddView.as_view(), name='curriculum_create'),
     path('curriculum/edit', CurriculumEditableFormView.as_view(), name='curriculum_edit_form'),
     # path('curriculum/<int:pk>', CurriculumDetail.as_view(), name= getpattern('Curriculum', 'detail')),
 
     path("curriculum/complete_set", CompleteSetCurriculum.as_view(), name='curriculum_complete_set'),
+    # Placeholder URL for setting attestation periods - View needs implementation
+    path("attestation/set-period/", SetAttestationPeriodView.as_view(), name='set_attestation_period'),
 
     #AJAX API
     path('api/study-plans/', get_study_plans, name='get_study_plans'),
