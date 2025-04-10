@@ -86,7 +86,7 @@
 
             <!-- Button container - Flex item (bottom) -->
             <div class="d-flex gap-2 w-100 pt-3"> <!-- Removed justify-content-end, mt-4; Added w-100, pt-3 -->
-                <button class="btn btn-secondary theme-button-secondary flex-grow-1">Заполнить периоды аттестации</button> <!-- Added flex-grow-1 -->
+                <a href="#" id="set-attestation-link" class="btn btn-secondary theme-button-secondary flex-grow-1">Заполнить периоды аттестации</a> <!-- Added flex-grow-1, changed to link -->
                 <button class="btn btn-success theme-button-success flex-grow-1">Проверить комплектность</button> <!-- Added flex-grow-1 -->
             </div>
         </div>
@@ -283,5 +283,67 @@
             }
         });
     }
+
+    // Update link for setting attestation periods
+    const setAttestationLink = document.getElementById('set-attestation-link');
+    const specialtySelect = document.getElementById('specialty');
+    const studyPlanSelect = document.getElementById('study_plan');
+    const courseSelect = document.getElementById('course');
+    const groupsContainer = document.getElementById('groups'); // Container with checkboxes
+    const termSelect = document.getElementById('termSelect'); // Assuming term is also needed
+
+    function updateAttestationLink() {
+        if (!setAttestationLink) return;
+
+        const specialtyId = specialtySelect.value;
+        const studyPlanId = studyPlanSelect.value;
+        const courseId = courseSelect.value;
+        const term = termSelect.value;
+        const selectedGroupIds = Array.from(groupsContainer.querySelectorAll('input[type="checkbox"]:checked'))
+                                     .map(cb => cb.value);
+
+        // Base URL - replace 'set_attestation_period' with your actual URL name in urls.py
+        // We construct a query string to pass parameters
+        let url = `{% url 'set_attestation_period' %}?term=${term}`; // Use the actual URL name here
+
+        if (specialtyId) url += `&specialty=${specialtyId}`;
+        if (studyPlanId) url += `&study_plan=${studyPlanId}`;
+        if (courseId) url += `&course=${courseId}`;
+        if (selectedGroupIds.length > 0) {
+            url += `&groups=${selectedGroupIds.join(',')}`;
+        }
+
+        setAttestationLink.href = url;
+    }
+
+    // Update link whenever relevant selections change
+    specialtySelect?.addEventListener('change', updateAttestationLink);
+    studyPlanSelect?.addEventListener('change', updateAttestationLink);
+    courseSelect?.addEventListener('change', updateAttestationLink);
+    termSelect?.addEventListener('change', updateAttestationLink);
+    // Need to listen for changes within the groups container (e.g., when checkboxes are added/checked)
+    // Using event delegation on the container for dynamically added checkboxes
+    groupsContainer?.addEventListener('change', (event) => {
+         if (event.target.matches('input[type="checkbox"]')) { // More specific selector
+             updateAttestationLink();
+         }
+    });
+
+    // Also update link when groups are initially loaded/rendered (if done via JS)
+    // If groups are rendered server-side initially, the initial call is enough.
+    // If groups are loaded dynamically via JS after course selection,
+    // you might need to call updateAttestationLink() after the groups are populated.
+    // Example (assuming a function loadGroups() populates the container):
+    // function loadGroups() {
+    //    // ... fetch and render groups ...
+    //    updateAttestationLink(); // Update link after groups are ready
+    // }
+
+
+    // Initial update on load in case some values are pre-filled
+    // Use setTimeout to ensure initial rendering is complete, especially if using other JS libraries
+    setTimeout(updateAttestationLink, 100);
+
+
 </script>
 {% endblock %}

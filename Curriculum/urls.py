@@ -14,6 +14,8 @@ urlpatterns = [
     # path('curriculum/<int:pk>', CurriculumDetail.as_view(), name= getpattern('Curriculum', 'detail')),
 
     path("curriculum/complete_set", CompleteSetCurriculum.as_view(), name='curriculum_complete_set'),
+    # Placeholder URL for setting attestation periods - View needs implementation
+    path("attestation/set-period/", SetAttestationPeriodView.as_view(), name='set_attestation_period'),
 
     #AJAX API
     path('api/study-plans/', get_study_plans, name='get_study_plans'),
