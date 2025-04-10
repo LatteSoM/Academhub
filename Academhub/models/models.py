@@ -1401,6 +1401,7 @@ class TeachersForDisciplineAndCurriculum(AcademHubModel):
     term = models.IntegerField(null=False)
     discipline = models.ForeignKey(Discipline, related_name='teachers_for_curriculum_and_discipline', on_delete=models.CASCADE)
     curriculum = models.ForeignKey(Curriculum, related_name='teachers_disciplines', on_delete=models.CASCADE)
+    groups = models.ManyToManyField(GroupStudents, 'teachers_for_groups')
 
 
     class Meta:
@@ -1433,6 +1434,7 @@ class AttestationPeriodForDisciplines(AcademHubModel):
     term = models.IntegerField(null=False)
     discipline = models.ForeignKey(Discipline, related_name='attestations_periods', on_delete=models.CASCADE)
     curriculum = models.ForeignKey(Curriculum, related_name='attestations_periods_disciplines', on_delete=models.CASCADE)
+    groups = models.ManyToManyField(GroupStudents, 'teachers_for_groups')
     start_date = models.DateField(null=False)
     end_date = models.DateField(null=False)
 
