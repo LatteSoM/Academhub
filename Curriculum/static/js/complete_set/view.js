@@ -188,24 +188,17 @@ document.getElementById('sendFileBtn').addEventListener('click', function () {
         method: 'POST',
         body: formData,
         headers: {
-            'X-CSRFToken': csrfToken  // Альтернативный способ передачи токена
+            'X-CSRFToken': csrfToken
         }
     })
         .then(response => response.json())
         .then(data => {
-            console.log(data)
             window.alert(data.message)
             teachers = data.teachers
 
-            if (disciplines.length !== 0){
+            if (curriculum !== 'Выберите учебный план' && course !== 'Выберите курс') {
                 add_teachers_to_disciplines()
                 renderDisciplinesTable(tbody)
-            }
-
-            console.log(disciplines)
-
-            if (curriculum !== 'Выберите учебный план' && course !== 'Выберите курс') {
-                
             }
         })
   } catch (error) {
@@ -236,9 +229,11 @@ function renderDisciplinesTable(tbody) {
         teachersDiv.className = 'teachers-list';
         teachersDiv.dataset.disciplineId = discipline.discipline_id;
 
+        console.log(discipline)
         // Добавляем преподавателей в блок
         if (discipline.teachers && discipline.teachers.length > 0) {
             discipline.teachers.forEach(teacher => {
+                console.log(teacher)
                 const teacherBlock = document.createElement('div');
                 teacherBlock.className = 'teacher-block';
                 teacherBlock.innerHTML = `
@@ -258,6 +253,7 @@ function renderDisciplinesTable(tbody) {
         const select = document.createElement('select');
         select.className = 'form-select teacher-select';
         select.dataset.disciplineId = discipline.discipline_id;
+        select.id = discipline.discipline_id;
 
         const defaultOption = document.createElement('option');
         defaultOption.value = '';
@@ -269,12 +265,23 @@ function renderDisciplinesTable(tbody) {
         if (teachers.length !== 0) {
             teachers.forEach(teacher => {
                 const option = document.createElement('option');
-                option.value = teacher.id;
+                option.value = teacher.teacher_id;
                 option.textContent = `${teacher.full_name}`;
                 select.appendChild(option);
             });
         }
+        
+        select.addEventListener('change', function() {
+            const value = this.value;
 
+            if (value !== 'Выберите преподавателя' || value !== ''){
+                const tbody = document.getElementById('disciplines-body');
+                add_teacher_to_discipline(this.value, this.id);
+                renderDisciplinesTable(tbody)
+                
+            }
+            
+        })
         selectCell.appendChild(select);
         row.appendChild(selectCell);
 
@@ -290,10 +297,11 @@ function add_teachers_to_disciplines(){
             discipline_cmc = discipline.discipline_code.split('.')[0].replaceAll(' ', '')
 
             if (discipline_cmc === teacher.cmc){
-                console.log(discipline_cmc)
                 already_exist = false;
                 for (let discipline_teacher in discipline.teachers){
-                    if (discipline_teacher.full_name === teacher.full_name && discipline_teacher.cmc === teacher.cmc){
+                    let disc_teacher = discipline.teachers[discipline_teacher]
+                    if (disc_teacher.full_name === teacher.full_name
+                         && disc_teacher.cmc === teacher.cmc){
                         already_exist = true;
                     }
                 }
@@ -304,4 +312,39 @@ function add_teachers_to_disciplines(){
             }
         })
     })
+}
+
+
+function add_teacher_to_discipline(teacher_id, discipline_id){
+    
+    let teacher_to_add = '';
+    for (let teacher in teachers){
+        let teacher_ = teachers[teacher]
+        if (teacher_.teacher_id === Number(teacher_id)){
+            teacher_to_add = teacher_;
+            break;
+        }
+    }
+
+    console.log(teacher_to_add)
+    for (let discipline in disciplines){
+
+        let discipline_ = disciplines[discipline]
+        if (discipline_.discipline_id === Number(discipline_id)){
+            already_exist = false;
+            for (let discipline_teacher in discipline_.teachers){
+                let disc_teacher = discipline_.teachers[discipline_teacher]
+                if (disc_teacher.full_name === teacher_to_add.full_name
+                     && disc_teacher.cmc === teacher_to_add.cmc){
+
+                    already_exist = true;
+                }
+            }
+
+            if (!already_exist){
+                discipline_.teachers.push(teacher_to_add)
+            }
+        }
+    }
+
 }
