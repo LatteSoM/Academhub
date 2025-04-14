@@ -208,6 +208,7 @@ document.getElementById('sendFileBtn').addEventListener('click', function () {
 
 
 function renderDisciplinesTable(tbody) {
+    console.log('fff')
     disciplines.forEach(discipline => {
         const row = document.createElement('tr');
 
@@ -229,21 +230,15 @@ function renderDisciplinesTable(tbody) {
         teachersDiv.className = 'teachers-list';
         teachersDiv.dataset.disciplineId = discipline.discipline_id;
 
-        console.log(discipline)
         // Добавляем преподавателей в блок
-        if (discipline.teachers && discipline.teachers.length > 0) {
-            discipline.teachers.forEach(teacher => {
-                console.log(teacher)
-                const teacherBlock = document.createElement('div');
-                teacherBlock.className = 'teacher-block';
-                teacherBlock.innerHTML = `
-                    <div class="teacher-name">${teacher.full_name}</div>
-                `;
-                teachersDiv.appendChild(teacherBlock);
-            });
-        } else {
-            teachersDiv.textContent = 'Нет преподавателей';
-        }
+        discipline.teachers.forEach(teacher => {
+            const teacherBlock = document.createElement('div');
+            teacherBlock.className = 'teacher-block';
+            teacherBlock.innerHTML = `
+                <div class="teacher-name">${teacher.full_name}</div>
+            `;
+            teachersDiv.appendChild(teacherBlock);
+        });
 
         teachersCell.appendChild(teachersDiv);
         row.appendChild(teachersCell);
@@ -262,20 +257,18 @@ function renderDisciplinesTable(tbody) {
         select.appendChild(defaultOption);
 
         // Добавляем преподавателей в выпадающий список
-        if (teachers.length !== 0) {
-            teachers.forEach(teacher => {
-                const option = document.createElement('option');
-                option.value = teacher.teacher_id;
-                option.textContent = `${teacher.full_name}`;
-                select.appendChild(option);
-            });
-        }
+        teachers.forEach(teacher => {
+            const option = document.createElement('option');
+            option.value = teacher.teacher_id;
+            option.textContent = `${teacher.full_name}`;
+            select.appendChild(option);
+        });
+        
         
         select.addEventListener('change', function() {
             const value = this.value;
 
             if (value !== 'Выберите преподавателя' || value !== ''){
-                const tbody = document.getElementById('disciplines-body');
                 add_teacher_to_discipline(this.value, this.id);
                 renderDisciplinesTable(tbody)
                 
@@ -298,6 +291,8 @@ function add_teachers_to_disciplines(){
 
             if (discipline_cmc === teacher.cmc){
                 already_exist = false;
+                console.log(teacher.cmc)
+                console.log(discipline)
                 for (let discipline_teacher in discipline.teachers){
                     let disc_teacher = discipline.teachers[discipline_teacher]
                     if (disc_teacher.full_name === teacher.full_name
