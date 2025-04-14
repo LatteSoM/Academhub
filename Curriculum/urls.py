@@ -23,6 +23,7 @@ urlpatterns = [
     path('api/courses_and_groups/', get_courses_for_study_plan, name='get_courses_for_study_plan'),
     path('api/disciplines_by_curriculum_course_term/', get_disciplines_by_curriculum_course_term, name='get_disciplines_by_curriculum_course_term'),
     path('api/import-teachers-excel/', import_teachers_excel_view, name='import_teachers_excel'),
+    path('api/save-all-changes/', save_teachers_for_groups_and_disciplines, name='save_teachers_for_groups_and_disciplines'),
 
     #### Легаси обработчики - не работают после изменения TeachersForDisciplineAndCurriculum в models
     # path('curriculum/<int:pk>/discipline/<int:discipline_id>/course/<int:course_number>/term/<int:term_number>', AddTeacher2DisciplineOnTerm.as_view(), name='curriculum_add_teacher'),

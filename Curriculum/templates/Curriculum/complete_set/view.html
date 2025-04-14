@@ -86,6 +86,7 @@
             <div class="d-flex gap-2 w-100 pt-3"> <!-- Removed justify-content-end, mt-4; Added w-100, pt-3 -->
                 <a href="#" id="set-attestation-link" class="btn btn-secondary theme-button-secondary flex-grow-1">Заполнить периоды аттестации</a> <!-- Added flex-grow-1, changed to link -->
                 <button class="btn btn-success theme-button-success flex-grow-1">Проверить комплектность</button> <!-- Added flex-grow-1 -->
+                <button id="saveAllData" class="btn btn-success theme-button-success flex-grow-1">Сохранить изменения</button> <!-- Added flex-grow-1 -->
             </div>
         </div>
     </div>
@@ -184,11 +185,14 @@
     }
 
     .teacher-block {
+        margin-top: 3px;
         padding: 5px;
         border-radius: 9px;
         background-color: #1F2937;
         display: flex;
-        justify-content: center;
+        justify-content: space-around;
+        align-items: center;
+        height: 80px;
     }
 
     .teacher-name {

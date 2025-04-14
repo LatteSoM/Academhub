@@ -1,11 +1,17 @@
+let speciality_id;
+let curriculum_id;
+let course_number;
+let term = 1;
 let teachers = []
 let disciplines = []
+let groups = []
 
 document.getElementById('specialty').addEventListener('change', function() {
     const specialtyId = this.value;
     const studyPlanSelect = document.getElementById('study_plan');
     const courseSelect = document.getElementById('course');
     const groupsContainer = document.getElementById('groups');
+    const tbody = document.getElementById('disciplines-body')
 
     if (!specialtyId || specialtyId === 'Выберите специальность') {
         studyPlanSelect.innerHTML = '<option>Сначала выберите специальность</option>';
@@ -14,9 +20,11 @@ document.getElementById('specialty').addEventListener('change', function() {
         courseSelect.disabled = true;
 
         groupsContainer.innerHTML = '';
+        tbody.innerHTML = ''
         return;
     }
 
+    speciality_id = specialtyId;
     // AJAX-запрос для получения учебных планов
     fetch(`/CurriculumApp/api/study-plans/?specialty_id=${specialtyId}`)
         .then(response => response.json())
@@ -45,13 +53,18 @@ document.getElementById('study_plan').addEventListener('change', function () {
 
     const groupsContainer = document.getElementById('groups');
     const courseSelect = document.getElementById('course');
+    const tbody = document.getElementById('disciplines-body')
 
     if (studyPlanId === 'Выберите учебный план'){
         courseSelect.innerHTML = '<option>Сначала выберите учебный план</option>';
         courseSelect.disabled = true;
+
+        groupsContainer.innerHTML = ''
+        tbody.innerHTML = ''
         return;
     }
 
+    curriculum_id = studyPlanId;
     // AJAX-запрос для получения курсов, дисциплин и групп
     fetch(`/CurriculumApp/api/courses_and_groups/?curriculum_id=${studyPlanId}`)
         .then(response => response.json())
@@ -66,26 +79,9 @@ document.getElementById('study_plan').addEventListener('change', function () {
             courseSelect.disabled = false;
 
             groupsContainer.innerHTML = '';
-            console.log(data)
-            data.study_groups.forEach(study_group => {
-                const div = document.createElement('div');
-                div.className = 'form-check';
+            groups = data.study_groups;
+            renderStudyGroups(data, groupsContainer)
 
-                const input = document.createElement('input');
-                input.type = 'checkbox';
-                input.className = 'form-check-input';
-                input.id = `group${study_group.id}`;
-                input.checked = true;
-
-                const label = document.createElement('label');
-                label.className = 'form-check-label';
-                label.htmlFor = `group${study_group.id}`;
-                label.textContent = study_group.full_name;
-
-                div.appendChild(input);
-                div.appendChild(label);
-                groupsContainer.appendChild(div);
-            })
         })
         .catch(error => {
             groupsContainer.innerHTML = '<div class="text-danger">Ошибка загрузки данных</div>';
@@ -104,13 +100,12 @@ document.getElementById('course').addEventListener('change', function () {
         return
     }
 
+    course_number = this.value
     fetch(
         `/CurriculumApp/api/disciplines_by_curriculum_course_term/?curriculum_id=${curriculumValue}&course=${this.value}&term=${termValue}`
     )
         .then(response => response.json())
         .then(data => {
-
-            tbody.innerHTML = '';
 
             if (data.length === 0) {
                 tbody.innerHTML = `
@@ -121,12 +116,11 @@ document.getElementById('course').addEventListener('change', function () {
             }
 
             disciplines = data
-
+            console.log(data)
             if (teachers.length !== 0){
                 add_teachers_to_disciplines()
             }
 
-            console.log(disciplines)
             renderDisciplinesTable(tbody)
         })
 })
@@ -142,14 +136,12 @@ document.getElementById('termSelect').addEventListener('change', function () {
         return
     }
 
+    term = this.value;
     fetch(
         `/CurriculumApp/api/disciplines_by_curriculum_course_term/?curriculum_id=${curriculumValue}&course=${courseValue}&term=${this.value}`
     )
         .then(response => response.json())
         .then(data => {
-
-            tbody.innerHTML = '';
-
             if (data.length === 0) {
                 tbody.innerHTML = `
                     <tr>
@@ -163,7 +155,6 @@ document.getElementById('termSelect').addEventListener('change', function () {
                 add_teachers_to_disciplines()
             }
 
-            console.log(disciplines)
             renderDisciplinesTable(tbody)
         })
 })
@@ -206,9 +197,51 @@ document.getElementById('sendFileBtn').addEventListener('click', function () {
   }
 })
 
+document.getElementById('saveAllData').addEventListener('click', function () {
+    const formData = new FormData();
+    const curriculum = document.getElementById('study_plan');
+    const speciality = document.getElementById('specialty');
+    const course = document.getElementById('specialty');
+
+    if (speciality.value === 'Выберите специальность'
+        || curriculum.value === 'Выберите учебный план'
+        || course.value === 'Выберите курс'){
+        window.alert('Вы ничего не выбрали!')
+        return;
+    }
+    console.log(speciality)
+    formData.append('speciality_id', speciality_id);
+    formData.append('curriculum_id', curriculum_id);
+    formData.append('course', course_number);
+    formData.append('term', term);
+    formData.append('disciplines_with_teachers', JSON.stringify(disciplines));
+    const checkedGroups = groups.filter(group => group.checked === true);
+    formData.append('checked_groups', JSON.stringify(checkedGroups));
+
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    formData.append('csrfmiddlewaretoken', csrfToken);
+
+
+    try {
+        const response = fetch('/CurriculumApp/api/save-all-changes/', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': csrfToken
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                window.alert(data.message);
+            })
+    } catch (error) {
+        console.error('Ошибка:', error);
+    }
+})
+
 
 function renderDisciplinesTable(tbody) {
-    console.log('fff')
+    tbody.innerHTML = '';
     disciplines.forEach(discipline => {
         const row = document.createElement('tr');
 
@@ -233,10 +266,29 @@ function renderDisciplinesTable(tbody) {
         // Добавляем преподавателей в блок
         discipline.teachers.forEach(teacher => {
             const teacherBlock = document.createElement('div');
-            teacherBlock.className = 'teacher-block';
-            teacherBlock.innerHTML = `
-                <div class="teacher-name">${teacher.full_name}</div>
-            `;
+            teacherBlock.className = 'teacher-block mb-2 p-2 rounded';
+
+            const nameDiv = document.createElement('div');
+            nameDiv.className = 'teacher-name';
+            nameDiv.textContent = teacher.full_name;
+
+            // Создаем кнопку с крестиком
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'btn btn-sm btn-outline-danger';
+            deleteBtn.innerHTML = '&times;'; // Значок крестика
+            deleteBtn.title = 'Удалить преподавателя';
+            deleteBtn.id = teacher.teacher_id;
+
+            // Обработчик клика на кнопку удаления
+            deleteBtn.addEventListener('click', (e) => {
+                e.stopPropagation(); // Предотвращаем всплытие события
+
+                deleteTeacherFromDiscipline(discipline.teachers, deleteBtn.id)
+                renderDisciplinesTable(tbody)
+            });
+
+            teacherBlock.appendChild(nameDiv);
+            teacherBlock.appendChild(deleteBtn);
             teachersDiv.appendChild(teacherBlock);
         });
 
@@ -271,7 +323,6 @@ function renderDisciplinesTable(tbody) {
             if (value !== 'Выберите преподавателя' || value !== ''){
                 add_teacher_to_discipline(this.value, this.id);
                 renderDisciplinesTable(tbody)
-                
             }
             
         })
@@ -283,25 +334,46 @@ function renderDisciplinesTable(tbody) {
 }
 
 
+function renderStudyGroups(data, groupsContainer){
+    data.study_groups.forEach(study_group => {
+        const div = document.createElement('div');
+        div.className = 'form-check';
+
+        const input = document.createElement('input');
+        input.type = 'checkbox';
+        input.className = 'form-check-input';
+        input.id = study_group.id;
+
+        if (study_group.checked){
+            input.checked = true;
+        }
+
+        input.addEventListener('change', function () {
+            changeCheckOfGroup(input.id)
+            console.log(groups)
+        })
+
+        const label = document.createElement('label');
+        label.className = 'form-check-label';
+        label.htmlFor = `group${study_group.id}`;
+        label.textContent = study_group.full_name;
+
+        div.appendChild(input);
+        div.appendChild(label);
+        groupsContainer.appendChild(div);
+    })
+}
+
+
 function add_teachers_to_disciplines(){
     disciplines.forEach(discipline => {
         teachers.forEach(teacher => {
-
             discipline_cmc = discipline.discipline_code.split('.')[0].replaceAll(' ', '')
 
             if (discipline_cmc === teacher.cmc){
-                already_exist = false;
-                console.log(teacher.cmc)
-                console.log(discipline)
-                for (let discipline_teacher in discipline.teachers){
-                    let disc_teacher = discipline.teachers[discipline_teacher]
-                    if (disc_teacher.full_name === teacher.full_name
-                         && disc_teacher.cmc === teacher.cmc){
-                        already_exist = true;
-                    }
-                }
+                const checkUnique = checkUniqueTeacher(discipline.teachers, teacher);
 
-                if (!already_exist){
+                if (!checkUnique){
                     discipline.teachers.push(teacher)
                 }
             }
@@ -311,35 +383,69 @@ function add_teachers_to_disciplines(){
 
 
 function add_teacher_to_discipline(teacher_id, discipline_id){
-    
-    let teacher_to_add = '';
-    for (let teacher in teachers){
-        let teacher_ = teachers[teacher]
-        if (teacher_.teacher_id === Number(teacher_id)){
-            teacher_to_add = teacher_;
-            break;
-        }
-    }
+    let teacher_to_add = findTeacherById(teacher_id);
 
-    console.log(teacher_to_add)
     for (let discipline in disciplines){
 
         let discipline_ = disciplines[discipline]
         if (discipline_.discipline_id === Number(discipline_id)){
-            already_exist = false;
-            for (let discipline_teacher in discipline_.teachers){
-                let disc_teacher = discipline_.teachers[discipline_teacher]
-                if (disc_teacher.full_name === teacher_to_add.full_name
-                     && disc_teacher.cmc === teacher_to_add.cmc){
-
-                    already_exist = true;
-                }
-            }
-
-            if (!already_exist){
+            const checkUnique = checkUniqueTeacher(discipline_.teachers, teacher_to_add);
+            if (!checkUnique){
                 discipline_.teachers.push(teacher_to_add)
             }
         }
     }
+}
+
+
+function findTeacherById(teacher_id) {
+    for (let teacher in teachers){
+        let teacher_ = teachers[teacher]
+        if (teacher_.teacher_id === Number(teacher_id)){
+            return teacher_
+        }
+    }
+}
+
+function checkUniqueTeacher(teachersForDiscipline, teacher){
+    let check = false
+    teachersForDiscipline.forEach(discipline_teacher => {
+        if (discipline_teacher.cmc === teacher.cmc
+            && discipline_teacher.full_name === teacher.full_name
+            && discipline_teacher.teacher_id === teacher.teacher_id){
+            check = true
+            return true;
+        }
+    })
+
+    return check
+}
+
+
+function deleteTeacherFromDiscipline(teachersForDiscipline, teacher_id){
+    const teacher = findTeacherById(teacher_id);
+
+    for (const index in teachersForDiscipline){
+        const discipline_teacher = teachersForDiscipline[index]
+        if (discipline_teacher.cmc === teacher.cmc
+            && discipline_teacher.full_name === teacher.full_name
+            && discipline_teacher.teacher_id === teacher.teacher_id){
+            teachersForDiscipline.splice(index, 1)
+        }
+    }
+}
+
+
+function changeCheckOfGroup(group_id){
+    for (const index in groups){
+        let group = groups[index];
+
+        if (group.id === Number(group_id)) {
+            group.checked = !group.checked
+        }
+    }
+}
+
+function sendDataOnSave(){
 
 }
