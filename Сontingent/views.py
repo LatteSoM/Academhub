@@ -45,7 +45,7 @@ from Academhub.modules.documentGenPars import StatisticsTableGenerator, CourseTa
 __all__ = (
 
     'ViewRecordBookView',
-    'save_record_book_template',
+    'create_auto_record_book_template',
     'generate_student_record_book',
     'generate_group_recordbooks',
     'PromoteGroupStudentsView',
