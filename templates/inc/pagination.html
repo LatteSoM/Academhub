@@ -1,4 +1,6 @@
+
 {% load static %}
+{% load pagination_tags %}
 
 <link rel="stylesheet" href="{% static 'Academhub/css/pagination.css' %}">
 
@@ -8,23 +10,46 @@
     </div>
     <div class="pagination-controls">
         {% if page_obj.has_previous %}
-            <a href="?page=1&{{ request.GET.urlencode }}" class="pagination-button">&laquo; Первая</a>
-            <a href="?page={{ page_obj.previous_page_number }}&{{ request.GET.urlencode }}" class="pagination-button">Предыдущая</a>
+            <a href="?page=1{% get_query_string_without_page %}" class="pagination-button">« Первая</a>
+            <a href="?page={{ page_obj.previous_page_number }}{% get_query_string_without_page %}" class="pagination-button">Предыдущая</a>
         {% endif %}
 
         <div class="pagination-pages">
-            {% for num in page_obj.paginator.page_range %}
-                {% if num == page_obj.number %}
-                    <span class="pagination-button active">{{ num }}</span>
-                {% else %}
-                    <a href="?page={{ num }}&{{ request.GET.urlencode }}" class="pagination-button">{{ num }}</a>
+            {% with paginator=page_obj.paginator current=page_obj.number %}
+                {% if paginator.num_pages > 1 %}
+                    <!-- Показываем первую страницу и многоточие, если текущая страница далеко -->
+                    {% if current > 3 %}
+                        <a href="?page=1{% get_query_string_without_page %}" class="pagination-button">1</a>
+                        {% if current > 4 %}
+                            <span class="pagination-ellipsis">...</span>
+                        {% endif %}
+                    {% endif %}
+
+                    <!-- Показываем страницы в диапазоне ±2 от текущей -->
+                    {% for num in paginator.page_range %}
+                        {% if num >= current|add:-2 and num <= current|add:2 %}
+                            {% if num == current %}
+                                <span class="pagination-button active">{{ num }}</span>
+                            {% else %}
+                                <a href="?page={{ num }}{% get_query_string_without_page %}" class="pagination-button">{{ num }}</a>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+
+                    <!-- Показываем последнюю страницу и многоточие, если она далеко -->
+                    {% if current < paginator.num_pages|add:-2 %}
+                        {% if current < paginator.num_pages|add:-3 %}
+                            <span class="pagination-ellipsis">...</span>
+                        {% endif %}
+                        <a href="?page={{ paginator.num_pages }}{% get_query_string_without_page %}" class="pagination-button">{{ paginator.num_pages }}</a>
+                    {% endif %}
                 {% endif %}
-            {% endfor %}
+            {% endwith %}
         </div>
 
         {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}&{{ request.GET.urlencode }}" class="pagination-button">Следующая</a>
-            <a href="?page={{ page_obj.paginator.num_pages }}&{{ request.GET.urlencode }}" class="pagination-button">Последняя &raquo;</a>
+            <a href="?page={{ page_obj.next_page_number }}{% get_query_string_without_page %}" class="pagination-button">Следующая</a>
+            <a href="?page={{ paginator.num_pages }}{% get_query_string_without_page %}" class="pagination-button">Последняя »</a>
         {% endif %}
     </div>
 </div>

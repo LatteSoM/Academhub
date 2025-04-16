@@ -24,6 +24,11 @@ navigation = Navigation(
                 name="Таблица оценок группы",
                 url="gradebook_view_group_grades",
                 permission_required=getpermission('Gradebook', 'add'),
+            ),
+            ChildLink(
+                name="Таблица определения типа диплома",
+                url="diplom_identifier",
+                permission_required=getpermission('Gradebook', 'add'),
             )
         ]
     )

@@ -870,7 +870,11 @@ class Gradebook(AcademHubModel):
 
     date_of_opening = models.DateField(verbose_name="Дата открытия ведомости", blank=True, null=True)
     date_of_filling = models.DateField(blank=True, null=True, verbose_name="Дата заполнения ведомости")
-    date_of_closing = models.DateField(blank=True, null=True, verbose_name="Дата закрытия ведомости")
+    date_of_closing = models.DateTimeField(
+        blank=True,
+        null=True,
+        verbose_name="Дата закрытия ведомости"
+    )
     amount_of_days_for_closing = models.PositiveIntegerField(verbose_name="Сколько дней дается на закрытие ведомости с момента открытия", blank=True, null=True)
 
     type_of_grade_book = models.CharField(blank=True, null=True, verbose_name="Тип ведомости", choices=TYPE_CHOICES, max_length=255)

@@ -28,7 +28,7 @@ class GradebookTable(BaseTable):
     class Meta:
         model = Gradebook
         paginate_by=30
-        fields = ('name', 'teachers', 'group', 'discipline', 'status')
+        fields = ('name', 'teachers', 'group', 'discipline', 'status', 'type_of_grade_book')
 
 
 
