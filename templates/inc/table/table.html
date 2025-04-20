@@ -2,6 +2,50 @@
 
 <link rel="stylesheet" href="{% static 'Academhub/css/table.css' %}">
 
+{% block extra2_css %}
+    <style>
+        /* Light Theme Colors */
+        .theme-light tr.status-not-filled {
+            background-color: color-mix(in srgb, var(--light-bg) 70%, #f7e8a4 30%); /* Пастельный желтый, смешанный с фоном */
+        }
+        .theme-light tr.status-opened {
+            background-color: color-mix(in srgb, var(--light-bg) 70%, #b3d9ff 30%); /* Пастельный голубой */
+        }
+        .theme-light tr.status-filled {
+            background-color: color-mix(in srgb, var(--light-bg) 70%, #b3e6b3 30%); /* Пастельный зеленый */
+        }
+        .theme-light tr.status-closed {
+            background-color: color-mix(in srgb, var(--light-bg) 70%, #d9d9d9 30%); /* Пастельный серый */
+        }
+        .theme-light tr.status-overdue {
+            background-color: color-mix(in srgb, var(--light-bg) 70%, #ffb3b3 30%); /* Пастельный красный */
+        }
+        .theme-light tr.status-unknown {
+            background-color: var(--light-surface); /* Используем поверхность для неизвестного статуса */
+        }
+
+        /* Dark Theme Colors */
+        .theme-dark tr.status-not-filled {
+            background-color: color-mix(in srgb, var(--dark-bg) 60%, #e6d68a 40%); /* Чуть более насыщенный желтый для темной темы */
+        }
+        .theme-dark tr.status-opened {
+            background-color: color-mix(in srgb, var(--dark-bg) 60%, #8ecbff 40%); /* Голубой для темной темы */
+        }
+        .theme-dark tr.status-filled {
+            background-color: color-mix(in srgb, var(--dark-bg) 60%, #8ed98e 40%); /* Зеленый для темной темы */
+        }
+        .theme-dark tr.status-closed {
+            background-color: color-mix(in srgb, var(--dark-bg) 60%, #b3b3b3 40%); /* Серый для темной темы */
+        }
+        .theme-dark tr.status-overdue {
+            background-color: color-mix(in srgb, var(--dark-bg) 60%, #ff9999 40%); /* Красный для темной темы */
+        }
+        .theme-dark tr.status-unknown {
+            background-color: var(--dark-surface); /* Используем поверхность для неизвестного статуса */
+        }
+    </style>
+{% endblock %}
+
 <table class="data-table">
     <thead>
         <tr>
@@ -12,7 +56,7 @@
     </thead>
     <tbody>
         {% for row in table.page.object_list %}
-            <tr>
+            <tr {{ row.attrs.as_html }} >
                 {% for column, cell in row.items %}
                     <td>{{ cell }}</td>
                 {% endfor %}

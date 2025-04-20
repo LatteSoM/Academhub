@@ -82,6 +82,35 @@ def get_last_grade(student, discipline, semester):
     return None
 
 
+def get_last_grade(student, discipline, semester):
+    """
+    Возвращает последнюю оценку студента по дисциплине с учетом всех типов ведомостей.
+    Порядок проверки: комиссия → пересдача → первичная сдача.
+
+    Args:
+        student: Объект студента.
+        discipline: Объект дисциплины.
+        semester: Номер семестра.
+
+    Returns:
+        str or None: Последняя оценка или None, если оценок нет.
+    """
+    gradebook_types_priority = ["Комиссия", "Пересдача", "Первичная сдача"]
+
+    grade = GradebookStudents.objects.filter(
+        student=student,
+        gradebook__discipline=discipline,
+        gradebook__semester_number=semester,
+        gradebook__type_of_grade_book__in=gradebook_types_priority
+    ).order_by(
+        '-gradebook__date_of_closing',
+        # Приоритет типов: меньший индекс в gradebook_types_priority → выше приоритет
+        F('gradebook__type_of_grade_book').asc().nullslast()
+    ).first()
+
+    return grade.grade if grade else None
+
+
 def check_students_for_academic_debts(group, semester):
     """
     Проверяет студентов группы на наличие академических задолженностей
@@ -195,10 +224,10 @@ class GradebookGenerateView(ObjectTemplateView):
 
                 if result['generated'] > 0 and result['errors'] == 0:
                     messages.success(request,
-                                     f"Успешно сгенерировано {result['generated']} ведомостей для {semester} семестра! С типом {result['grade_book_type']}")
+                                     f"Успешно сгенерировано/обновлено {result['generated']} ведомостей для {semester} семестра! С типом {result['grade_book_type']}")
                 elif result['generated'] > 0:
                     messages.warning(request,
-                                     f"Сгенерировано {result['generated']} ведомостей для {semester} семестра. С типом {result['grade_book_type']} "
+                                     f"Сгенерировано/обновлено {result['generated']} ведомостей для {semester} семестра. С типом {result['grade_book_type']} "
                                      f"Ошибок: {result['errors']}")
                 else:
                     messages.error(request,
@@ -959,7 +988,7 @@ class GradebookTableView(ObjectTableView):
         ),
         Button(
             id = 'generate',
-            name = 'Сгенерировать ведомости',
+            name = 'Сгенерировать/Обновить ведомости',
             link_name = 'gradebook_generate',
             permission = getpermission(Gradebook, 'add'),
         )
@@ -1294,44 +1323,6 @@ def get_download_path() -> Path:
 
 
 logger = logging.getLogger(__name__)
-
-# @permission_required(getpermission(Gradebook, 'view'))
-# def download_report(request, pk):
-#     try:
-#         # Получение объекта Gradebook
-#         logger.info(f"Fetching Gradebook with pk={pk}")
-#         gradebook = get_object_or_404(
-#             Gradebook.objects.select_related('discipline', 'group__qualification__specialty').prefetch_related('teachers', 'students'),
-#             pk=pk
-#         )
-#
-#         # Логика изменения статуса
-#         logger.info(f"Current status: {gradebook.status}")
-#         if gradebook.status == Gradebook.STATUS_CHOICE[2][1]:
-#             logger.info("Updating gradebook status and closing date")
-#             gradebook.status = Gradebook.STATUS_CHOICE[3][1]
-#             gradebook.date_of_closing = timezone.now()
-#             gradebook.save()
-#
-#         # Генерация документа
-#         file_name = f"{gradebook.name.replace(' ', '_')}_{gradebook.discipline.name}_{gradebook.semester_number}_{gradebook.group.full_name}.docx"
-#         logger.info(f"Generating document: {file_name}")
-#
-#         generator = GradebookDocumentGenerator(gradebook)
-#         buffer = generator.generate_document()
-#
-#         # Отправка файла
-#         logger.info(f"Sending file: {file_name}")
-#         response = FileResponse(
-#             buffer,
-#             content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-#         )
-#         response['Content-Disposition'] = f'attachment; filename*=UTF-8\'\'{quote(file_name)}'
-#         return response
-#
-#     except Exception as e:
-#         logger.error(f"Error in download_report: {str(e)}", exc_info=True)
-#         return HttpResponse(f"Произошла ошибка: {str(e)}", status=500)
 
 
 @permission_required(getpermission(Gradebook, 'view'))
