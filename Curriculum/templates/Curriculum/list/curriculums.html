@@ -9,15 +9,245 @@
     {{ block.super }}
     <div id="import" class="tab-pane">
         <div class="page-header">
-            <h2>Импорт учебных план из .plx</h2>
+            <h2>Импорт учебных планов из .plx</h2>
         </div>
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {% with form=form_import %}
                 {% include 'inc/form/form.html' %}
             {% endwith %}
-        <br>
-            <button type="submit" class="btn-primary">Загрузить</button>
+            <br>
+            <button type="submit" class="btn btn-primary" id="submitButton">Загрузить</button>
         </form>
     </div>
+
+    <!-- Модальное окно подтверждения удаления -->
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1"
+         aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="confirmDeleteModalLabel">Подтверждение удаления</h5>
+          </div>
+          <div class="modal-body">
+            <p>Для подтверждения удаления введите:</p>
+            <div class="mb-3">
+              <label for="confirmQualification" class="form-label">Квалификация учебного плана</label>
+              <input type="text" class="form-control" id="confirmQualification" required>
+            </div>
+            <div class="mb-3">
+              <label for="confirmAdmissionYear" class="form-label">Год поступления</label>
+              <input type="text" class="form-control" id="confirmAdmissionYear" required>
+            </div>
+            <div class="alert alert-danger d-none" id="deleteError"></div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+            <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Удалить</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Модальное окно загрузки -->
+    <div class="modal fade {% if 'theme-dark' in request.COOKIES.theme %}modal-dark{% else %}modal-light{% endif %}" id="exampleModal" tabindex="-1"
+         aria-labelledby="exampleModalLabel" aria-hidden="true"
+         data-bs-backdrop="static" data-bs-keyboard="false">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">Импорт данных</h1>
+          </div>
+          <div class="modal-body">
+            <p>Пожалуйста, подождите, идёт валидация данных...</p>
+            <div class="spinner-border" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      /* Фиксируем скроллбар и предотвращаем сдвиг контента */
+      body.modal-open {
+        overflow-y: scroll;
+        padding-right: 0 !important;
+      }
+
+      .modal-dark .modal-content {
+        background-color: #1f2937;
+        color: #f3f4f6;
+        border-radius: 12px;
+      }
+
+      .modal-dark .modal-header {
+        border-bottom: 1px solid #4b5563;
+      }
+
+      .modal-dark .btn-close {
+        display: none;
+      }
+
+      .modal-light .modal-content {
+        background-color: var(--light-surface);
+        color: #000;
+        border-radius: 12px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .modal-light .modal-header {
+        border-bottom: 1px solid #dee2e6;
+      }
+
+      .modal-light .btn-close {
+        display: none;
+      }
+
+      .modal-dialog {
+        display: flex;
+        align-items: center;
+        min-height: calc(100vh - 60px);
+        margin: 30px auto;
+      }
+
+      .modal-content {
+        width: 450px;
+        max-width: 90%;
+        margin: auto;
+      }
+
+      .modal {
+        padding-right: 0 !important;
+      }
+
+      .spinner-border {
+        width: 4rem;
+        height: 4rem;
+        border-width: 6px;
+        color: #2563eb;
+        display: block;
+        margin: 20px auto;
+      }
+
+      .modal-body {
+        text-align: left;
+        padding: 20px;
+      }
+
+      .btn-primary.loading {
+        position: relative;
+        pointer-events: none;
+        opacity: 0.6;
+      }
+
+      /* Стили для кнопки удаления */
+      .btn-danger {
+        padding: 8px 16px;
+        font-size: 14px;
+        background-color: #dc3545;
+        border: none;
+        border-radius: 4px;
+        color: white;
+      }
+      .btn-danger:hover {
+        background-color: #bb2d3b;
+      }
+
+      /* Скрываем заголовок колонки Actions */
+      th.no-header {
+        display: none;
+      }
+
+      .btn-primary.loading::after {
+        content: "";
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 16px;
+        height: 16px;
+        border: 3px solid transparent;
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 0.6s linear infinite;
+      }
+
+      @keyframes spin {
+        from { transform: translateY(-50%) rotate(0deg); }
+        to { transform: translateY(-50%) rotate(360deg); }
+      }
+    </style>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        // Обработка формы импорта
+        const form = document.querySelector("#import form");
+        const submitButton = document.getElementById("submitButton");
+        const importModal = new bootstrap.Modal(document.getElementById("exampleModal"));
+
+        if (form) {
+          form.addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            if (!form.checkValidity()) {
+              form.reportValidity();
+              return;
+            }
+
+            submitButton.classList.add("loading");
+            importModal.show();
+            form.submit();
+          });
+        }
+
+        // Глобальные переменные для удаления
+        let currentDeleteUrl = '';
+        let currentQualification = '';
+        let currentAdmissionYear = '';
+
+        // Функция для подтверждения удаления
+        window.confirmDelete = function(url, qualification, admissionYear) {
+          currentDeleteUrl = url;
+          currentQualification = qualification;
+          currentAdmissionYear = admissionYear.toString();
+
+          const deleteModal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
+          document.getElementById('confirmQualification').value = '';
+          document.getElementById('confirmAdmissionYear').value = '';
+          document.getElementById('deleteError').classList.add('d-none');
+          deleteModal.show();
+        };
+
+        // Обработчик кнопки подтверждения удаления
+        document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+          const inputQualification = document.getElementById('confirmQualification').value.trim();
+          const inputAdmissionYear = document.getElementById('confirmAdmissionYear').value.trim();
+          const errorElement = document.getElementById('deleteError');
+
+          if (inputQualification !== currentQualification || inputAdmissionYear !== currentAdmissionYear) {
+            errorElement.textContent = "Введенные данные не совпадают с учебным планом!";
+            errorElement.classList.remove('d-none');
+            return;
+          }
+
+          fetch(currentDeleteUrl, {
+            method: 'POST',
+            headers: {
+              'X-CSRFToken': '{{ csrf_token }}',
+            },
+          }).then(response => {
+            if (response.ok) {
+              window.location.reload();
+            } else {
+              errorElement.textContent = "Ошибка при удалении!";
+              errorElement.classList.remove('d-none');
+            }
+          }).catch(error => {
+            errorElement.textContent = "Ошибка сети!";
+            errorElement.classList.remove('d-none');
+          });
+        });
+      });
+    </script>
 {% endblock %}

@@ -43,12 +43,13 @@ class SpecialtyDict:
 
 class CurriculumDict:
     """Учебный план"""
-    def __init__(self, qualification_name=None, warnings=False, warning_description=None, qualification=None, admission_year=None):
+    def __init__(self, qualification_name=None, warnings=False, warning_description=None, qualification=None, admission_year=None, basis_of_admission=9):
         self.qualification_name = qualification_name
         self.warnings = warnings
         self.warning_description = warning_description if warning_description else {}
         self.qualification = qualification if qualification else {}
         self.admission_year = admission_year
+        self.basis_of_admission = basis_of_admission
 
     def to_dict(self):
         return {
@@ -57,6 +58,7 @@ class CurriculumDict:
             "warning_description": self.warning_description,
             "qualification": self.qualification,
             "admission_year": self.admission_year,
+            "basis_of_admission": self.basis_of_admission
         }
 
     @classmethod
