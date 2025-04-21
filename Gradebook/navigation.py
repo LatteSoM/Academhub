@@ -8,7 +8,7 @@ navigation = Navigation(
             ChildLink(
                 name='Все ведомости', 
                 url=getpattern('Gradebook', 'list'),
-                permission_required=getpermission('Gradebook', 'add_gradebook'),
+                permission_required=getpermission('Gradebook', 'create_gradebook'),
             ),
             ChildLink(
                 name='Ваши ведомости', 
@@ -19,7 +19,7 @@ navigation = Navigation(
             ChildLink(
                 name='Закрытые ведомости',
                 url="gradebookclosed_list",
-                permission_required=getpermission('Gradebook', 'add_gradebook'),
+                permission_required=getpermission('Gradebook', 'create_gradebook'),
             ),
             ChildLink(
                 name="Таблица оценок группы",

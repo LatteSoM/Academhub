@@ -28136,3 +28136,30 @@ interactive is False
 platform is darwin
 CACHEDIR=/Users/anastasiaoreskina/.matplotlib
 Using fontManager instance from /Users/anastasiaoreskina/.matplotlib/fontlist-v390.json
+Watching for file changes with StatReloader
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Сontingent/urls.py changed, reloading.
+Watching for file changes with StatReloader
+matplotlib data path: /Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/matplotlib/mpl-data
+CONFIGDIR=/Users/anastasiaoreskina/.matplotlib
+interactive is False
+platform is darwin
+CACHEDIR=/Users/anastasiaoreskina/.matplotlib
+Using fontManager instance from /Users/anastasiaoreskina/.matplotlib/fontlist-v390.json
+Not Found: /favicon.ico
+Attempt to access gradebook 45 with status Не заполнена
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/navigation.py changed, reloading.
+Watching for file changes with StatReloader
+matplotlib data path: /Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/matplotlib/mpl-data
+CONFIGDIR=/Users/anastasiaoreskina/.matplotlib
+interactive is False
+platform is darwin
+CACHEDIR=/Users/anastasiaoreskina/.matplotlib
+Using fontManager instance from /Users/anastasiaoreskina/.matplotlib/fontlist-v390.json
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/navigation.py changed, reloading.
+Watching for file changes with StatReloader
+matplotlib data path: /Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/matplotlib/mpl-data
+CONFIGDIR=/Users/anastasiaoreskina/.matplotlib
+interactive is False
+platform is darwin
+CACHEDIR=/Users/anastasiaoreskina/.matplotlib
+Using fontManager instance from /Users/anastasiaoreskina/.matplotlib/fontlist-v390.json
