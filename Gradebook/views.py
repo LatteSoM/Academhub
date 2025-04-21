@@ -160,7 +160,7 @@ class GradebookStudentBulkUpdateView(BulkUpdateView):
         if self.gradebook.status not in ["Открыта", "Заполнена"]:
             messages.error(
                 request,
-                "Заполнить/изменить можно только открытую или уже заполненную ведомость"
+                "Заполнить/изменить заполнение можно только открытую или уже заполненную ведомость"
             )
             logger.warning(
                 f"Attempt to access gradebook {self.gradebook_pk} with status {self.gradebook.status}"
@@ -397,10 +397,13 @@ def perform_generation(semester_number, grade_book_type):
     for group in groups:
         logger.debug(f"Processing group: {group.full_name}")
 
+        group_edu_base = 9 if group.education_base == "Основное общее" else 11
+
         # Получаем учебный план группы
         curriculum = Curriculum.objects.filter(
             qualification=group.qualification,
-            admission_year=group.year_create
+            admission_year=group.year_create,
+            basis_of_admission=group_edu_base
         ).first()
 
         if not curriculum:
@@ -448,11 +451,13 @@ def perform_generation(semester_number, grade_book_type):
                 ).first()
 
                 if gradebook and gradebook.status == "Не заполнена":
+                    # TODO: присоединить преподов
                     success = update_grade_book_contingent(
                         gradebook,
                         Student.objects.filter(group=group)
                     )
                 elif not gradebook:
+                    # TODO: присоединить преподов
                     success = create_gradebook_with_fields(
                         clock_cell.discipline,
                         group,
@@ -549,10 +554,13 @@ def fetch_group_semester_attestation_table(semester, group):
         is_in_academ=False
     ).order_by('full_name')
 
+    group_edu_base = 9 if group.education_base == "Основное общее" else 11
+
     # 2. Получаем дисциплины из учебного плана
     curriculum = Curriculum.objects.filter(
         qualification_name=group.qualification.name,
-        admission_year=group.year_create
+        admission_year=group.year_create,
+        basis_of_admission=group_edu_base
     )
 
     curriculum_items = ClockCell.objects.filter(
@@ -855,9 +863,12 @@ def export_grades(request):
 def get_disciplines_with_last_semester(group):
     """Возвращает список дисциплин с последним семестром, часами и общей суммой часов."""
     logger.info(f"Fetching disciplines for group {group.full_name}")
+    group_edu_base = 9 if group.education_base == "Основное общее" else 11
+
     clock_cells = ClockCell.objects.filter(
         curriculum__qualification=group.qualification,
-        curriculum__admission_year=group.year_create
+        curriculum__admission_year=group.year_create,
+        curriculum__basis_of_admission=group_edu_base
     ).select_related('discipline', 'module').order_by('discipline__id', '-term')
 
     # Словарь для хранения последнего семестра, часов и имени по каждой дисциплине
@@ -881,6 +892,7 @@ def get_disciplines_with_last_semester(group):
                 module_cells = ClockCell.objects.filter(
                     curriculum__qualification=group.qualification,
                     curriculum__admission_year=group.year_create,
+                    curriculum__basis_of_admission=group_edu_base,
                     discipline__isnull=True,
                     module__isnull=False,
                     code_of_type_work='Итого часов'
