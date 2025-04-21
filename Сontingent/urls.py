@@ -109,5 +109,5 @@ urlpatterns = [
      ## Генерация контингента
      #
 
-     path('test', GenerateQualificationTemplate.as_view(), name='for_test')
+     path('generate_qualification_template', GenerateQualificationTemplate.as_view(), name='generate_qualification_template')
 ]
