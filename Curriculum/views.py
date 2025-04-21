@@ -7,16 +7,13 @@ from django.core.exceptions import FieldError
 from django.http import HttpResponseForbidden
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
-# from parser_for_plx import RUP_parser
 from django.urls import reverse
 from django.urls import reverse_lazy
 from django.views.generic import DeleteView
 from django.views.generic import TemplateView
 
 from Academhub.generic import ObjectTableView, ObjectCreateView, ImportViewMixin, ObjectTemplateView, ObjectDetailView
-# Assuming Discipline model is correctly imported or defined elsewhere
 from Academhub.models import ClockCell, Category, StudyCycle, Discipline, CustomUser
-# Ensure Qualification is imported if not already
 from Academhub.models.models import Specialty, Qualification, GroupStudents, Curriculum
 from .filters import CurriculumQualificationsFilter
 from .forms.EditableCurriculumForm import EditableCurriculumForm
