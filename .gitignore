@@ -9,9 +9,9 @@ __pycache__/
 .idea/
 *.env
 .venv
-.env 
-env/ 
-venv/ 
+.env
+env/
+venv/
 
 # Django
 db.sqlite3
@@ -20,8 +20,8 @@ README.txt
 **/migrations/**
 !**/migrations
 !**/migrations/__init__.py
-# Visual Studio Code # 
-.vscode/* 
+# Visual Studio Code #
+.vscode/*
 .history
 
 Curriculum/media/
