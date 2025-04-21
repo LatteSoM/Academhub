@@ -1,0 +1,16 @@
+{% load util %}
+
+{% for key, value in request.GET.items %}
+    {% if key != 'page' %}
+        {% if value|is_list %}
+            {% for val in value %}
+                {{ key }}={{ val|urlencode }}{% if not forloop.last %}&{% endif %}
+            {% endfor %}
+        {% else %}
+            {{ key }}={{ value|urlencode }}
+        {% endif %}
+        {% if not forloop.last %}&{% endif %}
+    {% endif %}
+{% endfor %}
+{% if request.GET.items and page %}&{% endif %}
+{% if page %}page={{ page }}{% endif %}

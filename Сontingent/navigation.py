@@ -8,17 +8,17 @@ navigation = Navigation(
             ChildLink(
                 name='Специализации', 
                 url=getpattern('Specialty', 'list'),
-                permission_required=getpermission('Specialty', 'view')
+                permission_required=getpermission('Сontingent', 'view_specialty')
             ),
             ChildLink(
                 name='Квалификации', 
                 url=getpattern('Qualification', 'list'),
-                permission_required=getpermission('Qualification', 'view')
+                permission_required=getpermission('Сontingent', 'view_qualification')
             ),
             ChildLink(
                 name='Группы', 
                 url=getpattern('GroupStudents', 'list'),
-                permission_required=getpermission('GroupStudents', 'view')
+                permission_required=getpermission('Сontingent', 'view_group_student')
             ),
             ParentLink(
                 name='Студенты', 
@@ -26,38 +26,39 @@ navigation = Navigation(
                     ChildLink(
                         name='Текущие студенты',
                         url=getpattern('CurrentStudent', 'list'),
-                        permission_required=getpermission('CurrentStudent', 'view')
+                        permission_required=getpermission('Сontingent', 'view_current_student')
                     ),
                     ChildLink(
                         name='Отчисленные студенты',
                         url=getpattern('ExpulsionStudent', 'list'),
-                        permission_required=getpermission('ExpulsionStudent', 'view')
+                        permission_required=getpermission('Сontingent', 'view_expulsion_student')
                     ),
                     ChildLink(
                         name='Студенты в академическом отпуске',
                         url=getpattern('AcademStudent', 'list'),
-                        permission_required=getpermission('AcademStudent', 'view')
+                        permission_required=getpermission('Сontingent', 'view_academ_student')
                     ),
                     ChildLink(
                         name='Перевод на курс',
                         url='transfer_students_form',
+                        permission_required=getpermission('Сontingent', 'transfer_students')
                     ),
                 ]
             ),
             ChildLink(
                 name='Дисциплины', 
                 url=getpattern('Discipline', 'list'),
-                permission_required=getpermission('Discipline', 'view')
+                permission_required=getpermission('Сontingent', 'view_discipline')
             ),
             ChildLink(
                 name='Статистика', 
                 url='statisticks',
-                permission_required=getpermission('Student', 'statistic')
+                permission_required=getpermission('Сontingent', 'view_statistic')
             ),
             ChildLink(
                 name='Логи движений',
                 url=getpattern('ContingentMovement', 'list'),
-                permission_required=getpermission('ContingentMovement', 'view')
+                permission_required=getpermission('Сontingent', 'view_movement')
             )
         ]
     )

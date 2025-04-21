@@ -495,27 +495,27 @@ class RecordBookTemplate(AcademHubModel):
         verbose_name="Учебный план"
     )
 
-    # ManyToMany для различных компонентов зачетки
-    middle_certifications = models.ManyToManyField(
-        'MiddleCertification',
-        verbose_name="Промежуточные аттестации",
-        blank=True
-    )
-    professional_modules = models.ManyToManyField(
-        'ProfessionalModule',
-        verbose_name="Профессиональные модули",
-        blank=True
-    )
-    practices = models.ManyToManyField(
-        'Practice',
-        verbose_name="Практики",
-        blank=True
-    )
-    term_papers = models.ManyToManyField(
-        'TermPaper',
-        verbose_name="Курсовые работы",
-        blank=True
-    )
+    # # ManyToMany для различных компонентов зачетки
+    # middle_certifications = models.ManyToManyField(
+    #     'MiddleCertification',
+    #     verbose_name="Промежуточные аттестации",
+    #     blank=True
+    # )
+    # professional_modules = models.ManyToManyField(
+    #     'ProfessionalModule',
+    #     verbose_name="Профессиональные модули",
+    #     blank=True
+    # )
+    # practices = models.ManyToManyField(
+    #     'Practice',
+    #     verbose_name="Практики",
+    #     blank=True
+    # )
+    # term_papers = models.ManyToManyField(
+    #     'TermPaper',
+    #     verbose_name="Курсовые работы",
+    #     blank=True
+    # )
 
     class Meta:
         verbose_name = "Шаблон зачетной книжки"
@@ -776,7 +776,7 @@ class Student(AcademHubModel):
 
 
 class StudentRecordBook(AcademHubModel):
-    student = models.OneToOneField(Student, on_delete=models.CASCADE, verbose_name="Студент")
+    student = models.OneToOneField(Student, on_delete=models.CASCADE, verbose_name="Студент", null=True)
     qualification = models.ForeignKey('Qualification', on_delete=models.CASCADE, verbose_name="Квалификация")
     admission_year = models.PositiveIntegerField(verbose_name="Год поступления")
     student_name = models.CharField(max_length=255, verbose_name="ФИО студента", blank=True)
@@ -784,10 +784,10 @@ class StudentRecordBook(AcademHubModel):
     admission_order = models.CharField(max_length=100, verbose_name="Приказ о зачислении", blank=True)
     issue_date = models.DateField(verbose_name="Дата выдачи", null=True, blank=True)
     curriculum = models.ForeignKey('Curriculum', on_delete=models.CASCADE, verbose_name="Учебный план")
-    middle_certifications = models.ManyToManyField('MiddleCertification', verbose_name="Промежуточные аттестации", blank=True)
-    professional_modules = models.ManyToManyField('ProfessionalModule', verbose_name="Профессиональные модули", blank=True)
-    practices = models.ManyToManyField('Practice', verbose_name="Практики", blank=True)
-    term_papers = models.ManyToManyField('TermPaper', verbose_name="Курсовые работы", blank=True)
+    # middle_certifications = models.ManyToManyField('MiddleCertification', verbose_name="Промежуточные аттестации", blank=True)
+    # professional_modules = models.ManyToManyField('ProfessionalModule', verbose_name="Профессиональные модули", blank=True)
+    # practices = models.ManyToManyField('Practice', verbose_name="Практики", blank=True)
+    # term_papers = models.ManyToManyField('TermPaper', verbose_name="Курсовые работы", blank=True)
 
     class Meta:
         verbose_name = "Зачётная книжка студента"

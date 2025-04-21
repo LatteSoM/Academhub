@@ -16,12 +16,12 @@ def generate_unique_record_book_number(admission_year, student):
     """
     while True:
         prefix = 'Д'
-        suffix = 'Б' if student.education == 'Бюджет' else 'В'
+        suffix = 'Б' if student.education_basis == 'бюджет' else 'В'
         number = student.ancete_number if student.ancete_number else ''
         year_short = str(admission_year)[-2:]
         record_book_number = f"{prefix}{number}{suffix}/{year_short}/СПО"
-        if not StudentRecordBook.objects.filter(record_book_number=record_book_number).exists():
-            return record_book_number
+        # if not StudentRecordBook.objects.filter(record_book_number=record_book_number).exists():
+        return record_book_number
 
 
 def extract_application_number(text):
@@ -114,3 +114,165 @@ def create_transfer_log(order_number, student):
         new_group=None,
         student=student,
     )
+
+
+def get_middle_certifications(clock_cells):
+    middle_certifications = {
+        'exam': [],
+        'credit': [],
+    }
+
+    attestation_form = ['Экзамен', 'Зачет с оценкой', 'Другие формы контроля']
+
+    discipline = None
+    semestr = None
+    hours = None
+    is_exam = False
+
+    for clock_cell in clock_cells:
+
+        if clock_cell.module is None and clock_cell.code_of_type_work in attestation_form \
+                and not clock_cell.discipline.name.__contains__('Экзамен') \
+                and not clock_cell.discipline.name.__contains__('Учебная практика') \
+                and not clock_cell.discipline.name.__contains__('Производственная практика'):
+            if clock_cell.code_of_type_work == 'Экзамен':
+                is_exam = True
+            discipline = clock_cell.discipline
+            semestr = clock_cell.term
+            # print(discipline, semestr)
+
+        if discipline and semestr:
+            # print('2 ifffffffff')
+            if clock_cell.code_of_type_work == 'Итого часов' \
+                    and clock_cell.discipline == discipline and clock_cell.term == semestr:
+                # print('3 ifffffffff')
+
+                hours = clock_cell.count_of_clocks
+                if is_exam:
+                    # print('4 ifffffffff')
+
+                    middle_certifications['exam'].append({
+                        'name': discipline.name,
+                        'hours': hours,
+                        'semester': semestr
+                    })
+                    is_exam = False
+
+                else:
+                    # print('4 ifffffffff elsseeee')
+
+                    middle_certifications['credit'].append({
+                        'name': discipline.name,
+                        'hours': hours,
+                        'semester': semestr
+                    })
+                discipline = None
+                semestr = None
+                hours = None
+
+    # print(middle_certifications)
+    return middle_certifications
+
+def get_practices(clock_cells):
+    practices = {
+        'study_practice': [],
+        'work_practice': [],
+    }
+
+    practices_code = ['УП', 'ПП']
+
+    discipline = None
+    semestr = None
+    hours = None
+
+    for clock_cell in clock_cells:
+        if clock_cell.module is None:
+            clock_cell_discipline = Discipline.objects.get(pk=clock_cell.discipline_id)
+            if practices_code[0] in clock_cell_discipline.code \
+                or practices_code[1] in clock_cell_discipline.code :
+                discipline = f'{str(clock_cell_discipline.code).strip()} {clock_cell_discipline.name}'
+                semestr = clock_cell.term
+
+        if discipline and semestr:
+            if clock_cell.code_of_type_work == 'Итого часов':
+                hours = clock_cell.count_of_clocks
+
+                if practices_code[0] in clock_cell.discipline.code:
+                    practices['study_practice'].append([
+                        discipline,
+                        semestr,
+                        hours
+                    ])
+                else:
+                    practices['work_practice'].append([
+                        discipline,
+                        semestr,
+                        hours
+                    ])
+        discipline = None
+        semestr = None
+        hours = None
+    return practices
+
+
+def get_professional_modules(clock_cells):
+    professional_modules = {
+        'professional_modules': [],
+    }
+
+    for clock_cell in clock_cells:
+        if clock_cell.module is not None:
+            module = Module.objects.get(pk=clock_cell.module_id)
+            if str(module.code_of_discipline).strip().__contains__('ПМ') and \
+                    [f'{module.code_of_discipline.strip()} {module.name}'] not in professional_modules['professional_modules']:
+                professional_modules['professional_modules'].append([
+                    f'{module.code_of_discipline.strip()} {module.name}',
+                ])
+    return professional_modules
+
+
+def get_term_papers(clock_cells):
+    term_papers = {
+        'term_papers': [],
+    }
+    for clock_cell in clock_cells:
+        if clock_cell.module is None and clock_cell.code_of_type_work == 'Курсовая работа':
+            clock_cell_discipline = Discipline.objects.get(pk=clock_cell.discipline_id)
+            if [clock_cell_discipline.name] not in term_papers['term_papers']:
+                term_papers['term_papers'].append([
+                    clock_cell_discipline.name,
+                ])
+
+
+    return term_papers
+
+
+def create_template_recordbook_view(recordbook: StudentRecordBook):
+    curiculum = Curriculum.objects.get(pk=recordbook.curriculum.pk)
+    # print(curiculum)
+    clock_cells = ClockCell.objects.filter(curriculum=curiculum.pk)
+    # print(clock_cells)
+
+    middle_certifications = get_middle_certifications(clock_cells)
+    print(middle_certifications)
+    semesters = set()
+    for exam in middle_certifications['exam']:
+        semesters.add(exam['semester'])
+    for credit in middle_certifications['credit']:
+        semesters.add(credit['semester'])
+
+    practices = get_practices(clock_cells)
+    # print(practices)
+    professional_modules = get_professional_modules(clock_cells)
+    # print(professional_modules)
+    term_papers = get_term_papers(clock_cells)
+    # print(term_papers)
+    template = {
+        'middle_certifications': middle_certifications,
+        'practices': practices,
+        'professional_modules': professional_modules,
+        'term_papers': term_papers,
+        'semesters': sorted(semesters)
+    }
+    # print(template)
+    return template

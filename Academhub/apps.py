@@ -10,6 +10,8 @@ class AcademhubAppConfig(AppConfig):
     name = "Academhub"
 
     def ready(self, daily_task=None):
+        from .signals import setup_signals
+        setup_signals()
         # Импортируем модель здесь, внутри метода ready()
         # from Academhub.models import GroupStudents
         # from django.db import connection

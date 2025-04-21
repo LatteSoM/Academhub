@@ -1,6 +1,6 @@
-from __future__ import annotations
 from django.apps import apps
 from types import ModuleType
+from django.contrib.contenttypes.models import ContentType
 
 __all__ = (
     'getpattern',
@@ -43,21 +43,14 @@ def getpattern(model: ModuleType | str, action: str, app: str = 'Academhub') -> 
 
     return urls[url_key]
 
-def getpermission(model: ModuleType | str, action: str, app: str = 'Academhub') -> str:
+def getpermission(app: str, *actions: str) -> list[str]:
     """
     Возвращает permission.codename на основе модели и действия.
 
-    :param model: Модель (как объект модуля или строка с именем модели).
-    :param action: Действие (например, "add", "change", "delete", "view").
+    :param app: Приложение где находятся права.
+    :param actions: Действия (например, "add", "change", "delete", "view").
     :return: Строка с codename.
     """
-    # Если model передана как строка, получаем модель по её имени
-    model = _get_model(model, app)
 
-    # Получаем имя модели
-    model_name = model.__name__.lower()
-
-    # Формируем codenmae
-    codename = f'{app}.{action}_{model_name}'
-    
-    return codename
+    # Формируем codename
+    return (f"{app}.{action}" for action in actions)

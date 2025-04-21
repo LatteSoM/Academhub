@@ -8,6 +8,7 @@ from Academhub.models import CustomUser, GradebookStudents, Discipline, Specialt
     Student, Gradebook, Curriculum, TermPaper, Practice, ProfessionalModule, MiddleCertification, RecordBookTemplate, \
     StudentRecordBook, CurriculumItem
 from Academhub.models.models import ProgramSettings
+from Academhub.models.models import ClockCell
 
 admin.site.register(Student)
 admin.site.register(Practice)
@@ -28,3 +29,4 @@ admin.site.register(RecordBookTemplate)
 admin.site.register(MiddleCertification)
 admin.site.register(CalendarGraphicOfLearningProcess)
 admin.site.register(ProgramSettings)
+admin.site.register(ClockCell)

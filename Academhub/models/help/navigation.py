@@ -18,8 +18,8 @@ class ParentLink:
         self.sub_links = sub_links if sub_links is not None else []
 
 class ChildLink:
-    def __init__(self, name, url, permission_required=None, admin=False):
+    def __init__(self, name, url, permission_required=None, teacher=False):
         self.name = name
         self.url = url
         self.permission_required = permission_required
-        self.admin = admin
+        self.teacher = teacher

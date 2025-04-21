@@ -101,3 +101,10 @@ def is_one_to_one(model, field):
       return field.one_to_one
    except:
       return False
+
+@register.simple_tag(takes_context=True)
+def paginate_param(context, page_number):
+   request = context['request']
+   query_dict = request.GET.copy()
+   query_dict['page'] = page_number
+   return f"{request.path}?{query_dict.urlencode()}"

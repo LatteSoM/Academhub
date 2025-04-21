@@ -34,18 +34,22 @@ class UserTableView(ObjectTableView):
     filterset_class = UserFilter
     queryset = CustomUser.objects.all()
 
+    permission_required = getpermission('AccessControl', 'view_user')
+
     buttons = [
         Button (
             id='add',
             name = 'Добавить',
             link_name = getpattern(CustomUser, 'add'),
-            permission = getpermission(CustomUser, 'add'),
+            permission = getpermission('AccessControl', 'create_user'),
         )
     ]
 
 class UserDetailView(PermissionMixin, ObjectDetailView):
     model = CustomUser
     template_name = 'AccessControl/detail/user_detail.html'
+
+    permission_required = getpermission('AccessControl', 'view_user')
 
     fieldset = {
         'Пользовательская информация': [
@@ -73,13 +77,13 @@ class UserDetailView(PermissionMixin, ObjectDetailView):
             name = 'Обновить',
             link_params = ['pk'],
             link_name = getpattern(CustomUser, 'change'),
-            permission= getpermission(CustomUser, 'change'),
+            permission= getpermission('AccessControl', 'update_user'),
         ),
         Button (
             id='to_list',
             name = 'К таблице',
             link_name = getpattern(CustomUser, 'list'),
-            permission = getpermission(CustomUser, 'view'),
+            permission = getpermission('AccessControl', 'view_user'),
         )
     ]
 
@@ -90,19 +94,21 @@ class UserUpdateView(ObjectUpdateView):
     form_class = UserUpdateForm
     queryset = CustomUser.objects.all()
 
+    permission_required = getpermission('AccessControl', 'update_user')
+
     buttons = [
         Button (
             id='to_object',
             name = 'К объекту',
             link_params = ['pk'],
             link_name = getpattern(CustomUser, 'detail'),
-            permission = getpermission(CustomUser, 'view'),
+            permission = getpermission('AccessControl', 'view_user'),
         ),
         Button (
             id='to_list',
             name = 'К таблице',
             link_name = getpattern(CustomUser, 'list'),
-            permission = getpermission(CustomUser, 'view'),
+            permission = getpermission('AccessControl', 'view_user'),
         )
     ]
 
@@ -110,12 +116,14 @@ class UserCreateView(ObjectCreateView):
     model = CustomUser
     form_class = UserCreateForm
 
+    permission_required = getpermission('AccessControl', 'create_user')
+
     buttons = [
         Button (
             id='to_list',
             name = 'К таблице',
             link_name = getpattern(CustomUser, 'list'),
-            permission = getpermission(CustomUser, 'view'),
+            permission = getpermission('AccessControl', 'view_user'),
         )
     ]
 
@@ -128,12 +136,14 @@ class GroupTableView(ObjectTableView):
     filterset_class = GroupFilter
     queryset = GroupProxy.objects.all()
 
+    permission_required = getpermission('AccessControl', 'view_group')
+
     buttons = [
         Button (
             id='add',
             name = 'Добавить',
             link_name = getpattern(GroupProxy, 'add'),
-            permission = getpermission(GroupProxy, 'add'),
+            permission = getpermission('AccessControl', 'create_group'),
         )
     ]
 
@@ -143,6 +153,8 @@ class GroupTableView(ObjectTableView):
 class GroupDetailView(PermissionMixin, ObjectDetailView):
     model = GroupProxy
     template_name = 'AccessControl/detail/group_detail.html'
+
+    permission_required = getpermission('AccessControl', 'view_group')
 
     fieldset = {
         'Основная информация': [
@@ -156,13 +168,13 @@ class GroupDetailView(PermissionMixin, ObjectDetailView):
             name = 'Обновить',
             link_params = ['pk'],
             link_name = getpattern(GroupProxy, 'change'),
-            permission = getpermission(GroupProxy, 'change'),
+            permission = getpermission('AccessControl', 'update_group'),
         ),
         Button (
             id='to_list',
             name = 'К таблице',
             link_name = getpattern(GroupProxy, 'list'),
-            permission = getpermission(GroupProxy, 'view'),
+            permission = getpermission('AccessControl', 'view_group'),
         )
     ]
 
@@ -185,19 +197,21 @@ class  GroupUpdateView(ObjectUpdateView):
     form_class = GroupForm
     queryset = GroupProxy.objects.all()
 
+    permission_required = getpermission('AccessControl', 'update_group')
+
     buttons = [
         Button (
             id = 'to_object',
             name = 'К объекту',
             link_params = ['pk'],
             link_name = getpattern(GroupProxy, 'detail'),
-            permission = getpermission(GroupProxy, 'view'),
+            permission = getpermission('AccessControl', 'view_group'),
         ),
         Button (
             id = 'to_list',
             name = 'К таблице', 
             link_name = getpattern(GroupProxy, 'list'),
-            permission = getpermission(GroupProxy, 'view'),
+            permission = getpermission('AccessControl', 'view_group'),
         )
     ]
 
@@ -205,12 +219,14 @@ class  GroupCreateView(ObjectCreateView):
     model = GroupProxy
     form_class = GroupForm
 
+    permission_required = getpermission('AccessControl', 'create_group')
+
     buttons = [
         Button (
             id = 'to_list',
             name = 'К таблице', 
             link_name = getpattern(GroupProxy, 'list'),
-            permission = getpermission(GroupProxy, 'view'),
+            permission = getpermission('AccessControl', 'view_group'),
         )
     ]
 
@@ -222,6 +238,8 @@ class PermissionTableView(ObjectTableView):
     table_class = PermissionTable
     filterset_class = PermissionFilter
     queryset = PermissionProxy.objects.all()
+
+    permission_required = getpermission('AccessControl', 'view_permission')
 
     def get_model_name(self):
         return 'Права'

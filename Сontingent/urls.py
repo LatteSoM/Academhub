@@ -55,10 +55,10 @@ urlpatterns = [
 
      path('student/list', StudentTableView.as_view(), name=getpattern('CurrentStudent', 'list')),
      path('student/transfer/form', PromoteStudentsView.as_view(), name='transfer_students_form'),
-     path('student/add', StudentCreateView.as_view(), name=getpattern('CurrentStudent', 'add')),
-     path('student/<int:pk>', StudentDetailView.as_view(), name=getpattern('CurrentStudent', 'detail')),
-     path('student/update/<int:pk>', StudentUpdateView.as_view(), name=getpattern('CurrentStudent', 'change')),
-
+     path('student/add', StudentCreateView.as_view(), name=getpattern('Student', 'add')),
+     path('student/<int:pk>', StudentDetailView.as_view(), name=getpattern('Student', 'detail')),
+     path('student/update/<int:pk>', StudentUpdateView.as_view(), name=getpattern('Student', 'change')),
+    # пожалуйста
 
      # Студенты в академическом отпуске
     path('student/<int:pk>/academ-leave/', AcademUpdateView.as_view(), name='academ_leave'),
@@ -80,8 +80,6 @@ urlpatterns = [
      # Страница статистики
 
      path('statisticks/', StatisticksView.as_view(), name='statisticks'),
-     path('qualification/<int:qualification_id>/<int:admission_year>/record-book/view/', ViewRecordBookTemplateView.as_view(),
-          name='view_record_book_template'),
      path('qualification/<int:qualification_id>/<int:admission_year>/<int:student_id>/record-book-student/view/', ViewRecordBookView.as_view(),
           name='view_record_book'),
 
