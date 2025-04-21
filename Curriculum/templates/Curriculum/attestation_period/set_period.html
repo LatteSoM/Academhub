@@ -1,0 +1,654 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+<div class="theme-surface p-4 rounded shadow-sm">
+    <div class="d-flex gap-4 flex-column flex-lg-row">
+        <!-- Левая колонка -->
+        <div class="flex-grow-1" style="min-width: 320px;">
+            <h5 class="mb-3 theme-text">Выбор группы</h5>
+            <div class="mb-3">
+                <div class="d-flex flex-column gap-3">
+                    <select class="form-select theme-input theme-text" id="specialty">
+                        <option value="">Выберите специальность</option>
+                        {# Assume specialties are passed in context #}
+                        {% for specialty in specialties %}
+                        <option value="{{ specialty.id }}" {% if specialty.id == initial_selections.specialty_id %}selected{% endif %} class="theme-text">{{ specialty.name }}</option> {# Use initial_selections #}
+                        {% endfor %}
+                    </select>
+
+                    <select class="form-select theme-input theme-text" id="study_plan" {% if not initial_selections.specialty_id %}disabled{% endif %}>
+                        <option value="">{% if not initial_selections.specialty_id %}Сначала выберите специальность{% else %}Выберите учебный план{% endif %}</option>
+                        {# study_plans are passed in context, filtered by specialty in the view #}
+                        {% for plan in study_plans %}
+                        <option value="{{ plan.id }}" {% if plan.id == initial_selections.plan_id %}selected{% endif %} class="theme-text">{{ plan.qualification_name|default:plan.qualification.name }}-{{ plan.admission_year }}-{{ plan.basis_of_admission|default:'' }}</option> {# Removed spaces around hyphens #}
+                        {% endfor %}
+                    </select>
+
+                    <select class="form-select theme-input theme-text" id="course" {% if not initial_selections.plan_id %}disabled{% endif %}>
+                        <option value="">{% if not initial_selections.plan_id %}Сначала выберите учебный план{% else %}Выберите курс{% endif %}</option>
+                        {# courses are passed in context, filtered by plan in the view #}
+                        {% for course_num in courses %}
+                        <option value="{{ course_num }}" {% if course_num == initial_selections.course_id %}selected{% endif %} class="theme-text">{{ course_num }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="groups" class="form-label theme-text">Группы:</label>
+                <div id="groups-container" class="theme-surface rounded border p-3" style="height: 250px; border-color: var(--border-color) !important;">
+                    <div id="groups" class="h-100 overflow-y-auto pe-2 theme-text">
+                        {# groups are passed in context, filtered by course in the view #}
+                        {% if groups %}
+                            {% for group in groups %}
+                            <div class="form-check">
+                                <input class="form-check-input group-select" type="checkbox" value="{{ group.id }}" id="group_{{ group.id }}" name="selected_groups_static" {% if group.id in initial_selections.group_ids %}checked{% endif %}> {# Use group-select class #}
+                                <label class="form-check-label theme-text" for="group_{{ group.id }}">
+                                    {{ group.name }} {# Assuming GroupStudents has 'name', adjust if needed (e.g., group.full_name) #}
+                                </label>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <em class="theme-text-secondary">Выберите курс для отображения групп.</em>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+             <!-- Placeholder for potential future actions like import/export if needed -->
+        </div>
+
+        <!-- Правая колонка -->
+        <div class="flex-grow-1 d-flex flex-column" style="min-width: 60%;">
+             <h5 class="mb-3 theme-text">Установка периодов аттестации</h5>
+            <div class="mb-3">
+                 <div class="d-flex align-items-center gap-2">
+                     <label for="termSelect" class="form-label theme-text mb-0">Семестр:</label>
+                     <select class="form-select theme-input theme-text w-auto" id="termSelect">
+                         {# Use initial_selections.term #}
+                         <option value="1" {% if initial_selections.term == 1 %}selected{% endif %}>1</option>
+                         <option value="2" {% if initial_selections.term == 2 %}selected{% endif %}>2</option>
+                         {# Add more terms if necessary #}
+                     </select>
+                 </div>
+             </div>
+
+            <!-- Bulk Period Setting -->
+            <div class="d-flex gap-3 mb-3 p-3 border rounded theme-surface-secondary align-items-end">
+                 <div class="flex-grow-1">
+                     <label for="bulk_start_date" class="form-label theme-text-secondary mb-1"><small>Начало периода (для выбранных)</small></label>
+                     <input type="date" class="form-control form-control-sm theme-input" id="bulk_start_date">
+                 </div>
+                 <div class="flex-grow-1">
+                     <label for="bulk_end_date" class="form-label theme-text-secondary mb-1"><small>Окончание периода (для выбранных)</small></label>
+                     <input type="date" class="form-control form-control-sm theme-input" id="bulk_end_date">
+                 </div>
+                 <button class="btn btn-sm btn-outline-primary theme-button-outline" id="apply_bulk_dates">Применить</button>
+            </div>
+
+            <!-- Table container -->
+            <div class="custom-table-container theme-surface rounded border flex-grow-1" style="border-color: var(--border-color) !important;">
+                <table class="table table-hover w-100 mb-0">
+                    <thead class="sticky-top theme-bg">
+                        <tr>
+                            <th class="theme-text" style="width: 50px;"><input type="checkbox" id="select_all_disciplines" title="Выбрать все"></th>
+                            <th class="theme-text" style="min-width: 150px;">Код Дисциплины</th>
+                            <th class="theme-text" style="min-width: 250px;">Дисциплина</th>
+                            <th class="theme-text" style="min-width: 180px;">Начало периода аттестации</th>
+                            <th class="theme-text" style="min-width: 180px;">Окончание периода аттестации</th>
+                        </tr>
+                    </thead>
+                    <tbody id="disciplines-body">
+                        {# Example Row Structure - This will be populated dynamically by the view #}
+                        {% for discipline in disciplines %}
+                        <tr class="theme-surface">
+                             <td><input type="checkbox" class="discipline-select" name="discipline_{{ discipline.id }}"></td>
+                             <td>{{ discipline.code }}</td>
+                             <td>{{ discipline.name }}</td>
+                             <td><input type="date" class="form-control form-control-sm theme-input" name="start_date_{{ discipline.id }}" value="{{ discipline.attestation_start_date|date:'Y-m-d' }}"></td>
+                             <td><input type="date" class="form-control form-control-sm theme-input" name="end_date_{{ discipline.id }}" value="{{ discipline.attestation_end_date|date:'Y-m-d' }}"></td>
+                        </tr>
+                        {% empty %}
+                        <tr class="theme-surface empty-placeholder">
+                            <td colspan="5" class="text-center theme-text-secondary"><i>Выберите группу и семестр для отображения дисциплин.</i></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Button container -->
+            <div class="d-flex gap-2 w-100 pt-3">
+                <button type="submit" class="btn btn-primary theme-button flex-grow-1">Сохранить периоды</button>
+                {# Add a cancel button maybe? <a href="{% url 'previous_view' %}" class="btn btn-secondary theme-button-secondary flex-grow-1">Отмена</a> #}
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+{# Include the same styles as the original view, potentially refactor into a separate CSS file later #}
+<style>
+    /* Container for the table with scrolling */
+    .custom-table-container {
+        max-height: 450px; /* Adjust as needed */
+        min-height: 300px; /* Minimum height */
+        overflow-y: auto;
+        overflow-x: auto; /* Add horizontal scroll if needed */
+        border: 1px solid var(--border-color); /* Use theme variable */
+        border-radius: 0.375rem; /* Standard Bootstrap radius */
+    }
+
+    /* Table styling */
+    .table {
+        table-layout: fixed; /* Prevent column width changes */
+        width: 100%; /* Ensure table takes full width */
+    }
+    /* Table header styling */
+    .table thead th {
+        background-color: var(--surface-color); /* Theme surface color */
+        color: var(--text-color); /* Theme text color */
+        padding: 0.75rem 1rem;
+        border-bottom: 2px solid var(--border-color); /* Theme border color */
+        white-space: nowrap;
+        position: sticky; /* Keep header visible */
+        top: 0; /* Stick to the top of the container */
+        z-index: 10; /* Ensure header is above body */
+        vertical-align: middle;
+    }
+     .table thead th:first-child { /* Style for checkbox header */
+         padding: 0.75rem 0.5rem;
+         text-align: center;
+     }
+
+
+    /* Table body cell styling */
+    .table tbody td {
+        padding: 0.5rem 1rem; /* Slightly reduced padding for denser table */
+        border-top: 1px solid var(--border-color); /* Theme border color */
+        background-color: var(--surface-color); /* Use theme surface color */
+        color: var(--text-color); /* Use theme text color */
+        vertical-align: middle;
+        white-space: normal; /* Allow text wrapping */
+        overflow: hidden; /* Hide overflow */
+        text-overflow: ellipsis; /* Add ellipsis for overflow */
+    }
+     .table tbody td:first-child { /* Style for checkbox cell */
+         padding: 0.5rem 0.5rem;
+         text-align: center;
+     }
+
+    /* Ensure selects/inputs within table cells use theme */
+    .table .form-select,
+    .table .form-control {
+        background-color: var(--bg-color); /* Use background for contrast */
+        border-color: var(--border-color);
+        color: var(--text-color);
+        font-size: 0.875rem; /* Smaller font size for inputs in table */
+    }
+     .table .form-control[type="date"] {
+         min-width: 150px; /* Ensure date inputs have enough space */
+     }
+
+    /* Scrollbar styling for theme consistency */
+    #groups::-webkit-scrollbar,
+    .custom-table-container::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    #groups::-webkit-scrollbar-track,
+    .custom-table-container::-webkit-scrollbar-track {
+        background: var(--surface-color); /* Scrollbar track */
+        border-radius: 4px;
+    }
+
+    #groups::-webkit-scrollbar-thumb,
+    .custom-table-container::-webkit-scrollbar-thumb {
+        background-color: var(--border-color); /* Scrollbar handle */
+        border-radius: 4px;
+        border: 2px solid var(--surface-color); /* Padding around thumb */
+    }
+
+    #groups::-webkit-scrollbar-thumb:hover,
+    .custom-table-container::-webkit-scrollbar-thumb:hover {
+        background-color: var(--text-color); /* Darker on hover */
+    }
+
+    /* General form select styling */
+    .form-select.theme-input,
+    .form-control.theme-input {
+        background-color: var(--surface-color); /* Use surface color */
+        border: 1px solid var(--border-color);
+        color: var(--text-color);
+        min-width: 200px; /* Adjust as needed */
+    }
+
+    .form-select.theme-input:disabled,
+    .form-control.theme-input:disabled {
+        background-color: var(--bg-color); /* Different background when disabled */
+        opacity: 0.7;
+    }
+
+    /* Theme buttons */
+    .theme-button {
+        background-color: var(--bs-primary);
+        border-color: var(--bs-primary);
+        color: white;
+    }
+    .theme-button-secondary {
+        background-color: var(--bs-secondary);
+        border-color: var(--bs-secondary);
+        color: white;
+    }
+     .theme-button-success {
+        background-color: var(--bs-success);
+        border-color: var(--bs-success);
+        color: white;
+    }
+    .theme-button-outline {
+        color: var(--text-color);
+        border-color: var(--border-color);
+    }
+    .theme-button-outline:hover {
+        background-color: var(--surface-color);
+        color: var(--text-color);
+    }
+
+    /* Secondary text color utility */
+    .theme-text-secondary {
+        color: var(--text-secondary, #6c757d); /* Fallback color */
+        opacity: 0.8;
+    }
+     .theme-surface-secondary {
+         background-color: var(--surface-secondary, #f8f9fa); /* Example fallback */
+         border-color: var(--border-color) !important;
+     }
+
+    /* Placeholder row styling */
+    .empty-placeholder td {
+        height: 200px; /* Adjust height */
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 991.98px) {
+        .d-flex.flex-column.flex-lg-row {
+            gap: 1.5rem !important;
+        }
+        .table th,
+        .table td {
+            min-width: 150px;
+            font-size: 0.9rem;
+        }
+         .table .form-control[type="date"] {
+             min-width: 130px;
+         }
+    }
+
+    @media (max-width: 767.98px) {
+        .table th,
+        .table td {
+            min-width: 120px;
+            font-size: 0.85rem;
+        }
+         .table .form-control[type="date"] {
+             min-width: 120px;
+         }
+         .d-flex.gap-2.w-100.pt-3 {
+            flex-direction: column;
+            align-items: stretch;
+         }
+         .d-flex.gap-2.w-100.pt-3 .btn {
+            width: 100%;
+         }
+         .d-flex.gap-3.mb-3.p-3 { /* Stack bulk controls */
+             flex-direction: column;
+             align-items: stretch;
+             gap: 0.5rem !important;
+         }
+         .d-flex.gap-3.mb-3.p-3 .btn {
+             margin-top: 0.5rem;
+         }
+    }
+</style>
+
+{# Add JavaScript for interactions: select all, apply bulk dates, dynamic loading #}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const specialtySelect = document.getElementById('specialty');
+    const studyPlanSelect = document.getElementById('study_plan');
+    const courseSelect = document.getElementById('course');
+    const groupsContainer = document.getElementById('groups');
+    const termSelect = document.getElementById('termSelect');
+    const disciplinesTbody = document.getElementById('disciplines-body');
+    const selectAllCheckbox = document.getElementById('select_all_disciplines');
+    const applyBulkButton = document.getElementById('apply_bulk_dates');
+    const bulkStartDateInput = document.getElementById('bulk_start_date');
+    const bulkEndDateInput = document.getElementById('bulk_end_date');
+
+    // --- Get initial values from the json_script tag ---
+    const initialSelections = JSON.parse(document.getElementById('initial-selections-data').textContent || '{}');
+    const initialPlanId = initialSelections.plan_id || null;
+    const initialCourseId = initialSelections.course_id || null;
+    const initiallySelectedGroupIds = initialSelections.group_ids || [];
+
+    // --- Helper function to clear subsequent selects ---
+    function clearSelect(selectElement, message) {
+        selectElement.innerHTML = `<option selected value="">${message}</option>`;
+        selectElement.disabled = true;
+    }
+
+    function clearGroups(message = '<em class="theme-text-secondary">Выберите курс для отображения групп.</em>') {
+        groupsContainer.innerHTML = message;
+    }
+
+    function clearDisciplinesTable(message = '<i>Выберите группу и семестр для отображения дисциплин.</i>') {
+        disciplinesTbody.innerHTML = `<tr class="theme-surface empty-placeholder"><td colspan="5" class="text-center theme-text-secondary">${message}</td></tr>`;
+        if (selectAllCheckbox) selectAllCheckbox.checked = false; // Reset select all
+    }
+
+    // --- Function to fetch and display disciplines ---
+    function fetchDisciplines() {
+        const studyPlanId = studyPlanSelect.value;
+        const courseId = courseSelect.value;
+        const termId = termSelect.value;
+        // Get currently checked groups within this page
+        const selectedGroupCheckboxes = groupsContainer.querySelectorAll('input[type="checkbox"]:checked');
+        const currentSelectedGroupIds = Array.from(selectedGroupCheckboxes).map(cb => cb.value);
+
+        if (!studyPlanId || !courseId || !termId || currentSelectedGroupIds.length === 0) {
+            clearDisciplinesTable();
+            // Optionally add a more specific message if groups aren't selected
+            if (studyPlanId && courseId && termId && currentSelectedGroupIds.length === 0) {
+                 clearDisciplinesTable('<i>Выберите хотя бы одну группу для отображения дисциплин.</i>');
+            }
+            return;
+        }
+
+        // Construct the API URL - Adjust if your API endpoint differs
+        // Note: Sending groups might require a different API or parameter handling
+        const apiUrl = `/CurriculumApp/api/disciplines_by_curriculum_course_term/?curriculum_id=${studyPlanId}&course=${courseId}&term=${termId}`;
+        // If your API supports filtering by group IDs, add them:
+        // apiUrl += `&groups=${currentSelectedGroupIds.join(',')}`;
+
+        disciplinesTbody.innerHTML = `<tr class="theme-surface"><td colspan="5" class="text-center theme-text-secondary"><i>Загрузка дисциплин...</i></td></tr>`;
+
+        fetch(apiUrl)
+            .then(response => response.json())
+            .then(data => {
+                disciplinesTbody.innerHTML = ''; // Clear loading message
+                if (data && data.length > 0) {
+                    data.forEach(discipline => {
+                        const row = document.createElement('tr');
+                        row.className = 'theme-surface';
+
+                        // Checkbox cell
+                        const checkCell = document.createElement('td');
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.className = 'discipline-select';
+                        checkbox.name = `discipline_${discipline.discipline_id}`; // Use discipline_id from API response
+                        checkbox.value = discipline.discipline_id;
+                        checkCell.appendChild(checkbox);
+                        row.appendChild(checkCell);
+
+                        // Code cell
+                        const codeCell = document.createElement('td');
+                        codeCell.textContent = discipline.discipline_code;
+                        row.appendChild(codeCell);
+
+                        // Name cell
+                        const nameCell = document.createElement('td');
+                        nameCell.textContent = discipline.discipline_name;
+                        row.appendChild(nameCell);
+
+                        // Start Date cell
+                        const startDateCell = document.createElement('td');
+                        const startDateInput = document.createElement('input');
+                        startDateInput.type = 'date';
+                        startDateInput.className = 'form-control form-control-sm theme-input';
+                        startDateInput.name = `start_date_${discipline.discipline_id}`;
+                        // Pre-fill if data available (adjust property name if needed)
+                        // startDateInput.value = discipline.attestation_start_date || '';
+                        startDateCell.appendChild(startDateInput);
+                        row.appendChild(startDateCell);
+
+                        // End Date cell
+                        const endDateCell = document.createElement('td');
+                        const endDateInput = document.createElement('input');
+                        endDateInput.type = 'date';
+                        endDateInput.className = 'form-control form-control-sm theme-input';
+                        endDateInput.name = `end_date_${discipline.discipline_id}`;
+                        // Pre-fill if data available (adjust property name if needed)
+                        // endDateInput.value = discipline.attestation_end_date || '';
+                        endDateCell.appendChild(endDateInput);
+                        row.appendChild(endDateCell);
+
+                        disciplinesTbody.appendChild(row);
+                    });
+                    // Re-attach event listeners for new checkboxes if needed (delegation is better)
+                    updateSelectAllState(); // Update select-all checkbox state
+                } else {
+                    clearDisciplinesTable('<i>Нет дисциплин для выбранных параметров.</i>');
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching disciplines:', error);
+                clearDisciplinesTable('<i class="text-danger">Ошибка загрузки дисциплин.</i>');
+            });
+    }
+
+    // --- Event Listener for Specialty ---
+    specialtySelect.addEventListener('change', function() {
+        const specialtyId = this.value;
+        clearSelect(studyPlanSelect, 'Загрузка...');
+        clearSelect(courseSelect, 'Сначала выберите учебный план');
+        clearGroups();
+        clearDisciplinesTable();
+
+        if (!specialtyId) {
+            clearSelect(studyPlanSelect, 'Сначала выберите специальность');
+            return;
+        }
+
+        fetch(`/CurriculumApp/api/study-plans/?specialty_id=${specialtyId}`)
+            .then(response => response.json())
+            .then(data => {
+                clearSelect(studyPlanSelect, 'Выберите учебный план');
+                data.forEach(plan => {
+                    const option = document.createElement('option');
+                    option.value = plan.id;
+                    // Corrected formatting and fallback
+                    option.textContent = `${plan.qualification_name || plan.qualification.name}-${plan.admission_year}-${plan.basis_of_admission || ''}`;
+                    // Check if this plan was initially selected using the variable defined above
+                    if (initialPlanId !== null && plan.id == initialPlanId) {
+                        option.selected = true;
+                    }
+                    studyPlanSelect.appendChild(option);
+                });
+                studyPlanSelect.disabled = false;
+                // Trigger change if a plan was pre-selected to load courses/groups
+                if (studyPlanSelect.value) {
+                    studyPlanSelect.dispatchEvent(new Event('change'));
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching study plans:', error);
+                clearSelect(studyPlanSelect, 'Ошибка загрузки планов');
+            });
+    });
+
+    // --- Event Listener for Study Plan ---
+    studyPlanSelect.addEventListener('change', function() {
+        const studyPlanId = this.value;
+        clearSelect(courseSelect, 'Загрузка...');
+        clearGroups();
+        clearDisciplinesTable();
+
+        if (!studyPlanId) {
+            clearSelect(courseSelect, 'Сначала выберите учебный план');
+            return;
+        }
+
+        fetch(`/CurriculumApp/api/courses_and_groups/?curriculum_id=${studyPlanId}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log("API Response (/courses_and_groups/):", data); // Log API response
+                clearSelect(courseSelect, 'Выберите курс');
+                data.courses.forEach(course => {
+                    const option = document.createElement('option');
+                    option.value = course;
+                    option.textContent = course;
+                     // Check if this course was initially selected using the variable defined above
+                     // Assuming 'course' from API is a number or string representing a number
+                    if (initialCourseId !== null && course == initialCourseId) {
+                        option.selected = true;
+                    }
+                    courseSelect.appendChild(option);
+                });
+                courseSelect.disabled = false;
+
+                // Populate groups
+                groupsContainer.innerHTML = ''; // Clear placeholder
+                 if (data.study_groups && data.study_groups.length > 0) {
+                    console.log("Populating groups..."); // Log before loop
+                    data.study_groups.forEach(study_group => {
+                        const div = document.createElement('div');
+                        div.className = 'form-check';
+                        const input = document.createElement('input');
+                        input.type = 'checkbox';
+                        input.className = 'form-check-input group-select';
+                        input.id = `group_${study_group.id}`;
+                        input.value = study_group.id;
+                        input.name = 'selected_groups_dynamic'; // Use a distinct name
+                        // Check if this group was initially selected
+                        // Check against initial IDs, coercing both to strings for comparison
+                        if (initiallySelectedGroupIds.map(String).includes(String(study_group.id))) {
+                             input.checked = true;
+                        }
+                        const label = document.createElement('label');
+                        label.className = 'form-check-label theme-text';
+                        label.htmlFor = `group_${study_group.id}`;
+                        label.textContent = study_group.full_name || study_group.name; // Use full_name if available
+                        div.appendChild(input);
+                        div.appendChild(label);
+                        groupsContainer.appendChild(div);
+                    });
+                    console.log("Finished populating groups."); // Log after loop
+                 } else {
+                     console.log("No study groups found in API response."); // Log if no groups
+                     clearGroups('<em>Нет групп для этого плана.</em>');
+                 }
+                 // Trigger change if a course was pre-selected to load disciplines
+                 if (courseSelect.value) {
+                     courseSelect.dispatchEvent(new Event('change'));
+                 } else {
+                     // If no course pre-selected, but groups might be, try fetching disciplines
+                     fetchDisciplines();
+                 }
+            })
+            .catch(error => {
+                console.error('Error fetching courses/groups:', error); // Log fetch error
+                clearSelect(courseSelect, 'Ошибка загрузки курсов');
+                clearGroups('Ошибка загрузки групп.');
+            });
+    });
+
+    // --- Event Listener for Course ---
+    courseSelect.addEventListener('change', function() {
+        // Groups are usually tied to the Study Plan, not the course selection within it.
+        // But changing the course *does* affect which disciplines are shown.
+        fetchDisciplines();
+    });
+
+    // --- Event Listener for Term ---
+    termSelect.addEventListener('change', fetchDisciplines);
+
+    // --- Event Listener for Group Checkboxes (using delegation) ---
+    groupsContainer.addEventListener('change', function(event) {
+        if (event.target.matches('.group-select')) {
+            fetchDisciplines();
+        }
+    });
+
+    // --- Select All/None Disciplines ---
+    function updateSelectAllState() {
+         // Removed check as selectAllCheckbox should exist
+         const disciplineCheckboxes = disciplinesTbody.querySelectorAll('.discipline-select');
+         let allChecked = disciplineCheckboxes.length > 0; // Start assuming true if there are checkboxes
+         disciplineCheckboxes.forEach(cb => {
+             if (!cb.checked) {
+                 allChecked = false;
+             }
+         });
+         selectAllCheckbox.checked = allChecked;
+         selectAllCheckbox.indeterminate = false; // Reset indeterminate state
+    } // Close func
+
+    selectAllCheckbox.addEventListener('change', function() {
+        const disciplineCheckboxes = disciplinesTbody.querySelectorAll('.discipline-select');
+        disciplineCheckboxes.forEach(checkbox => {
+            checkbox.checked = selectAllCheckbox.checked;
+        });
+    }); // Close listener func
+
+    // Use event delegation for dynamically added discipline checkboxes
+    disciplinesTbody.addEventListener('change', function(event) {
+        if (event.target.matches('.discipline-select')) {
+             updateSelectAllState();
+        }
+    }); // Close listener func
+
+    // --- Apply Bulk Dates ---
+    applyBulkButton.addEventListener('click', function() {
+        const startDate = bulkStartDateInput.value;
+        const endDate = bulkEndDateInput.value;
+        const selectedDisciplineCheckboxes = disciplinesTbody.querySelectorAll('.discipline-select:checked');
+
+        if (!startDate && !endDate) {
+            alert('Пожалуйста, выберите хотя бы одну дату для применения.');
+            return;
+        }
+        if (selectedDisciplineCheckboxes.length === 0) {
+             alert('Пожалуйста, выберите хотя бы одну дисциплину.');
+             return;
+        }
+
+        selectedDisciplineCheckboxes.forEach(checkbox => {
+            const row = checkbox.closest('tr');
+            const startDateField = row.querySelector('input[type="date"][name^="start_date_"]');
+            const endDateField = row.querySelector('input[type="date"][name^="end_date_"]');
+
+            if (startDate && startDateField) {
+                startDateField.value = startDate;
+            }
+            if (endDate && endDateField) {
+                endDateField.value = endDate;
+            }
+        });
+    }); // Close listener func
+
+    // --- Initial Load Trigger ---
+    // Prioritize triggering study plan change if it's pre-selected,
+    // as this loads courses and groups. Otherwise, trigger specialty change.
+    if (studyPlanSelect.value) {
+        console.log("Initial load: Triggering study plan change.");
+        studyPlanSelect.dispatchEvent(new Event('change'));
+        // Note: The study plan change handler should subsequently trigger course change if needed.
+    } else if (specialtySelect.value) {
+        console.log("Initial load: Triggering specialty change.");
+        specialtySelect.dispatchEvent(new Event('change'));
+    } else {
+        // If nothing is pre-selected, no initial fetch needed.
+        console.log("Initial load: No pre-selections found.");
+    }
+}); // End DOMContentLoaded listener
+</script>
+
+{# Place the json_script tag here, just before the endblock #}
+{{ initial_selections|json_script:"initial-selections-data" }}
+
+{% endblock %}

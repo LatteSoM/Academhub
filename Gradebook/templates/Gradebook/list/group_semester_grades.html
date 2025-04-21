@@ -1,30 +1,54 @@
 {% extends 'base_view.html' %}
 {% load custom_filters %}
-{% load static %}
-{% load custom_filters %}
 
+{% load custom_filters %}
+{% load static %}
 
 {% block content %}
-
-
 <style>
-
+    /* Основные стили */
     .export-btn-container {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
     }
+
+    .legend {
+        margin-bottom: 20px;
+    }
+
+    .legend .badge {
+        margin-right: 10px;
+        padding: 8px 12px;
+        font-size: 14px;
+        color: var(--text-color);
+        background-color: var(--surface-color);
+        border: 1px solid var(--border-color);
+    }
+
+    /* Контейнер таблицы с прокруткой */
+    .table-responsive-container {
+        overflow-x: auto;
+        max-width: 100%;
+        margin: 20px 0;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        background-color: var(--surface-color);
+    }
+
     /* Стили для таблицы */
     .grades-table {
-        border: 1px solid black;
+        border: 1px solid var(--border-color);
         border-collapse: collapse;
-        width: 10%;
+        width: 100%;
+        background-color: var(--surface-color);
+        color: var(--text-color);
     }
 
     .grades-table th,
     .grades-table td {
-        border: 1px solid black;
+        border: 1px solid var(--border-color);
         padding: 8px;
         text-align: center;
         vertical-align: middle;
@@ -46,14 +70,94 @@
         width: 10%;
         position: sticky;
         left: 0;
-        background: white;
+        background: var(--surface-color);
         z-index: 1;
     }
 
-    .grade-primary { background-color: #d4edda !important; } /* Зеленый */
-    .grade-retake { background-color: #cce5ff !important; }  /* Голубой */
-    .grade-commission { background-color: #e2d9f3 !important; } /* Фиолетовый */
-    .grade-bad {background-color: #f5c6cb !important;} /* Красный */
+    .number-column {
+        width: 5%;
+    }
+
+    .basis-column {
+        width: 10%;
+    }
+
+    /* Цвета оценок */
+    .theme-light .grade-primary { background-color: #d4edda !important; }
+    .theme-light .grade-retake { background-color: #cce5ff !important; }
+    .theme-light .grade-commission { background-color: #e2d9f3 !important; }
+    .theme-light .grade-bad { background-color: #f5c6cb !important; }
+
+    .theme-dark .grade-primary { background-color: #2e7d32 !important; }
+    .theme-dark .grade-retake { background-color: #1565c0 !important; }
+    .theme-dark .grade-commission { background-color: #6a1b9a !important; }
+    .theme-dark .grade-bad { background-color: #b71c1c !important; }
+
+    /* Стили кнопки экспорта */
+    .btn-success {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        font-size: 14px;
+        font-weight: 500;
+        text-decoration: none;
+        background-color: #28a745;
+        color: #ffffff;
+        border: 1px solid #28a745;
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+        cursor: pointer;
+    }
+
+    .theme-dark .btn-success {
+        background-color: #2e7d32;
+        border-color: #2e7d32;
+        color: var(--text-color);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-success:hover {
+        background-color: #218838;
+        border-color: #218838;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+        transform: translateY(-1px);
+    }
+
+    .theme-dark .btn-success:hover {
+        background-color: #3d8b40;
+        border-color: #3d8b40;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+    }
+
+    .btn-success:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .theme-dark .btn-success:active {
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-success:disabled {
+        background-color: #6c757d;
+        border-color: #6c757d;
+        color: #ffffff;
+        box-shadow: none;
+        cursor: not-allowed;
+        opacity: 0.65;
+    }
+
+    .theme-dark .btn-success:disabled {
+        background-color: #495057;
+        border-color: #495057;
+        color: var(--text-color);
+    }
+
+    .btn-success i {
+        font-size: 16px;
+    }
 </style>
 
 <div class="export-btn-container">
@@ -64,14 +168,14 @@
     </a>
 </div>
 
-<div class="legend mb-3">
+<div class="legend">
     <span class="badge grade-primary">Первичная сдача</span>
     <span class="badge grade-retake">Пересдача</span>
     <span class="badge grade-commission">Комиссия</span>
     <span class="badge grade-bad">2 или н/я</span>
 </div>
 
-<div class="table-responsive">
+<div class="table-responsive-container">
     <table class="grades-table">
         <thead>
             <tr>
@@ -80,7 +184,7 @@
                 <th class="fixed-column basis-column">Основа обучения</th>
                 {% for discipline in disciplines %}
                 <th class="discipline-header">
-                    <div class="vertical-text">
+                    <div>
                         {{ discipline.name }} {{ discipline.code }}
                     </div>
                 </th>
@@ -95,10 +199,10 @@
                 <td class="fixed-column basis-column">{{ student.education_basis }}</td>
                 {% for discipline in disciplines %}
                 {% with grade=grades|get_item:student.id|get_item:discipline.id %}
-                <td class="{% if grade.gradebook.type_of_grade_book == 'Первичная сдача' and grade.grade != "2" and grade.grade != "Неявка" %}grade-primary
-                          {% elif grade.gradebook.type_of_grade_book == 'Пересдача' %}grade-retake
-                          {% elif grade.gradebook.type_of_grade_book == 'Комиссия' %}grade-commission
-                          {% elif grade.grade == "2" or grade.grade == "Неявка" %}grade-bad{% endif %}">
+                <td class="{% if grade and grade.gradebook.type_of_grade_book == 'Первичная сдача' and grade.grade|lower not in '2,неявка,н/я' %}grade-primary
+                          {% elif grade and grade.gradebook.type_of_grade_book == 'Пересдача' and grade.grade|lower not in '2,неявка,н/я' %}grade-retake
+                          {% elif grade and grade.gradebook.type_of_grade_book == 'Комиссия' and grade.grade|lower not in '2,неявка,н/я' %}grade-commission
+                          {% elif grade and grade.grade|lower in '2,неявка,н/я' %}grade-bad{% endif %}">
                     {{ grade.grade|default:"-" }}
                 </td>
                 {% endwith %}

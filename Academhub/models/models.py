@@ -83,6 +83,11 @@ class CustomUser(AcademHubModel, AbstractBaseUser, PermissionsMixin):
         verbose_name='ФИО'
     )
 
+    cmc = models.CharField(
+        max_length=255,
+        verbose_name='ЦМК '
+    )
+
     is_active = models.BooleanField(default=True, verbose_name='Активный?')
     is_staff = models.BooleanField(default=False, verbose_name='Персонал?')
     is_teacher = models.BooleanField(default=False, verbose_name='Учитель?')
@@ -870,7 +875,11 @@ class Gradebook(AcademHubModel):
 
     date_of_opening = models.DateField(verbose_name="Дата открытия ведомости", blank=True, null=True)
     date_of_filling = models.DateField(blank=True, null=True, verbose_name="Дата заполнения ведомости")
-    date_of_closing = models.DateField(blank=True, null=True, verbose_name="Дата закрытия ведомости")
+    date_of_closing = models.DateTimeField(
+        blank=True,
+        null=True,
+        verbose_name="Дата закрытия ведомости"
+    )
     amount_of_days_for_closing = models.PositiveIntegerField(verbose_name="Сколько дней дается на закрытие ведомости с момента открытия", blank=True, null=True)
 
     type_of_grade_book = models.CharField(blank=True, null=True, verbose_name="Тип ведомости", choices=TYPE_CHOICES, max_length=255)
@@ -1193,14 +1202,16 @@ class Curriculum(AcademHubModel):
     warnings = models.BooleanField(default=False)
     warning_description = models.JSONField(null=True, blank=True)
     qualification = models.ForeignKey(
-        Qualification, on_delete=models.CASCADE, verbose_name="Квалификация"
+        Qualification, on_delete=models.CASCADE, related_name='curriculums', verbose_name="Квалификация"
     )
     admission_year = models.PositiveIntegerField(verbose_name="Год поступления")
+
+    basis_of_admission = models.PositiveIntegerField(verbose_name="Основа поступления")
 
     class Meta:
         verbose_name = "Учебный план"
         verbose_name_plural = "Учебные планы"
-        unique_together = ['qualification', 'admission_year']
+        unique_together = ['qualification', 'admission_year', 'basis_of_admission']
 
     @classmethod
     def from_dict(cls, data):
@@ -1209,11 +1220,13 @@ class Curriculum(AcademHubModel):
             qualification=qual_obj,
             admission_year=data["admission_year"],
             qualification_name = qual_obj.name,
+            basis_of_admission=data['basis_of_admission']
         )
         if not created:
             obj.qualification_name = data.get("qualification_name", obj.qualification_name)
             obj.warnings = data.get("warnings", obj.warnings)
             obj.warning_description = data.get("warning_description", obj.warning_description)
+            obj.basis_of_admission = data.get("basis_of_admission", obj.basis_of_admission)
             obj.save()
         return obj
 
@@ -1222,7 +1235,8 @@ class Curriculum(AcademHubModel):
             "qualification": self.qualification,
             "admission_year": self.admission_year,
             "warnings": self.warnings,
-            "warning_description": self.warning_description
+            "warning_description": self.warning_description,
+            "basis_of_admission": self.basis_of_admission
         }
 
 
@@ -1484,16 +1498,16 @@ class ClockCell(AcademHubModel):
         }
 
 
-class TeacherDicsciplineCurriculum(AcademHubModel):
+class TeachersForDisciplineAndCurriculum(AcademHubModel):
     """
     Модель создаёт связь преподавателя с дисциплиной в конкретном семестре? конкретного учебного плана,
     """
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    teacher = models.ForeignKey(CustomUser, related_name='disciplines', on_delete=models.CASCADE)
-    course = models.IntegerField(null=False),
-    term = models.IntegerField(null=False),
-    discipline = models.ForeignKey(Discipline, related_name='teachers', on_delete=models.CASCADE)
-    curriculum = models.ForeignKey(Curriculum, related_name='teachers_dicsciplines', on_delete=models.CASCADE)
+    teachers = models.ManyToManyField(CustomUser, related_name="disciplines_in_curriculums")
+    course = models.IntegerField(null=False)
+    term = models.IntegerField(null=False)
+    discipline = models.ForeignKey(Discipline, related_name='teachers_for_curriculum_and_discipline', on_delete=models.CASCADE)
+    curriculum = models.ForeignKey(Curriculum, related_name='teachers_disciplines', on_delete=models.CASCADE)
+    groups = models.ManyToManyField(GroupStudents, 'teachers_for_groups')
 
 
     class Meta:
@@ -1503,8 +1517,9 @@ class TeacherDicsciplineCurriculum(AcademHubModel):
     @classmethod
     def from_dict(cls, data):
         return cls(
-            id=data["id"],
             teacher=CustomUser.objects.get(id=data["teacher"]),
+            course=data['course'],
+            term=data['term'],
             discipline=Discipline.objects.get(id=data["discipline"]),
             curriculum=Curriculum.objects.get(id=data["curriculum"]),
         )
@@ -1519,3 +1534,34 @@ class TeacherDicsciplineCurriculum(AcademHubModel):
             "curriculum": self.curriculum,
         }
 
+
+class AttestationPeriodForDisciplines(AcademHubModel):
+    course = models.IntegerField(null=False)
+    term = models.IntegerField(null=False)
+    discipline = models.ForeignKey(Discipline, related_name='attestations_periods', on_delete=models.CASCADE)
+    curriculum = models.ForeignKey(Curriculum, related_name='attestations_periods_disciplines', on_delete=models.CASCADE)
+    groups = models.ManyToManyField(GroupStudents, 'teachers_for_groups_attestation')
+    start_date = models.DateField(null=False)
+    end_date = models.DateField(null=False)
+
+    @classmethod
+    def from_dict(cls, data):
+        return cls(
+            id=data["id"],
+            course=data['course'],
+            term=data['term'],
+            discipline=Discipline.objects.get(id=data["discipline"]),
+            curriculum=Curriculum.objects.get(id=data["curriculum"]),
+            start_date=data['start_date'],
+            end_date=data['end_date'],
+        )
+
+    def to_dict(self):
+        return {
+            "course": self.course,
+            "term": self.term,
+            "discipline": self.discipline,
+            "curriculum": self.curriculum,
+            "start_date": self.start_date,
+            "end_date": self.end_date,
+        }

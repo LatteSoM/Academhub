@@ -1,0 +1,331 @@
+{% extends 'base_view.html' %}
+{% load grade_tags %}
+{% load static %}
+
+{% block content %}
+<style>
+    /* Основные стили */
+    .export-btn-container {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+    }
+
+    .legend {
+        margin-bottom: 20px;
+    }
+
+    .legend .badge {
+        margin-right: 10px;
+        padding: 8px 12px;
+        font-size: 14px;
+        color: var(--text-color);
+        background-color: var(--surface-color);
+        border: 1px solid var(--border-color);
+    }
+
+    .header-info {
+        margin-bottom: 15px;
+        font-size: 16px;
+        font-weight: bold;
+        text-align: center;
+        color: var(--text-color);
+    }
+
+    /* Контейнер таблицы с прокруткой */
+    .table-responsive-container {
+        overflow-x: auto;
+        max-width: 100%;
+        margin: 20px 0;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        background-color: var(--surface-color);
+    }
+
+    /* Основные стили таблицы */
+    .grades-table {
+        border-collapse: collapse;
+        width: 100%;
+        background-color: var(--surface-color);
+        color: var(--text-color);
+    }
+
+    .grades-table th,
+    .grades-table td {
+        border: 1px solid var(--border-color);
+        padding: 8px;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    /* Фиксированные колонки */
+    .fixed-column {
+        position: sticky;
+        left: 0;
+        background-color: var(--surface-color);
+        z-index: 2;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .number-column {
+        width: 50px;
+    }
+
+    .student-column {
+        width: 200px;
+        min-width: 200px;
+        text-align: left;
+    }
+
+    .diploma-column {
+        width: 100px;
+        min-width: 100px;
+        font-weight: bold;
+    }
+
+    /* Стили для вертикальных заголовков */
+    .discipline-header {
+        width: 40px;
+        max-width: 40px;
+        height: 150px;
+        position: relative;
+    }
+
+    .hours-header {
+        width: 40px;
+        max-width: 40px;
+        height: 40px;
+    }
+
+    .vertical-text-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .vertical-text {
+        transform: rotate(-90deg);
+        transform-origin: center;
+        white-space: nowrap;
+        position: absolute;
+        color: var(--text-color);
+    }
+
+    /* Цвета оценок */
+    .theme-light .grade-primary { background-color: #d4edda !important; }
+    .theme-light .grade-retake { background-color: #cce5ff !important; }
+    .theme-light .grade-commission { background-color: #e2d9f3 !important; }
+    .theme-light .grade-bad { background-color: #f5c6cb !important; }
+
+    .theme-dark .grade-primary { background-color: #2e7d32 !important; }
+    .theme-dark .grade-retake { background-color: #1565c0 !important; }
+    .theme-dark .grade-commission { background-color: #6a1b9a !important; }
+    .theme-dark .grade-bad { background-color: #b71c1c !important; }
+
+    .diploma-red { color: #ff0000; }
+    .diploma-blue { color: #2196f3; }
+
+    /* Подсказки */
+    .discipline-header:hover .discipline-tooltip {
+        display: block;
+    }
+
+    .discipline-tooltip {
+        display: none;
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--surface-color);
+        color: var(--text-color);
+        padding: 5px 10px;
+        border-radius: 4px;
+        border: 1px solid var(--border-color);
+        white-space: nowrap;
+        z-index: 100;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Стили кнопки экспорта */
+    .btn-success {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        font-size: 14px;
+        font-weight: 500;
+        text-decoration: none;
+        background-color: #28a745;
+        color: #ffffff;
+        border: 1px solid #28a745;
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+        cursor: pointer;
+    }
+
+    .theme-dark .btn-success {
+        background-color: #2e7d32;
+        border-color: #2e7d32;
+        color: var(--text-color);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-success:hover {
+        background-color: #218838;
+        border-color: #218838;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+        transform: translateY(-1px);
+    }
+
+    .theme-dark .btn-success:hover {
+        background-color: #3d8b40;
+        border-color: #3d8b40;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+    }
+
+    .btn-success:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .theme-dark .btn-success:active {
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-success:disabled {
+        background-color: #6c757d;
+        border-color: #6c757d;
+        color: #ffffff;
+        box-shadow: none;
+        cursor: not-allowed;
+        opacity: 0.65;
+    }
+
+    .theme-dark .btn-success:disabled {
+        background-color: #495057;
+        border-color: #495057;
+        color: var(--text-color);
+    }
+
+    .btn-success i {
+        font-size: 16px;
+    }
+</style>
+
+<div class="export-btn-container">
+    <a href="{% url 'export_diplom_types' %}?group={{ group.id }}"
+       class="btn btn-success"
+       {% if not group %}disabled{% endif %}>
+        <i class="fas fa-file-export"></i> Экспорт в Excel
+    </a>
+</div>
+
+<div class="legend">
+    <span class="badge grade-primary">Первичная сдача</span>
+    <span class="badge grade-retake">Пересдача</span>
+    <span class="badge grade-commission">Комиссия</span>
+    <span class="badge grade-bad">2 или н/я</span>
+</div>
+
+<div class="header-info">
+    СПЕЦИАЛЬНОСТЬ {{ group.qualification.name }} ({{ education_basis }})<br>
+    СВОДНАЯ ВЕДОМОСТЬ УСПЕВАЕМОСТИ СТУДЕНТОВ ГРУППЫ {{ group.full_name }}
+</div>
+
+<div class="table-responsive-container">
+    <table class="grades-table">
+        <thead>
+            <!-- Заголовок с дисциплинами -->
+            <tr>
+                <th class="fixed-column number-column">№</th>
+                <th class="fixed-column student-column">ФИО студента</th>
+                {% for semester in semesters_order %}
+                    {% for discipline, disp_semester, hours, display_name in disciplines_with_semesters %}
+                        {% if disp_semester == semester %}
+                        <th class="discipline-header">
+                            <div class="vertical-text-container">
+                                <div class="vertical-text" title="{{ display_name }} ({{ discipline.code }}) - Семестр {{ semester }}">
+                                    {{ discipline.code }} {{ display_name }}
+                                </div>
+                            </div>
+                        </th>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+                <th class="fixed-column diploma-column">Тип диплома</th>
+            </tr>
+            <!-- Строка с часами -->
+            <tr>
+                <th class="fixed-column number-column"></th>
+                <th class="fixed-column student-column">Часы</th>
+                {% for semester in semesters_order %}
+                    {% for discipline, disp_semester, hours, display_name in disciplines_with_semesters %}
+                        {% if disp_semester == semester %}
+                        <th class="hours-header">
+                            {{ hours|default:"0" }}
+                        </th>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+                <th class="fixed-column diploma-column">{{ total_all_hours|default:"0" }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+            <tr>
+                <td class="fixed-column number-column">{{ forloop.counter }}</td>
+                <td class="fixed-column student-column">{{ student.full_name }}</td>
+                {% for semester in semesters_order %}
+                    {% for discipline, disp_semester, hours, display_name in disciplines_with_semesters %}
+                        {% if disp_semester == semester %}
+                        {% with grade=student|get_grade:discipline|get_grade_for_semester:disp_semester %}
+                        <td class="{% if grade.gradebook.type_of_grade_book == 'Первичная сдача' and grade.grade != '2' and grade.grade != 'Неявка' %}grade-primary
+                                  {% elif grade.gradebook.type_of_grade_book == 'Пересдача' and grade.grade != '2' and grade.grade != 'Неявка' %}grade-retake
+                                  {% elif grade.gradebook.type_of_grade_book == 'Комиссия' and grade.grade != '2' and grade.grade != 'Неявка' %}grade-commission
+                                  {% elif grade.grade == '2' or grade.grade == 'Неявка' %}grade-bad{% endif %}">
+                            {{ grade.grade|default:"-" }}
+                        </td>
+                        {% endwith %}
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+                {% with grades=student|get_all_grades:disciplines_with_semesters %}
+                {% with bad_grades=grades|filter_bad_grades all_grades=grades|filter_valid_grades %}
+                <td class="fixed-column diploma-column {% if bad_grades or all_grades.count_4 < all_grades.total|multiply:0.25 %}diploma-blue{% else %}diploma-red{% endif %}">
+                    {% if bad_grades or all_grades.count_4 < all_grades.total|multiply:0.25 %}Синий{% else %}Красный{% endif %}
+                </td>
+                {% endwith %}
+                {% endwith %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Автоматическая подстройка высоты строки заголовков
+    const headerCells = document.querySelectorAll('.discipline-header');
+    let maxHeight = 0;
+
+    headerCells.forEach(cell => {
+        const textElement = cell.querySelector('.vertical-text');
+        if (textElement.scrollWidth > maxHeight) {
+            maxHeight = textElement.scrollWidth;
+        }
+    });
+
+    if (maxHeight > 0) {
+        const headerRow = document.querySelector('.grades-table thead tr:first-child');
+        headerRow.style.height = (maxHeight + 40) + 'px';
+    }
+});
+</script>
+{% endblock %}

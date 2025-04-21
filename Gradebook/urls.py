@@ -1,7 +1,8 @@
 from .views import *
 from django.urls import path
 from Academhub.utils import getpattern
-from .views import GradebookGenerateView, ViewStudentsGradesForSemester, export_grades
+from .views import GradebookGenerateView, ViewStudentsGradesForSemester, export_grades, \
+    DiplomTypeIdentifier, GradebookRedirectView
 
 urlpatterns = [
     #
@@ -20,9 +21,7 @@ urlpatterns = [
 
     path('gradebook/export_grades/', export_grades, name="export_grades"),
 
-    #
-    ## GradebookStudents
-    #
+    path('gradebook/export_diplom_types', export_diplom_types, name="export_diplom_types"),
 
     path('gradebook/update/<int:pk>/students/', GradebookStudentBulkUpdateView.as_view(), name='gradebookstudents_bulk_create'),
 
@@ -31,4 +30,8 @@ urlpatterns = [
     path('gradebook/<int:pk>/check_open/', check_and_open_gradebook, name='check_open_gradebook'),
 
     path('gradebook/closed/list', GradebookClosedList.as_view(), name='gradebookclosed_list'),
+
+    path('gradebook/diplom/', DiplomTypeIdentifier.as_view(), name='diplom_identifier'),
+
+    path('gradebook/redirect_to_list/', GradebookRedirectView.as_view(), name='redirect_to_list'),
 ]

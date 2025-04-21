@@ -19,9 +19,20 @@ class GenerateGradebookForm(forms.Form):
         (8, 8),
     )
 
+    TYPE_CHOICES = (
+        ("Первичная сдача", "Первичная сдача"),
+        ("Пересдача", "Пересдача"),
+        ("Комиссия", "Комиссия")
+    )
+
     semester = forms.ChoiceField(
         choices=SEMESTER_NUMBERS,
         label="Выберите семестр"
+    )
+
+    type_of_gradebook = forms.ChoiceField(
+        choices=TYPE_CHOICES,
+        label="Выберите тип ведомости"
     )
 
 
@@ -44,7 +55,13 @@ class GetStatisticksGradebookForm(forms.Form):
     )
 
     group = forms.ModelChoiceField(
-        queryset=GroupStudents.objects.all(),
+        queryset=GroupStudents.objects.filter(is_active=True),
+        label="Группы"
+    )
+
+class GetDiplomTypeGradebookForm(forms.Form):
+    group = forms.ModelChoiceField(
+        queryset=GroupStudents.objects.filter(is_active=True),
         label="Группы"
     )
 
@@ -126,17 +143,19 @@ class GradebookStudentsForm(forms.ModelForm):
         choices=GradebookStudents.ASSESSMENT_CHOICES,
         label='Оценка'
     )
-    
+
     class Meta:
         model = GradebookStudents
         fields = ['student', 'ticket_number', 'grade']
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.instance and self.instance.pk:
             self.fields['student'].initial = self.instance.student
             self.fields['ticket_number'].initial = self.instance.ticket_number
             self.fields['grade'].initial = self.instance.grade
+
+            self.fields['student'].widget.attrs['disabled'] = 'disabled'
 
 
             

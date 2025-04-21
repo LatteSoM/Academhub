@@ -34,3 +34,55 @@ body {
 .theme-toggle .material-icons {
     color: var(--text-color);
 }
+/* Theme text color */
+.theme-text {
+    color: var(--text-color);
+}
+
+/* Theme background color for elements like table rows */
+.theme-bg {
+    background-color: var(--surface-color);
+}
+
+/* Modal Theming */
+.modal-content {
+    background-color: var(--surface-color);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+}
+
+.modal-header {
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Default close button styling (usually black) - no specific rule needed unless overriding */
+
+/* Style close button for dark theme to be white */
+.theme-dark .modal-header .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%); /* Same filter as Bootstrap's .btn-close-white */
+}
+
+
+.modal-footer {
+    border-top: 1px solid var(--border-color);
+}
+
+/* Ensure text inputs in modals also follow theme */
+.modal-body input[type="text"],
+.modal-body input[type="password"],
+.modal-body input[type="email"],
+.modal-body input[type="number"],
+.modal-body textarea {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+}
+
+.modal-body input[type="text"]:focus,
+.modal-body input[type="password"]:focus,
+.modal-body input[type="email"]:focus,
+.modal-body input[type="number"]:focus,
+.modal-body textarea:focus {
+    border-color: var(--bs-primary); /* Or use another theme variable */
+    box-shadow: none; /* Optional: remove default focus shadow */
+}

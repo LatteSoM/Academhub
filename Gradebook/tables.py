@@ -12,6 +12,14 @@ __all__ = (
 )
 
 
+STATUS_CLASS_MAP = {
+    'Не заполнена': 'status-not-filled',
+    'Открыта': 'status-opened',
+    'Заполнена': 'status-filled',
+    'Закрыта': 'status-closed',
+    'Просрочена': 'status-overdue',
+}
+
 class GradebookTable(BaseTable):
     teachers = table.ManyToManyColumn(
         verbose_name='Учителя'
@@ -27,9 +35,11 @@ class GradebookTable(BaseTable):
 
     class Meta:
         model = Gradebook
-        paginate_by=30
-        fields = ('name', 'teachers', 'group', 'discipline', 'status')
-
+        paginate_by = 30
+        fields = ('name', 'teachers', 'group', 'discipline', 'status', 'type_of_grade_book')
+        row_attrs = {
+            "class": lambda record: STATUS_CLASS_MAP.get(record.status, 'status-unknown')
+        }
 
 
 class TeacherGradeBookTable(BaseTable2):
@@ -59,6 +69,9 @@ class GradebookTable2(BaseTable):
         model = Gradebook
         paginate_by=30
         fields = ('name', 'teachers', 'discipline', 'status')
+        row_attrs = {
+            "class": lambda record: STATUS_CLASS_MAP.get(record.status, 'status-unknown')
+        }
 
 
 class GradebookMobileTable(BaseTable):
@@ -69,6 +82,9 @@ class GradebookMobileTable(BaseTable):
         model = Gradebook
         paginate_by = 30
         fields = ('pk', 'teachers', 'group')  # Только ключевые колонки
+        row_attrs = {
+            "class": lambda record: STATUS_CLASS_MAP.get(record.status, 'status-unknown')
+        }
 
 
 class GradebookStudentsTable(BaseTable):

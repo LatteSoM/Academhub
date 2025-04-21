@@ -97,8 +97,7 @@ urlpatterns = [
      #
      ## Зачетная книжка
      #
-     
-     path('qualification/<int:qualification_id>/<int:admission_year>/record-book/save/', create_auto_record_book_template, name='save_record_book_template'),
+     # path('qualification/<int:qualification_id>/<int:admission_year>/record-book/save/', save_record_book_template, name='save_record_book_template'),
      #генерация зачетки для студента
      path('student/<int:pk>/generate-record-book/', generate_student_record_book, name='generate_record_book'),
      # генерация зачетки для группы
