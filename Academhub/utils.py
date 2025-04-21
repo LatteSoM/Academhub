@@ -53,4 +53,7 @@ def getpermission(app: str, *actions: str) -> list[str]:
     """
 
     # Формируем codename
-    return (f"{app}.{action}" for action in actions)
+    permissions = []
+    for action in actions:
+        permissions.append(f"{app}.{action}")
+    return permissions

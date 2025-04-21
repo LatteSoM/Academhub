@@ -161,7 +161,7 @@
 </style>
 
 <div class="export-btn-container">
-    <a href="{% url 'export_grades' %}?semester={{ semestr }}&group={{ group.values_list.0.0 }}"
+    <a href="{% url 'export_grades' %}?semester={{ semestr }}&group={{ group.pk }}"
        class="btn btn-success"
        {% if not semester or not group %}disabled{% endif %}>
         <i class="fas fa-file-export"></i> Экспорт в Excel

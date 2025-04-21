@@ -72,7 +72,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'Academhub.middleware.AuthMiddleware',
+    # 'Academhub.middleware.AuthMiddleware',
 ]
 
 ROOT_URLCONF = 'Academhub.urls'
@@ -174,14 +174,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Добавление кастомной модели пользователя
 AUTH_USER_MODEL = 'Academhub.CustomUser'
-
-# Navigation
-
-# for app in ACTIVE_APPS:
-#     try:
-#         module = importlib.import_module(f"{app}.navigation")
-#     except ModuleNotFoundError as e:
-#         pass
 
 LOGGING = {
     'version': 1,

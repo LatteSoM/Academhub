@@ -333,6 +333,16 @@ class GroupStudents(AcademHubModel):
 
         return super().save(*args, **kwargs)
 
+    @property
+    def curriculum(self):
+        """Получаем учебный план группы на основе квалификации, года создания и базы образования"""
+        group_edu_base = 9 if self.education_base == "Основное общее" else 11
+        return Curriculum.objects.filter(
+            qualification=self.qualification,
+            admission_year=self.year_create,
+            basis_of_admission=group_edu_base
+        ).first()
+
 
 class CalendarGraphicOfLearningProcess(AcademHubModel):
 
@@ -886,7 +896,8 @@ class Gradebook(AcademHubModel):
 
     teachers = models.ManyToManyField(
         'CustomUser', 
-        verbose_name="Преподаватели"
+        verbose_name="Преподаватели",
+        related_name='gradebooks',
     )
     group = models.ForeignKey(
         GroupStudents, 
@@ -1533,6 +1544,36 @@ class TeachersForDisciplineAndCurriculum(AcademHubModel):
             "discipline": self.discipline,
             "curriculum": self.curriculum,
         }
+
+    @classmethod
+    def get_teachers_for_gradebook(cls, discipline, group, semester):
+        """Получаем преподавателей для данной дисциплины, группы и семестра"""
+        if not hasattr(group, 'curriculum') or not group.curriculum:
+            return None
+
+        # Определяем курс и локальный семестр из глобального семестра
+        course = (semester + 1) // 2
+        local_semester = 2 if semester % 2 == 0 else 1
+
+        return cls.objects.filter(
+            discipline=discipline,
+            curriculum=group.curriculum,
+            groups=group,
+            course=course,
+            term=local_semester
+        ).prefetch_related('teachers').first()
+
+def get_global_semester(course, local_semester):
+    """
+    Преобразует курс (1-4) и локальный семестр (1 или 2) в глобальный номер семестра (1-8)
+    Пример:
+      1 курс, 1 семестр → 1
+      1 курс, 2 семестр → 2
+      2 курс, 1 семестр → 3
+      2 курс, 2 семестр → 4
+      и т.д.
+    """
+    return (course - 1) * 2 + local_semester
 
 
 class AttestationPeriodForDisciplines(AcademHubModel):

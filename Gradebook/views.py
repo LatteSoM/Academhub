@@ -7,13 +7,9 @@ from collections import defaultdict
 from pathlib import Path
 from urllib.parse import quote
 
-import matplotlib
 from django.urls import reverse
 from django.views import View
-
-matplotlib.use('Agg')  # Set backend to Agg
-import matplotlib.pyplot as plt
-from io import BytesIO
+from Academhub.models.models import TeachersForDisciplineAndCurriculum
 
 import numpy as np
 from django.db.models import Prefetch, Q, Func, F
@@ -80,35 +76,6 @@ def get_last_grade(student, discipline, semester):
         if grade:
             return grade.grade
     return None
-
-
-def get_last_grade(student, discipline, semester):
-    """
-    Возвращает последнюю оценку студента по дисциплине с учетом всех типов ведомостей.
-    Порядок проверки: комиссия → пересдача → первичная сдача.
-
-    Args:
-        student: Объект студента.
-        discipline: Объект дисциплины.
-        semester: Номер семестра.
-
-    Returns:
-        str or None: Последняя оценка или None, если оценок нет.
-    """
-    gradebook_types_priority = ["Комиссия", "Пересдача", "Первичная сдача"]
-
-    grade = GradebookStudents.objects.filter(
-        student=student,
-        gradebook__discipline=discipline,
-        gradebook__semester_number=semester,
-        gradebook__type_of_grade_book__in=gradebook_types_priority
-    ).order_by(
-        '-gradebook__date_of_closing',
-        # Приоритет типов: меньший индекс в gradebook_types_priority → выше приоритет
-        F('gradebook__type_of_grade_book').asc().nullslast()
-    ).first()
-
-    return grade.grade if grade else None
 
 
 def check_students_for_academic_debts(group, semester):
@@ -301,20 +268,23 @@ def has_required_grades(student, pm_discipline):
 
 def update_grade_book_contingent(gradebook, students):
     try:
+        # Обновляем преподавателей
+        teacher_link = TeachersForDisciplineAndCurriculum.get_teachers_for_gradebook(
+            discipline=gradebook.discipline,
+            group=gradebook.group,
+            semester=gradebook.semester_number
+        )
+
+        if teacher_link:
+            gradebook.teachers.set(teacher_link.teachers.all())
+
+        # Обновляем студентов
         GradebookStudents.objects.filter(gradebook=gradebook).delete()
 
         if is_pm_discipline(gradebook.discipline):
-            # Фильтрация студентов с выполненными требованиями
-            print(f"{gradebook.discipline} is PM")
-            allowed_students = [
-                s for s in students
-                if has_required_grades(s, gradebook.discipline)
-            ]
+            students = [s for s in students if has_required_grades(s, gradebook.discipline)]
 
-        else:
-            allowed_students = students
-
-        for student in allowed_students:
+        for student in students:
             GradebookStudents.objects.create(
                 student=student,
                 gradebook=gradebook,
@@ -325,7 +295,7 @@ def update_grade_book_contingent(gradebook, students):
         gradebook.save()
         return True
     except Exception as e:
-        print(f"Ошибка обновления: {e}")
+        logger.error(f"Ошибка обновления ведомости: {str(e)}", exc_info=True)
         return False
 
 
@@ -342,6 +312,13 @@ def get_gradebook_name(clock_cell):
 
 def create_gradebook_with_fields(discipline, group, semester, grade_type, clock_cell, resist_students=None):
     try:
+        # Получаем привязанных преподавателей
+        teacher_link = TeachersForDisciplineAndCurriculum.get_teachers_for_gradebook(
+            discipline=discipline,
+            group=group,
+            semester=semester
+        )
+
         gradebook = Gradebook.objects.create(
             discipline=discipline,
             group=group,
@@ -350,34 +327,27 @@ def create_gradebook_with_fields(discipline, group, semester, grade_type, clock_
             name=get_gradebook_name(clock_cell),
             status='Не заполнена'
         )
-        if not resist_students:
-            students = Student.objects.filter(group=group)
 
-            if is_pm_discipline(discipline):
-                allowed_students = [
-                    s for s in students
-                    if has_required_grades(s, discipline)
-                ]
-            else:
-                allowed_students = students
+        # Назначаем преподавателей, если они есть
+        if teacher_link:
+            gradebook.teachers.set(teacher_link.teachers.all())
 
-            for student in allowed_students:
-                GradebookStudents.objects.create(
-                    student=student,
-                    gradebook=gradebook,
-                    grade='-'
-                )
-        else:
-            for student in resist_students:
-                GradebookStudents.objects.create(
-                    student=student,
-                    gradebook=gradebook,
-                    grade='-'
-                )
+        # Обработка студентов
+        students = resist_students if resist_students else Student.objects.filter(group=group)
+
+        if is_pm_discipline(discipline):
+            students = [s for s in students if has_required_grades(s, discipline)]
+
+        for student in students:
+            GradebookStudents.objects.create(
+                student=student,
+                gradebook=gradebook,
+                grade='-'
+            )
 
         return True
     except Exception as e:
-        print(f"Ошибка создания: {e}")
+        logger.error(f"Ошибка создания ведомости: {str(e)}", exc_info=True)
         return False
 
 
@@ -658,6 +628,8 @@ class ViewStudentsGradesForSemester(ObjectTemplateView):
                 group = form.cleaned_data['group']
 
                 data = fetch_group_semester_attestation_table(semester, group)
+
+                print(group)
 
                 return render(request, 'Gradebook/list/group_semester_grades.html', {
                     'students': data['students'],
@@ -1082,17 +1054,7 @@ class TeachersGradeBookTableView(ObjectTableView):
         if not user.is_authenticated or not hasattr(user, 'is_teacher') or not user.is_teacher:
             return Gradebook.objects.none()
 
-        # Фильтрация ведомостей
-        queryset = Gradebook.objects.filter(
-            status='Открыта',  # Статус "Открыта"
-            teachers__id=user.id  # Текущий пользователь в списке преподавателей
-        ).select_related(  # Оптимизация запросов
-            'group',
-            'discipline'
-        ).prefetch_related(
-            'teachers',
-            'students'
-        ).distinct()  # Убираем дубликаты
+        queryset = user.gradebooks.all()
 
         return queryset
  
