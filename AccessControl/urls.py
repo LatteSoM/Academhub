@@ -1,6 +1,7 @@
-from .views import *
 from django.urls import path
+
 from Academhub.utils import getpattern
+from .views import *
 
 urlpatterns = [
     path('user/list', UserTableView.as_view(), name = getpattern('CustomUser', 'list')),

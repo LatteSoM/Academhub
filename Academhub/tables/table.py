@@ -1,6 +1,7 @@
-from .column import *
 from django_tables2 import tables
+
 from Academhub.utils import getpattern
+from .column import *
 
 __all__ = (
     'BaseTable',

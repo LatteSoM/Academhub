@@ -1,6 +1,4 @@
 from django import forms
-from django.contrib.auth.models import Permission
-from django.template.loader import render_to_string
 
 __all__ = (
     'Phone',

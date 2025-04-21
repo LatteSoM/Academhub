@@ -30611,3 +30611,657 @@ Traceback (most recent call last):
   File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/mixins.py", line 48, in handle_no_permission
     raise PermissionDenied(self.get_permission_denied_message())
 django.core.exceptions.PermissionDenied
+Watching for file changes with StatReloader
+Internal Server Error: /GradeBook/gradebook/45
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 1125, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/mixins.py", line 109, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/mixins.py", line 73, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/views/generic/base.py", line 143, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 1234, in get
+    return super().get(request, *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/generic/generic.py", line 121, in get
+    context = self.get_context_data(object=self.object)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/generic/generic.py", line 115, in get_context_data
+    context = super().get_context_data(**kwargs)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/generic/mixin.py", line 92, in get_context_data
+    context = super().get_context_data(**kwargs)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/generic/mixin.py", line 79, in get_context_data
+    if button.is_accessible(self.request.user) and button.is_visible(self.request.user, obj):
+       ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/models/help/button.py", line 23, in is_accessible
+    return user.is_superuser or user.has_perm(self.permission)
+                                ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/models.py", line 311, in has_perm
+    return _user_has_perm(self, perm, obj)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/models.py", line 220, in _user_has_perm
+    if backend.has_perm(user, perm, obj):
+       ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/backends.py", line 113, in has_perm
+    return user_obj.is_active and super().has_perm(user_obj, perm, obj=obj)
+                                  ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/backends.py", line 32, in has_perm
+    return perm in self.get_all_permissions(user_obj, obj=obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: unhashable type: 'list'
+Internal Server Error: /GradeBook/gradebook/45
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 1125, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/mixins.py", line 109, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/mixins.py", line 73, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/views/generic/base.py", line 143, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 1234, in get
+    return super().get(request, *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/generic/generic.py", line 121, in get
+    context = self.get_context_data(object=self.object)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/generic/generic.py", line 115, in get_context_data
+    context = super().get_context_data(**kwargs)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/generic/mixin.py", line 92, in get_context_data
+    context = super().get_context_data(**kwargs)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/generic/mixin.py", line 79, in get_context_data
+    if button.is_accessible(self.request.user) and button.is_visible(self.request.user, obj):
+       ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/models/help/button.py", line 23, in is_accessible
+    print(self.permission)
+    
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/models.py", line 311, in has_perm
+    return _user_has_perm(self, perm, obj)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/models.py", line 220, in _user_has_perm
+    if backend.has_perm(user, perm, obj):
+       ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/backends.py", line 113, in has_perm
+    return user_obj.is_active and super().has_perm(user_obj, perm, obj=obj)
+                                  ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/backends.py", line 32, in has_perm
+    return perm in self.get_all_permissions(user_obj, obj=obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: unhashable type: 'list'
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/models/help/button.py changed, reloading.
+Watching for file changes with StatReloader
+Internal Server Error: /GradeBook/gradebook/45
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 1125, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/mixins.py", line 109, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/mixins.py", line 73, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/views/generic/base.py", line 143, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 1234, in get
+    return super().get(request, *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/generic/generic.py", line 121, in get
+    context = self.get_context_data(object=self.object)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/generic/generic.py", line 115, in get_context_data
+    context = super().get_context_data(**kwargs)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/generic/mixin.py", line 92, in get_context_data
+    context = super().get_context_data(**kwargs)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/generic/mixin.py", line 79, in get_context_data
+    if button.is_accessible(self.request.user) and button.is_visible(self.request.user, obj):
+       ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/models/help/button.py", line 24, in is_accessible
+    return user.is_superuser or user.has_perm(self.permission)
+                                ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/models.py", line 311, in has_perm
+    return _user_has_perm(self, perm, obj)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/models.py", line 220, in _user_has_perm
+    if backend.has_perm(user, perm, obj):
+       ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/backends.py", line 113, in has_perm
+    return user_obj.is_active and super().has_perm(user_obj, perm, obj=obj)
+                                  ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/backends.py", line 32, in has_perm
+    return perm in self.get_all_permissions(user_obj, obj=obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: unhashable type: 'list'
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/models/help/button.py changed, reloading.
+Watching for file changes with StatReloader
+Forbidden (Permission denied): /ContingentApp/discipline/3
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/mixins.py", line 108, in dispatch
+    return self.handle_no_permission()
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/mixins.py", line 48, in handle_no_permission
+    raise PermissionDenied(self.get_permission_denied_message())
+django.core.exceptions.PermissionDenied
+Forbidden (Permission denied): /GradeBook/gradebook/47
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 1125, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/mixins.py", line 108, in dispatch
+    return self.handle_no_permission()
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/mixins.py", line 48, in handle_no_permission
+    raise PermissionDenied(self.get_permission_denied_message())
+django.core.exceptions.PermissionDenied
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+Forbidden (Permission denied): /AccessControl/user/2
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/mixins.py", line 108, in dispatch
+    return self.handle_no_permission()
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/mixins.py", line 48, in handle_no_permission
+    raise PermissionDenied(self.get_permission_denied_message())
+django.core.exceptions.PermissionDenied
+Forbidden (Permission denied): /AccessControl/user/change/2
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/mixins.py", line 108, in dispatch
+    return self.handle_no_permission()
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/mixins.py", line 48, in handle_no_permission
+    raise PermissionDenied(self.get_permission_denied_message())
+django.core.exceptions.PermissionDenied
+Forbidden (Permission denied): /AccessControl/user/change/2
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/mixins.py", line 108, in dispatch
+    return self.handle_no_permission()
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/mixins.py", line 48, in handle_no_permission
+    raise PermissionDenied(self.get_permission_denied_message())
+django.core.exceptions.PermissionDenied
+Forbidden (Permission denied): /AccessControl/user/change/2
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/mixins.py", line 108, in dispatch
+    return self.handle_no_permission()
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/mixins.py", line 48, in handle_no_permission
+    raise PermissionDenied(self.get_permission_denied_message())
+django.core.exceptions.PermissionDenied
+Forbidden (Permission denied): /AccessControl/user/3
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/mixins.py", line 108, in dispatch
+    return self.handle_no_permission()
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/mixins.py", line 48, in handle_no_permission
+    raise PermissionDenied(self.get_permission_denied_message())
+django.core.exceptions.PermissionDenied
+Forbidden (Permission denied): /AccessControl/user/change/3
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/mixins.py", line 108, in dispatch
+    return self.handle_no_permission()
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/mixins.py", line 48, in handle_no_permission
+    raise PermissionDenied(self.get_permission_denied_message())
+django.core.exceptions.PermissionDenied
+Watching for file changes with StatReloader
+Forbidden (Permission denied): /AccessControl/user/2
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/mixins.py", line 108, in dispatch
+    return self.handle_no_permission()
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/mixins.py", line 48, in handle_no_permission
+    raise PermissionDenied(self.get_permission_denied_message())
+django.core.exceptions.PermissionDenied
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+Internal Server Error: /GradeBook/gradebook/teacher/list
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/mixins.py", line 109, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/mixins.py", line 73, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/views/generic/base.py", line 143, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 1077, in get
+    return super().get(request, *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django_filters/views.py", line 74, in get
+    self.filterset = self.get_filterset(filterset_class)
+                     ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django_filters/views.py", line 37, in get_filterset
+    kwargs = self.get_filterset_kwargs(filterset_class)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django_filters/views.py", line 51, in get_filterset_kwargs
+    "queryset": self.get_queryset(),
+                ~~~~~~~~~~~~~~~~~^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 1052, in get_queryset
+    queryset = user.gradebooks.filter(gradbook__status=Gradebook.STATUS_CHOICE[2][1])
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1436, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1454, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1461, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1546, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+                ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1577, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ~~~~~~~~~~~~~~~~~^
+        child,
+        ^^^^^^
+    ...<6 lines>...
+        summarize=summarize,
+        ^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1427, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg, summarize)
+                                        ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1237, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+                                ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1725, in names_to_path
+    raise FieldError(
+    ...<2 lines>...
+    )
+django.core.exceptions.FieldError: Cannot resolve keyword 'gradbook' into field. Choices are: amount_of_days_for_closing, date_of_closing, date_of_filling, date_of_opening, discipline, discipline_id, gradebookstudents, group, group_id, id, name, number, semester_number, status, students, teachers, type_of_grade_book
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+Internal Server Error: /GradeBook/gradebook/teacher/list
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/mixins.py", line 109, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/mixins.py", line 73, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/views/generic/base.py", line 143, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 1077, in get
+    return super().get(request, *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django_filters/views.py", line 74, in get
+    self.filterset = self.get_filterset(filterset_class)
+                     ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django_filters/views.py", line 37, in get_filterset
+    kwargs = self.get_filterset_kwargs(filterset_class)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django_filters/views.py", line 51, in get_filterset_kwargs
+    "queryset": self.get_queryset(),
+                ~~~~~~~~~~~~~~~~~^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 1052, in get_queryset
+    queryset = user.gradebooks.filter(gradebook__status=Gradebook.STATUS_CHOICE[2][1])
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1436, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1454, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1461, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1546, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+                ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1577, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ~~~~~~~~~~~~~~~~~^
+        child,
+        ^^^^^^
+    ...<6 lines>...
+        summarize=summarize,
+        ^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1427, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg, summarize)
+                                        ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1237, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+                                ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1725, in names_to_path
+    raise FieldError(
+    ...<2 lines>...
+    )
+django.core.exceptions.FieldError: Cannot resolve keyword 'gradebook' into field. Choices are: amount_of_days_for_closing, date_of_closing, date_of_filling, date_of_opening, discipline, discipline_id, gradebookstudents, group, group_id, id, name, number, semester_number, status, students, teachers, type_of_grade_book
+Internal Server Error: /GradeBook/gradebook/teacher/list
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/mixins.py", line 109, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/mixins.py", line 73, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/views/generic/base.py", line 143, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 1077, in get
+    return super().get(request, *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django_filters/views.py", line 74, in get
+    self.filterset = self.get_filterset(filterset_class)
+                     ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django_filters/views.py", line 37, in get_filterset
+    kwargs = self.get_filterset_kwargs(filterset_class)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django_filters/views.py", line 51, in get_filterset_kwargs
+    "queryset": self.get_queryset(),
+                ~~~~~~~~~~~~~~~~~^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 1052, in get_queryset
+    queryset = user.gradebooks.filter(status=Gradebook.STATUS_CHOICE[2][1])
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1436, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1454, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1461, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1546, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+                ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1577, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ~~~~~~~~~~~~~~~~~^
+        child,
+        ^^^^^^
+    ...<6 lines>...
+        summarize=summarize,
+        ^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1427, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg, summarize)
+                                        ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1237, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+                                ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1725, in names_to_path
+    raise FieldError(
+    ...<2 lines>...
+    )
+django.core.exceptions.FieldError: Cannot resolve keyword 'gradebook' into field. Choices are: amount_of_days_for_closing, date_of_closing, date_of_filling, date_of_opening, discipline, discipline_id, gradebookstudents, group, group_id, id, name, number, semester_number, status, students, teachers, type_of_grade_book
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+Internal Server Error: /GradeBook/gradebook/teacher/list
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/mixins.py", line 109, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/mixins.py", line 73, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/views/generic/base.py", line 143, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 1076, in get
+    return super().get(request, *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django_filters/views.py", line 85, in get
+    context = self.get_context_data(
+        filter=self.filterset, object_list=self.object_list
+    )
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/generic/generic.py", line 48, in get_context_data
+    context = super().get_context_data(**kwargs)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/generic/mixin.py", line 94, in get_context_data
+    context['model_name'] = self.get_model_name()
+                            ~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/generic/mixin.py", line 99, in get_model_name
+    model_class = self.queryset.model
+                  ^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'model'
+Internal Server Error: /GradeBook/gradebook/teacher/list
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/views/generic/base.py", line 104, in view
+    return self.dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/mixins.py", line 109, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/contrib/auth/mixins.py", line 73, in dispatch
+    return super().dispatch(request, *args, **kwargs)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/views/generic/base.py", line 143, in dispatch
+    return handler(request, *args, **kwargs)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 1076, in get
+    return super().get(request, *args, **kwargs)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django_filters/views.py", line 85, in get
+    context = self.get_context_data(
+        filter=self.filterset, object_list=self.object_list
+    )
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/generic/generic.py", line 48, in get_context_data
+    context = super().get_context_data(**kwargs)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/generic/mixin.py", line 94, in get_context_data
+    context['model_name'] = self.get_model_name()
+                            ~~~~~~~~~~~~~~~~~~~^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/generic/mixin.py", line 99, in get_model_name
+    model_class = self.queryset.model
+                  ^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'model'
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+Generating document in memory
+Document generated in memory
+Generating document in memory
+Document generated in memory
+Generating document in memory
+Document generated in memory
+Generating document in memory
+Document generated in memory
+Generating document in memory
+Document generated in memory
+Attempt to access gradebook 49 with status Не заполнена
+Generating document in memory
+Document generated in memory
+Internal Server Error: /accounts/login/
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 220, in _get_response
+    response = response.render()
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/template/response.py", line 114, in render
+    self.content = self.rendered_content
+                   ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/template/response.py", line 90, in rendered_content
+    template = self.resolve_template(self.template_name)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/template/response.py", line 72, in resolve_template
+    return select_template(template, using=self.using)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/template/loader.py", line 47, in select_template
+    raise TemplateDoesNotExist(", ".join(template_name_list), chain=chain)
+django.template.exceptions.TemplateDoesNotExist: registration/login.html
+Generating document in memory
+Document generated in memory
+Watching for file changes with StatReloader
+Generating document in memory
+Document generated in memory
+Watching for file changes with StatReloader
+Generating document in memory
+Document generated in memory
+Watching for file changes with StatReloader
+Generating document in memory
+Document generated in memory
+Not Found: /favicon.ico
+Generating document in memory
+Document generated in memory
+Generating document in memory
+Document generated in memory
+Generating document in memory
+Document generated in memory
+Generating document in memory
+Document generated in memory
+Generating document in memory
+Document generated in memory
+Generating document in memory
+Document generated in memory
+Watching for file changes with StatReloader
+Generating document in memory
+Document generated in memory
+Generating document in memory
+Document generated in memory
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Generating document in memory
+Document generated in memory
+Not Found: /favicon.ico
+Generating document in memory
+Document generated in memory
+Not Found: /favicon.ico
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Watching for file changes with StatReloader
+Generating document in memory
+Document generated in memory
+Generating document in memory
+Document generated in memory
+Generating document in memory
+Document generated in memory
+Generating document in memory
+Document generated in memory

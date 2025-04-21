@@ -1,28 +1,24 @@
 import logging
 import os
+import re
 import sys
 from io import BytesIO
 
 import django
-import re
-
 from django.db.models import Q
-from docx.enum.table import WD_ALIGN_VERTICAL
-from openpyxl import Workbook, load_workbook
-from openpyxl.styles import Color, PatternFill
-
-from docx import Document, table
+from docx import Document
+from docx.enum.style import WD_STYLE_TYPE
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.shared import Pt, RGBColor, Cm, Inches
-from docx.enum.style import WD_STYLE_TYPE
-
+from openpyxl import Workbook, load_workbook
+from openpyxl.styles import Color, PatternFill
 
 # Определение среды Django для тестов
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Academhub.settings")
 django.setup()
 
-from Academhub.models import ContingentMovement, GradebookStudents, GroupStudents, Qualification, Specialty, Student, Gradebook, ClockCell, Curriculum, Module, StudentRecordBook
+from Academhub.models import GradebookStudents, ClockCell, Curriculum, Module, StudentRecordBook
 
 class GroupTableGenerator:
     """

@@ -1,8 +1,9 @@
-from django.contrib import messages
 from collections.abc import Iterable
-from django_tables2 import RequestConfig
-from django.views.generic.base import ContextMixin
+
+from django.contrib import messages
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
+from django.views.generic.base import ContextMixin
+from django_tables2 import RequestConfig
 
 __all__ = (
     'ButtonsMixin',

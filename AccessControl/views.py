@@ -1,12 +1,12 @@
-from .form import *
-from .mixin import PermissionMixin
+from Academhub.generic import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView
 from Academhub.models import Button
+from Academhub.models import CustomUser, PermissionProxy, GroupProxy
 from Academhub.models import SubTable
 from Academhub.utils import getpattern, getpermission
 from .filter import UserFilter, GroupFilter, PermissionFilter
-from Academhub.models import CustomUser, PermissionProxy, GroupProxy
+from .form import *
+from .mixin import PermissionMixin
 from .table import UserTable, PermissionTable, GroupTable, GroupUserTable
-from Academhub.generic import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView
 
 __all__ = (
     'UserTableView',

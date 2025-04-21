@@ -1,10 +1,13 @@
 # myproject/signals.py
 import importlib
+
 from django.apps import apps
-from .settings import ACTIVE_APPS
-from django.db.models.signals import post_migrate
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
+from django.db.models.signals import post_migrate
+
+from .settings import ACTIVE_APPS
+
 
 def create_custom_permissions(sender, **kwargs):
     # Получаем все установленные приложения

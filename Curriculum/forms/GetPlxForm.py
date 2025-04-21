@@ -1,7 +1,6 @@
 import json
 import os
 from collections import defaultdict
-from typing import DefaultDict
 
 from django import forms
 

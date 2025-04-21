@@ -1,7 +1,7 @@
-import sys
 import unittest
 
 from Curriculum.parser_for_plx import RUP_parser
+
 
 class TestRUPParserAddFile(unittest.TestCase):
 

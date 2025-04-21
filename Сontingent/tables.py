@@ -1,9 +1,9 @@
-from Academhub.tables.column import *
-import django_tables2 as table
 from django_tables2 import tables
+
+from Academhub.models import Qualification, Specialty, GroupStudents, Student, Discipline, MiddleCertification, \
+    ProfessionalModule, Practice, TermPaper, ContingentMovement
 from Academhub.tables import BaseTable
-from Academhub.models import Qualification, Specialty, ExpulsionStudent, GroupStudents, Student, Discipline, MiddleCertification, \
-    ProfessionalModule, Practice, TermPaper, ContingentMovement, AcademStudent, CurrentStudent
+from Academhub.tables.column import *
 
 __all__ = (
     'GroupTable',

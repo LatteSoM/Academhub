@@ -1,8 +1,8 @@
-from datetime import timezone
+import logging
 
 from django import template
+
 from Academhub.models import GradebookStudents
-import logging
 
 register = template.Library()
 logger = logging.getLogger(__name__)

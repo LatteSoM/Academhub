@@ -1,4 +1,5 @@
 {% extends 'base_detail.html' %}
+{% load static %}
 
 {% load django_tables2 %}
 {% load util %}
@@ -28,32 +29,7 @@
 </h1>
 {% endblock %}
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const links = document.querySelectorAll('a[href*="download_report"]');
-    links.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            const url = this.href;
-            fetch(url)
-                .then(response => {
-                    const refreshUrl = response.headers.get('X-Refresh-After');
-                    return response.blob().then(blob => ({ blob, refreshUrl }));
-                })
-                .then(({ blob, refreshUrl }) => {
-                    const blobUrl = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = blobUrl;
-                    a.download = '';
-                    document.body.appendChild(a);
-                    a.click();
-                    a.remove();
-                    window.URL.revokeObjectURL(blobUrl);
-                    if (refreshUrl) {
-                        window.location.href = refreshUrl;
-                    }
-                });
-        });
-    });
-});
-</script>
+{% block extra_js %}
+    {{ block.super }}
+<script src="{% static "Gradebook/js/reloader.js" %}"></script>
+{% endblock %}

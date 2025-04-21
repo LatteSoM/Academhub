@@ -1,7 +1,8 @@
+from django.contrib.auth.models import Permission, Group, PermissionManager
 from django.db import models
+
 from .models import AcademHubModel, Student
 from .utils import UnifiedPermissionQyerySet
-from django.contrib.auth.models import Permission, Group, PermissionManager
 
 __all__ = (
     'GroupProxy',

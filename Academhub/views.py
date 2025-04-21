@@ -1,14 +1,15 @@
-from django.urls import reverse_lazy
-from AccessControl.table import GroupTable
-from django.views.generic import UpdateView
-from AccessControl.mixin import PermissionMixin
-from Academhub.models.help.button import Button
-from django.contrib.messages.views import SuccessMessageMixin
-from Academhub.generic import ObjectTemplateView, ObjectDetailView
 from django.contrib.auth.views import LoginView, PasswordChangeView
-from .models import CustomUser, SubTable, GroupProxy, PermissionProxy
+from django.contrib.messages.views import SuccessMessageMixin
+from django.urls import reverse_lazy
+from django.views.generic import UpdateView
+
+from Academhub.generic import ObjectTemplateView, ObjectDetailView
+from Academhub.models.help.button import Button
 from AccessControl.form import UserEmailChangeForm, UserPasswordChangeForm
-from .forms.form import CustomAuthenticationForm, CustomAuthenticationForm
+from AccessControl.mixin import PermissionMixin
+from AccessControl.table import GroupTable
+from .forms.form import CustomAuthenticationForm
+from .models import CustomUser, SubTable, GroupProxy, PermissionProxy
 
 __all__ = (
     'HomeView',

@@ -1,5 +1,6 @@
-from django import template
 from collections.abc import Iterable
+
+from django import template
 
 register = template.Library()
 

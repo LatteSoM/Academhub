@@ -1,4 +1,3 @@
-import datetime
 import logging
 import os
 import re
@@ -7,38 +6,34 @@ from collections import defaultdict
 from pathlib import Path
 from urllib.parse import quote
 
-from django.urls import reverse
-from django.views import View
-from Academhub.models.models import TeachersForDisciplineAndCurriculum
-
-import numpy as np
+from django.contrib import messages
+from django.contrib.auth.decorators import permission_required
+from django.core.exceptions import PermissionDenied
 from django.db.models import Prefetch, Q, Func, F
+from django.http import HttpResponse, FileResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+from django.utils import timezone
+from django.views import View
 from openpyxl.styles import PatternFill, Font, Alignment, Side, Border
 from openpyxl.utils import get_column_letter
 from openpyxl.workbook import Workbook
 from unidecode import unidecode
 
-from Academhub import settings
-from django.db.models.functions import Trim
-from Academhub.modules.documentGenPars import GradebookDocumentGenerator
-from Gradebook.forms import *
-from Gradebook.forms import GenerateGradebookForm, GetStatisticksGradebookForm, GetDiplomTypeGradebookForm
-from Gradebook.tables import *
-from Gradebook.filters import *
-from django.utils import timezone
-from django.contrib import messages
-from django.http import HttpResponse, FileResponse
-from Gradebook.mixins import GradeBookMixin
-from Gradebook.tables import TeacherGradeBookTable
-from Academhub.utils import getpermission, getpattern
-from Gradebook.filters import GradeBookTeachersFilter
-from django.shortcuts import get_object_or_404, redirect, render
-from django.contrib.auth.decorators import permission_required
-from Academhub.models import GradebookStudents, Gradebook, CustomUser, SubTable, Button, Discipline, Student, \
-    GroupStudents, ClockCell, Curriculum
 from Academhub.generic import BulkUpdateView, ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView, \
     ObjectTemplateView
-
+from Academhub.models import GradebookStudents, Gradebook, CustomUser, SubTable, Button, Discipline, Student, \
+    GroupStudents, ClockCell, Curriculum
+from Academhub.models.models import TeachersForDisciplineAndCurriculum
+from Academhub.modules.documentGenPars import GradebookDocumentGenerator
+from Academhub.utils import getpermission, getpattern
+from Gradebook.filters import *
+from Gradebook.filters import GradeBookTeachersFilter
+from Gradebook.forms import *
+from Gradebook.forms import GenerateGradebookForm, GetStatisticksGradebookForm, GetDiplomTypeGradebookForm
+from Gradebook.mixins import GradeBookMixin
+from Gradebook.tables import *
+from Gradebook.tables import TeacherGradeBookTable
 
 #
 # Create your views here.
@@ -1044,7 +1039,7 @@ class GradebookClosedList(ObjectTableView):
 class TeachersGradeBookTableView(ObjectTableView):
     table_class = TeacherGradeBookTable
     filterset_class = GradeBookTeachersFilter
-    queryset = Gradebook.objects.all() 
+    queryset = Gradebook.objects.all()
 
     def get_queryset(self):
         # Получаем залогиненного пользователя
@@ -1054,7 +1049,7 @@ class TeachersGradeBookTableView(ObjectTableView):
         if not user.is_authenticated or not hasattr(user, 'is_teacher') or not user.is_teacher:
             return Gradebook.objects.none()
 
-        queryset = user.gradebooks.all()
+        queryset = user.gradebooks.filter(status=Gradebook.STATUS_CHOICE[1][1])
 
         return queryset
  
@@ -1107,9 +1102,22 @@ class GradebookDetailView(ObjectDetailView):
         ]
     }
 
+    def has_permission(self):
+        if super().has_permission():
+            return True
 
-    def check_status(obj, user):
-        return obj.status == "Не заполнена"
+        try:
+            obj = self.get_object()
+            if self.request.user.gradebooks.filter(id=obj.id).exists():
+                return True
+            return False
+        except (AttributeError, PermissionDenied):
+            return False
+
+    def dispatch(self, request, *args, **kwargs):
+        self.request = request
+        return super().dispatch(request, *args, **kwargs)
+
 
     # Формируем список кнопок динамически
     buttons = [

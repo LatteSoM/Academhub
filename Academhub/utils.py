@@ -1,6 +1,6 @@
-from django.apps import apps
 from types import ModuleType
-from django.contrib.contenttypes.models import ContentType
+
+from django.apps import apps
 
 __all__ = (
     'getpattern',

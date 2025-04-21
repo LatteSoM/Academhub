@@ -1,10 +1,8 @@
-import django_tables2 as tables
 from django_tables2 import TemplateColumn
-from django.urls import reverse_lazy
-from django.utils.html import format_html
+
 from Academhub.models import Curriculum
 from Academhub.tables import BaseTable
-from Academhub.tables.column import ButtonLinkColumn # Import ButtonLinkColumn
+from Academhub.tables.column import ButtonLinkColumn  # Import ButtonLinkColumn
 
 
 class CurriculumTable(BaseTable):  # Inherit from BaseTable

@@ -2,6 +2,7 @@ import unittest
 
 from Curriculum.parser_for_plx import RUP_parser
 
+
 class TestRUPParserInvalidData(unittest.TestCase):
 
     def setUp(self):

@@ -20,7 +20,8 @@ class Button:
 
     def is_accessible(self, user):
         if self.permission:
-            return user.is_superuser or user.has_perm(self.permission)
+            print(self.permission)
+            return user.is_superuser or user.has_perms(self.permission)
         return True
 
     def is_visible(self, user, obj=None):

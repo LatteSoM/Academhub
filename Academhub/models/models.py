@@ -1,11 +1,10 @@
-import uuid
-from ..validators import *
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
+
 from .mixin import UrlGenerateMixin
-from django.utils.translation import gettext_lazy as _
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from ..validators import *
 
 __all__ = (
     'Student',
@@ -694,7 +693,6 @@ class Student(AcademHubModel):
 
     def save(self, *args, **kwargs):
         from django.utils import timezone  # Импортируем внутри метода, чтобы избежать проблем с импортом
-        from django.core.exceptions import ValidationError
         # :TODO нада что-то придумать для импорта, потому что в доке может быть как 'Основное общее' так и 'основное общее', еще закоментил подобную строку в forms.py 104 строка
 
         # Проверка соответствия education_base группы и студента

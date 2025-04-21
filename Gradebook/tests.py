@@ -1,9 +1,10 @@
+from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
-from Academhub.models import GradebookStudents, Gradebook, Student, GroupStudents, Curriculum, ClockCell, Discipline
-from Gradebook.views import GradebookStudentBulkUpdateView, perform_generation
-from django.contrib.auth.models import User
 from django.utils import timezone
+
+from Academhub.models import GradebookStudents, Gradebook, Student, GroupStudents, Curriculum, ClockCell, Discipline
+from Gradebook.views import perform_generation
 
 
 class GradebookStudentBulkUpdateViewTest(TestCase):
