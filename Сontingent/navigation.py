@@ -59,6 +59,10 @@ navigation = Navigation(
                 name='Логи движений',
                 url=getpattern('ContingentMovement', 'list'),
                 permission_required=getpermission('Сontingent', 'view_movement')
+            ),
+            ChildLink(
+                name='Задать шаблон зачетной книжки',
+                url = 'for_test',
             )
         ]
     )

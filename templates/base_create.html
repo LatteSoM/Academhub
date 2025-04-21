@@ -20,7 +20,7 @@
                 {% include 'inc/buttons.html' %}
             {% endblock %}
         </div>
-        <form id="edit-form" class="form" method="post">
+        <form id="edit-form" class="form" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {% include 'inc/form/form.html' %}
             <button type="submit" class="btn-primary">Добавить</button>

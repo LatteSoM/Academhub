@@ -3,6 +3,7 @@
 <link rel="stylesheet" href="{% static 'Academhub/css/form.css' %}">
 
 {% for field in form %}
+    {{ field.widget.media }}
     <div class="form-group">
         {{ field.errors }}
         <label for="{{ field.id_for_label }}">

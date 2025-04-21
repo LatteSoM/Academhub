@@ -1,5 +1,7 @@
 import os
-from cProfile import label
+
+from Academhub.modules.documentGenPars import RecordBookDocumentGenerator
+
 
 from .utils import *
 from django import forms
@@ -17,8 +19,9 @@ __all__ = [
     'DisciplineForm', 
     'StudentImportForm',
     'QualificationForm',
+    'PromoteStudentsForm',
     'PromoteGroupStudentsForm',
-    'PromoteStudentsForm'
+    'GenerateQualificationTemplateForm',
 ]
 
 class DisciplineForm(forms.ModelForm):
@@ -584,6 +587,147 @@ class PromoteStudentsForm(forms.ModelForm):
         self.fields['students'].queryset = students_qs.order_by('full_name')
 
 
+class GenerateQualificationTemplateForm(forms.Form):
+    сurriculum = forms.ModelChoiceField(
+        queryset=Curriculum.objects.all(),
+        label='Учебный план'
+    )
 
+    file = forms.FileField(
+        help_text='Поддерживает только .xlsx и .xls файлы',
+        label='Шаблон'
+    )
 
+    semester2_exam_coords = ExcelField(
+        label='Экзамены 2 семестра',
 
+    )
+
+    semester2_zachet_coords = ExcelField(
+        label='Зачеты 2 семестра',
+
+    )
+
+    semester3_zachet_coords = ExcelField(
+        label='Зачеты 3 семестра',
+
+    )
+
+    semester4_exam_coords = ExcelField(
+        label='Экзамены 4 семестра',
+
+    )
+
+    semester4_zachet_coords = ExcelField(
+        label='Зачеты 4 семестра',
+    )
+
+    semester5_exam_coords = ExcelField(
+        label='Экзамены 5 семестра',
+    )
+
+    semester5_zachet_coords = ExcelField(
+        label='Зачеты 5 семестра',
+
+    )
+
+    semester6_exam_coords = ExcelField(
+        label='Экзамены 6 семестра',
+
+    )
+
+    semester6_zachet_coords = ExcelField(
+        label='Зачеты 6 семестра',
+    )
+
+    semester7_exam_coords = ExcelField(
+        label='Экзамены 7 семестра',
+    )
+
+    semester7_zachet_coords = ExcelField(
+        label='Зачеты 7 семестра',
+    )
+
+    semester8_exam_coords = ExcelField(
+        label='Экзамены 8 семестра',
+    )
+
+    semester8_zachet_coords = ExcelField(
+        label='Зачеты 8 семестра',
+    )
+
+    coursework_coords = DictCoordsField(
+        label='Курсовые работы',
+    )
+    study_practices_coords = TupleCoordsField(
+        label='Учебные практики',
+    )
+    industrial_practices_coords = TupleCoordsField(
+        label='Производственные практики',
+    )
+    professional_modules_coords = DictCoordsField(
+        label='Профессиональные модули',
+    )
+
+    def clean_file(self):
+        file = self.cleaned_data.get('file')
+        
+        file_extension = os.path.splitext(file.name)[1]
+
+        if file_extension.lower() not in ['.xlsx', '.xls']:
+            raise forms.ValidationError("Файл должен быть в формате .xlsx или .xls")
+        
+        return file
+    
+    def clean(self):
+        super().clean()        
+        
+        file = self.cleaned_data.get('file')
+
+        if file:
+            rbdg = RecordBookDocumentGenerator(file)
+            сurriculum = self.cleaned_data.get('сurriculum')
+
+            semester2_exam_coords = self.cleaned_data.get('semester2_exam_coords')
+            semester2_zachet_coords = self.cleaned_data.get('semester2_zachet_coords')
+            semester3_zachet_coords = self.cleaned_data.get('semester3_zachet_coords')
+            semester4_exam_coords = self.cleaned_data.get('semester4_exam_coords')
+            semester4_zachet_coords = self.cleaned_data.get('semester4_zachet_coords')
+            semester5_exam_coords = self.cleaned_data.get('semester5_exam_coords')
+            semester5_zachet_coords = self.cleaned_data.get('semester5_zachet_coords')
+            semester6_exam_coords = self.cleaned_data.get('semester6_exam_coords')
+            semester6_zachet_coords = self.cleaned_data.get('semester6_zachet_coords')
+            semester7_exam_coords = self.cleaned_data.get('semester7_exam_coords')
+            semester7_zachet_coords = self.cleaned_data.get('semester7_zachet_coords')
+            semester8_exam_coords = self.cleaned_data.get('semester8_exam_coords')
+            semester8_zachet_coords = self.cleaned_data.get('semester8_zachet_coords')
+            coursework_coords = self.cleaned_data.get('coursework_coords')
+            study_practices_coords = self.cleaned_data.get('study_practices_coords')
+            industrial_practices_coords = self.cleaned_data.get('industrial_practices_coords')
+            professional_modules_coords = self.cleaned_data.get('professional_modules_coords')
+
+            print(semester2_exam_coords)
+
+            result = rbdg.generate_qualification_template(
+                сurriculum, 
+                semester2_exam_coords,
+                semester2_zachet_coords,
+                semester3_zachet_coords,
+                semester4_exam_coords,
+                semester4_zachet_coords,
+                semester5_exam_coords,
+                semester5_zachet_coords,
+                semester6_exam_coords,
+                semester6_zachet_coords,
+                semester7_exam_coords,
+                semester7_zachet_coords,
+                semester8_exam_coords,
+                semester8_zachet_coords,
+                coursework_coords,
+                study_practices_coords,
+                industrial_practices_coords,
+                professional_modules_coords
+            )
+            
+            if result:
+                raise forms.ValidationError(result)

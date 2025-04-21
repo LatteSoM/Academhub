@@ -34,7 +34,7 @@
 }
 
 .sidebar-nav ul ul.open {
-    max-height: 500px;
+    max-height: none;
 }
 
 .nav-item {
@@ -70,7 +70,7 @@
 .nav-item.has-children::after {
     content: "▸";
     transition: transform 0.2s;
-    margin-left: 0.5rem; /* Небольшой отступ для треугольника */
+    margin-left: 0.5rem;
 }
 
 .nav-item.has-children.open::after {

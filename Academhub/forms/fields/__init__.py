@@ -1,13 +1,5 @@
-from django import forms
-from django.contrib.auth.models import Permission
-from Academhub.forms.widgets import PermissionSelectWidget
-
-__all__ = (
-    'PermissionSelectField',
-)
-
-class PermissionSelectField(forms.ModelMultipleChoiceField):
-    def __init__(self, *args, **kwargs):
-        kwargs.setdefault('queryset', Permission.objects.all())
-        kwargs.setdefault('widget', PermissionSelectWidget)
-        super().__init__(*args, **kwargs)
+from .cell import *
+from .phone import *
+from .snils import *
+from .permission import *
+from .excelField import *

@@ -21,12 +21,14 @@ from Academhub.models import (
     MiddleCertification,
 )
 from django.conf import settings 
+from django.contrib import messages
 from collections import defaultdict
 from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.http import HttpResponse
 from Academhub.models import SubTable
 from django.views.generic import FormView
+from django.utils.html import format_html
 from Academhub.utils import getpermission, getpattern
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib.messages.views import SuccessMessageMixin
@@ -35,7 +37,7 @@ from .tables import AcademTable, ExpulsionTable, ContingentMovementTable, Studen
 from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 from .filters import AcademFilter, ExpulsionFilter, ContingentMovementFilter
 from .forms import AcademLeaveForm, AcademReturnForm, ExpellStudentForm, RecoverStudentForm, StudentImportForm, \
-    ContingentStudentImportForm
+    ContingentStudentImportForm, GenerateQualificationTemplateForm
 from Academhub.generic import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView, ObjectTemplateView, ObjectTableImportView
 from .forms import AcademLeaveForm, AcademReturnForm, ExpellStudentForm, RecoverStudentForm, StudentImportForm
 from Academhub.generic import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView, ObjectTemplateView, \
@@ -45,7 +47,7 @@ from Academhub.modules.documentGenPars import StatisticsTableGenerator, CourseTa
 __all__ = (
 
     'ViewRecordBookView',
-    'save_record_book_template',
+    'create_auto_record_book_template',
     'generate_student_record_book',
     'generate_group_recordbooks',
     'PromoteGroupStudentsView',
@@ -78,6 +80,8 @@ __all__ = (
 
     'ExpulsionListView',
     'AcademListView',
+
+    'GenerateQualificationTemplate',
 )
 
 
@@ -1222,3 +1226,27 @@ def generate_movement_table(request):
         response['Content-Disposition'] = 'attachment; filename="movement_table.xlsx"'
     os.remove(file_path)
     return response
+
+
+#
+## Создание шаблона зачеток для учебного плана
+#
+
+class GenerateQualificationTemplate(PermissionBaseMixin, FormView):
+    permission_required = getpermission('Contingent', 'generate_qualification_template')
+    template_name = 'Contingent/generate_qualification_template.html'
+    form_class = GenerateQualificationTemplateForm
+
+    def form_invalid(self, form):
+        # Собираем все ошибки формы в одно сообщение
+        error_messages = []
+        
+        # Общие ошибки формы (non-field errors)
+        for error in form.non_field_errors():
+            error_messages.append(error)
+        
+        # Объединяем все ошибки в одно сообщение
+        if error_messages:
+            messages.error(self.request, "Ошибки в форме:\n" + "\n".join(error_messages))
+        
+        return super().form_invalid(form)

@@ -1,0 +1,247 @@
+<div class="excel-range-widget tuple">
+    <input type="hidden" name="{{ widget.name }}" value="{{ widget.json_value|safe }}" id="id_{{ widget.name }}">
+    
+    <div class="excel-range-container-tuple">
+        <input type="text" class="sheet-input" placeholder="Лист" value="{{ widget.sheet|default:'' }}">
+        
+        <div class="excel-ranges">
+            <!-- Постоянное поле без кнопки удаления -->
+            <div class="excel-range-item">
+                <input type="text" class="range-input" placeholder="N4:P8" 
+                       pattern="^[A-Za-z]{1,3}\d+(?::[A-Za-z]{1,3}\d+)?$"
+                       title="Допустимые форматы: B20 или N4:P8" value="{% if widget.ranges %}{{ widget.ranges.0|default:'' }}{% endif %}">
+            </div>
+            
+            <!-- Дополнительные поля с кнопкой удаления -->
+            {% for range in widget.ranges|slice:"1:" %}
+            <div class="excel-range-item">
+                <input type="text" class="range-input" placeholder="N4:P8" 
+                       pattern="^[A-Za-z]{1,3}\d+(?::[A-Za-z]{1,3}\d+)?$"
+                       title="Допустимые форматы: B20 или N4:P8" value="{{ range|default:'' }}">
+                <button type="button" class="remove-range-btn" title="Удалить">
+                    <svg class="delete-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 6h18"></path>
+                        <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        <path d="M5 6v15a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"></path>
+                        <path d="M10 11v6"></path>
+                        <path d="M14 11v6"></path>
+                    </svg>
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <button type="button" class="add-excel-range-btn" title="Добавить диапазон">
+            <span class="plus-icon">+</span>
+        </button>
+    </div>
+</div>
+
+<style>
+.excel-range-widget.tuple {
+    width: 100%;
+    font-family: Arial, sans-serif;
+    text-align: left;
+}
+
+.excel-range-container-tuple {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.sheet-input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    width: 100%;
+    max-width: 200px;
+}
+
+.sheet-input:focus {
+    outline: none;
+    border-color: #4CAF50;
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+}
+
+.add-excel-range-btn {
+    width: 40px;
+    height: 40px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.add-excel-range-btn:hover {
+    background-color: #45a049;
+    transform: scale(1.1);
+}
+
+.add-excel-range-btn .plus-icon {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.excel-ranges {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.excel-range-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.range-input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    max-width: 200px;
+}
+
+.range-input:focus {
+    outline: none;
+    border-color: #4CAF50;
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+}
+
+.remove-range-btn {
+    background-color: #ff4444;
+    border: none;
+    border-radius: 4px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.remove-range-btn:hover {
+    background-color: #cc0000;
+}
+
+.delete-icon {
+    width: 20px;
+    height: 20px;
+    stroke: white;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.excel-range-widget.tuple').forEach(widget => {
+        const hiddenInput = widget.querySelector('input[type="hidden"]');
+        const rangesContainer = widget.querySelector('.excel-ranges');
+        const addButton = widget.querySelector('.add-excel-range-btn');
+        const sheetInput = widget.querySelector('.sheet-input');
+        const permanentRangeInput = rangesContainer.querySelector('.range-input');
+        
+        // Добавление нового диапазона
+        function addRange(range = '') {
+            const rangeId = Date.now();
+            const rangeHtml = `
+                <div class="excel-range-item" data-id="${rangeId}">
+                    <input type="text" class="range-input" placeholder="N4:P8" 
+                           pattern="^[A-Za-z]{1,3}\\d+(?::[A-Za-z]{1,3}\\d+)?$"
+                           title="Допустимые форматы: B20 или N4:P8" value="${range}">
+                    <button type="button" class="remove-range-btn" title="Удалить">
+                        <svg class="delete-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 6h18"></path>
+                            <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            <path d="M5 6v15a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"></path>
+                            <path d="M10 11v6"></path>
+                            <path d="M14 11v6"></path>
+                        </svg>
+                    </button>
+                </div>
+            `;
+            rangesContainer.insertAdjacentHTML('beforeend', rangeHtml);
+            
+            const newRange = rangesContainer.querySelector(`[data-id="${rangeId}"]`);
+            const removeButton = newRange.querySelector('.remove-range-btn');
+            removeButton.addEventListener('click', () => {
+                newRange.remove();
+                updateHiddenInput();
+            });
+            
+            newRange.querySelector('.range-input').addEventListener('input', updateHiddenInput);
+        }
+        
+        // Обновление скрытого поля
+        function updateHiddenInput() {
+            const ranges = [];
+            widget.querySelectorAll('.range-input').forEach(input => {
+                const range = input.value.trim();
+                if (range) {
+                    ranges.push(range);
+                }
+            });
+            
+            const sheet = sheetInput.value.trim();
+            hiddenInput.value = JSON.stringify(ranges.concat(sheet || ""));
+        }
+        
+        // Инициализация существующих значений
+        try {
+            const initialData = JSON.parse(hiddenInput.value);
+            rangesContainer.innerHTML = ''; // Очищаем контейнер
+            
+            // Добавляем постоянное поле
+            const firstRange = initialData.length > 1 ? initialData[0] : "";
+            rangesContainer.insertAdjacentHTML('beforeend', `
+                <div class="excel-range-item">
+                    <input type="text" class="range-input" placeholder="N4:P8" 
+                           pattern="^[A-Za-z]{1,3}\\d+(?::[A-Za-z]{1,3}\\d+)?$"
+                           title="Допустимые форматы: B20 или N4:P8" value="${firstRange}">
+                </div>
+            `);
+            
+            // Устанавливаем лист
+            const sheet = initialData[initialData.length - 1] || "";
+            sheetInput.value = sheet;
+            
+            // Добавляем дополнительные диапазоны
+            const ranges = initialData.slice(1, -1);
+            ranges.forEach(range => addRange(range));
+            
+            // Привязываем обработчик к постоянному полю
+            rangesContainer.querySelector('.range-input').addEventListener('input', updateHiddenInput);
+        } catch (e) {
+            console.error('Ошибка при разборе начальных данных:', e);
+            sheetInput.value = "";
+            rangesContainer.innerHTML = `
+                <div class="excel-range-item">
+                    <input type="text" class="range-input" placeholder="N4:P8" 
+                           pattern="^[A-Za-z]{1,3}\\d+(?::[A-Za-z]{1,3}\\d+)?$"
+                           title="Допустимые форматы: B20 или N4:P8" value="">
+                </div>
+            `;
+            rangesContainer.querySelector('.range-input').addEventListener('input', updateHiddenInput);
+        }
+        
+        // Удаляем существующие обработчики
+        const newAddButton = addButton.cloneNode(true);
+        addButton.parentNode.replaceChild(newAddButton, addButton);
+        
+        // Обработчики
+        newAddButton.addEventListener('click', () => {
+            addRange();
+        });
+        
+        sheetInput.addEventListener('input', updateHiddenInput);
+    });
+});
+</script>
