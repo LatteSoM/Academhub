@@ -140,7 +140,10 @@ document.getElementById('termSelect').addEventListener('change', function () {
     fetch(
         `/CurriculumApp/api/disciplines_by_curriculum_course_term/?curriculum_id=${curriculumValue}&course=${courseValue}&term=${this.value}`
     )
-        .then(response => response.json())
+        .then(response => {
+            console.log(response)
+            return response.json()
+        })
         .then(data => {
             if (data.length === 0) {
                 tbody.innerHTML = `
@@ -173,16 +176,21 @@ document.getElementById('sendFileBtn').addEventListener('click', function () {
   const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
   formData.append('csrfmiddlewaretoken', csrfToken);
 
+  const url = '/CurriculumApp/api/import_teachers_excel/'
 
+  console.log(csrfToken)
   try {
-    const response = fetch('/CurriculumApp/api/import-teachers-excel/', {
+    fetch(url, {
         method: 'POST',
         body: formData,
         headers: {
             'X-CSRFToken': csrfToken
         }
     })
-        .then(response => response.json())
+        .then(response => {
+            console.log(response)
+            return response.json()
+        })
         .then(data => {
             window.alert(data.message)
             teachers = data.teachers
@@ -193,7 +201,8 @@ document.getElementById('sendFileBtn').addEventListener('click', function () {
             }
         })
   } catch (error) {
-    console.error('Ошибка:', error);
+      console.log(error)
+      console.error('Ошибка:', error);
   }
 })
 
@@ -369,8 +378,9 @@ function add_teachers_to_disciplines(){
     disciplines.forEach(discipline => {
         teachers.forEach(teacher => {
             discipline_cmc = discipline.discipline_code.split('.')[0].replaceAll(' ', '')
+            discipline_speciality = discipline.discipline_speciality.split('.')[0].replaceAll(' ', '')
 
-            if (discipline_cmc === teacher.cmc){
+            if (discipline_cmc === teacher.cmc && discipline_speciality === teacher.speciality){
                 const checkUnique = checkUniqueTeacher(discipline.teachers, teacher);
 
                 if (!checkUnique){

@@ -87,6 +87,13 @@ class CustomUser(AcademHubModel, AbstractBaseUser, PermissionsMixin):
         verbose_name='ЦМК '
     )
 
+    speciality = models.ForeignKey('Specialty',
+                                      related_name="teachers",
+                                      null=True,
+                                      verbose_name="Специальность",
+                                      on_delete=models.SET_NULL,
+                                      )
+
     is_active = models.BooleanField(default=True, verbose_name='Активный?')
     is_staff = models.BooleanField(default=False, verbose_name='Персонал?')
     is_teacher = models.BooleanField(default=False, verbose_name='Учитель?')

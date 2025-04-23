@@ -3,6 +3,8 @@ import json
 import pandas as pd
 from django.db import transaction
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 
 from Academhub.models import Specialty, Qualification, Curriculum, GroupStudents, ClockCell, CustomUser
 
@@ -104,6 +106,7 @@ def get_disciplines_by_curriculum_course_term(request):
                 "discipline_id": clock_cell.discipline.id,
                 "discipline_name": clock_cell.discipline.name,
                 "discipline_code": clock_cell.discipline.code,
+                "discipline_speciality": clock_cell.discipline.specialty.name,
                 "teachers": []
             })
             processed_disciplines.add(clock_cell.discipline.id)
@@ -129,7 +132,9 @@ def get_disciplines_by_curriculum_course_term(request):
             {
                 "teacher_id": teacher.id,
                 "full_name": teacher.full_name,
-                "cmc": teacher.cmc
+                "cmc": teacher.cmc,
+                "speciality": teacher.speciality.name,
+
             }
             for teacher in teachers_set
         ]
@@ -137,7 +142,7 @@ def get_disciplines_by_curriculum_course_term(request):
     return JsonResponse(response, safe=False)
 
 
-
+@csrf_exempt
 def import_teachers_excel_view(request):
     response = {}
     if request.method == 'POST':
@@ -160,7 +165,7 @@ def import_teachers_excel_view(request):
 
         try:
             df = pd.read_excel(excel_file, sheet_name=0)
-            required_columns = ['ФИО','email', 'ЦМК']
+            required_columns = ['ФИО','email', 'ЦМК', 'специализация']
 
             if not all(col in df.columns for col in required_columns):
                 missing_cols = [col for col in required_columns if col not in df.columns]
@@ -173,10 +178,12 @@ def import_teachers_excel_view(request):
                     full_name_raw = row.get('ФИО')
                     email_raw = row.get('email')
                     cmk_raw = row.get('ЦМК')
+                    specialty_raw = row.get('специализация')
 
                     full_name = str(full_name_raw).strip() if pd.notna(full_name_raw) else None
                     email = str(email_raw).strip() if pd.notna(email_raw) else None
                     cmc = str(cmk_raw).strip() if pd.notna(cmk_raw) else None
+                    specialty = str(specialty_raw).strip() if pd.notna(specialty_raw) else None
 
                     if not all([full_name, email]):
                         errors.append(f"Строка {index + 2}: Отсутствуют обязательные данные (ФИО или email).")
@@ -200,19 +207,40 @@ def import_teachers_excel_view(request):
 
                     #TODO Придумать где хранить связи с ЦМК
 
-                    filter_user = CustomUser.objects.filter(email=email, full_name=full_name, is_teacher=True)
+                    speciality_name, code = specialty.split('_')
+                    specialty_obj, created = Specialty.objects.get_or_create(
+                        name=speciality_name,
+                        code=code,
+                    )
+
+                    if created:
+                        filter_user = CustomUser.objects.filter(
+                            email=email,
+                            full_name=full_name,
+                            is_teacher=True,
+                        )
+
+                    else:
+                        filter_user = CustomUser.objects.filter(
+                            email=email,
+                            full_name=full_name,
+                            is_teacher=True,
+                            qualification=specialty_obj
+                        )
 
                     if len(filter_user) == 0:
                         user, created = CustomUser.objects.update_or_create(
                             email=email,
                             defaults=user_defaults,
-                            cmc=cmc
+                            cmc=cmc,
+                            qualification=specialty_obj
                         )
 
                         teachers_list.append({
                             'teacher_id': user.id,
                             'full_name': user.full_name,
                             'cmc': user.cmc,
+                            'qualification': user.qualification.name,
                         })
                         if created:
                             email_part = str(email.split("@")[0])
@@ -231,6 +259,7 @@ def import_teachers_excel_view(request):
                             'teacher_id': filter_user[0].id,
                             'full_name': filter_user[0].full_name,
                             'cmc': filter_user[0].cmc,
+                            'speciality': filter_user[0].specialty.name,
                         })
 
                 except Exception as e:
@@ -261,7 +290,7 @@ def import_teachers_excel_view(request):
         if skipped_count > 0:
             final_message_parts.append(f"Пропущено строк из-за ошибок: {skipped_count}")
         if found_count > 0:
-            final_message_parts.append(f"НАйдено преподавателей: {found_count}")
+            final_message_parts.append(f"Найдено преподавателей: {found_count}")
 
         if final_message_parts:
              final_message = "Импорт завершен. " + ", ".join(final_message_parts) + "."
