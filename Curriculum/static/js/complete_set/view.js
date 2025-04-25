@@ -174,7 +174,6 @@ document.getElementById('sendFileBtn').addEventListener('click', function () {
 
   formData.append('excel_file', fileInput.files[0]);
   const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-  formData.append('csrfmiddlewaretoken', csrfToken);
 
   const url = '/CurriculumApp/api/import_teachers_excel/'
 
@@ -198,6 +197,7 @@ document.getElementById('sendFileBtn').addEventListener('click', function () {
             if (curriculum !== 'Выберите учебный план' && course !== 'Выберите курс') {
                 add_teachers_to_disciplines()
                 renderDisciplinesTable(tbody)
+                console.log(teachers)
             }
         })
   } catch (error) {

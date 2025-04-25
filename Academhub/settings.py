@@ -76,6 +76,7 @@ MIDDLEWARE = [
     #'Academhub.middleware.AuthMiddleware',
 ]
 
+
 ROOT_URLCONF = 'Academhub.urls'
 TEMPLATES = [
     {

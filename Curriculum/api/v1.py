@@ -142,7 +142,6 @@ def get_disciplines_by_curriculum_course_term(request):
     return JsonResponse(response, safe=False)
 
 
-@csrf_exempt
 def import_teachers_excel_view(request):
     response = {}
     if request.method == 'POST':
@@ -213,39 +212,33 @@ def import_teachers_excel_view(request):
                         code=code,
                     )
 
-                    if created:
-                        filter_user = CustomUser.objects.filter(
-                            email=email,
-                            full_name=full_name,
-                            is_teacher=True,
-                        )
 
-                    else:
-                        filter_user = CustomUser.objects.filter(
-                            email=email,
-                            full_name=full_name,
-                            is_teacher=True,
-                            qualification=specialty_obj
-                        )
+                    filter_user = CustomUser.objects.filter(
+                        email=email,
+                        full_name=full_name,
+                        is_teacher=True,
+                        speciality=specialty_obj
+                    )
 
                     if len(filter_user) == 0:
                         user, created = CustomUser.objects.update_or_create(
                             email=email,
                             defaults=user_defaults,
                             cmc=cmc,
-                            qualification=specialty_obj
+                            speciality=specialty_obj
                         )
 
                         teachers_list.append({
                             'teacher_id': user.id,
                             'full_name': user.full_name,
                             'cmc': user.cmc,
-                            'qualification': user.qualification.name,
+                            'speciality': user.speciality.name,
                         })
                         if created:
                             email_part = str(email.split("@")[0])
                             against_overkill_par = "123456789"
                             user.set_password(email_part + against_overkill_par)
+                            user.speciality = specialty_obj
                             user.save()
                             created_count += 1
                         else:
@@ -259,7 +252,7 @@ def import_teachers_excel_view(request):
                             'teacher_id': filter_user[0].id,
                             'full_name': filter_user[0].full_name,
                             'cmc': filter_user[0].cmc,
-                            'speciality': filter_user[0].specialty.name,
+                            'speciality': filter_user[0].speciality.name,
                         })
 
                 except Exception as e:
