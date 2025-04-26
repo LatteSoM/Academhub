@@ -456,6 +456,3 @@ function changeCheckOfGroup(group_id){
     }
 }
 
-function sendDataOnSave(){
-
-}

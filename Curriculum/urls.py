@@ -18,9 +18,13 @@ urlpatterns = [
     path('api/courses_and_groups/', get_courses_for_study_plan, name='get_courses_for_study_plan'),
     path('api/disciplines_by_curriculum_course_term/', get_disciplines_by_curriculum_course_term,
          name='get_disciplines_by_curriculum_course_term'),
+    path('api/disciplines_by_curriculum_course_term_for_attestation/', get_disciplines_by_curriculum_course_term_for_attestation,
+         name='get_disciplines_by_curriculum_course_term_for_attestations'),
     path('api/import_teachers_excel/', import_teachers_excel_view, name='import_teachers_excel'),
     path('api/save-all-changes/', save_teachers_for_groups_and_disciplines,
          name='save_teachers_for_groups_and_disciplines'),
+    path('api/save-attestation-periods/', save_periods_for_groups_and_disciplines,
+         name='save_periods_for_groups_and_disciplines'),
 
 
     path("curriculum/complete_set/", CompleteSetCurriculum.as_view(), name='curriculum_complete_set'),

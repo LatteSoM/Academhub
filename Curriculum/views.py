@@ -30,6 +30,7 @@ __all__ = (
     'CompleteSetCurriculum', # Add the new view to __all__
 )
 
+
 class CurriculumTableView(ImportViewMixin, ObjectTableView):
     """
     Класс для отображения таблицы учебных журналов.
@@ -163,113 +164,7 @@ class SetAttestationPeriodView(ObjectTemplateView):
         context = super().get_context_data(**kwargs)
         request = self.request
 
-        # --- Get selected IDs from query parameters ---
-        selected_specialty_id = request.GET.get('specialty')
-        selected_study_plan_id = request.GET.get('study_plan')
-        selected_course_id = request.GET.get('course')
-        selected_group_ids_str = request.GET.get('groups', '')
-        selected_term = request.GET.get('term', '1') # Default to term 1 if not provided
-
-        selected_group_ids = []
-        if selected_group_ids_str:
-            try:
-                # Ensure IDs are integers if your model uses integer PKs
-                selected_group_ids = [int(gid) for gid in selected_group_ids_str.split(',') if gid.isdigit()]
-            except ValueError:
-                messages.warning(request, "Неверный формат ID групп.")
-                selected_group_ids = []
-
-        # --- Pass selected IDs to context ---
-        # --- Bundle selected IDs for JS ---
-        initial_selections = {
-            'specialty_id': int(selected_specialty_id) if selected_specialty_id and selected_specialty_id.isdigit() else None,
-            'plan_id': int(selected_study_plan_id) if selected_study_plan_id and selected_study_plan_id.isdigit() else None,
-            'course_id': int(selected_course_id) if selected_course_id and selected_course_id.isdigit() else None,
-            'group_ids': selected_group_ids,
-            'term': int(selected_term) if selected_term and selected_term.isdigit() else 1
-        }
-        context['initial_selections'] = initial_selections
-
-        # --- Fetch data for dropdowns/checkboxes based on selections ---
-        # We still need the individual IDs for server-side filtering during initial load
-        selected_specialty_id_int = initial_selections['specialty_id']
-        selected_study_plan_id_int = initial_selections['plan_id']
-        selected_course_id_int = initial_selections['course_id']
-        selected_term_int = initial_selections['term']
-        # selected_group_ids remains the same list
-
         context["specialties"] = Specialty.objects.all()
-        context["study_plans"] = Curriculum.objects.none() # Default to empty
-        context["courses"] = [] # Default to empty
-        context["groups"] = GroupStudents.objects.none() # Default to empty
-        context["disciplines"] = [] # Default to empty
-
-        # Filter Curriculums (Study Plans) via Qualification linked to Specialty
-        if selected_specialty_id_int:
-            try:
-                # Assuming Qualification has a ForeignKey 'specialty' to Specialty model
-                qualifications = Qualification.objects.filter(specialty_id=selected_specialty_id_int)
-                context["study_plans"] = Curriculum.objects.filter(qualification__in=qualifications)
-            except Qualification.DoesNotExist:
-                 messages.warning(request, "Квалификации для выбранной специальности не найдены.")
-                 context["study_plans"] = Curriculum.objects.none()
-            except FieldError: # Catch if the assumed 'specialty_id' on Qualification is wrong
-                 messages.error(request, "Ошибка связи между Специальностью и Квалификацией. Проверьте модели.")
-                 context["study_plans"] = Curriculum.objects.none()
-
-        # Fetch Courses and Groups based on selected Curriculum (Study Plan)
-        if selected_study_plan_id_int:
-            # Assuming StudyPlan has a relation to get courses (e.g., through ClockCell or similar)
-            # This logic might need adjustment based on your actual models
-            try:
-                curriculum_obj = Curriculum.objects.get(id=selected_study_plan_id_int) # Use curriculum_obj consistently
-                # Example: Get distinct courses from ClockCells related to this curriculum
-                courses_qs = ClockCell.objects.filter(curriculum=curriculum_obj).values_list('course', flat=True).distinct().order_by('course')
-                context["courses"] = list(courses_qs)
-
-                if selected_course_id_int:
-                     # Filter GroupStudents by Qualification from Curriculum and selected course
-                     context["groups"] = GroupStudents.objects.filter(
-                         qualification=curriculum_obj.qualification, # Use qualification from curriculum_obj
-                         current_course=selected_course_id_int # Use current_course field
-                     ).order_by('full_name') # Order by full_name
-
-            except Curriculum.DoesNotExist:
-                 messages.error(request, "Выбранный учебный план не найден.")
-
-
-        # --- Fetch Disciplines based on selected groups and term ---
-        # !!! This logic heavily depends on your model structure !!!
-        # Example: Find disciplines linked via ClockCell for the selected curriculum, course, term,
-        # and potentially filter further if disciplines are group-specific.
-        # This is a simplified example assuming disciplines are tied to curriculum/course/term.
-        if selected_study_plan_id_int and selected_course_id_int and selected_term_int:
-             try:
-                 # Use the already fetched curriculum_obj if available, otherwise fetch Curriculum
-                 curriculum_obj = Curriculum.objects.get(id=selected_study_plan_id_int)
-                 discipline_ids = ClockCell.objects.filter(
-                     curriculum=curriculum_obj, # Use curriculum_obj
-                     course=selected_course_id_int,
-                     term=selected_term_int,
-                     discipline__isnull=False
-                 ).values_list('discipline_id', flat=True).distinct()
-
-                 # Fetch actual Discipline objects
-                 # You might want to add attestation dates here if stored on Discipline model
-                 # or fetch them from another related model
-                 context['disciplines'] = Discipline.objects.filter(id__in=discipline_ids).order_by('name')
-
-                 # If disciplines are specific to groups, you'd need further filtering based on selected_group_ids
-                 # This requires knowing how Disciplines/ClockCells relate to StudyGroups
-
-             except Curriculum.DoesNotExist:
-                 pass # Already handled above
-
-        # Add a message if the page is loaded without full selections needed for disciplines
-        if not context['disciplines'] and (selected_study_plan_id_int or selected_course_id_int or selected_term_int):
-             messages.info(request, "Выберите учебный план, курс, семестр и группы для отображения дисциплин.")
-        elif not selected_study_plan_id_int:
-             messages.info(request, "Выберите специальность и учебный план.")
 
 
         return context
