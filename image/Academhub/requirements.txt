@@ -78,3 +78,4 @@ xlrd==2.0.1
 yarg==0.1.10
 zope.event==5.0
 zope.interface==7.2
+gunicorn==21.2.0
