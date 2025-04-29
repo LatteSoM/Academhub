@@ -314,8 +314,6 @@ def import_teachers_excel_view(request):
                         'is_teacher': True,
                     }
 
-                    #TODO Придумать где хранить связи с ЦМК
-
                     speciality_name, code = specialty.split('_')
                     specialty_obj, created = Specialty.objects.get_or_create(
                         name=speciality_name,
@@ -500,8 +498,6 @@ def save_periods_for_groups_and_disciplines(request):
                             course=course,
                             term=term_db,
                             discipline_id=discipline_data['discipline_id'],
-                            start_date=discipline_data['start_attestation'],
-                            end_date=discipline_data['end_attestation'],
                             defaults={
                                 'curriculum_id': curriculum_id,
                                 'course': course,
