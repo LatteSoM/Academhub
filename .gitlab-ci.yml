@@ -1,0 +1,12 @@
+stages:
+  - build
+  - test
+  - prod
+
+build:
+  stage: build
+  script: 
+    - docker-compose build
+    - docker-compose push
+  tags:
+    - bt-srv

@@ -18,6 +18,7 @@ services:
       - postgres
   django:
     build: image/.
+    image: ${CI_REGISTRY}/acadehub:${CI_COMMIT_SHORT_SHA}
     container_name: django
     restart: always
     depends_on:
