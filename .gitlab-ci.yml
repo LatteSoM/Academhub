@@ -5,6 +5,8 @@ stages:
 
 build:
   stage: build
+  before_script:
+    - ${REGISTRY_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script: 
     - docker-compose build
     - docker-compose push
