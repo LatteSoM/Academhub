@@ -20,8 +20,7 @@ variables:
     - mv ${ENV_TEMPLATE} ${ENV_OUTPUT}
     - docker-compose pull
   script:
-    - if [ "$(docker-compose -p "${COMPOSE_PROJECT_NAME}" -f docker-compose.yaml ps --services | grep -q '[a-zA-Z0-9]')" ]; then \ 
-      docker-compose -p "${COMPOSE_PROJECT_NAME}" -f docker-compose.yaml down --volumes --remove-orphans) fi
+    - if docker-compose -p "${COMPOSE_PROJECT_NAME}" ps --services >/dev/null 2>&1; then docker-compose -p "${COMPOSE_PROJECT_NAME}" down --volumes --remove-orphans fi
     - docker-compose -p "${COMPOSE_PROJECT_NAME}" -f docker-compose.yaml up -d --force-recreate
 
 build_job:
