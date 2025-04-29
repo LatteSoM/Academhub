@@ -6,7 +6,7 @@ stages:
 variables:
   ENV_TEMPLATE: .env.template
   ENV_OUTPUT: .env
-  COMPOSE_PROJECT_NAME: ${CI_PROJECT_NAME}_${CI_PROJECT_ID}
+  COMPOSE_PROJECT_NAME: "${CI_PROJECT_NAME}_${CI_PROJECT_ID}"
 
 .deploy-job:
   stage: test
