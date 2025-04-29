@@ -37,7 +37,9 @@ USE_TZ = True
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 5000
 
-
+CSRF_COOKIE_SECURE = True   # Куки CSRF только через HTTPS
+SESSION_COOKIE_SECURE = True  # Сессионные куки только через HTTPS
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')  # Если за прокси (nginx)
 
 # Application definition
 
@@ -146,8 +148,6 @@ LANGUAGE_CODE = 'en-us'
 
 
 USE_I18N = True
-
-USE_TZ = True
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'

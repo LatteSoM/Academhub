@@ -52,6 +52,8 @@ __all__ = (
     'GradebookStudentBulkUpdateView',
 )
 
+from image.Academhub.Gradebook.forms import GradebookStudentsForm
+
 
 def get_last_grade(student, discipline, semester):
     """
