@@ -37,11 +37,6 @@ USE_TZ = True
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 5000
 
-# CSRF_COOKIE_SECURE = True   # Куки CSRF только через HTTPS
-# SESSION_COOKIE_SECURE = True  # Сессионные куки только через HTTPS
-# SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')  # Если за прокси (nginx)
-# CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS")
-
 # Application definition
 
 # Приложения которые пойдут в навигационную панель
