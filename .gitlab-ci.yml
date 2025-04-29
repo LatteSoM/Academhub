@@ -9,7 +9,6 @@ variables:
   COMPOSE_PROJECT_NAME: "${CI_PROJECT_NAME}_${CI_PROJECT_ID}"
 
 .deploy-job:
-  stage: test
   before_script:
     - sed -i "s/_DB_NAME_/${DB_NAME}/g" ${ENV_TEMPLATE}
     - sed -i "s/_DB_USER_/${DB_USER}/g" ${ENV_TEMPLATE}
@@ -38,5 +37,6 @@ build_job:
 
 test_job:
   extends: .deploy-job
+  stage: test
   tags:
     - bt-srv
