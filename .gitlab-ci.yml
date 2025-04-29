@@ -3,12 +3,38 @@ stages:
   - test
   - prod
 
-build:
+variables:
+  ENV_TEMPLATE: .env.template
+  ENV_OUTPUT: .env
+  COMPOSE_PROJECT_NAME: ${CI_PROJECT_NAME}_${CI_PROJECT_ID}
+
+.deploy-job:
+  stage: test
+  before_script:
+    - sed -i "s/_DB_NAME_/${DB_NAME}/g" ${ENV_TEMPLATE}
+    - sed -i "s/_DB_USER_/${DB_USER}/g" ${ENV_TEMPLATE}
+    - sed -i "s/_DB_PASS_/${DB_PASS}/g" ${ENV_TEMPLATE}
+    - sed -i "s/_DJANGO_ADMIN_/${DJANGO_ADMIN}/g" ${ENV_TEMPLATE}
+    - sed -i "s/_DJANGO_PASS_/${DJANGO_PASS}/g" ${ENV_TEMPLATE}
+    - sed -i "s/_DJANGO_KEY_/${DJANGO_KEY}/g" ${ENV_TEMPLATE}
+    - mv ${ENV_TEMPLATE} ${ENV_OUTPUT}
+    - docker-compose pull
+  script:
+    - if docker-compose -p "${COMPOSE_PROJECT_NAME}" -f docker-compose.yaml ps --services | grep -q '[a-zA-Z0-9]'; then \ 
+      docker-compose -p "${COMPOSE_PROJECT_NAME}" -f docker-compose.yaml down --volumes --remove-orphans
+    - docker-compose -p "${COMPOSE_PROJECT_NAME}" -f docker-compose.yaml up -d --force-recreate
+
+build_job:
   stage: build
   before_script:
     - echo ${REGISTRY_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
   script: 
     - docker-compose build
     - docker-compose push
+  tags:
+    - bt-srv
+
+test_job:
+  extends: .deploy-job
   tags:
     - bt-srv

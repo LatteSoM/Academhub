@@ -8,7 +8,6 @@ __pycache__/
 .venv/
 .idea/
 .venv
-.env
 env/
 venv/
 
