@@ -1550,8 +1550,8 @@ class TeachersForDisciplineAndCurriculum(AcademHubModel):
             return None
 
         # Определяем курс и локальный семестр из глобального семестра
-        course = (int(semester) + 1) // 2
-        local_semester = 2 if int(semester) % 2 == 0 else 1
+        course = (semester + 1) // 2
+        local_semester = 2 if semester % 2 == 0 else 1
 
         return cls.objects.filter(
             discipline=discipline,
