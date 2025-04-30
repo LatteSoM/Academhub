@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("SECRET_KEY")
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG")
@@ -37,11 +37,9 @@ USE_TZ = True
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 5000
 
+
+
 # Application definition
-
-
-
-
 
 # Приложения которые пойдут в навигационную панель
 ACTIVE_APPS = [
@@ -145,6 +143,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
+
+
 USE_I18N = True
 
 USE_TZ = True
