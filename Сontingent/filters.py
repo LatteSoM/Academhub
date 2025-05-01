@@ -1,14 +1,9 @@
-from cProfile import label
-from random import choices
-
 from django import forms
 from django.db.models import Q
-from django.db.models.fields import DateField
-
-from Academhub.models import Qualification, Specialty, GroupStudents, Student, Discipline, ContingentMovement, \
-    CurrentStudent
 from django_filters import FilterSet, CharFilter, ModelChoiceFilter, ModelMultipleChoiceFilter, ChoiceFilter, \
-    MultipleChoiceFilter, DateFilter
+    MultipleChoiceFilter
+
+from Academhub.models import Qualification, Specialty, GroupStudents, Student, Discipline, ContingentMovement
 
 __all__ = (
     'GroupFilter',

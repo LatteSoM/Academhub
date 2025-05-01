@@ -1,10 +1,7 @@
-import xml.etree.ElementTree as et
-from xml.etree.ElementTree import Element
-from typing import List
-import json
 import uuid
-import _io
-
+import xml.etree.ElementTree as et
+from typing import List
+from xml.etree.ElementTree import Element
 
 __all__ = (
     'RUP_parser'

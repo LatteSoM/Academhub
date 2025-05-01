@@ -1,7 +1,7 @@
-import django_filters
+import django_filters as filters
 from django import forms
 from django.db.models import Q, Min, Max
-import django_filters as filters
+
 from Academhub.models import CustomUser, Gradebook, GroupStudents, Discipline
 
 __all__ = (

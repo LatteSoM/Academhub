@@ -1,6 +1,6 @@
-from django import forms
-from django.db.models import Q
 import django_filters as filters
+from django import forms
+
 from Academhub.models import Curriculum, Qualification
 
 __all__ = (

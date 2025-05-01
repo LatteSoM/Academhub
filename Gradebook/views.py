@@ -6,35 +6,34 @@ from collections import defaultdict
 from pathlib import Path
 from urllib.parse import quote
 
-from django.urls import reverse
-from django.views import View
-
+from django.contrib import messages
+from django.contrib.auth.decorators import permission_required
+from django.core.exceptions import PermissionDenied
 from django.db.models import Prefetch, Q, Func, F
+from django.http import HttpResponse, FileResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+from django.utils import timezone
+from django.views import View
 from openpyxl.styles import PatternFill, Font, Alignment, Side, Border
 from openpyxl.utils import get_column_letter
 from openpyxl.workbook import Workbook
 from unidecode import unidecode
 
-from Academhub.modules.documentGenPars import GradebookDocumentGenerator
-from Gradebook.forms import *
-from Gradebook.forms import GenerateGradebookForm, GetStatisticksGradebookForm, GetDiplomTypeGradebookForm
-from Gradebook.tables import *
-from Gradebook.filters import *
-from django.utils import timezone
-from django.contrib import messages
-from django.http import HttpResponse, FileResponse
-from Gradebook.mixins import GradeBookMixin
-from Gradebook.tables import TeacherGradeBookTable
-from Academhub.utils import getpermission, getpattern
-from Gradebook.filters import GradeBookTeachersFilter
-from django.shortcuts import get_object_or_404, redirect, render
-from django.contrib.auth.decorators import permission_required
-from django.core.exceptions import PermissionDenied
-from Academhub.models import GradebookStudents, Gradebook, CustomUser, SubTable, Button, Discipline, Student, \
-    GroupStudents, ClockCell, Curriculum
 from Academhub.generic import BulkUpdateView, ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView, \
     ObjectTemplateView
-
+from Academhub.models import GradebookStudents, Gradebook, CustomUser, SubTable, Button, Discipline, Student, \
+    GroupStudents, ClockCell, Curriculum
+from Academhub.models.models import TeachersForDisciplineAndCurriculum
+from Academhub.modules.documentGenPars import GradebookDocumentGenerator
+from Academhub.utils import getpermission, getpattern
+from Gradebook.filters import *
+from Gradebook.filters import GradeBookTeachersFilter
+from Gradebook.forms import *
+from Gradebook.forms import GenerateGradebookForm, GetStatisticksGradebookForm, GetDiplomTypeGradebookForm
+from Gradebook.mixins import GradeBookMixin
+from Gradebook.tables import *
+from Gradebook.tables import TeacherGradeBookTable
 
 #
 # Create your views here.
@@ -264,20 +263,23 @@ def has_required_grades(student, pm_discipline):
 
 def update_grade_book_contingent(gradebook, students):
     try:
+        # Обновляем преподавателей
+        teacher_link = TeachersForDisciplineAndCurriculum.get_teachers_for_gradebook(
+            discipline=gradebook.discipline,
+            group=gradebook.group,
+            semester=gradebook.semester_number
+        )
+
+        if teacher_link:
+            gradebook.teachers.set(teacher_link.teachers.all())
+
+        # Обновляем студентов
         GradebookStudents.objects.filter(gradebook=gradebook).delete()
 
         if is_pm_discipline(gradebook.discipline):
-            # Фильтрация студентов с выполненными требованиями
-            print(f"{gradebook.discipline} is PM")
-            allowed_students = [
-                s for s in students
-                if has_required_grades(s, gradebook.discipline)
-            ]
+            students = [s for s in students if has_required_grades(s, gradebook.discipline)]
 
-        else:
-            allowed_students = students
-
-        for student in allowed_students:
+        for student in students:
             GradebookStudents.objects.create(
                 student=student,
                 gradebook=gradebook,
@@ -288,7 +290,7 @@ def update_grade_book_contingent(gradebook, students):
         gradebook.save()
         return True
     except Exception as e:
-        print(f"Ошибка обновления: {e}")
+        logger.error(f"Ошибка обновления ведомости: {str(e)}", exc_info=True)
         return False
 
 
@@ -305,6 +307,13 @@ def get_gradebook_name(clock_cell):
 
 def create_gradebook_with_fields(discipline, group, semester, grade_type, clock_cell, resist_students=None):
     try:
+        # Получаем привязанных преподавателей
+        teacher_link = TeachersForDisciplineAndCurriculum.get_teachers_for_gradebook(
+            discipline=discipline,
+            group=group,
+            semester=semester
+        )
+
         gradebook = Gradebook.objects.create(
             discipline=discipline,
             group=group,
@@ -313,34 +322,27 @@ def create_gradebook_with_fields(discipline, group, semester, grade_type, clock_
             name=get_gradebook_name(clock_cell),
             status='Не заполнена'
         )
-        if not resist_students:
-            students = Student.objects.filter(group=group)
 
-            if is_pm_discipline(discipline):
-                allowed_students = [
-                    s for s in students
-                    if has_required_grades(s, discipline)
-                ]
-            else:
-                allowed_students = students
+        # Назначаем преподавателей, если они есть
+        if teacher_link:
+            gradebook.teachers.set(teacher_link.teachers.all())
 
-            for student in allowed_students:
-                GradebookStudents.objects.create(
-                    student=student,
-                    gradebook=gradebook,
-                    grade='-'
-                )
-        else:
-            for student in resist_students:
-                GradebookStudents.objects.create(
-                    student=student,
-                    gradebook=gradebook,
-                    grade='-'
-                )
+        # Обработка студентов
+        students = resist_students if resist_students else Student.objects.filter(group=group)
+
+        if is_pm_discipline(discipline):
+            students = [s for s in students if has_required_grades(s, discipline)]
+
+        for student in students:
+            GradebookStudents.objects.create(
+                student=student,
+                gradebook=gradebook,
+                grade='-'
+            )
 
         return True
     except Exception as e:
-        print(f"Ошибка создания: {e}")
+        logger.error(f"Ошибка создания ведомости: {str(e)}", exc_info=True)
         return False
 
 
@@ -621,6 +623,8 @@ class ViewStudentsGradesForSemester(ObjectTemplateView):
                 group = form.cleaned_data['group']
 
                 data = fetch_group_semester_attestation_table(semester, group)
+
+                print(group)
 
                 return render(request, 'Gradebook/list/group_semester_grades.html', {
                     'students': data['students'],
@@ -1035,7 +1039,7 @@ class GradebookClosedList(ObjectTableView):
 class TeachersGradeBookTableView(ObjectTableView):
     table_class = TeacherGradeBookTable
     filterset_class = GradeBookTeachersFilter
-    queryset = Gradebook.objects.all() 
+    queryset = Gradebook.objects.all()
 
     def get_queryset(self):
         # Получаем залогиненного пользователя
@@ -1045,17 +1049,7 @@ class TeachersGradeBookTableView(ObjectTableView):
         if not user.is_authenticated or not hasattr(user, 'is_teacher') or not user.is_teacher:
             return Gradebook.objects.none()
 
-        # Фильтрация ведомостей
-        queryset = Gradebook.objects.filter(
-            status='Открыта',  # Статус "Открыта"
-            teachers__id=user.id  # Текущий пользователь в списке преподавателей
-        ).select_related(  # Оптимизация запросов
-            'group',
-            'discipline'
-        ).prefetch_related(
-            'teachers',
-            'students'
-        ).distinct()  # Убираем дубликаты
+        queryset = user.gradebooks.filter(status=Gradebook.STATUS_CHOICE[1][1])
 
         return queryset
  
@@ -1123,6 +1117,7 @@ class GradebookDetailView(ObjectDetailView):
     def dispatch(self, request, *args, **kwargs):
         self.request = request
         return super().dispatch(request, *args, **kwargs)
+
 
     # Формируем список кнопок динамически
     buttons = [

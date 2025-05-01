@@ -1,16 +1,15 @@
 import os
-
-from Academhub.modules.documentGenPars import RecordBookDocumentGenerator
-
-
-from .utils import *
-from django import forms
 from datetime import datetime
-from Academhub.forms import *
+
+from django import forms
+from django.core.exceptions import ValidationError
 from django.utils.dateparse import parse_date
 from openpyxl.reader.excel import load_workbook
-from django.core.exceptions import ValidationError
+
+from Academhub.forms import *
 from Academhub.models import Student, Discipline, GroupStudents, Specialty, Qualification
+from Academhub.modules.documentGenPars import RecordBookDocumentGenerator
+from .utils import *
 
 __all__ = [
     'GroupForm',

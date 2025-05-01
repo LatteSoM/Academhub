@@ -1,8 +1,8 @@
 import re
-from Academhub.models import *
-from django.db import transaction
+
 from django.utils import timezone
-from django.core.files.base import equals_lf
+
+from Academhub.models import *
 
 
 def generate_unique_record_book_number(admission_year, student):

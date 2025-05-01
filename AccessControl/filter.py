@@ -1,8 +1,10 @@
-from django.db.models import Q
 from django import forms
-from Academhub.models import CustomUser, GroupProxy, PermissionProxy
 from django.contrib.contenttypes.models import ContentType
-from django_filters import FilterSet, CharFilter, BooleanFilter, ModelMultipleChoiceFilter, ModelChoiceFilter
+from django.db.models import Q
+from django_filters import FilterSet, CharFilter, BooleanFilter, ModelMultipleChoiceFilter
+
+from Academhub.models import CustomUser, GroupProxy, PermissionProxy
+
 
 class UserFilter(FilterSet):
     search = CharFilter(method='filter_search', label='Поиск')

@@ -1,6 +1,6 @@
-from django.apps import apps
 from types import ModuleType
-from django.contrib.contenttypes.models import ContentType
+
+from django.apps import apps
 
 __all__ = (
     'getpattern',
@@ -51,6 +51,8 @@ def getpermission(app: str, *actions: str) -> list[str]:
     :param actions: Действия (например, "add", "change", "delete", "view").
     :return: Строка с codename.
     """
+
+    # Формируем codename
     permissions = []
     for action in actions:
         permissions.append(f"{app}.{action}")

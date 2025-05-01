@@ -1,12 +1,8 @@
 import json
-from email.policy import default
-from enum import unique
-from http.client import responses
 
 import pandas as pd
 from django.db import transaction
 from django.http import JsonResponse
-
 
 from Academhub.models import Specialty, Qualification, Curriculum, GroupStudents, ClockCell, CustomUser
 

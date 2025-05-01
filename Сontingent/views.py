@@ -1,13 +1,20 @@
 import os
-from .forms import *
-from .utils import *
-from .tables import *
-from .filters import *
+from collections import defaultdict
 from datetime import datetime
+
+from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth.decorators import permission_required
+from django.contrib.messages.views import SuccessMessageMixin
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse_lazy
+from django.views.generic import FormView
+
+from Academhub.generic import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView, ObjectTemplateView, \
+    ObjectTableImportView, PermissionBaseMixin
 from Academhub.models import (
     Student,
-    Practice,
-    TermPaper,
     Specialty,
     Discipline,
     Curriculum,
@@ -17,32 +24,19 @@ from Academhub.models import (
     StudentRecordBook,
     ContingentMovement,
     RecordBookTemplate,
-    ProfessionalModule,
-    MiddleCertification,
 )
-from django.conf import settings 
-from django.contrib import messages
-from collections import defaultdict
-from django.http import HttpResponse
-from django.urls import reverse_lazy
-from django.http import HttpResponse
 from Academhub.models import SubTable
-from django.views.generic import FormView
-from django.utils.html import format_html
+from Academhub.modules.documentGenPars import StatisticsTableGenerator, CourseTableGenerator, GroupTableGenerator, \
+    VacationTableGenerator, MovementTableGenerator
 from Academhub.utils import getpermission, getpattern
-from django.shortcuts import get_object_or_404, redirect
-from django.contrib.messages.views import SuccessMessageMixin
-from django.contrib.auth.decorators import permission_required
-from .tables import AcademTable, ExpulsionTable, ContingentMovementTable, StudentTransferTable
-from django.core.exceptions import ImproperlyConfigured, PermissionDenied
+from .filters import *
 from .filters import AcademFilter, ExpulsionFilter, ContingentMovementFilter
-from .forms import AcademLeaveForm, AcademReturnForm, ExpellStudentForm, RecoverStudentForm, StudentImportForm, \
-    ContingentStudentImportForm, GenerateQualificationTemplateForm
-from Academhub.generic import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView, ObjectTemplateView, ObjectTableImportView
-from .forms import AcademLeaveForm, AcademReturnForm, ExpellStudentForm, RecoverStudentForm, StudentImportForm
-from Academhub.generic import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView, ObjectTemplateView, \
-    ObjectTableImportView, PermissionBaseMixin
-from Academhub.modules.documentGenPars import StatisticsTableGenerator, CourseTableGenerator, GroupTableGenerator, VacationTableGenerator, MovementTableGenerator
+from .forms import *
+from .forms import AcademLeaveForm, AcademReturnForm, ExpellStudentForm, RecoverStudentForm
+from .forms import ContingentStudentImportForm, GenerateQualificationTemplateForm
+from .tables import *
+from .tables import AcademTable, ExpulsionTable, ContingentMovementTable
+from .utils import *
 
 __all__ = (
 

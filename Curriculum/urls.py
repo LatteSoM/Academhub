@@ -1,8 +1,7 @@
 from django.urls import path
 
-from Academhub.utils import getpattern
-from .views import *
 from .api.v1 import *
+from .views import *
 from .views import SetAttestationPeriodView
 
 urlpatterns = [

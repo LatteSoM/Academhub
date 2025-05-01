@@ -1,35 +1,24 @@
 import json
 from collections import defaultdict
 
+import pandas as pd  # Import pandas for Excel processing
+from django.contrib import messages
 from django.core.exceptions import FieldError
 from django.http import HttpResponseForbidden
-from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
-# from parser_for_plx import RUP_parser
-from django.shortcuts import render
 from django.urls import reverse
-from django.views import View
-from django.views.generic import TemplateView, DetailView
-from django.views.generic import DeleteView
-from unicodedata import category
-import pandas as pd # Import pandas for Excel processing
-
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from django.views import View
-from Academhub.models import Curriculum, CustomUser # Add CustomUser
 from django.urls import reverse_lazy
+from django.views.generic import DeleteView
+from django.views.generic import TemplateView
 
-# Ensure Qualification is imported if not already
-from Academhub.models.models import Module, Specialty, Qualification, GroupStudents, Curriculum
-from .models.curriculum_datail_objects import *
 from Academhub.generic import ObjectTableView, ObjectCreateView, ImportViewMixin, ObjectTemplateView, ObjectDetailView
-# Assuming Discipline model is correctly imported or defined elsewhere
 from Academhub.models import ClockCell, Category, StudyCycle, Discipline, CustomUser
+from Academhub.models.models import Specialty, Qualification, GroupStudents, Curriculum
 from .filters import CurriculumQualificationsFilter
-from .forms.GetPlxForm import GetPlxForm
 from .forms.EditableCurriculumForm import EditableCurriculumForm
+from .forms.GetPlxForm import GetPlxForm
+from .models.curriculum_datail_objects import *
 from .tables import CurriculumTable
 
 __all__ = (

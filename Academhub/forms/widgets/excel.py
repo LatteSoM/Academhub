@@ -1,5 +1,6 @@
-import re
 import json
+import re
+
 from django.forms import widgets as wid
 
 __all__ = (

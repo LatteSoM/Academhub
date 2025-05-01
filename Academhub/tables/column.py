@@ -1,8 +1,8 @@
+from django.template.loader import render_to_string
 from django.urls import reverse
-from django_tables2 import tables
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
-from django.template.loader import render_to_string
+from django_tables2 import tables
 
 __all__ = (
     'EmailColumn',

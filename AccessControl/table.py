@@ -1,6 +1,7 @@
 import django_tables2 as table
-from Academhub.tables import BaseTable, EmailColumn
+
 from Academhub.models import CustomUser, GroupProxy, PermissionProxy
+from Academhub.tables import BaseTable, EmailColumn
 
 __all__ = (
     'UserTable',

@@ -1,11 +1,9 @@
-from ..utils import getpermission
-from django.http import JsonResponse
-from django_tables2 import SingleTableView
-from django_filters.views import FilterView
-from django.utils.translation import gettext as _
 from django.core.exceptions import ObjectDoesNotExist
 from .mixin import LoginRequiredMixin, SubTablesMixin, BaseContextMixin, ImportViewMixin, PermissionBaseMixin
+from django.http import JsonResponse
 from django.views.generic import TemplateView, ListView, DetailView, UpdateView, CreateView, DeleteView, View
+from django_filters.views import FilterView
+from django_tables2 import SingleTableView
 
 __all__  = [
   'ObjectListView',

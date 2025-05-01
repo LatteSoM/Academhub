@@ -1,7 +1,10 @@
 import json
 from collections import defaultdict
+
 from django import forms
+
 from Academhub.models import Specialty, Category, Curriculum, StudyCycle, Module, Discipline, ClockCell
+
 
 class EditableCurriculumForm(forms.Form):
     def __init__(self, json_data, data=None, *args, **kwargs):

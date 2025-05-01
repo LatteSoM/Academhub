@@ -1,7 +1,8 @@
 import django_tables2 as table
 from django_tables2 import tables
-from Academhub.tables import BaseTable, BaseTable2
+
 from Academhub.models import Gradebook, GradebookStudents, CustomUser
+from Academhub.tables import BaseTable, BaseTable2
 
 __all__ = (
     'GradebookTable',

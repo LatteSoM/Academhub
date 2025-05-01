@@ -1,4 +1,5 @@
 from django import forms
+
 from Academhub.models import Gradebook, GradebookStudents, CustomUser, Discipline, Student, GroupStudents
 
 __all__ = (
@@ -155,4 +156,4 @@ class GradebookStudentsForm(forms.ModelForm):
             self.fields['ticket_number'].initial = self.instance.ticket_number
             self.fields['grade'].initial = self.instance.grade
             self.fields['student'].widget.attrs['disabled'] = 'disabled'
-            self.fields['student'].widget.attrs['handshakable'] ='un'
+            self.fields['student'].widget.attrs['handshakable'] = 'un'
