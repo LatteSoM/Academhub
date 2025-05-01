@@ -1,4 +1,3 @@
-import datetime
 import logging
 import os
 import re
@@ -7,23 +6,15 @@ from collections import defaultdict
 from pathlib import Path
 from urllib.parse import quote
 
-import matplotlib
 from django.urls import reverse
 from django.views import View
 
-matplotlib.use('Agg')  # Set backend to Agg
-import matplotlib.pyplot as plt
-from io import BytesIO
-
-import numpy as np
 from django.db.models import Prefetch, Q, Func, F
 from openpyxl.styles import PatternFill, Font, Alignment, Side, Border
 from openpyxl.utils import get_column_letter
 from openpyxl.workbook import Workbook
 from unidecode import unidecode
 
-from Academhub import settings
-from django.db.models.functions import Trim
 from Academhub.modules.documentGenPars import GradebookDocumentGenerator
 from Gradebook.forms import *
 from Gradebook.forms import GenerateGradebookForm, GetStatisticksGradebookForm, GetDiplomTypeGradebookForm
@@ -38,6 +29,7 @@ from Academhub.utils import getpermission, getpattern
 from Gradebook.filters import GradeBookTeachersFilter
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import permission_required
+from django.core.exceptions import PermissionDenied
 from Academhub.models import GradebookStudents, Gradebook, CustomUser, SubTable, Button, Discipline, Student, \
     GroupStudents, ClockCell, Curriculum
 from Academhub.generic import BulkUpdateView, ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView, \
@@ -80,35 +72,6 @@ def get_last_grade(student, discipline, semester):
         if grade:
             return grade.grade
     return None
-
-
-def get_last_grade(student, discipline, semester):
-    """
-    Возвращает последнюю оценку студента по дисциплине с учетом всех типов ведомостей.
-    Порядок проверки: комиссия → пересдача → первичная сдача.
-
-    Args:
-        student: Объект студента.
-        discipline: Объект дисциплины.
-        semester: Номер семестра.
-
-    Returns:
-        str or None: Последняя оценка или None, если оценок нет.
-    """
-    gradebook_types_priority = ["Комиссия", "Пересдача", "Первичная сдача"]
-
-    grade = GradebookStudents.objects.filter(
-        student=student,
-        gradebook__discipline=discipline,
-        gradebook__semester_number=semester,
-        gradebook__type_of_grade_book__in=gradebook_types_priority
-    ).order_by(
-        '-gradebook__date_of_closing',
-        # Приоритет типов: меньший индекс в gradebook_types_priority → выше приоритет
-        F('gradebook__type_of_grade_book').asc().nullslast()
-    ).first()
-
-    return grade.grade if grade else None
 
 
 def check_students_for_academic_debts(group, semester):
@@ -1145,9 +1108,21 @@ class GradebookDetailView(ObjectDetailView):
         ]
     }
 
+    def has_permission(self):
+        if super().has_permission():
+            return True
 
-    def check_status(obj, user):
-        return obj.status == "Не заполнена"
+        try:
+            obj = self.get_object()
+            if self.request.user.gradebooks.filter(id=obj.id).exists():
+                return True
+            return False
+        except (AttributeError, PermissionDenied):
+            return False
+
+    def dispatch(self, request, *args, **kwargs):
+        self.request = request
+        return super().dispatch(request, *args, **kwargs)
 
     # Формируем список кнопок динамически
     buttons = [

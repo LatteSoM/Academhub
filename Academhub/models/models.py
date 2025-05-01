@@ -886,7 +886,8 @@ class Gradebook(AcademHubModel):
 
     teachers = models.ManyToManyField(
         'CustomUser', 
-        verbose_name="Преподаватели"
+        verbose_name="Преподаватели",
+        related_name='gradebooks',
     )
     group = models.ForeignKey(
         GroupStudents, 

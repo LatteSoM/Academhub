@@ -154,8 +154,5 @@ class GradebookStudentsForm(forms.ModelForm):
             self.fields['student'].initial = self.instance.student
             self.fields['ticket_number'].initial = self.instance.ticket_number
             self.fields['grade'].initial = self.instance.grade
-
             self.fields['student'].widget.attrs['disabled'] = 'disabled'
-
-
-            
+            self.fields['student'].widget.attrs['handshakable'] ='un'

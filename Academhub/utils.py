@@ -51,6 +51,7 @@ def getpermission(app: str, *actions: str) -> list[str]:
     :param actions: Действия (например, "add", "change", "delete", "view").
     :return: Строка с codename.
     """
-
-    # Формируем codename
-    return (f"{app}.{action}" for action in actions)
+    permissions = []
+    for action in actions:
+        permissions.append(f"{app}.{action}")
+    return permissions
