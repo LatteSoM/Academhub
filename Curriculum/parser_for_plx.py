@@ -1,7 +1,10 @@
+import _io
+import json
 import uuid
-import xml.etree.ElementTree as et
 from typing import List
+import xml.etree.ElementTree as et
 from xml.etree.ElementTree import Element
+
 
 __all__ = (
     'RUP_parser'
@@ -41,7 +44,12 @@ class RUP_parser:
                     else:
                         self.plany_ciclov.append(child)
                 case "ПланыСтроки":
-                    self.plany_stroky.append(child)
+                    # if child.attrib['Дисциплина'] == 'Дисциплины по выбору (предлагаемые ОО)':
+                    #     child.attrib['ТипОбъекта'] = 4
+                    #     child.attrib['ВидОбъекта'] = 1
+                    # else:
+                        self.plany_stroky.append(child)
+
                 case "ПланыНовыеЧасы":
                     self.plany_novie_chasy.append(child)
                 case "Планы":
@@ -84,7 +92,6 @@ class RUP_parser:
                     })
 
     def get_clock_cells(self, child_object, child_code_xml):
-        
         for hour in self.plany_novie_chasy:
             new_hour_parent_id = hour.get("КодОбъекта")
 
@@ -133,7 +140,10 @@ class RUP_parser:
                         parent_string_id_local = string.get('Код')
                         string_object_type = self.spravochnik_tipa_objecta.get(string.get('ТипОбъекта'))
 
-                        if string_object_type == "Модули":
+                        if string_object_type == 'Блоки по выбору':
+                            pass
+
+                        if string_object_type == "Модули" or string_object_type == 'Блоки по выбору':
                             module = {
                                 'id': str(uuid.uuid4()),
                                 'module_name': string.get('Дисциплина'),
@@ -147,6 +157,8 @@ class RUP_parser:
                             self.get_clock_cells(module, parent_string_id_local)
 
                             child['modules'].append(module)
+                            if string_object_type == 'Блоки по выбору':
+                                pass
 
                         else:
                             string_parent_code = string.get('КодРодителя')

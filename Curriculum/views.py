@@ -27,9 +27,9 @@ __all__ = (
     'CurriculumDeleteView',
     'CurriculumEditableFormView',
     'CurriculumPreviewView',
-    'CompleteSetCurriculum',
-    'import_teachers_excel_view', # Add the new view to __all__
+    'CompleteSetCurriculum', # Add the new view to __all__
 )
+
 
 class CurriculumTableView(ImportViewMixin, ObjectTableView):
     """
@@ -164,113 +164,7 @@ class SetAttestationPeriodView(ObjectTemplateView):
         context = super().get_context_data(**kwargs)
         request = self.request
 
-        # --- Get selected IDs from query parameters ---
-        selected_specialty_id = request.GET.get('specialty')
-        selected_study_plan_id = request.GET.get('study_plan')
-        selected_course_id = request.GET.get('course')
-        selected_group_ids_str = request.GET.get('groups', '')
-        selected_term = request.GET.get('term', '1') # Default to term 1 if not provided
-
-        selected_group_ids = []
-        if selected_group_ids_str:
-            try:
-                # Ensure IDs are integers if your model uses integer PKs
-                selected_group_ids = [int(gid) for gid in selected_group_ids_str.split(',') if gid.isdigit()]
-            except ValueError:
-                messages.warning(request, "Неверный формат ID групп.")
-                selected_group_ids = []
-
-        # --- Pass selected IDs to context ---
-        # --- Bundle selected IDs for JS ---
-        initial_selections = {
-            'specialty_id': int(selected_specialty_id) if selected_specialty_id and selected_specialty_id.isdigit() else None,
-            'plan_id': int(selected_study_plan_id) if selected_study_plan_id and selected_study_plan_id.isdigit() else None,
-            'course_id': int(selected_course_id) if selected_course_id and selected_course_id.isdigit() else None,
-            'group_ids': selected_group_ids,
-            'term': int(selected_term) if selected_term and selected_term.isdigit() else 1
-        }
-        context['initial_selections'] = initial_selections
-
-        # --- Fetch data for dropdowns/checkboxes based on selections ---
-        # We still need the individual IDs for server-side filtering during initial load
-        selected_specialty_id_int = initial_selections['specialty_id']
-        selected_study_plan_id_int = initial_selections['plan_id']
-        selected_course_id_int = initial_selections['course_id']
-        selected_term_int = initial_selections['term']
-        # selected_group_ids remains the same list
-
         context["specialties"] = Specialty.objects.all()
-        context["study_plans"] = Curriculum.objects.none() # Default to empty
-        context["courses"] = [] # Default to empty
-        context["groups"] = GroupStudents.objects.none() # Default to empty
-        context["disciplines"] = [] # Default to empty
-
-        # Filter Curriculums (Study Plans) via Qualification linked to Specialty
-        if selected_specialty_id_int:
-            try:
-                # Assuming Qualification has a ForeignKey 'specialty' to Specialty model
-                qualifications = Qualification.objects.filter(specialty_id=selected_specialty_id_int)
-                context["study_plans"] = Curriculum.objects.filter(qualification__in=qualifications)
-            except Qualification.DoesNotExist:
-                 messages.warning(request, "Квалификации для выбранной специальности не найдены.")
-                 context["study_plans"] = Curriculum.objects.none()
-            except FieldError: # Catch if the assumed 'specialty_id' on Qualification is wrong
-                 messages.error(request, "Ошибка связи между Специальностью и Квалификацией. Проверьте модели.")
-                 context["study_plans"] = Curriculum.objects.none()
-
-        # Fetch Courses and Groups based on selected Curriculum (Study Plan)
-        if selected_study_plan_id_int:
-            # Assuming StudyPlan has a relation to get courses (e.g., through ClockCell or similar)
-            # This logic might need adjustment based on your actual models
-            try:
-                curriculum_obj = Curriculum.objects.get(id=selected_study_plan_id_int) # Use curriculum_obj consistently
-                # Example: Get distinct courses from ClockCells related to this curriculum
-                courses_qs = ClockCell.objects.filter(curriculum=curriculum_obj).values_list('course', flat=True).distinct().order_by('course')
-                context["courses"] = list(courses_qs)
-
-                if selected_course_id_int:
-                     # Filter GroupStudents by Qualification from Curriculum and selected course
-                     context["groups"] = GroupStudents.objects.filter(
-                         qualification=curriculum_obj.qualification, # Use qualification from curriculum_obj
-                         current_course=selected_course_id_int # Use current_course field
-                     ).order_by('full_name') # Order by full_name
-
-            except Curriculum.DoesNotExist:
-                 messages.error(request, "Выбранный учебный план не найден.")
-
-
-        # --- Fetch Disciplines based on selected groups and term ---
-        # !!! This logic heavily depends on your model structure !!!
-        # Example: Find disciplines linked via ClockCell for the selected curriculum, course, term,
-        # and potentially filter further if disciplines are group-specific.
-        # This is a simplified example assuming disciplines are tied to curriculum/course/term.
-        if selected_study_plan_id_int and selected_course_id_int and selected_term_int:
-             try:
-                 # Use the already fetched curriculum_obj if available, otherwise fetch Curriculum
-                 curriculum_obj = Curriculum.objects.get(id=selected_study_plan_id_int)
-                 discipline_ids = ClockCell.objects.filter(
-                     curriculum=curriculum_obj, # Use curriculum_obj
-                     course=selected_course_id_int,
-                     term=selected_term_int,
-                     discipline__isnull=False
-                 ).values_list('discipline_id', flat=True).distinct()
-
-                 # Fetch actual Discipline objects
-                 # You might want to add attestation dates here if stored on Discipline model
-                 # or fetch them from another related model
-                 context['disciplines'] = Discipline.objects.filter(id__in=discipline_ids).order_by('name')
-
-                 # If disciplines are specific to groups, you'd need further filtering based on selected_group_ids
-                 # This requires knowing how Disciplines/ClockCells relate to StudyGroups
-
-             except Curriculum.DoesNotExist:
-                 pass # Already handled above
-
-        # Add a message if the page is loaded without full selections needed for disciplines
-        if not context['disciplines'] and (selected_study_plan_id_int or selected_course_id_int or selected_term_int):
-             messages.info(request, "Выберите учебный план, курс, семестр и группы для отображения дисциплин.")
-        elif not selected_study_plan_id_int:
-             messages.info(request, "Выберите специальность и учебный план.")
 
 
         return context
@@ -447,132 +341,132 @@ class CurriculumDetail(ObjectDetailView):
 #         messages.success(request, f'Преподаватель {teacher.full_name} больше не может вести дисциплину {discipline.name}')
 #         return redirect('curriculum_add_teacher', pk=pk, discipline_id=discipline_id, course_number=course_number, term_number=term_number)
 
-def import_teachers_excel_view(request):
-    if request.method == 'POST':
-        excel_file = request.FILES.get('excel_file')
-        if not excel_file:
-            messages.error(request, "Не был выбран файл Excel.")
-            referer_url = request.META.get('HTTP_REFERER', reverse('curriculum_list'))
-            return redirect(referer_url)
-
-        if not excel_file.name.endswith(('.xls', '.xlsx')):
-             messages.error(request, "Неверный формат файла. Пожалуйста, загрузите файл Excel (.xls или .xlsx).")
-             referer_url = request.META.get('HTTP_REFERER', reverse('curriculum_list'))
-             return redirect(referer_url)
-
-        created_count = 0
-        updated_count = 0
-        skipped_count = 0
-        deactivated_count = 0
-        errors = []
-        excel_emails = set()
-
-        try:
-            df = pd.read_excel(excel_file, sheet_name=0)
-            required_columns = ['ФИО','email', 'ЦМК']
-
-            if not all(col in df.columns for col in required_columns):
-                missing_cols = [col for col in required_columns if col not in df.columns]
-                messages.error(request, f"В файле отсутствуют необходимые столбцы: {', '.join(missing_cols)}")
-                referer_url = request.META.get('HTTP_REFERER', reverse('curriculum_list'))
-                return redirect(referer_url)
-
-            for index, row in df.iterrows():
-                try:
-                    full_name_raw = row.get('ФИО')
-                    email_raw = row.get('email')
-                    cmk_raw = row.get('ЦМК')
-
-                    full_name = str(full_name_raw).strip() if pd.notna(full_name_raw) else None
-                    email = str(email_raw).strip() if pd.notna(email_raw) else None
-                    cmk = str(cmk_raw).strip() if pd.notna(cmk_raw) else None
-
-                    if not all([full_name, email]):
-                        errors.append(f"Строка {index + 2}: Отсутствуют обязательные данные (ФИО или email).")
-                        skipped_count += 1
-                        continue
-
-                    name_parts = full_name.split()
-                    last_name = name_parts[0] if len(name_parts) > 0 else ''
-                    first_name = name_parts[1] if len(name_parts) > 1 else ''
-                    # middle_name = ' '.join(name_parts[2:]) if len(name_parts) > 2 else '' # Not used currently based on user edits
-
-                    if not last_name or not first_name:
-                         errors.append(f"Строка {index + 2}: Не удалось разобрать ФИО '{full_name}'. Ожидается как минимум Фамилия и Имя.")
-                         skipped_count += 1
-                         continue
-
-
-                    user_defaults = {
-                        'full_name': full_name,
-                        'is_teacher': True,
-                        'is_active': True
-                    }
-
-                    #TODO Придумать где хранить связи с ЦМК (user_defaults['cmk'] = cmk)
-
-                    user, created = CustomUser.objects.update_or_create(
-                        email=email,
-                        defaults=user_defaults
-                    )
-
-                    if created:
-                        email_part = str(email.split("@")[0])
-                        against_overkill_par = "123456789"
-                        user.set_password(email_part + against_overkill_par)
-                        user.save()
-                        created_count += 1
-                    else:
-                        updated_count += 1
-
-                    excel_emails.add(email)
-
-                except Exception as e:
-                    errors.append(f"Строка {index + 2}: Ошибка обработки - {e}")
-                    skipped_count += 1
-
-            existing_teacher_emails = set(CustomUser.objects.filter(is_teacher=True, is_active=True).values_list('email', flat=True))
-            emails_to_deactivate = existing_teacher_emails - excel_emails
-
-            if emails_to_deactivate:
-                users_to_deactivate = CustomUser.objects.filter(email__in=emails_to_deactivate, is_teacher=True)
-                for user in users_to_deactivate:
-                    user.is_active = False
-                    user.save()
-                    deactivated_count += 1
-
-        except Exception as e:
-            messages.error(request, f"Произошла ошибка при обработке файла: {e}")
-            referer_url = request.META.get('HTTP_REFERER', reverse('curriculum_list'))
-            return redirect(referer_url)
-
-        final_message_parts = []
-        if created_count > 0:
-            final_message_parts.append(f"Создано: {created_count}")
-        if updated_count > 0:
-            final_message_parts.append(f"Обновлено/Подтверждено: {updated_count}")
-        if deactivated_count > 0:
-            final_message_parts.append(f"Деактивировано (не найдены в файле): {deactivated_count}")
-        if skipped_count > 0:
-            final_message_parts.append(f"Пропущено строк из-за ошибок: {skipped_count}")
-
-        if final_message_parts:
-             final_message = "Импорт завершен. " + ", ".join(final_message_parts) + "."
-             if created_count > 0 or updated_count > 0 or deactivated_count > 0:
-                 messages.success(request, final_message)
-             else:
-                 messages.warning(request, final_message)
-        else:
-             messages.info(request, "Файл обработан, но не найдено данных для создания, обновления или деактивации.")
-
-        if errors:
-            messages.warning(request, "Обнаружены следующие ошибки в строках:")
-            for error in errors:
-                messages.error(request, error)
-
-        referer_url = request.META.get('HTTP_REFERER', reverse('curriculum_list'))
-        return redirect(referer_url)
-
-    else:
-        messages.error(request, "Недопустимый метод запроса.")
-        return redirect(reverse('curriculum_list'))
+# def import_teachers_excel_view(request):
+#     if request.method == 'POST':
+#         excel_file = request.FILES.get('excel_file')
+#         if not excel_file:
+#             messages.error(request, "Не был выбран файл Excel.")
+#             referer_url = request.META.get('HTTP_REFERER', reverse('curriculum_list'))
+#             return redirect(referer_url)
+#
+#         if not excel_file.name.endswith(('.xls', '.xlsx')):
+#              messages.error(request, "Неверный формат файла. Пожалуйста, загрузите файл Excel (.xls или .xlsx).")
+#              referer_url = request.META.get('HTTP_REFERER', reverse('curriculum_list'))
+#              return redirect(referer_url)
+#
+#         created_count = 0
+#         updated_count = 0
+#         skipped_count = 0
+#         deactivated_count = 0
+#         errors = []
+#         excel_emails = set()
+#
+#         try:
+#             df = pd.read_excel(excel_file, sheet_name=0)
+#             required_columns = ['ФИО','email', 'ЦМК']
+#
+#             if not all(col in df.columns for col in required_columns):
+#                 missing_cols = [col for col in required_columns if col not in df.columns]
+#                 messages.error(request, f"В файле отсутствуют необходимые столбцы: {', '.join(missing_cols)}")
+#                 referer_url = request.META.get('HTTP_REFERER', reverse('curriculum_list'))
+#                 return redirect(referer_url)
+#
+#             for index, row in df.iterrows():
+#                 try:
+#                     full_name_raw = row.get('ФИО')
+#                     email_raw = row.get('email')
+#                     cmk_raw = row.get('ЦМК')
+#
+#                     full_name = str(full_name_raw).strip() if pd.notna(full_name_raw) else None
+#                     email = str(email_raw).strip() if pd.notna(email_raw) else None
+#                     cmk = str(cmk_raw).strip() if pd.notna(cmk_raw) else None
+#
+#                     if not all([full_name, email]):
+#                         errors.append(f"Строка {index + 2}: Отсутствуют обязательные данные (ФИО или email).")
+#                         skipped_count += 1
+#                         continue
+#
+#                     name_parts = full_name.split()
+#                     last_name = name_parts[0] if len(name_parts) > 0 else ''
+#                     first_name = name_parts[1] if len(name_parts) > 1 else ''
+#                     # middle_name = ' '.join(name_parts[2:]) if len(name_parts) > 2 else '' # Not used currently based on user edits
+#
+#                     if not last_name or not first_name:
+#                          errors.append(f"Строка {index + 2}: Не удалось разобрать ФИО '{full_name}'. Ожидается как минимум Фамилия и Имя.")
+#                          skipped_count += 1
+#                          continue
+#
+#
+#                     user_defaults = {
+#                         'full_name': full_name,
+#                         'is_teacher': True,
+#                         'is_active': True
+#                     }
+#
+#                     #TODO Придумать где хранить связи с ЦМК (user_defaults['cmk'] = cmk)
+#
+#                     user, created = CustomUser.objects.update_or_create(
+#                         email=email,
+#                         defaults=user_defaults
+#                     )
+#
+#                     if created:
+#                         email_part = str(email.split("@")[0])
+#                         against_overkill_par = "123456789"
+#                         user.set_password(email_part + against_overkill_par)
+#                         user.save()
+#                         created_count += 1
+#                     else:
+#                         updated_count += 1
+#
+#                     excel_emails.add(email)
+#
+#                 except Exception as e:
+#                     errors.append(f"Строка {index + 2}: Ошибка обработки - {e}")
+#                     skipped_count += 1
+#
+#             existing_teacher_emails = set(CustomUser.objects.filter(is_teacher=True, is_active=True).values_list('email', flat=True))
+#             emails_to_deactivate = existing_teacher_emails - excel_emails
+#
+#             if emails_to_deactivate:
+#                 users_to_deactivate = CustomUser.objects.filter(email__in=emails_to_deactivate, is_teacher=True)
+#                 for user in users_to_deactivate:
+#                     user.is_active = False
+#                     user.save()
+#                     deactivated_count += 1
+#
+#         except Exception as e:
+#             messages.error(request, f"Произошла ошибка при обработке файла: {e}")
+#             referer_url = request.META.get('HTTP_REFERER', reverse('curriculum_list'))
+#             return redirect(referer_url)
+#
+#         final_message_parts = []
+#         if created_count > 0:
+#             final_message_parts.append(f"Создано: {created_count}")
+#         if updated_count > 0:
+#             final_message_parts.append(f"Обновлено/Подтверждено: {updated_count}")
+#         if deactivated_count > 0:
+#             final_message_parts.append(f"Деактивировано (не найдены в файле): {deactivated_count}")
+#         if skipped_count > 0:
+#             final_message_parts.append(f"Пропущено строк из-за ошибок: {skipped_count}")
+#
+#         if final_message_parts:
+#              final_message = "Импорт завершен. " + ", ".join(final_message_parts) + "."
+#              if created_count > 0 or updated_count > 0 or deactivated_count > 0:
+#                  messages.success(request, final_message)
+#              else:
+#                  messages.warning(request, final_message)
+#         else:
+#              messages.info(request, "Файл обработан, но не найдено данных для создания, обновления или деактивации.")
+#
+#         if errors:
+#             messages.warning(request, "Обнаружены следующие ошибки в строках:")
+#             for error in errors:
+#                 messages.error(request, error)
+#
+#         referer_url = request.META.get('HTTP_REFERER', reverse('curriculum_list'))
+#         return redirect(referer_url)
+#
+#     else:
+#         messages.error(request, "Недопустимый метод запроса.")
+#         return redirect(reverse('curriculum_list'))
