@@ -317,6 +317,7 @@ def import_teachers_excel_view(request):
                     }
 
                     speciality_name, code = specialty.split('_')
+
                     specialty_obj, created = Specialty.objects.get_or_create(
                         name=speciality_name,
                         code=code,
@@ -327,7 +328,6 @@ def import_teachers_excel_view(request):
                         email=email,
                         full_name=full_name,
                         is_teacher=True,
-                        speciality=specialty_obj
                     )
 
                     if len(filter_user) == 0:
@@ -355,16 +355,27 @@ def import_teachers_excel_view(request):
                         else:
                             updated_count += 1
 
-                        excel_emails.add(email)
-
                     else:
                         found_count += 1
-                        teachers_list.append({
-                            'teacher_id': filter_user[0].id,
-                            'full_name': filter_user[0].full_name,
-                            'cmc': filter_user[0].cmc,
-                            'speciality': filter_user[0].speciality.name,
-                        })
+
+                        if filter_user[0].speciality is not None:
+                            teachers_list.append({
+                                'teacher_id': filter_user[0].id,
+                                'full_name': filter_user[0].full_name,
+                                'cmc': filter_user[0].cmc,
+                                'speciality': filter_user[0].speciality.name,
+                            })
+
+                        else:
+                            teachers_list.append({
+                                'teacher_id': filter_user[0].id,
+                                'full_name': filter_user[0].full_name,
+                                'cmc': filter_user[0].cmc,
+                                'speciality': "",
+                            })
+
+
+                    excel_emails.add(email)
 
                 except Exception as e:
                     errors.append(f"Строка {index + 2}: Ошибка обработки - {e}")
