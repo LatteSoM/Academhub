@@ -22,7 +22,7 @@ __all__ = (
 )
 
 from Academhub.models.models import TeachersForDisciplineAndCurriculum, AttestationPeriodForDisciplines
-
+from Gradebook.utils import update_gradebooks_after_deactivation
 
 semester_dict = {
         "1-1": 1,
@@ -371,10 +371,17 @@ def import_teachers_excel_view(request):
                     skipped_count += 1
 
             existing_teacher_emails = set(CustomUser.objects.filter(is_teacher=True, is_active=True).values_list('email', flat=True))
+            print(type(existing_teacher_emails))
+            print(type(excel_emails))
+            print("existing_teacher_emails:", existing_teacher_emails)
+            print("excel_emails:", excel_emails)
             emails_to_deactivate = existing_teacher_emails - excel_emails
+            print("emails_to_deactivate:", emails_to_deactivate)
 
             if emails_to_deactivate:
                 users_to_deactivate = CustomUser.objects.filter(email__in=emails_to_deactivate, is_teacher=True)
+                print(users_to_deactivate)
+                update_gradebooks_after_deactivation(users_to_deactivate)
                 for user in users_to_deactivate:
                     user.is_active = False
                     user.save()

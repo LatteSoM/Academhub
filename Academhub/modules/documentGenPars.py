@@ -20,6 +20,13 @@ django.setup()
 
 from Academhub.models import GradebookStudents, ClockCell, Curriculum, Module, StudentRecordBook
 
+GRADE_MAPPING = {
+        "5": "(Отлично)",
+        "4": "(Хорошо)",
+        "3": "(Удовлетворительно)",
+        "2": "(Неудовлетворительно)"
+    }
+
 class GroupTableGenerator:
     """
     Класс для генерации таблицы групп
@@ -902,10 +909,10 @@ class GradebookDocumentGenerator:
                 if len(row_cells) == 5:
                     row_cells[1].text = str(gradebook_student.ticket_number or '')
                     row_cells[2].text = gradebook_student.student.full_name
-                    row_cells[3].text = str(gradebook_student.grade or '')
+                    row_cells[3].text = str(gradebook_student.grade + GRADE_MAPPING.get(gradebook_student.grade, "") or '')
                 else:
                     row_cells[1].text = gradebook_student.student.full_name
-                    row_cells[2].text = str(gradebook_student.grade or '')
+                    row_cells[2].text = str(gradebook_student.grade + GRADE_MAPPING.get(gradebook_student.grade, "") or '')
                 row_cells[1 if len(row_cells) == 4 else 2].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.LEFT
                 for i in [0, 2, 3] if len(row_cells) == 4 else [0, 1, 3, 4]:
                     row_cells[i].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER

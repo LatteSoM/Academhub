@@ -71,7 +71,7 @@ class GradebookForm(forms.ModelForm):
     Форма для создания и редактирования записей в журнале оценок.
     """
     teachers = forms.ModelMultipleChoiceField(
-        queryset=CustomUser.objects.filter(is_teacher=True),
+        queryset=CustomUser.objects.filter(is_teacher=True, is_active=True),
         label='Преподаватели',
         widget=forms.CheckboxSelectMultiple
     )
