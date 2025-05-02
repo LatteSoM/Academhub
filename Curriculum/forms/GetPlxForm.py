@@ -1,13 +1,11 @@
-import json
 import os
-from collections import defaultdict
-
+import json
 from django import forms
-
-from Academhub.models import Specialty, Qualification
-from ..models.models_dict_sesstion import *
-from ..parser_for_plx import RUP_parser
+from collections import defaultdict
 from ..utils.utils import MyValidator
+from ..parser_for_plx import RUP_parser
+from ..models.models_dict_sesstion import *
+from Academhub.models import Specialty, Qualification
 
 
 class GetPlxForm(forms.Form):
@@ -157,6 +155,8 @@ class GetPlxForm(forms.Form):
                 for plan in child.get("modules", []):
                     # Создаем Module из модуля
                     module_name = plan.get("module_name")
+                    if module_name == "Дисциплины по выбору (предлагаемые ОО)":
+                        pass
                     if module_name is not None:
                         module_warnings = None #Если хотим проверять - используем validate_text
                         if module_warnings:
@@ -188,6 +188,9 @@ class GetPlxForm(forms.Form):
                     for discipline in plan.get("disciplines", []):
                         discipline_name = discipline.get("discipline_name")
                         discipline_code = discipline.get("code_of_discipline")
+
+                        if discipline_name == "Дисциплины по выбору (предлагаемые ОО)":
+                            pass
 
                         if discipline_name is not None:
                             discipline_warnings = self.validator.validate_text(text=discipline_name)

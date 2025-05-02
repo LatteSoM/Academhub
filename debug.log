@@ -1678,3 +1678,73 @@ C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\Curriculum\api\v1.py changed,
 Watching for file changes with StatReloader
 Watching for file changes with StatReloader
 Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Watching for file changes with StatReloader
+Not Found: /favicon.ico
+Using proactor: IocpProactor
+C:\Users\Kliker\Documents\MPTLab\Academhub\Curriculum\api\v1.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Kliker\Documents\MPTLab\Academhub\Curriculum\api\v1.py changed, reloading.
+Watching for file changes with StatReloader
+Method Not Allowed (GET): /CurriculumApp/api/disciplines_by_curriculum_course_term/
+C:\Users\Kliker\Documents\MPTLab\Academhub\Curriculum\api\v1.py changed, reloading.
+Watching for file changes with StatReloader
+Method Not Allowed (GET): /CurriculumApp/api/disciplines_by_curriculum_course_term/
+Method Not Allowed (GET): /CurriculumApp/api/disciplines_by_curriculum_course_term/
+Not Found: /favicon.ico
+Method Not Allowed (GET): /CurriculumApp/api/disciplines_by_curriculum_course_term/
+Watching for file changes with StatReloader
+Not Found: /favicon.ico
+Method Not Allowed (GET): /CurriculumApp/api/disciplines_by_curriculum_course_term/
+Not Found: /favicon.ico
+Using proactor: IocpProactor
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+C:\Users\Kliker\Documents\MPTLab\Academhub\Curriculum\forms\GetPlxForm.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Kliker\Documents\MPTLab\Academhub\Curriculum\parser_for_plx.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Kliker\Documents\MPTLab\Academhub\Curriculum\api\v1.py changed, reloading.
+Watching for file changes with StatReloader
+Not Found: /favicon.ico
+Internal Server Error: /CurriculumApp/api/disciplines_by_curriculum_course_term/
+Traceback (most recent call last):
+  File "C:\Users\Kliker\Documents\MPTLab\Academhub\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Kliker\Documents\MPTLab\Academhub\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Kliker\Documents\MPTLab\Academhub\venv\Lib\site-packages\django\views\decorators\http.py", line 43, in inner
+    return func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Kliker\Documents\MPTLab\Academhub\Curriculum\api\v1.py", line 169, in get_disciplines_by_curriculum_course_term
+    course = int(request.POST.get('course'))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: invalid literal for int() with base 10: 'Выберите курс'
+Internal Server Error: /CurriculumApp/api/disciplines_by_curriculum_course_term/
+Traceback (most recent call last):
+  File "C:\Users\Kliker\Documents\MPTLab\Academhub\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Kliker\Documents\MPTLab\Academhub\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Kliker\Documents\MPTLab\Academhub\venv\Lib\site-packages\django\views\decorators\http.py", line 43, in inner
+    return func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Kliker\Documents\MPTLab\Academhub\Curriculum\api\v1.py", line 169, in get_disciplines_by_curriculum_course_term
+    course = int(request.POST.get('course'))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: invalid literal for int() with base 10: 'Выберите курс'
+Watching for file changes with StatReloader
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+C:\Users\Kliker\Documents\MPTLab\Academhub\Curriculum\api\v1.py changed, reloading.
+Watching for file changes with StatReloader

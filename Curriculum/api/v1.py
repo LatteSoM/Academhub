@@ -7,6 +7,7 @@ from django.db.models import Count
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+from lxml.objectify import annotate
 
 from Academhub.models import Specialty, Qualification, Curriculum, GroupStudents, ClockCell, CustomUser
 
@@ -86,6 +87,7 @@ def get_courses_for_study_plan(request):
     return JsonResponse(response, safe=False)
 
 
+@require_POST
 def get_disciplines_by_curriculum_course_term_for_attestation(request):
     curriculum_id = request.GET.get('curriculum_id')
     course = int(request.GET.get('course'))
@@ -161,11 +163,11 @@ def get_disciplines_by_curriculum_course_term_for_attestation(request):
 
     return JsonResponse(response, safe=False)
 
-
+@require_POST
 def get_disciplines_by_curriculum_course_term(request):
-    curriculum_id = request.GET.get('curriculum_id')
-    course = int(request.GET.get('course'))
-    term = int(request.GET.get('term'))
+    curriculum_id = request.POST.get('curriculum_id')
+    course = int(request.POST.get('course'))
+    term = int(request.POST.get('term'))
     checked_groups = json.loads(request.POST.get('checked_groups', '[]'))
     checked_group_ids = [group['id'] for group in checked_groups]
 
@@ -432,34 +434,35 @@ def save_teachers_for_groups_and_disciplines(request):
                 # Обрабатываем каждую дисциплину
                 for discipline_data in disciplines_with_teachers:
                     # Получаем или создаем базовую запись
-                    term_db = semester_dict.get(f"{course}-{term}")
-                    obj, created = TeachersForDisciplineAndCurriculum.objects.get_or_create(
+                    if len(discipline_data.get('teachers')) != 0:
+                        term_db = semester_dict.get(f"{course}-{term}")
+                        obj, created = TeachersForDisciplineAndCurriculum.objects.update_or_create(
+                            curriculum_id=curriculum_id,
+                            course=course,
+                            term=term_db,
+                            discipline_id=discipline_data['discipline_id'],
+                            defaults={
+                                'curriculum_id': curriculum_id,
+                                'course': course,
+                                'term': term_db,
+                                'discipline_id': discipline_data['discipline_id']
+                            }
+                        )
+
+                        # Обновляем преподавателей
+                        teacher_ids = [str(t['teacher_id']) for t in discipline_data['teachers']]
+                        obj.teachers.set(CustomUser.objects.filter(id__in=teacher_ids))
+
+                        # Связываем группы
+                        obj.groups.set(groups)
+
+                    # Удаляем записи которых нет в полученных данных
+                    existing_discipline_ids = [d['discipline_id'] for d in disciplines_with_teachers]
+                    TeachersForDisciplineAndCurriculum.objects.filter(
                         curriculum_id=curriculum_id,
                         course=course,
-                        term=term_db,
-                        discipline_id=discipline_data['discipline_id'],
-                        defaults={
-                            'curriculum_id': curriculum_id,
-                            'course': course,
-                            'term': term_db,
-                            'discipline_id': discipline_data['discipline_id']
-                        }
-                    )
-
-                    # Обновляем преподавателей
-                    teacher_ids = [str(t['teacher_id']) for t in discipline_data['teachers']]
-                    obj.teachers.set(CustomUser.objects.filter(id__in=teacher_ids))
-
-                    # Связываем группы
-                    obj.groups.set(groups)
-
-                # Удаляем записи которых нет в полученных данных
-                existing_discipline_ids = [d['discipline_id'] for d in disciplines_with_teachers]
-                TeachersForDisciplineAndCurriculum.objects.filter(
-                    curriculum_id=curriculum_id,
-                    course=course,
-                    term=term
-                ).exclude(discipline_id__in=existing_discipline_ids).delete()
+                        term=term
+                    ).exclude(discipline_id__in=existing_discipline_ids).delete()
 
                 response['status'] = 'success'
                 response['message'] = 'Данные успешно сохранены'

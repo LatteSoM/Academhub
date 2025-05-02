@@ -6,18 +6,22 @@ let teachers = []
 let disciplines = []
 let groups = []
 
+
+// Константные объекты страницы
+const tbody = document.getElementById('disciplines-body');
+const courseElement = document.getElementById('course')
+const curriculumElement = document.getElementById('study_plan')
+
+
 document.getElementById('specialty').addEventListener('change', function() {
     const specialtyId = this.value;
-    const studyPlanSelect = document.getElementById('study_plan');
-    const courseSelect = document.getElementById('course');
     const groupsContainer = document.getElementById('groups');
-    const tbody = document.getElementById('disciplines-body')
 
     if (!specialtyId || specialtyId === 'Выберите специальность') {
-        studyPlanSelect.innerHTML = '<option>Сначала выберите специальность</option>';
-        studyPlanSelect.disabled = true;
-        courseSelect.innerHTML = '<option selected>Сначала выберите специальность и учебный план</option>';
-        courseSelect.disabled = true;
+        curriculumElement.innerHTML = '<option>Сначала выберите специальность</option>';
+        curriculumElement.disabled = true;
+        courseElement.innerHTML = '<option selected>Сначала выберите специальность и учебный план</option>';
+        courseElement.disabled = true;
 
         groupsContainer.innerHTML = '';
         tbody.innerHTML = ''
@@ -30,19 +34,19 @@ document.getElementById('specialty').addEventListener('change', function() {
         .then(response => response.json())
         .then(data => {
             console.log(data)
-            courseSelect.innerHTML = '<option selected>Сначала выберите учебный план</option>';
-            courseSelect.disabled = true;
+            courseElement.innerHTML = '<option selected>Сначала выберите учебный план</option>';
+            courseElement.disabled = true;
 
             groupsContainer.innerHTML = '';
 
-            studyPlanSelect.innerHTML = '<option selected>Выберите учебный план</option>';
+            curriculumElement.innerHTML = '<option selected>Выберите учебный план</option>';
             data.forEach(plan => {
                 const option = document.createElement('option');
                 option.value = plan.id;
                 option.textContent = plan.qualification_name + "-" + plan.admission_year + "-" + plan.basis_of_admission;
-                studyPlanSelect.appendChild(option);
+                curriculumElement.appendChild(option);
             });
-            studyPlanSelect.disabled = false;
+            curriculumElement.disabled = false;
         })
         .catch(error => console.error('Error:', error));
 });
@@ -52,12 +56,10 @@ document.getElementById('study_plan').addEventListener('change', function () {
     const studyPlanId = this.value;
 
     const groupsContainer = document.getElementById('groups');
-    const courseSelect = document.getElementById('course');
-    const tbody = document.getElementById('disciplines-body')
 
     if (studyPlanId === 'Выберите учебный план'){
-        courseSelect.innerHTML = '<option>Сначала выберите учебный план</option>';
-        courseSelect.disabled = true;
+        courseElement.innerHTML = '<option>Сначала выберите учебный план</option>';
+        courseElement.disabled = true;
 
         groupsContainer.innerHTML = ''
         tbody.innerHTML = ''
@@ -69,14 +71,14 @@ document.getElementById('study_plan').addEventListener('change', function () {
     fetch(`/CurriculumApp/api/courses_and_groups/?curriculum_id=${studyPlanId}`)
         .then(response => response.json())
         .then(data => {
-            courseSelect.innerHTML = '<option selected>Выберите курс</option>';
+            courseElement.innerHTML = '<option selected>Выберите курс</option>';
             data.courses.forEach(course => {
                 const option = document.createElement('option');
                 option.value = course;
                 option.textContent = course;
-                courseSelect.appendChild(option);
+                courseElement.appendChild(option);
             });
-            courseSelect.disabled = false;
+            courseElement.disabled = false;
 
             groupsContainer.innerHTML = '';
             groups = data.study_groups;
@@ -92,8 +94,7 @@ document.getElementById('study_plan').addEventListener('change', function () {
 
 document.getElementById('course').addEventListener('change', function () {
     const termValue = document.getElementById('termSelect').value
-    const curriculumValue = document.getElementById('study_plan').value
-    const tbody = document.getElementById('disciplines-body');
+    const curriculumValue = curriculumElement.value
 
     if (curriculumValue === 'Выберите учебный план' || this.value === 'Выберите курс'){
         tbody.innerHTML = ''
@@ -101,35 +102,13 @@ document.getElementById('course').addEventListener('change', function () {
     }
 
     course_number = this.value
-    fetch(
-        `/CurriculumApp/api/disciplines_by_curriculum_course_term/?curriculum_id=${curriculumValue}&course=${this.value}&term=${termValue}`
-    )
-        .then(response => response.json())
-        .then(data => {
-
-            if (data.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="4">Нет данных для отображения</td>
-                    </tr>`;
-                return;
-            }
-
-            disciplines = data
-            console.log(data)
-            if (teachers.length !== 0){
-                add_teachers_to_disciplines()
-            }
-
-            renderDisciplinesTable(tbody)
-        })
+    get_disciplines_request(curriculumValue, course_number, termValue)
 })
 
 
 document.getElementById('termSelect').addEventListener('change', function () {
-    const courseValue = document.getElementById('course').value
-    const curriculumValue = document.getElementById('study_plan').value
-    const tbody = document.getElementById('disciplines-body');
+    const courseValue = courseElement.value
+    const curriculumValue = curriculumElement.value
 
     if (curriculumValue === 'Выберите учебный план' || this.value === 'Выберите курс'){
         tbody.innerHTML = ''
@@ -137,29 +116,8 @@ document.getElementById('termSelect').addEventListener('change', function () {
     }
 
     term = this.value;
-    fetch(
-        `/CurriculumApp/api/disciplines_by_curriculum_course_term/?curriculum_id=${curriculumValue}&course=${courseValue}&term=${this.value}`
-    )
-        .then(response => {
-            console.log(response)
-            return response.json()
-        })
-        .then(data => {
-            if (data.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="4">Нет данных для отображения</td>
-                    </tr>`;
-                return;
-            }
-            disciplines = data
 
-            if (teachers.length !== 0){
-                add_teachers_to_disciplines()
-            }
-
-            renderDisciplinesTable(tbody)
-        })
+    get_disciplines_request(curriculumValue, courseValue, term)
 })
 
 
@@ -168,9 +126,6 @@ document.getElementById('sendFileBtn').addEventListener('click', function () {
 
   const fileInput = document.getElementById('excel_file_import');
   const formData = new FormData();
-  const curriculum = document.getElementById('study_plan');
-  const course = document.getElementById('course');
-  const tbody = document.getElementById('disciplines-body')
 
   formData.append('excel_file', fileInput.files[0]);
   const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
@@ -187,34 +142,30 @@ document.getElementById('sendFileBtn').addEventListener('click', function () {
         }
     })
         .then(response => {
-            console.log(response)
             return response.json()
         })
         .then(data => {
             window.alert(data.message)
             teachers = data.teachers
 
-            if (curriculum !== 'Выберите учебный план' && course !== 'Выберите курс') {
-                add_teachers_to_disciplines()
-                renderDisciplinesTable(tbody)
+            if (curriculumElement.value !== 'Выберите учебный план' && courseElement.value !== 'Выберите курс') {
+                // add_teachers_to_disciplines()
+                renderDisciplinesTable()
                 console.log(teachers)
             }
         })
   } catch (error) {
-      console.log(error)
       console.error('Ошибка:', error);
   }
 })
 
 document.getElementById('saveAllData').addEventListener('click', function () {
     const formData = new FormData();
-    const curriculum = document.getElementById('study_plan');
     const speciality = document.getElementById('specialty');
-    const course = document.getElementById('specialty');
 
     if (speciality.value === 'Выберите специальность'
-        || curriculum.value === 'Выберите учебный план'
-        || course.value === 'Выберите курс'){
+        || curriculumElement.value === 'Выберите учебный план'
+        || courseElement.value === 'Выберите курс'){
         window.alert('Вы ничего не выбрали!')
         return;
     }
@@ -249,7 +200,7 @@ document.getElementById('saveAllData').addEventListener('click', function () {
 })
 
 
-function renderDisciplinesTable(tbody) {
+function renderDisciplinesTable() {
     tbody.innerHTML = '';
     disciplines.forEach(discipline => {
         const row = document.createElement('tr');
@@ -293,7 +244,7 @@ function renderDisciplinesTable(tbody) {
                 e.stopPropagation(); // Предотвращаем всплытие события
 
                 deleteTeacherFromDiscipline(discipline.teachers, deleteBtn.id)
-                renderDisciplinesTable(tbody)
+                renderDisciplinesTable()
             });
 
             teacherBlock.appendChild(nameDiv);
@@ -331,7 +282,7 @@ function renderDisciplinesTable(tbody) {
 
             if (value !== 'Выберите преподавателя' || value !== ''){
                 add_teacher_to_discipline(this.value, this.id);
-                renderDisciplinesTable(tbody)
+                renderDisciplinesTable()
             }
             
         })
@@ -359,7 +310,9 @@ function renderStudyGroups(data, groupsContainer){
 
         input.addEventListener('change', function () {
             changeCheckOfGroup(input.id)
-            console.log(groups)
+            const termValue = document.getElementById('termSelect').value
+
+            get_disciplines_request(curriculumElement.value, courseElement.value, termValue)
         })
 
         const label = document.createElement('label');
@@ -374,6 +327,47 @@ function renderStudyGroups(data, groupsContainer){
 }
 
 
+function get_disciplines_request(curriculumValue, courseValue, termValue){
+    const formData = new FormData();
+
+    const checkedGroups = groups.filter(group => group.checked === true);
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    formData.append('checked_groups', JSON.stringify(checkedGroups));
+    formData.append('csrfmiddlewaretoken', csrfToken);
+
+    formData.append('curriculum_id', curriculumValue);
+    formData.append('course', courseValue);
+    formData.append('term', termValue);
+
+    fetch(
+        `/CurriculumApp/api/disciplines_by_curriculum_course_term/`,
+        {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': csrfToken
+            }
+        }
+    )
+        .then(response => {
+            console.log(response)
+            return response.json()
+        })
+        .then(data => {
+            if (data.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4">Нет данных для отображения</td>
+                    </tr>`;
+                return;
+            }
+            disciplines = data
+
+            renderDisciplinesTable()
+        })
+}
+
 function add_teachers_to_disciplines(){
     disciplines.forEach(discipline => {
         teachers.forEach(teacher => {
@@ -383,7 +377,7 @@ function add_teachers_to_disciplines(){
             if (discipline_cmc === teacher.cmc && discipline_speciality === teacher.speciality){
                 const checkUnique = checkUniqueTeacher(discipline.teachers, teacher);
 
-                if (!checkUnique){
+                if (!checkUnique && discipline.teachers.length === 0){
                     discipline.teachers.push(teacher)
                 }
             }
