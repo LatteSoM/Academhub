@@ -325,10 +325,10 @@ class GroupStudents(AcademHubModel):
         if not self.pk:
             self.number = self.get_default_number_value()
 
-        if self.education_base != "Основное общее":
-            self.full_name = f"{self.qualification.short_name}-11/{self.number}-{str(self.year_create)[-2:]}"
-        else:
-            self.full_name = f"{self.qualification.short_name}-{self.number}-{str(self.year_create)[-2:]}"
+        # if self.education_base != "Основное общее":
+        #     self.full_name = f"{self.qualification.short_name}-11/{self.number}-{str(self.year_create)[-2:]}"
+        # else:
+        #     self.full_name = f"{self.qualification.short_name}-{self.number}-{str(self.year_create)[-2:]}"
 
         return super().save(*args, **kwargs)
 
@@ -631,7 +631,9 @@ class Student(AcademHubModel):
 
     REASONS_OF_ACADEM_CHOICES = (
         ("с/о", "с/о"),
-        ("Смерть", "Смерть"),
+        ("Призыв в ВС", "Призыв в ВС"),
+        ("По состоянию здоровья", "По состоянию здоровья"),
+
         # TODO: Выяснить про другие причины
     )
 
@@ -647,7 +649,7 @@ class Student(AcademHubModel):
     group = models.ForeignKey(
         'GroupStudents', on_delete=models.CASCADE, related_name="students", verbose_name="Группа"
     )
-    admission_order = models.CharField(max_length=255, verbose_name="Приказ о зачислении") # TODO: Приказ о приеме
+    admission_order = models.CharField(max_length=255, verbose_name="Приказ о зачислении",  blank=True, null=True) # TODO: Приказ о приеме
     transfer_to_2nd_year_order = models.CharField(max_length=255, verbose_name="Переводной приказ на 2 курс", blank=True, null=True) # TODO: Приказ о переводе на 2 курс
     transfer_to_3rd_year_order = models.CharField(max_length=255, verbose_name="Переводной приказ на 3 курс", blank=True, null=True) # TODO: Приказ о переводе на 3 курс
     transfer_to_4th_year_order = models.CharField(max_length=255, verbose_name="Переводной приказ на 4 курс", blank=True, null=True) # TODO: Приказ о переводе на 4 курс
