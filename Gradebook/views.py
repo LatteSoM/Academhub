@@ -1212,7 +1212,7 @@ class GradebookDetailView(ObjectDetailView):
         ])
 
         # Комплексная проверка всех условий
-        if not all(required_fields) or not text_fields_valid or not relations_valid:
+        if not all(required_fields) or not text_fields_valid or not relations_valid and gradebook.status == "Не заполнена":
             messages.error(
                 request,
                 "Невозможно открыть ведомость! Заполните все обязательные поля: "

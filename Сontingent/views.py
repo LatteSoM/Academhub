@@ -1244,3 +1244,7 @@ class GenerateQualificationTemplate(PermissionBaseMixin, FormView):
             messages.error(self.request, "Ошибки в форме:\n" + "\n".join(error_messages))
         
         return super().form_invalid(form)
+    
+    def form_valid(self, form):
+        messages.success(self.request, "Шаблон успешно создан")
+        return redirect('generate_qualification_template')
