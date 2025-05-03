@@ -52,6 +52,8 @@ __all__ = (
     'GradebookStudentBulkUpdateView',
 )
 
+from Gradebook.utils import transliterate
+
 
 def get_last_grade(student, discipline, semester):
     """
@@ -583,15 +585,59 @@ def fetch_group_semester_attestation_table(semester, group):
     # 5. Заполняем оценки, выбирая самую последнюю по date_of_closing
     for gb in gradebooks:
         discipline_id = gb.discipline.id
-
         for grade_entry in gb.grades_list:
             student = grade_entry.student
             student_id = student.id
+            if student in students and grade_matrix[student_id][discipline_id] == "-":
+                grade_matrix[student_id][discipline_id] = grade_entry
 
-            if student in students:
-                # Записываем оценку только если её ещё нет
-                if grade_matrix[student_id][discipline_id] == "-":
-                    grade_matrix[student_id][discipline_id] = grade_entry
+    # 6. Рассчитываем метрики для каждого предмета
+    quality_percentages = {}
+    success_percentages = {}
+    average_grades = {}
+    for discipline in disciplines:
+        # Собираем все оценки для дисциплины
+        grades = [
+            grade_entry.grade if hasattr(grade_entry, 'grade') and grade_entry.grade in ["2", "3", "4", "5"]
+            else 0 if str(grade_entry.grade).lower() in ['неявка', 'н/я']
+            else None
+            for student_id in grade_matrix
+            for grade_entry in [grade_matrix[student_id][discipline.id]]
+            if grade_entry != "-"
+        ]
+        valid_grades = [g for g in grades if g is not None]
+        if valid_grades:
+            total_grades = len(valid_grades)
+            count_5 = sum(1 for g in valid_grades if g == "5")
+            count_4 = sum(1 for g in valid_grades if g == "4")
+            count_3 = sum(1 for g in valid_grades if g == "3")
+            count_2 = sum(1 for g in valid_grades if g == "2")
+
+            # % качества
+            quality_percentages[discipline.id] = ((count_5 + count_4) / total_grades) * 100
+
+            # % успеваемости
+            success_percentages[discipline.id] = ((count_5 + count_4 + count_3) / total_grades) * 100
+
+            # Средний балл
+            average_grades[discipline.id] = (
+                (count_5 * 5 + count_4 * 4 + count_3 * 3 + count_2 * 2) / total_grades
+            )
+        else:
+            quality_percentages[discipline.id] = 0.0
+            success_percentages[discipline.id] = 0.0
+            average_grades[discipline.id] = 0.0
+
+    # Рассчитываем общие метрики по группе
+    num_disciplines = len(disciplines)
+    if num_disciplines > 0:
+        total_quality_percentage = sum(quality_percentages.values()) / num_disciplines
+        total_success_percentage = sum(success_percentages.values()) / num_disciplines
+        total_average_grade = sum(average_grades.values()) / num_disciplines
+    else:
+        total_quality_percentage = 0.0
+        total_success_percentage = 0.0
+        total_average_grade = 0.0
 
     return {
         'students': students,
@@ -601,13 +647,18 @@ def fetch_group_semester_attestation_table(semester, group):
         'group': group,
         'gradebooks': gradebooks,
         'curriculum_items': curriculum_items,
+        'quality_percentages': quality_percentages,
+        'success_percentages': success_percentages,
+        'average_grades': average_grades,
+        'total_quality_percentage': total_quality_percentage,
+        'total_success_percentage': total_success_percentage,
+        'total_average_grade': total_average_grade,
     }
 
 
 class ViewStudentsGradesForSemester(ObjectTemplateView):
     """Отдельный класс для обработки статистической таблицы студентов"""
     template_name = 'Gradebook/inc/statisticks_form.html'
-
     permission_required = getpermission('Gradebook', 'view_student_statick')
 
     def get(self, request):
@@ -617,15 +668,15 @@ class ViewStudentsGradesForSemester(ObjectTemplateView):
     def post(self, request):
         form = GetStatisticksGradebookForm(request.POST)  # Создаем экземпляр формы
 
-        if form.is_valid():  # Проверяем валидность ФОРМЫ
+        if form.is_valid():  # Проверяем валидность формы
             try:
                 semester = form.cleaned_data['semester']  # Данные берем из формы
                 group = form.cleaned_data['group']
 
+                # Получаем данные с помощью функции
                 data = fetch_group_semester_attestation_table(semester, group)
 
-                print(group)
-
+                # Передаем все данные в шаблон
                 return render(request, 'Gradebook/list/group_semester_grades.html', {
                     'students': data['students'],
                     'disciplines': data['disciplines'],
@@ -633,15 +684,208 @@ class ViewStudentsGradesForSemester(ObjectTemplateView):
                     'semestr': data['semestr'],
                     'group': data['group'],
                     'curriculum_items': data['curriculum_items'],
+                    'quality_percentages': data['quality_percentages'],  # Добавляем % качества
+                    'success_percentages': data['success_percentages'],  # Добавляем % успеваемости
+                    'average_grades': data['average_grades'],  # Добавляем средний балл
+                    'total_quality_percentage': data['total_quality_percentage'],
+                    'total_success_percentage': data['total_success_percentage'],
+                    'total_average_grade': data['total_average_grade'],
                 })
 
             except Exception as e:
                 print(e)
-                messages.error(request,
-                               "Не удалось сгенерировать статистику!")
+                messages.error(request, "Не удалось сгенерировать статистику!")
+                return render(request, self.template_name, {'form': form})
 
         # Если форма невалидна, показываем ее с ошибками
         return render(request, self.template_name, {'form': form})
+
+
+# def export_grades(request):
+#     try:
+#         # Получение и валидация параметров
+#         semester = request.GET.get('semester')
+#         group_id = request.GET.get('group')
+#
+#         if not semester or not group_id:
+#             raise ValueError("Не указаны обязательные параметры")
+#
+#         group = get_object_or_404(GroupStudents, id=int(group_id))
+#         semester_number = int(semester)
+#
+#     except (ValueError, TypeError) as e:
+#         return HttpResponse(f"Ошибка параметров: {str(e)}", status=400)
+#     except Exception as e:
+#         return HttpResponse(f"Ошибка сервера: {str(e)}", status=500)
+#
+#     # Получение данных
+#     data = fetch_group_semester_attestation_table(semester_number, group)
+#
+#     # Создание Excel-документа
+#     wb = Workbook()
+#     ws = wb.active
+#     ws.title = "Сводная ведомость"
+#
+#     # Стили оформления
+#     thin_side = Side(style='thin')
+#     thin_border = Border(
+#         left=thin_side,
+#         right=thin_side,
+#         top=thin_side,
+#         bottom=thin_side
+#     )
+#     center_alignment = Alignment(horizontal='center', vertical='center', wrap_text=True)
+#     header_fill = PatternFill(start_color='D9E1F2', fill_type='solid')
+#     header_font = Font(bold=True)
+#
+#     # Цвета заливки
+#     FILLS = {
+#         'Первичная сдача': PatternFill(start_color='D4EDDA', fill_type='solid'),
+#         'Пересдача': PatternFill(start_color='CCE5FF', fill_type='solid'),
+#         'Комиссия': PatternFill(start_color='E2D9F3', fill_type='solid'),
+#         'неуд': PatternFill(start_color='FFC7CE', fill_type='solid')
+#     }
+#
+#     # Заголовок документа
+#     ws.merge_cells('A1:M1')
+#     title_cell = ws['A1']
+#     title_cell.value = f"Сводная ведомость успеваемости студентов\nГруппа {group.full_name}\nСеместр {semester}"
+#     title_cell.alignment = Alignment(wrap_text=True, vertical='center', horizontal='center')
+#     title_cell.font = Font(bold=True, size=14)
+#     ws.row_dimensions[1].height = 60
+#
+#
+#     ws.cell(row=5, column=1, value="№ п/п").font = header_font
+#     ws.cell(row=5, column=2, value="Ф.И.О. студента").font = header_font
+#     ws.cell(row=5, column=3, value="Основа обучения").font = header_font
+#
+#     # Группировка дисциплин по типам аттестации из Curriculum
+#     TYPE_MAPPING = {
+#         'Экзамен': 'Экзамены',
+#         'Зачет с оценкой': 'Диф. зачёты',
+#         'Курсовая работа': 'Курсовые работы',
+#         'Другие формы контроля': 'Другие формы'
+#     }
+#
+#     # course = (semester_number + 1) // 2
+#     # current_term = 1 if semester_number % 2 == 1 else 2
+#
+#     discipline_groups = defaultdict(list)
+#     for curriculum_item in data['curriculum_items']:
+#
+#         if curriculum_item.term != semester_number:
+#             continue
+#
+#         discipline = curriculum_item.discipline
+#         category = TYPE_MAPPING.get(
+#             curriculum_item.code_of_type_work,
+#             'Другие формы'
+#         )
+#
+#         if discipline.id not in {d.id for d in discipline_groups[category]}:
+#             discipline_groups[category].append(discipline)
+#
+#     # Формирование структуры таблицы
+#     headers = ['№ п/п', 'Ф.И.О. студента', 'Основа обучения']
+#     column_map = {}
+#     current_col = 4
+#
+#     # Порядок отображения категорий
+#     categories_order = [
+#         'Экзамены',
+#         'Диф. зачёты',
+#         'Курсовые работы',
+#         'Другие формы'
+#     ]
+#
+#     for category in categories_order:
+#         disciplines = sorted(
+#             discipline_groups.get(category, []),
+#             key=lambda x: x.name
+#         )
+#
+#         if not disciplines:
+#             continue
+#
+#         # Объединение ячеек для категории
+#         end_col = current_col + len(disciplines) - 1
+#         ws.merge_cells(
+#             start_row=4,
+#             start_column=current_col,
+#             end_row=4,
+#             end_column=end_col
+#         )
+#         cell = ws.cell(row=4, column=current_col, value=category)
+#         cell.alignment = center_alignment
+#         cell.fill = header_fill
+#         cell.font = header_font
+#         cell.border = thin_border
+#
+#         # Добавление дисциплин
+#         for idx, disc in enumerate(disciplines, start=current_col):
+#             cell = ws.cell(row=5, column=idx, value=disc.name)
+#             cell.alignment = center_alignment
+#             cell.fill = header_fill
+#             cell.font = header_font
+#             cell.border = thin_border
+#             column_map[disc.id] = idx
+#
+#         current_col += len(disciplines)
+#
+#     # Заполнение данных студентов
+#     for row_idx, student in enumerate(data['students'], start=6):
+#         # Базовые данные
+#         ws.cell(row=row_idx, column=1, value=row_idx - 5).alignment = center_alignment
+#         ws.cell(row=row_idx, column=2, value=student.full_name)
+#         ws.cell(row=row_idx, column=3, value=student.education_basis).alignment = center_alignment
+#
+#         # Оценки
+#         for category in categories_order:
+#             for disc in discipline_groups.get(category, []):
+#                 col = column_map.get(disc.id)
+#                 if not col:
+#                     continue
+#
+#                 grade_entry = data['grades'].get(student.id, {}).get(disc.id)
+#
+#                 cell = ws.cell(row=row_idx, column=col)
+#                 cell.alignment = center_alignment
+#                 cell.border = thin_border
+#
+#                 if grade_entry:
+#                     if grade_entry == "-":
+#                         cell.value = grade_entry
+#                     else:
+#                         cell.value = grade_entry.grade
+#
+#                         if str(grade_entry.grade).lower() in ['неудовлетворительно', 'неявка', 'н/я', '2']:
+#                             cell.fill = FILLS['неуд']
+#                         elif grade_entry.gradebook.type_of_grade_book in FILLS:
+#                             cell.fill = FILLS[grade_entry.gradebook.type_of_grade_book]
+#
+#     # Настройка ширины столбцов
+#     for col_idx in range(1, len(headers) + 1):
+#         col_letter = get_column_letter(col_idx)
+#         ws.column_dimensions[col_letter].width = 20 if col_idx > 3 else 15
+#
+#     # Применение стилей ко всем ячейкам
+#     for row in ws.iter_rows():
+#         for cell in row:
+#             cell.border = thin_border
+#             if cell.row > 5 and cell.column in [1, 3]:
+#                 cell.alignment = center_alignment
+#
+#     # Формирование имени файла
+#     group_name_clean = unidecode(group.full_name)
+#     group_name_clean = re.sub(r'\W+', '_', group_name_clean)[:50]
+#     filename = f"Vedomost_{group_name_clean}_sem{semester}.xlsx"
+#
+#     response = HttpResponse(
+#         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+#     )
+#     response['Content-Disposition'] = f'attachment; filename="{filename}"'
+#     wb.save(response)
+#     return response
 
 
 def export_grades(request):
@@ -680,6 +924,7 @@ def export_grades(request):
     center_alignment = Alignment(horizontal='center', vertical='center', wrap_text=True)
     header_fill = PatternFill(start_color='D9E1F2', fill_type='solid')
     header_font = Font(bold=True)
+    footer_fill = PatternFill(start_color='F0F0F0', fill_type='solid')
 
     # Цвета заливки
     FILLS = {
@@ -697,7 +942,6 @@ def export_grades(request):
     title_cell.font = Font(bold=True, size=14)
     ws.row_dimensions[1].height = 60
 
-
     ws.cell(row=5, column=1, value="№ п/п").font = header_font
     ws.cell(row=5, column=2, value="Ф.И.О. студента").font = header_font
     ws.cell(row=5, column=3, value="Основа обучения").font = header_font
@@ -710,21 +954,15 @@ def export_grades(request):
         'Другие формы контроля': 'Другие формы'
     }
 
-    # course = (semester_number + 1) // 2
-    # current_term = 1 if semester_number % 2 == 1 else 2
-
     discipline_groups = defaultdict(list)
     for curriculum_item in data['curriculum_items']:
-
         if curriculum_item.term != semester_number:
             continue
-
         discipline = curriculum_item.discipline
         category = TYPE_MAPPING.get(
             curriculum_item.code_of_type_work,
             'Другие формы'
         )
-
         if discipline.id not in {d.id for d in discipline_groups[category]}:
             discipline_groups[category].append(discipline)
 
@@ -733,7 +971,6 @@ def export_grades(request):
     column_map = {}
     current_col = 4
 
-    # Порядок отображения категорий
     categories_order = [
         'Экзамены',
         'Диф. зачёты',
@@ -746,11 +983,8 @@ def export_grades(request):
             discipline_groups.get(category, []),
             key=lambda x: x.name
         )
-
         if not disciplines:
             continue
-
-        # Объединение ячеек для категории
         end_col = current_col + len(disciplines) - 1
         ws.merge_cells(
             start_row=4,
@@ -763,8 +997,6 @@ def export_grades(request):
         cell.fill = header_fill
         cell.font = header_font
         cell.border = thin_border
-
-        # Добавление дисциплин
         for idx, disc in enumerate(disciplines, start=current_col):
             cell = ws.cell(row=5, column=idx, value=disc.name)
             cell.alignment = center_alignment
@@ -772,49 +1004,141 @@ def export_grades(request):
             cell.font = header_font
             cell.border = thin_border
             column_map[disc.id] = idx
-
         current_col += len(disciplines)
 
     # Заполнение данных студентов
+    total_rows = len(data['students'])
     for row_idx, student in enumerate(data['students'], start=6):
-        # Базовые данные
         ws.cell(row=row_idx, column=1, value=row_idx - 5).alignment = center_alignment
-        ws.cell(row=row_idx, column=2, value=student.full_name)
+        ws.cell(row=row_idx, column=1).border = thin_border
+        ws.cell(row=row_idx, column=2, value=student.full_name).border = thin_border
         ws.cell(row=row_idx, column=3, value=student.education_basis).alignment = center_alignment
-
-        # Оценки
+        ws.cell(row=row_idx, column=3).border = thin_border
         for category in categories_order:
             for disc in discipline_groups.get(category, []):
                 col = column_map.get(disc.id)
                 if not col:
                     continue
-
                 grade_entry = data['grades'].get(student.id, {}).get(disc.id)
-
                 cell = ws.cell(row=row_idx, column=col)
                 cell.alignment = center_alignment
                 cell.border = thin_border
-
                 if grade_entry:
                     if grade_entry == "-":
                         cell.value = grade_entry
                     else:
                         cell.value = grade_entry.grade
-
                         if str(grade_entry.grade).lower() in ['неудовлетворительно', 'неявка', 'н/я', '2']:
                             cell.fill = FILLS['неуд']
                         elif grade_entry.gradebook.type_of_grade_book in FILLS:
                             cell.fill = FILLS[grade_entry.gradebook.type_of_grade_book]
+
+    # Добавление метрик по дисциплинам
+    metrics_start_row = total_rows + 6
+    quality_row = metrics_start_row
+    success_row = metrics_start_row + 1
+    average_row = metrics_start_row + 2
+
+    # Процент качества
+    ws.merge_cells(start_row=quality_row, start_column=1, end_row=quality_row, end_column=3)
+    quality_cell = ws.cell(row=quality_row, column=1, value="Процент качества")
+    quality_cell.alignment = center_alignment
+    quality_cell.font = header_font
+    quality_cell.fill = footer_fill
+    quality_cell.border = thin_border
+    max_col = max(column_map.values()) if column_map else 4
+    for discipline in data['disciplines']:
+        col = column_map.get(discipline.id)
+        if col:
+            cell = ws.cell(row=quality_row, column=col, value=f"{data['quality_percentages'].get(discipline.id, 0):.2f}%")
+            cell.alignment = center_alignment
+            cell.border = thin_border
+            cell.fill = footer_fill
+
+    # Процент успеваемости
+    ws.merge_cells(start_row=success_row, start_column=1, end_row=success_row, end_column=3)
+    success_cell = ws.cell(row=success_row, column=1, value="Процент успеваемости")
+    success_cell.alignment = center_alignment
+    success_cell.font = header_font
+    success_cell.fill = footer_fill
+    success_cell.border = thin_border
+    for discipline in data['disciplines']:
+        col = column_map.get(discipline.id)
+        if col:
+            cell = ws.cell(row=success_row, column=col, value=f"{data['success_percentages'].get(discipline.id, 0):.2f}%")
+            cell.alignment = center_alignment
+            cell.border = thin_border
+            cell.fill = footer_fill
+
+    # Средний балл
+    ws.merge_cells(start_row=average_row, start_column=1, end_row=average_row, end_column=3)
+    average_cell = ws.cell(row=average_row, column=1, value="Средний балл")
+    average_cell.alignment = center_alignment
+    average_cell.font = header_font
+    average_cell.fill = footer_fill
+    average_cell.border = thin_border
+    for discipline in data['disciplines']:
+        col = column_map.get(discipline.id)
+        if col:
+            cell = ws.cell(row=average_row, column=col, value=f"{data['average_grades'].get(discipline.id, 0):.2f}")
+            cell.alignment = center_alignment
+            cell.border = thin_border
+            cell.fill = footer_fill
+
+    # Добавление групповых метрик в самом конце
+    group_metrics_start_row = average_row + 2
+    if total_rows > 0:
+        # Процент качества по учебной группе
+        ws.merge_cells(start_row=group_metrics_start_row, start_column=1, end_row=group_metrics_start_row, end_column=1)
+        group_quality_cell = ws.cell(row=group_metrics_start_row, column=1, value="Процент качества по учебной группе")
+        group_quality_cell.alignment = center_alignment
+        group_quality_cell.font = header_font
+        group_quality_cell.fill = footer_fill
+        group_quality_cell.border = thin_border
+        group_quality_value_cell = ws.cell(row=group_metrics_start_row, column=2, value=f"{data.get('total_quality_percentage', 0):.2f}%")
+        group_quality_value_cell.alignment = center_alignment
+        group_quality_value_cell.font = header_font
+        group_quality_value_cell.fill = footer_fill
+        group_quality_value_cell.border = thin_border
+
+        # Процент успеваемости по группе
+        ws.merge_cells(start_row=group_metrics_start_row + 1, start_column=1, end_row=group_metrics_start_row + 1, end_column=1)
+        group_success_cell = ws.cell(row=group_metrics_start_row + 1, column=1, value="Процент успеваемости по группе")
+        group_success_cell.alignment = center_alignment
+        group_success_cell.font = header_font
+        group_success_cell.fill = footer_fill
+        group_success_cell.border = thin_border
+        group_success_value_cell = ws.cell(row=group_metrics_start_row + 1, column=2, value=f"{data.get('total_success_percentage', 0):.2f}%")
+        group_success_value_cell.alignment = center_alignment
+        group_success_value_cell.font = header_font
+        group_success_value_cell.fill = footer_fill
+        group_success_value_cell.border = thin_border
+
+        # Средний балл по группе
+        ws.merge_cells(start_row=group_metrics_start_row + 2, start_column=1, end_row=group_metrics_start_row + 2, end_column=1)
+        group_average_cell = ws.cell(row=group_metrics_start_row + 2, column=1, value="Средний балл по группе")
+        group_average_cell.alignment = center_alignment
+        group_average_cell.font = header_font
+        group_average_cell.fill = footer_fill
+        group_average_cell.border = thin_border
+        group_average_value_cell = ws.cell(row=group_metrics_start_row + 2, column=2, value=f"{data.get('total_average_grade', 0):.2f}")
+        group_average_value_cell.alignment = center_alignment
+        group_average_value_cell.font = header_font
+        group_average_value_cell.fill = footer_fill
+        group_average_value_cell.border = thin_border
 
     # Настройка ширины столбцов
     for col_idx in range(1, len(headers) + 1):
         col_letter = get_column_letter(col_idx)
         ws.column_dimensions[col_letter].width = 20 if col_idx > 3 else 15
 
-    # Применение стилей ко всем ячейкам
-    for row in ws.iter_rows():
+    # Применение границ только к используемым ячейкам
+    max_col = max(column_map.values()) if column_map else 4  # Максимальный столбец с данными
+    for row in ws.iter_rows(min_row=4, max_row=group_metrics_start_row + 2, min_col=1, max_col=max_col):
         for cell in row:
-            cell.border = thin_border
+            if cell.row < group_metrics_start_row - 1:
+                cell.border = thin_border
+
             if cell.row > 5 and cell.column in [1, 3]:
                 cell.alignment = center_alignment
 
@@ -1272,49 +1596,49 @@ class GradebookCreateView(GradeBookMixin, ObjectCreateView):
     ]
 
 
-def get_download_path() -> Path:
-    """
-    Возвращает путь к папке загрузок в зависимости от ОС.
-    Поддерживает: Windows, macOS, Linux, Android (Termux), iOS (Pythonista).
-    Для других случаев возвращает текущую директорию.
-    """
-    # Для Android (Termux)
-    if "ANDROID_ROOT" in os.environ:
-        return Path("/storage/emulated/0/Download")
-
-    # Для iOS (Pythonista)
-    if sys.platform == "ios":
-        return Path(os.path.expanduser("~/Documents"))
-
-    # Для Windows
-    if sys.platform == "win32":
-        return Path(os.path.join(os.environ["USERPROFILE"], "Downloads"))
-
-    # Для macOS и Linux
-    download_dir = ""
-
-    # Проверка XDG для Linux
-    if sys.platform == "linux":
-        download_dir = os.environ.get("XDG_DOWNLOAD_DIR", "")
-        if download_dir:
-            return Path(download_dir)
-
-    # Стандартные пути для macOS/Linux/других Unix
-    home = Path.home()
-    possible_paths = [
-        home / "Downloads",
-        home / "Download",
-        home / "downloads",
-        home / "Загрузки"  # Для русскоязычных систем
-    ]
-
-    # Поиск существующей папки
-    for path in possible_paths:
-        if path.exists():
-            return path
-
-    # Fallback: текущая директория
-    return Path.cwd()
+# def get_download_path() -> Path:
+#     """
+#     Возвращает путь к папке загрузок в зависимости от ОС.
+#     Поддерживает: Windows, macOS, Linux, Android (Termux), iOS (Pythonista).
+#     Для других случаев возвращает текущую директорию.
+#     """
+#     # Для Android (Termux)
+#     if "ANDROID_ROOT" in os.environ:
+#         return Path("/storage/emulated/0/Download")
+#
+#     # Для iOS (Pythonista)
+#     if sys.platform == "ios":
+#         return Path(os.path.expanduser("~/Documents"))
+#
+#     # Для Windows
+#     if sys.platform == "win32":
+#         return Path(os.path.join(os.environ["USERPROFILE"], "Downloads"))
+#
+#     # Для macOS и Linux
+#     download_dir = ""
+#
+#     # Проверка XDG для Linux
+#     if sys.platform == "linux":
+#         download_dir = os.environ.get("XDG_DOWNLOAD_DIR", "")
+#         if download_dir:
+#             return Path(download_dir)
+#
+#     # Стандартные пути для macOS/Linux/других Unix
+#     home = Path.home()
+#     possible_paths = [
+#         home / "Downloads",
+#         home / "Download",
+#         home / "downloads",
+#         home / "Загрузки"  # Для русскоязычных систем
+#     ]
+#
+#     # Поиск существующей папки
+#     for path in possible_paths:
+#         if path.exists():
+#             return path
+#
+#     # Fallback: текущая директория
+#     return Path.cwd()
 
 
 logger = logging.getLogger(__name__)
@@ -1332,16 +1656,48 @@ def download_report(request, pk):
             gradebook.date_of_closing = timezone.now()
             gradebook.save()
 
-        file_name = f"{gradebook.name.replace(' ', '_')}_{gradebook.discipline.name}_{gradebook.semester_number}_{gradebook.group.full_name}.docx"
+        # Отладка исходных данных
+        logger.debug(f"Raw data: name={gradebook.name}, discipline={gradebook.discipline.name}, group={gradebook.group.full_name}, semester={gradebook.semester_number}, pk={pk}")
+
+        # Формирование имени файла
+        file_name_base = f"Vedomost_{gradebook.group.full_name}_{gradebook.discipline.name}_{gradebook.semester_number}_{gradebook.type_of_grade_book}"
+        # Транслитерация кириллицы в латиницу
+        file_name_translit = transliterate(file_name_base)
+        # Очистка имени файла от недопустимых символов и замена пробелов на подчеркивания
+        file_name_clean = re.sub(r'[^a-zA-Z0-9_]', '_', file_name_translit)[:50]
+        file_name = f"{file_name_clean}.docx"
+
+        # Отладка сформированного имени
+        logger.debug(f"Generated filename: {file_name}")
+
         generator = GradebookDocumentGenerator(gradebook)
         buffer = generator.generate_document()
 
+        # Проверка и сброс указателя буфера
+        if hasattr(buffer, 'seek') and hasattr(buffer, 'tell'):
+            buffer.seek(0)  # Сбрасываем указатель в начало
+            buffer_length = len(buffer.getvalue()) if hasattr(buffer, 'getvalue') else 0
+            logger.debug(f"Buffer length after seek: {buffer_length}")
+        else:
+            logger.error("Buffer does not support seek/tell operations")
+            raise ValueError("Buffer does not support required operations")
+
+        # Проверка содержимого буфера
+        if buffer_length == 0:
+            logger.error("Buffer is empty after generation")
+            raise ValueError("Generated document buffer is empty")
+
         response = FileResponse(
             buffer,
+            as_attachment=True,
             content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
         )
-        response['Content-Disposition'] = f'attachment; filename*=UTF-8\'\'{quote(file_name)}'
-        response['X-Refresh-After'] = reverse('gradebook_detail', kwargs={'pk': pk})
+        # Устанавливаем заголовок для корректной обработки клиентом
+        response['Content-Disposition'] = f'attachment; filename="{file_name}"'
+        # Разрешаем доступ к заголовку Content-Disposition для JavaScript
+        response['Access-Control-Expose-Headers'] = 'Content-Disposition'
+        logger.debug(f"Response Content-Disposition: {response['Content-Disposition']}")
+        logger.debug(f"Response status: 200")
         return response
 
     except Exception as e:

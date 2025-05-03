@@ -1,7 +1,6 @@
 {% extends 'base_view.html' %}
 {% load custom_filters %}
 
-{% load custom_filters %}
 {% load static %}
 
 {% block content %}
@@ -158,6 +157,15 @@
     .btn-success i {
         font-size: 16px;
     }
+
+    .quality-row, .success-row, .average-row {
+        font-weight: bold;
+        background-color: #f0f0f0;
+    }
+    .theme-dark .quality-row, .theme-dark .success-row, .theme-dark .average-row {
+        background-color: #333;
+        color: #fff;
+    }
 </style>
 
 <div class="export-btn-container">
@@ -210,6 +218,32 @@
             </tr>
             {% endfor %}
         </tbody>
+        <tfoot>
+            <tr class="quality-row">
+                <td colspan="3">Процент качества</td>
+                {% for discipline in disciplines %}
+                <td>{{ quality_percentages|get_item:discipline.id|floatformat:2 }}%</td>
+                {% endfor %}
+            </tr>
+            <tr class="success-row">
+                <td colspan="3">Процент успеваемости</td>
+                {% for discipline in disciplines %}
+                <td>{{ success_percentages|get_item:discipline.id|floatformat:2 }}%</td>
+                {% endfor %}
+            </tr>
+            <tr class="average-row">
+                <td colspan="3">Средний балл</td>
+                {% for discipline in disciplines %}
+                <td>{{ average_grades|get_item:discipline.id|floatformat:2 }}</td>
+                {% endfor %}
+            </tr>
+        </tfoot>
     </table>
+    <p></p>
+    <div>
+        <p>Процент качества по учебной группе = {{ total_quality_percentage|floatformat:2 }}%</p>
+        <p>Процент успеваемости по группе = {{ total_success_percentage|floatformat:2 }}%</p>
+        <p>Средний балл по группе = {{ total_average_grade|floatformat:2 }}</p>
+    </div>
 </div>
 {% endblock %}

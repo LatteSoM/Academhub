@@ -1748,3 +1748,412 @@ Not Found: /favicon.ico
 Not Found: /favicon.ico
 C:\Users\Kliker\Documents\MPTLab\Academhub\Curriculum\api\v1.py changed, reloading.
 Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+Not Found: /favicon.ico
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+Generating document in memory
+Document generated in memory
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+Generating document in memory
+Document generated in memory
+Generating document in memory
+Document generated in memory
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+Raw data: name=Ведомость дифференцированного зачета, discipline=Иностранный язык, group=Программис-1-24, semester=2
+Generated filename: gradebook_3_2.docx
+Generating document in memory
+Document generated in memory
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+Raw data: name=Ведомость дифференцированного зачета, discipline=Иностранный язык, group=Программис-1-24, semester=2, pk=3
+Generated filename: gradebook_3_2.docx
+Generating document in memory
+Document generated in memory
+Buffer type: <class '_io.BytesIO'>, Buffer content length: 0
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+Raw data: name=Ведомость дифференцированного зачета, discipline=Иностранный язык, group=Программис-1-24, semester=2, pk=3
+Generated filename: gradebook_3_2.docx
+Generating document in memory
+Document generated in memory
+Buffer length after seek: 0
+Buffer is empty after generation
+Error in download_report: Generated document buffer is empty
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 1682, in download_report
+    raise ValueError("Generated document buffer is empty")
+ValueError: Generated document buffer is empty
+Internal Server Error: /GradeBook/download_report/3/
+Raw data: name=Ведомость дифференцированного зачета, discipline=Иностранный язык, group=Программис-1-24, semester=2, pk=3
+Generated filename: gradebook_3_2.docx
+Generating document in memory
+Document generated in memory
+Buffer length after seek: 0
+Buffer is empty after generation
+Error in download_report: Generated document buffer is empty
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 1682, in download_report
+    raise ValueError("Generated document buffer is empty")
+ValueError: Generated document buffer is empty
+Internal Server Error: /GradeBook/download_report/3/
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/modules/documentGenPars.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/modules/documentGenPars.py changed, reloading.
+Watching for file changes with StatReloader
+Raw data: name=Ведомость дифференцированного зачета, discipline=Иностранный язык, group=Программис-1-24, semester=2, pk=3
+Generated filename: gradebook_3_2.docx
+Generating document in memory
+Buffer length before return: 38093
+Document generated in memory
+Buffer length after seek: 0
+Buffer is empty after generation
+Error in download_report: Generated document buffer is empty
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 1682, in download_report
+    raise ValueError("Generated document buffer is empty")
+ValueError: Generated document buffer is empty
+Internal Server Error: /GradeBook/download_report/3/
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/modules/documentGenPars.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+Raw data: name=Ведомость дифференцированного зачета, discipline=Иностранный язык, group=Программис-1-24, semester=2, pk=3
+Generated filename: gradebook_3_2.docx
+Generating document in memory
+Buffer length before return: 38093
+Document generated in memory
+Buffer length after seek: 38093
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+Raw data: name=Ведомость дифференцированного зачета, discipline=Иностранный язык, group=Программис-1-24, semester=2, pk=3
+Generated filename: gradebook_3_2.docx
+Generating document in memory
+Buffer length before return: 38093
+Document generated in memory
+Buffer length after seek: 38093
+Response Content-Disposition: attachment; filename="gradebook_3_2.docx"
+Raw data: name=Ведомость дифференцированного зачета, discipline=Иностранный язык, group=Программис-1-24, semester=2, pk=3
+Generated filename: gradebook_3_2.docx
+Generating document in memory
+Buffer length before return: 38093
+Document generated in memory
+Buffer length after seek: 38093
+Response Content-Disposition: attachment; filename="gradebook_3_2.docx"
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+Raw data: name=Ведомость дифференцированного зачета, discipline=Иностранный язык, group=Программис-1-24, semester=2, pk=3
+Generated filename: gradebook_3_2.docx
+Generating document in memory
+Buffer length before return: 38093
+Document generated in memory
+Buffer length after seek: 38093
+Response Content-Disposition: =?utf-8?b?YXR0YWNobWVudDsgZmlsZW5hbWU9IlZlZG9tb3N0X9CS0LXQtNC+0LzQvtGB0YLRjCDQtNC40YTRhNC10YDQtdC90YbQuNGA0L7QstCw0L3QvdC+0LPQviDQt9Cw0YfQtdGC0LBf0JjQvdC+0YHRgtGA0LDQvdC90YvQuSDRj9C30YvQul8yX9Cf0YDQvtCz0YDQsNC80LzQuNGBLTEtMjQuZG9jeCI=?=
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+Raw data: name=Ведомость дифференцированного зачета, discipline=Иностранный язык, group=Программис-1-24, semester=2, pk=3
+Generated filename: gradebook_3_2.docx
+Generating document in memory
+Buffer length before return: 38093
+Document generated in memory
+Buffer length after seek: 38093
+Response Content-Disposition: attachment; filename="gradebook_3_2.docx"
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+Raw data: name=Ведомость дифференцированного зачета, discipline=Иностранный язык, group=Программис-1-24, semester=2, pk=3
+Generated filename: gradebook_3_2.docx
+Generating document in memory
+Buffer length before return: 38093
+Document generated in memory
+Buffer length after seek: 38093
+Response Content-Disposition: attachment; filename="gradebook_3_2.docx"; filename*=UTF-8''gradebook_3_2.docx
+Raw data: name=Ведомость дифференцированного зачета, discipline=Иностранный язык, group=Программис-1-24, semester=2, pk=3
+Generated filename: gradebook_3_2.docx
+Generating document in memory
+Buffer length before return: 38093
+Document generated in memory
+Buffer length after seek: 38093
+Response Content-Disposition: attachment; filename="gradebook_3_2.docx"; filename*=UTF-8''gradebook_3_2.docx
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+Raw data: name=Ведомость дифференцированного зачета, discipline=Иностранный язык, group=Программис-1-24, semester=2, pk=3
+Generated filename: gradebook_3_2.docx
+Generating document in memory
+Buffer length before return: 38093
+Document generated in memory
+Buffer length after seek: 38093
+Response Content-Disposition: attachment; filename="gradebook_3_2.docx"; filename*=UTF-8''gradebook_3_2.docx
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+Raw data: name=Ведомость дифференцированного зачета, discipline=Иностранный язык, group=Программис-1-24, semester=2, pk=3
+Generated filename: gradebook_3_2.docx
+Generating document in memory
+Buffer length before return: 38093
+Document generated in memory
+Buffer length after seek: 38093
+Response Content-Disposition: attachment; filename="123.docx"; filename*=UTF-8''gradebook_3_2.docx
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+Raw data: name=Ведомость дифференцированного зачета, discipline=Иностранный язык, group=Программис-1-24, semester=2, pk=3
+Generated filename: gradebook_3_2.docx
+Generating document in memory
+Buffer length before return: 38093
+Document generated in memory
+Buffer length after seek: 38093
+Response Content-Disposition: attachment; filename="123.docx"
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+Raw data: name=Ведомость дифференцированного зачета, discipline=Иностранный язык, group=Программис-1-24, semester=2, pk=3
+Generated filename: gradebook_3_2.docx
+Generating document in memory
+Buffer length before return: 38093
+Document generated in memory
+Buffer length after seek: 38093
+Response Content-Disposition: attachment; filename="gradebook_3_2.docx"
+Raw data: name=Ведомость дифференцированного зачета, discipline=Иностранный язык, group=Программис-1-24, semester=2, pk=3
+Generated filename: gradebook_3_2.docx
+Generating document in memory
+Buffer length before return: 38093
+Document generated in memory
+Buffer length after seek: 38093
+Response Content-Disposition: attachment; filename="gradebook_3_2.docx"
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+Raw data: name=Ведомость дифференцированного зачета, discipline=Иностранный язык, group=Программис-1-24, semester=2, pk=3
+Generated filename: gradebook_3_2.docx
+Generating document in memory
+Buffer length before return: 38093
+Document generated in memory
+Buffer length after seek: 38093
+Error in download_report: HttpResponseBase.__init__() got an unexpected keyword argument 'as_attachment'
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 1693, in download_report
+    response = HttpResponse(
+        open(tmp_file_path, 'rb'),
+        as_attachment=True,
+        content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    )
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/http/response.py", line 374, in __init__
+    super().__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+TypeError: HttpResponseBase.__init__() got an unexpected keyword argument 'as_attachment'
+Internal Server Error: /GradeBook/download_report/3/
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+Raw data: name=Ведомость дифференцированного зачета, discipline=Иностранный язык, group=Программис-1-24, semester=2, pk=3
+Generated filename: gradebook_3_2.docx
+Generating document in memory
+Buffer length before return: 38093
+Document generated in memory
+Buffer length after seek: 38093
+Response Content-Disposition: attachment; filename="gradebook_3_2.docx"
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+Raw data: name=Ведомость дифференцированного зачета, discipline=Иностранный язык, group=Программис-1-24, semester=2, pk=3
+Generated filename: gradebook_3_2.docx
+Generating document in memory
+Buffer length before return: 38093
+Document generated in memory
+Buffer length after seek: 38093
+Response Content-Disposition: attachment; filename="gradebook_3_2.docx"
+Raw data: name=Ведомость дифференцированного зачета, discipline=Иностранный язык, group=Программис-1-24, semester=2, pk=3
+Generated filename: gradebook_3_2.docx
+Generating document in memory
+Buffer length before return: 38093
+Document generated in memory
+Buffer length after seek: 38093
+Response Content-Disposition: attachment; filename="gradebook_3_2.docx"
+Raw data: name=Ведомость дифференцированного зачета, discipline=Иностранный язык, group=Программис-1-24, semester=2, pk=3
+Generated filename: gradebook_3_2.docx
+Generating document in memory
+Buffer length before return: 38093
+Document generated in memory
+Buffer length after seek: 38093
+Response Content-Disposition: attachment; filename="gradebook_3_2.docx"
+Raw data: name=Ведомость дифференцированного зачета, discipline=Иностранный язык, group=Программис-1-24, semester=2, pk=3
+Generated filename: gradebook_3_2.docx
+Generating document in memory
+Buffer length before return: 38093
+Document generated in memory
+Buffer length after seek: 38093
+Response Content-Disposition: attachment; filename="gradebook_3_2.docx"
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+Raw data: name=Ведомость дифференцированного зачета, discipline=Иностранный язык, group=Программис-1-24, semester=2, pk=3
+Generated filename: gradebook_3_2.docx
+Generating document in memory
+Buffer length before return: 38093
+Document generated in memory
+Buffer length after seek: 38093
+Response Content-Disposition: attachment; filename="gradebook_3_2.docx"
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Raw data: name=Ведомость дифференцированного зачета, discipline=Иностранный язык, group=Программис-1-24, semester=2, pk=3
+Generated filename: gradebook_3_2.docx
+Generating document in memory
+Buffer length before return: 38093
+Document generated in memory
+Buffer length after seek: 38093
+Response Content-Disposition: attachment; filename="gradebook_3_2.docx"
+Watching for file changes with StatReloader
+Not Found: /favicon.ico
+Raw data: name=Ведомость дифференцированного зачета, discipline=Иностранный язык, group=Программис-1-24, semester=2, pk=3
+Generated filename: gradebook_3_2.docx
+Generating document in memory
+Buffer length before return: 38093
+Document generated in memory
+Buffer length after seek: 38093
+Response Content-Disposition: attachment; filename="gradebook_3_2.docx"
+Raw data: name=Ведомость дифференцированного зачета, discipline=Иностранный язык, group=Программис-1-24, semester=2, pk=3
+Generated filename: gradebook_3_2.docx
+Generating document in memory
+Buffer length before return: 38093
+Document generated in memory
+Buffer length after seek: 38093
+Response Content-Disposition: attachment; filename="gradebook_3_2.docx"
+Raw data: name=Ведомость дифференцированного зачета, discipline=Иностранный язык, group=Программис-1-24, semester=2, pk=3
+Generated filename: gradebook_3_2.docx
+Generating document in memory
+Buffer length before return: 38093
+Document generated in memory
+Buffer length after seek: 38093
+Response Content-Disposition: attachment; filename="gradebook_3_2.docx"
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Not Found: /favicon.ico
+Raw data: name=Ведомость дифференцированного зачета, discipline=Иностранный язык, group=Программис-1-24, semester=2, pk=3
+Generated filename: gradebook_3_2.docx
+Generating document in memory
+Buffer length before return: 38093
+Document generated in memory
+Buffer length after seek: 38093
+Response Content-Disposition: attachment; filename="gradebook_3_2.docx"
+Not Found: /favicon.ico
+Raw data: name=Ведомость дифференцированного зачета, discipline=Иностранный язык, group=Программис-1-24, semester=2, pk=3
+Generated filename: gradebook_3_2.docx
+Generating document in memory
+Buffer length before return: 38093
+Document generated in memory
+Buffer length after seek: 38093
+Response Content-Disposition: attachment; filename="gradebook_3_2.docx"
+Not Found: /favicon.ico
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Raw data: name=Ведомость дифференцированного зачета, discipline=Иностранный язык, group=Программис-1-24, semester=2, pk=3
+Generated filename: _____________________1_24_________________________.docx
+Generating document in memory
+Buffer length before return: 38093
+Document generated in memory
+Buffer length after seek: 38093
+Response Content-Disposition: attachment; filename="_____________________1_24_________________________.docx"
+Not Found: /favicon.ico
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+Not Found: /favicon.ico
+Raw data: name=Ведомость дифференцированного зачета, discipline=Иностранный язык, group=Программис-1-24, semester=2, pk=3
+Generated filename: Ведомость_Программис-1-24_Ведомость дифференцированного зачета_Иностранный язык_2_Первичная сдача.docx
+Generating document in memory
+Buffer length before return: 38093
+Document generated in memory
+Buffer length after seek: 38093
+Response Content-Disposition: =?utf-8?b?YXR0YWNobWVudDsgZmlsZW5hbWU9ItCS0LXQtNC+0LzQvtGB0YLRjF/Qn9GA0L7Qs9GA0LDQvNC80LjRgS0xLTI0X9CS0LXQtNC+0LzQvtGB0YLRjCDQtNC40YTRhNC10YDQtdC90YbQuNGA0L7QstCw0L3QvdC+0LPQviDQt9Cw0YfQtdGC0LBf0JjQvdC+0YHRgtGA0LDQvdC90YvQuSDRj9C30YvQul8yX9Cf0LXRgNCy0LjRh9C90LDRjyDRgdC00LDRh9CwLmRvY3gi?=
+Not Found: /favicon.ico
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+Not Found: /favicon.ico
+Raw data: name=Ведомость дифференцированного зачета, discipline=Иностранный язык, group=Программис-1-24, semester=2, pk=3
+Generated filename: Vedomost_Программис-1-24_Ведомость дифференцированного зачета_Иностранный язык_2_Первичная сдача.docx
+Generating document in memory
+Buffer length before return: 38093
+Document generated in memory
+Buffer length after seek: 38093
+Response Content-Disposition: =?utf-8?b?YXR0YWNobWVudDsgZmlsZW5hbWU9IlZlZG9tb3N0X9Cf0YDQvtCz0YDQsNC80LzQuNGBLTEtMjRf0JLQtdC00L7QvNC+0YHRgtGMINC00LjRhNGE0LXRgNC10L3RhtC40YDQvtCy0LDQvdC90L7Qs9C+INC30LDRh9C10YLQsF/QmNC90L7RgdGC0YDQsNC90L3Ri9C5INGP0LfRi9C6XzJf0J/QtdGA0LLQuNGH0L3QsNGPINGB0LTQsNGH0LAuZG9jeCI=?=
+Not Found: /favicon.ico
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/utils.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py changed, reloading.
+Watching for file changes with StatReloader
+Not Found: /favicon.ico
+Raw data: name=Ведомость дифференцированного зачета, discipline=Иностранный язык, group=Программис-1-24, semester=2, pk=3
+Generated filename: Vedomost_Programmis_1_24_Inostrannyy_yazyk_2_Pervi.docx
+Generating document in memory
+Buffer length before return: 38093
+Document generated in memory
+Buffer length after seek: 38093
+Response Content-Disposition: attachment; filename="Vedomost_Programmis_1_24_Inostrannyy_yazyk_2_Pervi.docx"
+Response status: 200
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Raw data: name=Ведомость дифференцированного зачета, discipline=Иностранный язык, group=Программис-1-24, semester=2, pk=3
+Generated filename: Vedomost_Programmis_1_24_Inostrannyy_yazyk_2_Pervi.docx
+Generating document in memory
+Buffer length before return: 38093
+Document generated in memory
+Buffer length after seek: 38093
+Response Content-Disposition: attachment; filename="Vedomost_Programmis_1_24_Inostrannyy_yazyk_2_Pervi.docx"
+Response status: 200
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Raw data: name=Ведомость дифференцированного зачета, discipline=Физика, group=Программис-1-24, semester=2, pk=4
+Generated filename: Vedomost_Programmis_1_24_Fizika_2_Pervichnaya_sdac.docx
+Generating document in memory
+Buffer length before return: 38083
+Document generated in memory
+Buffer length after seek: 38083
+Response Content-Disposition: attachment; filename="Vedomost_Programmis_1_24_Fizika_2_Pervichnaya_sdac.docx"
+Response status: 200
+Not Found: /favicon.ico

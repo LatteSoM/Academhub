@@ -1,7 +1,9 @@
+import io
 import logging
 import os
 import re
 import sys
+from copy import copy
 from io import BytesIO
 
 import django
@@ -959,11 +961,20 @@ class GradebookDocumentGenerator:
                         run.font.size = Pt(10)
 
             # Сохранение в буфер
-            buffer = BytesIO()
+            buffer = io.BytesIO()
             document.save(buffer)
-            buffer.seek(0)
+            buffer.seek(0)  # Сбрасываем указатель перед чтением
+            buffer_length = len(buffer.getvalue())
+            logger.debug(f"Buffer length before return: {buffer_length}")
+            if buffer_length == 0:
+                logger.error("Buffer is empty after saving document")
+                raise ValueError("Document buffer is empty after saving")
+
+            # Создаем новый буфер и копируем содержимое
+            new_buffer = io.BytesIO(buffer.getvalue())
+            new_buffer.seek(0)
             logger.info("Document generated in memory")
-            return buffer
+            return new_buffer
 
         except Exception as e:
             logger.error(f"Error generating document: {str(e)}", exc_info=True)
