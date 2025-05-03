@@ -1523,12 +1523,12 @@ class TeachersForDisciplineAndCurriculum(AcademHubModel):
     term = models.IntegerField(null=False)
     discipline = models.ForeignKey(Discipline, related_name='teachers_for_curriculum_and_discipline', on_delete=models.CASCADE)
     curriculum = models.ForeignKey(Curriculum, related_name='teachers_disciplines', on_delete=models.CASCADE)
-    groups = models.ManyToManyField(GroupStudents, 'teachers_for_groups')
+    group = models.ForeignKey(GroupStudents, related_name='teachers_to_discipline', on_delete=models.CASCADE)
 
 
     class Meta:
-        verbose_name = "Преподаватель дисциплины в семестре"
-        verbose_name_plural = "Преподаватели дисциплины в семестре"
+        verbose_name = "Преподаватель дисциплины для группы"
+        verbose_name_plural = "Преподаватели дисциплины для группы"
 
     @classmethod
     def from_dict(cls, data):
@@ -1563,7 +1563,7 @@ class TeachersForDisciplineAndCurriculum(AcademHubModel):
         return cls.objects.filter(
             discipline=discipline,
             curriculum=group.curriculum,
-            groups=group,
+            group=group,
             course=course,
             term=local_semester
         ).prefetch_related('teachers').first()
@@ -1586,7 +1586,7 @@ class AttestationPeriodForDisciplines(AcademHubModel):
     term = models.IntegerField(null=False)
     discipline = models.ForeignKey(Discipline, related_name='attestations_periods', on_delete=models.CASCADE)
     curriculum = models.ForeignKey(Curriculum, related_name='attestations_periods_disciplines', on_delete=models.CASCADE)
-    groups = models.ManyToManyField(GroupStudents, 'teachers_for_groups_attestation')
+    group = models.ForeignKey(GroupStudents, related_name='attestations_periods_disciplines', on_delete=models.CASCADE)
     start_date = models.DateField(null=False)
     end_date = models.DateField(null=False)
 
