@@ -1000,7 +1000,7 @@ class GradebookDocumentGenerator:
 class RecordBookDocumentGenerator:
     def __init__(self, recordbook_template_path):
         self.rb_template_path = recordbook_template_path
-        self.rb_qualification_template_path = os.path.abspath('./Academhub/modules/qualification_excel_template.xlsx')
+        self.rb_qualification_template_path = os.path.abspath('./qualification_excel_template.xlsx')
 
     def generate_qualification_template(self, curriculum, semester1_exam_coords: dict={}, semester1_zachet_coords: dict={},
                                         semester2_exam_coords: dict={}, semester2_zachet_coords: dict={}, 
@@ -1247,8 +1247,8 @@ class RecordBookDocumentGenerator:
         workbook.save(save_path)
 
 if __name__ == "__main__":
-    rbdg = RecordBookDocumentGenerator("Academhub/modules/test_excel_template.xlsx")
-    test_curriculum = Curriculum.objects.get(id=2)
+    rbdg = RecordBookDocumentGenerator("test_excel_template.xlsx")
+    test_curriculum = Curriculum.objects.get(id=1)
     
     # cur_clock_cells = ClockCell.objects.filter(curriculum=test_curriculum)
     # for i in range(1, 9):
@@ -1293,8 +1293,8 @@ if __name__ == "__main__":
                                                 )
     print(test)
 
-    test = rbdg.generate_student_recordbook(StudentRecordBook.objects.get(id=1), 'Sheet3', 'C3', 'C5', 'C9', 'C11', 'recordbook1.xlsx')
-    print(test)
+    # test = rbdg.generate_student_recordbook(StudentRecordBook.objects.get(id=1), 'Sheet3', 'C3', 'C5', 'C9', 'C11', 'recordbook1.xlsx')
+    # print(test)
     # students = Student.objects.all()
     # specialties = Specialty.objects.all()
     # qualifications = Qualification.objects.all()
