@@ -1563,7 +1563,7 @@ class TeachersForDisciplineAndCurriculum(AcademHubModel):
         return cls.objects.filter(
             discipline=discipline,
             curriculum=group.curriculum,
-            groups=group,
+            group=group,
             course=course,
             term=local_semester
         ).prefetch_related('teachers').first()

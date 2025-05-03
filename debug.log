@@ -2377,3 +2377,2160 @@ Watching for file changes with StatReloader
 Using proactor: IocpProactor
 C:\Users\Kliker\Documents\MPTLab\Academhub\Curriculum\api\v1.py changed, reloading.
 Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Processing group: Программис-1-24
+Found curriculum: Curriculum object (1)
+No clock cells found for curriculum 1, semester 1. Found 0 records.
+All clock cells for curriculum: [{'term': 2, 'code_of_type_work': 'Экзамен', 'module': 1}, {'term': 2, 'code_of_type_work': 'Зачет с оценкой', 'module': 1}, {'term': 1, 'code_of_type_work': 'Лекционные занятия', 'module': 1}, {'term': 1, 'code_of_type_work': 'Практические занятия', 'module': 1}, {'term': 2, 'code_of_type_work': 'Лекционные занятия', 'module': 1}, {'term': 2, 'code_of_type_work': 'Практические занятия', 'module': 1}, {'term': 2, 'code_of_type_work': 'Итого часов', 'module': 1}, {'term': 1, 'code_of_type_work': 'Итого часов', 'module': 1}, {'term': 2, 'code_of_type_work': 'Часы на контроль', 'module': 1}, {'term': 1, 'code_of_type_work': 'Лабораторные занятия', 'module': 1}, {'term': 2, 'code_of_type_work': 'Лабораторные занятия', 'module': 1}, {'term': 2, 'code_of_type_work': 'Экзамен', 'module': None}, {'term': 1, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 2, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 2, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 1, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 2, 'code_of_type_work': 'Часы на контроль', 'module': None}, {'term': 1, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 2, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 2, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 1, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 2, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 1, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 2, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 2, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 1, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 2, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 1, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 2, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 2, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 1, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 2, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 1, 'code_of_type_work': 'Лабораторные занятия', 'module': None}, {'term': 2, 'code_of_type_work': 'Лабораторные занятия', 'module': None}, {'term': 1, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 1, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 2, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 2, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 2, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 1, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 2, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 1, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 1, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 2, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 2, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 2, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 1, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 2, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 1, 'code_of_type_work': 'Лабораторные занятия', 'module': None}, {'term': 2, 'code_of_type_work': 'Лабораторные занятия', 'module': None}, {'term': 1, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 2, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 2, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 1, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 2, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 1, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 1, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 2, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 2, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 2, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 1, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 2, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 1, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 1, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 2, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 2, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 2, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 1, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 2, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 1, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 1, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 2, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 2, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 2, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 1, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 2, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 2, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 1, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 2, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 2, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 1, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 2, 'code_of_type_work': 'Экзамен', 'module': 2}, {'term': 1, 'code_of_type_work': 'Лекционные занятия', 'module': 2}, {'term': 1, 'code_of_type_work': 'Практические занятия', 'module': 2}, {'term': 2, 'code_of_type_work': 'Лекционные занятия', 'module': 2}, {'term': 2, 'code_of_type_work': 'Практические занятия', 'module': 2}, {'term': 2, 'code_of_type_work': 'Итого часов', 'module': 2}, {'term': 1, 'code_of_type_work': 'Итого часов', 'module': 2}, {'term': 2, 'code_of_type_work': 'Часы на контроль', 'module': 2}, {'term': 2, 'code_of_type_work': 'Экзамен', 'module': None}, {'term': 1, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 1, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 2, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 2, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 2, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 1, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 2, 'code_of_type_work': 'Часы на контроль', 'module': None}, {'term': 2, 'code_of_type_work': 'Экзамен', 'module': None}, {'term': 1, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 1, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 2, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 2, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 2, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 1, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 2, 'code_of_type_work': 'Часы на контроль', 'module': None}, {'term': 1, 'code_of_type_work': 'Итого часов', 'module': 3}, {'term': 2, 'code_of_type_work': 'Итого часов', 'module': 3}, {'term': 2, 'code_of_type_work': 'Зачет с оценкой', 'module': 3}, {'term': 1, 'code_of_type_work': 'Индивидуальный проект', 'module': 3}, {'term': 2, 'code_of_type_work': 'Индивидуальный проект', 'module': 3}, {'term': 1, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 2, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 2, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 1, 'code_of_type_work': 'Индивидуальный проект', 'module': None}, {'term': 2, 'code_of_type_work': 'Индивидуальный проект', 'module': None}, {'term': 2, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 1, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 2, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 1, 'code_of_type_work': 'Индивидуальный проект', 'module': None}, {'term': 2, 'code_of_type_work': 'Индивидуальный проект', 'module': None}, {'term': 2, 'code_of_type_work': 'Экзамен', 'module': 4}, {'term': 1, 'code_of_type_work': 'Экзамен', 'module': 4}, {'term': 2, 'code_of_type_work': 'Экзамен', 'module': 4}, {'term': 1, 'code_of_type_work': 'Зачет с оценкой', 'module': 4}, {'term': 2, 'code_of_type_work': 'Зачет с оценкой', 'module': 4}, {'term': 2, 'code_of_type_work': 'Курсовая работа', 'module': 4}, {'term': 1, 'code_of_type_work': 'Другие формы контроля', 'module': 4}, {'term': 2, 'code_of_type_work': 'Другие формы контроля', 'module': 4}, {'term': 1, 'code_of_type_work': 'Другие формы контроля', 'module': 4}, {'term': 1, 'code_of_type_work': 'Итого часов', 'module': 4}, {'term': 1, 'code_of_type_work': 'Лекционные занятия', 'module': 4}, {'term': 1, 'code_of_type_work': 'Практические занятия', 'module': 4}, {'term': 2, 'code_of_type_work': 'Итого часов', 'module': 4}, {'term': 2, 'code_of_type_work': 'Лекционные занятия', 'module': 4}, {'term': 2, 'code_of_type_work': 'Практические занятия', 'module': 4}, {'term': 2, 'code_of_type_work': 'Часы на контроль', 'module': 4}, {'term': 1, 'code_of_type_work': 'Итого часов', 'module': 4}, {'term': 1, 'code_of_type_work': 'Лекционные занятия', 'module': 4}, {'term': 1, 'code_of_type_work': 'Практические занятия', 'module': 4}, {'term': 1, 'code_of_type_work': 'Часы на контроль', 'module': 4}, {'term': 2, 'code_of_type_work': 'Итого часов', 'module': 4}, {'term': 2, 'code_of_type_work': 'Лекционные занятия', 'module': 4}, {'term': 2, 'code_of_type_work': 'Практические занятия', 'module': 4}, {'term': 2, 'code_of_type_work': 'Курсовое проектирование', 'module': 4}, {'term': 2, 'code_of_type_work': 'Часы на контроль', 'module': 4}, {'term': 2, 'code_of_type_work': 'Самостоятельная работа', 'module': 4}, {'term': 6, 'code_of_type_work': 'Экзамен', 'module': None}, {'term': 6, 'code_of_type_work': 'Часы на контроль', 'module': None}, {'term': 6, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 4, 'code_of_type_work': 'Другие формы контроля', 'module': None}, {'term': 4, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 4, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 4, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 5, 'code_of_type_work': 'Экзамен', 'module': None}, {'term': 5, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 5, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 5, 'code_of_type_work': 'Часы на контроль', 'module': None}, {'term': 5, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 6, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 6, 'code_of_type_work': 'Курсовая работа', 'module': None}, {'term': 6, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 6, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 6, 'code_of_type_work': 'Курсовое проектирование', 'module': None}, {'term': 6, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 4, 'code_of_type_work': 'Самостоятельная работа', 'module': None}, {'term': 3, 'code_of_type_work': 'Другие формы контроля', 'module': None}, {'term': 3, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 3, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 3, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 4, 'code_of_type_work': 'Экзамен', 'module': None}, {'term': 4, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 4, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 4, 'code_of_type_work': 'Часы на контроль', 'module': None}, {'term': 4, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 4, 'code_of_type_work': 'Другие формы контроля', 'module': None}, {'term': 4, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 4, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 4, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 5, 'code_of_type_work': 'Другие формы контроля', 'module': None}, {'term': 5, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 5, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 5, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 6, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 6, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 6, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 6, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 5, 'code_of_type_work': 'Другие формы контроля', 'module': None}, {'term': 5, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 5, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 5, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 6, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 6, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 6, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 6, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 5, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 5, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 5, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 5, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 5, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 5, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 5, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 5, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 5, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 2, 'code_of_type_work': 'Экзамен', 'module': 5}, {'term': 2, 'code_of_type_work': 'Зачет с оценкой', 'module': 5}, {'term': 1, 'code_of_type_work': 'Зачет с оценкой', 'module': 5}, {'term': 2, 'code_of_type_work': 'Зачет с оценкой', 'module': 5}, {'term': 2, 'code_of_type_work': 'Курсовая работа', 'module': 5}, {'term': 1, 'code_of_type_work': 'Другие формы контроля', 'module': 5}, {'term': 2, 'code_of_type_work': 'Итого часов', 'module': 5}, {'term': 2, 'code_of_type_work': 'Лекционные занятия', 'module': 5}, {'term': 2, 'code_of_type_work': 'Практические занятия', 'module': 5}, {'term': 1, 'code_of_type_work': 'Итого часов', 'module': 5}, {'term': 1, 'code_of_type_work': 'Лекционные занятия', 'module': 5}, {'term': 1, 'code_of_type_work': 'Практические занятия', 'module': 5}, {'term': 2, 'code_of_type_work': 'Итого часов', 'module': 5}, {'term': 2, 'code_of_type_work': 'Лекционные занятия', 'module': 5}, {'term': 2, 'code_of_type_work': 'Практические занятия', 'module': 5}, {'term': 2, 'code_of_type_work': 'Курсовое проектирование', 'module': 5}, {'term': 2, 'code_of_type_work': 'Часы на контроль', 'module': 5}, {'term': 8, 'code_of_type_work': 'Экзамен', 'module': None}, {'term': 8, 'code_of_type_work': 'Часы на контроль', 'module': None}, {'term': 8, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 7, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 7, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 7, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 7, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 8, 'code_of_type_work': 'Курсовая работа', 'module': None}, {'term': 8, 'code_of_type_work': 'Курсовое проектирование', 'module': None}, {'term': 8, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 6, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 6, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 6, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 6, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 7, 'code_of_type_work': 'Другие формы контроля', 'module': None}, {'term': 7, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 7, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 7, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 8, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 8, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 8, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 8, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 6, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 6, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 6, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 7, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 7, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 7, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 1, 'code_of_type_work': 'Экзамен', 'module': 6}, {'term': 2, 'code_of_type_work': 'Зачет с оценкой', 'module': 6}, {'term': 1, 'code_of_type_work': 'Зачет с оценкой', 'module': 6}, {'term': 2, 'code_of_type_work': 'Другие формы контроля', 'module': 6}, {'term': 2, 'code_of_type_work': 'Итого часов', 'module': 6}, {'term': 2, 'code_of_type_work': 'Лекционные занятия', 'module': 6}, {'term': 2, 'code_of_type_work': 'Практические занятия', 'module': 6}, {'term': 1, 'code_of_type_work': 'Итого часов', 'module': 6}, {'term': 1, 'code_of_type_work': 'Лекционные занятия', 'module': 6}, {'term': 1, 'code_of_type_work': 'Практические занятия', 'module': 6}, {'term': 1, 'code_of_type_work': 'Часы на контроль', 'module': 6}, {'term': 7, 'code_of_type_work': 'Экзамен', 'module': None}, {'term': 7, 'code_of_type_work': 'Часы на контроль', 'module': None}, {'term': 7, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 6, 'code_of_type_work': 'Другие формы контроля', 'module': None}, {'term': 6, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 6, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 6, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 7, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 7, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 7, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 7, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 6, 'code_of_type_work': 'Другие формы контроля', 'module': None}, {'term': 6, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 6, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 6, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 7, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 7, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 7, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 7, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 7, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 7, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 7, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 6, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 6, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 6, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 1, 'code_of_type_work': 'Экзамен', 'module': 7}, {'term': 2, 'code_of_type_work': 'Экзамен', 'module': 7}, {'term': 1, 'code_of_type_work': 'Экзамен', 'module': 7}, {'term': 2, 'code_of_type_work': 'Зачет с оценкой', 'module': 7}, {'term': 1, 'code_of_type_work': 'Курсовая работа', 'module': 7}, {'term': 1, 'code_of_type_work': 'Итого часов', 'module': 7}, {'term': 1, 'code_of_type_work': 'Лекционные занятия', 'module': 7}, {'term': 1, 'code_of_type_work': 'Практические занятия', 'module': 7}, {'term': 1, 'code_of_type_work': 'Часы на контроль', 'module': 7}, {'term': 2, 'code_of_type_work': 'Итого часов', 'module': 7}, {'term': 2, 'code_of_type_work': 'Лекционные занятия', 'module': 7}, {'term': 2, 'code_of_type_work': 'Практические занятия', 'module': 7}, {'term': 2, 'code_of_type_work': 'Часы на контроль', 'module': 7}, {'term': 1, 'code_of_type_work': 'Итого часов', 'module': 7}, {'term': 1, 'code_of_type_work': 'Курсовое проектирование', 'module': 7}, {'term': 1, 'code_of_type_work': 'Часы на контроль', 'module': 7}, {'term': 1, 'code_of_type_work': 'Другие формы контроля', 'module': 7}, {'term': 7, 'code_of_type_work': 'Экзамен', 'module': None}, {'term': 7, 'code_of_type_work': 'Часы на контроль', 'module': None}, {'term': 7, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 5, 'code_of_type_work': 'Экзамен', 'module': None}, {'term': 5, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 5, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 5, 'code_of_type_work': 'Часы на контроль', 'module': None}, {'term': 5, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 6, 'code_of_type_work': 'Экзамен', 'module': None}, {'term': 6, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 6, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 6, 'code_of_type_work': 'Часы на контроль', 'module': None}, {'term': 6, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 7, 'code_of_type_work': 'Курсовая работа', 'module': None}, {'term': 7, 'code_of_type_work': 'Курсовое проектирование', 'module': None}, {'term': 7, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 7, 'code_of_type_work': 'Другие формы контроля', 'module': None}, {'term': 6, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 6, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 6, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 6, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 6, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 6, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 2, 'code_of_type_work': 'Экзамен', 'module': 8}, {'term': 1, 'code_of_type_work': 'Зачет с оценкой', 'module': 8}, {'term': 2, 'code_of_type_work': 'Зачет с оценкой', 'module': 8}, {'term': 1, 'code_of_type_work': 'Другие формы контроля', 'module': 8}, {'term': 1, 'code_of_type_work': 'Итого часов', 'module': 8}, {'term': 1, 'code_of_type_work': 'Лекционные занятия', 'module': 8}, {'term': 1, 'code_of_type_work': 'Практические занятия', 'module': 8}, {'term': 2, 'code_of_type_work': 'Итого часов', 'module': 8}, {'term': 2, 'code_of_type_work': 'Лекционные занятия', 'module': 8}, {'term': 2, 'code_of_type_work': 'Практические занятия', 'module': 8}, {'term': 2, 'code_of_type_work': 'Часы на контроль', 'module': 8}, {'term': 8, 'code_of_type_work': 'Экзамен', 'module': None}, {'term': 8, 'code_of_type_work': 'Часы на контроль', 'module': None}, {'term': 8, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 7, 'code_of_type_work': 'Другие формы контроля', 'module': None}, {'term': 7, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 7, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 7, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 8, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 8, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 8, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 8, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 7, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 7, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 7, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 8, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 8, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 8, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 8, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 8, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 8, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 4, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 4, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 4, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 4, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 3, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 3, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 3, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 3, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 4, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 4, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 4, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 4, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 3, 'code_of_type_work': 'Другие формы контроля', 'module': None}, {'term': 3, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 3, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 4, 'code_of_type_work': 'Другие формы контроля', 'module': None}, {'term': 4, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 4, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 5, 'code_of_type_work': 'Другие формы контроля', 'module': None}, {'term': 5, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 5, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 6, 'code_of_type_work': 'Другие формы контроля', 'module': None}, {'term': 6, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 6, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 7, 'code_of_type_work': 'Другие формы контроля', 'module': None}, {'term': 7, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 7, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 8, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 8, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 8, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 8, 'code_of_type_work': 'Самостоятельная работа', 'module': None}, {'term': 3, 'code_of_type_work': 'Другие формы контроля', 'module': None}, {'term': 3, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 3, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 4, 'code_of_type_work': 'Другие формы контроля', 'module': None}, {'term': 4, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 4, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 5, 'code_of_type_work': 'Другие формы контроля', 'module': None}, {'term': 5, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 5, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 6, 'code_of_type_work': 'Другие формы контроля', 'module': None}, {'term': 6, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 6, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 7, 'code_of_type_work': 'Другие формы контроля', 'module': None}, {'term': 7, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 7, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 8, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 8, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 8, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 3, 'code_of_type_work': 'Другие формы контроля', 'module': None}, {'term': 3, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 3, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 3, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 4, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 4, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 4, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 4, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 4, 'code_of_type_work': 'Самостоятельная работа', 'module': None}, {'term': 3, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 3, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 3, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 3, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 4, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 4, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 4, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 4, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 4, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 4, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 4, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 4, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 3, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 3, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 3, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 3, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 3, 'code_of_type_work': 'Другие формы контроля', 'module': None}, {'term': 3, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 3, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 3, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 4, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 4, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 4, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 4, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 3, 'code_of_type_work': 'Другие формы контроля', 'module': None}, {'term': 3, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 3, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 3, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 4, 'code_of_type_work': 'Экзамен', 'module': None}, {'term': 4, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 4, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 4, 'code_of_type_work': 'Часы на контроль', 'module': None}, {'term': 4, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 8, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 8, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 8, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 8, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 3, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 3, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 3, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 3, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 7, 'code_of_type_work': 'Другие формы контроля', 'module': None}, {'term': 7, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 7, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 7, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 8, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 8, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 8, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 8, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 7, 'code_of_type_work': 'Самостоятельная работа', 'module': None}, {'term': 3, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 3, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 3, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 3, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 4, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 4, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 4, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 4, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 5, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 5, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 5, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 5, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 4, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 4, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 4, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 4, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 8, 'code_of_type_work': 'Зачет с оценкой', 'module': None}, {'term': 8, 'code_of_type_work': 'Лекционные занятия', 'module': None}, {'term': 8, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 8, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 8, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 8, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 8, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 8, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 8, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 8, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 8, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 8, 'code_of_type_work': 'Практические занятия', 'module': None}, {'term': 8, 'code_of_type_work': 'Итого часов', 'module': None}, {'term': 8, 'code_of_type_work': 'Практические занятия', 'module': None}]
+Processing group: Программис-1-24
+Found curriculum: Curriculum object (1)
+Found 15 clock cells for semester 2
+Processing discipline: Русский язык, type: Первичная сдача
+Ошибка обновления ведомости: Cannot resolve keyword 'groups' into field. Choices are: course, curriculum, curriculum_id, discipline, discipline_id, group, group_id, id, teachers, term
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 267, in update_grade_book_contingent
+    teacher_link = TeachersForDisciplineAndCurriculum.get_teachers_for_gradebook(
+        discipline=gradebook.discipline,
+        group=gradebook.group,
+        semester=gradebook.semester_number
+    )
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/models/models.py", line 1563, in get_teachers_for_gradebook
+    return cls.objects.filter(
+           ~~~~~~~~~~~~~~~~~~^
+        discipline=discipline,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+        term=local_semester
+        ^^^^^^^^^^^^^^^^^^^
+    ).prefetch_related('teachers').first()
+    ^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1436, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1454, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1461, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1546, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+                ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1577, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ~~~~~~~~~~~~~~~~~^
+        child,
+        ^^^^^^
+    ...<6 lines>...
+        summarize=summarize,
+        ^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1427, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg, summarize)
+                                        ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1237, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+                                ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1725, in names_to_path
+    raise FieldError(
+    ...<2 lines>...
+    )
+django.core.exceptions.FieldError: Cannot resolve keyword 'groups' into field. Choices are: course, curriculum, curriculum_id, discipline, discipline_id, group, group_id, id, teachers, term
+Failed to generate gradebook for Русский язык, group Программис-1-24
+Processing discipline: Литература, type: Первичная сдача
+Ошибка обновления ведомости: Cannot resolve keyword 'groups' into field. Choices are: course, curriculum, curriculum_id, discipline, discipline_id, group, group_id, id, teachers, term
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 267, in update_grade_book_contingent
+    teacher_link = TeachersForDisciplineAndCurriculum.get_teachers_for_gradebook(
+        discipline=gradebook.discipline,
+        group=gradebook.group,
+        semester=gradebook.semester_number
+    )
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/models/models.py", line 1563, in get_teachers_for_gradebook
+    return cls.objects.filter(
+           ~~~~~~~~~~~~~~~~~~^
+        discipline=discipline,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+        term=local_semester
+        ^^^^^^^^^^^^^^^^^^^
+    ).prefetch_related('teachers').first()
+    ^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1436, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1454, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1461, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1546, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+                ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1577, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ~~~~~~~~~~~~~~~~~^
+        child,
+        ^^^^^^
+    ...<6 lines>...
+        summarize=summarize,
+        ^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1427, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg, summarize)
+                                        ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1237, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+                                ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1725, in names_to_path
+    raise FieldError(
+    ...<2 lines>...
+    )
+django.core.exceptions.FieldError: Cannot resolve keyword 'groups' into field. Choices are: course, curriculum, curriculum_id, discipline, discipline_id, group, group_id, id, teachers, term
+Failed to generate gradebook for Литература, group Программис-1-24
+Processing discipline: Иностранный язык, type: Первичная сдача
+Gradebook already exists and not 'Не заполнена' for Иностранный язык
+Processing discipline: Физика, type: Первичная сдача
+Gradebook already exists and not 'Не заполнена' for Физика
+Processing discipline: Химия, type: Первичная сдача
+Ошибка обновления ведомости: Cannot resolve keyword 'groups' into field. Choices are: course, curriculum, curriculum_id, discipline, discipline_id, group, group_id, id, teachers, term
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 267, in update_grade_book_contingent
+    teacher_link = TeachersForDisciplineAndCurriculum.get_teachers_for_gradebook(
+        discipline=gradebook.discipline,
+        group=gradebook.group,
+        semester=gradebook.semester_number
+    )
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/models/models.py", line 1563, in get_teachers_for_gradebook
+    return cls.objects.filter(
+           ~~~~~~~~~~~~~~~~~~^
+        discipline=discipline,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+        term=local_semester
+        ^^^^^^^^^^^^^^^^^^^
+    ).prefetch_related('teachers').first()
+    ^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1436, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1454, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1461, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1546, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+                ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1577, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ~~~~~~~~~~~~~~~~~^
+        child,
+        ^^^^^^
+    ...<6 lines>...
+        summarize=summarize,
+        ^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1427, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg, summarize)
+                                        ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1237, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+                                ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1725, in names_to_path
+    raise FieldError(
+    ...<2 lines>...
+    )
+django.core.exceptions.FieldError: Cannot resolve keyword 'groups' into field. Choices are: course, curriculum, curriculum_id, discipline, discipline_id, group, group_id, id, teachers, term
+Failed to generate gradebook for Химия, group Программис-1-24
+Processing discipline: Биология, type: Первичная сдача
+Ошибка обновления ведомости: Cannot resolve keyword 'groups' into field. Choices are: course, curriculum, curriculum_id, discipline, discipline_id, group, group_id, id, teachers, term
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 267, in update_grade_book_contingent
+    teacher_link = TeachersForDisciplineAndCurriculum.get_teachers_for_gradebook(
+        discipline=gradebook.discipline,
+        group=gradebook.group,
+        semester=gradebook.semester_number
+    )
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/models/models.py", line 1563, in get_teachers_for_gradebook
+    return cls.objects.filter(
+           ~~~~~~~~~~~~~~~~~~^
+        discipline=discipline,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+        term=local_semester
+        ^^^^^^^^^^^^^^^^^^^
+    ).prefetch_related('teachers').first()
+    ^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1436, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1454, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1461, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1546, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+                ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1577, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ~~~~~~~~~~~~~~~~~^
+        child,
+        ^^^^^^
+    ...<6 lines>...
+        summarize=summarize,
+        ^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1427, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg, summarize)
+                                        ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1237, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+                                ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1725, in names_to_path
+    raise FieldError(
+    ...<2 lines>...
+    )
+django.core.exceptions.FieldError: Cannot resolve keyword 'groups' into field. Choices are: course, curriculum, curriculum_id, discipline, discipline_id, group, group_id, id, teachers, term
+Failed to generate gradebook for Биология, group Программис-1-24
+Processing discipline: История, type: Первичная сдача
+Ошибка обновления ведомости: Cannot resolve keyword 'groups' into field. Choices are: course, curriculum, curriculum_id, discipline, discipline_id, group, group_id, id, teachers, term
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 267, in update_grade_book_contingent
+    teacher_link = TeachersForDisciplineAndCurriculum.get_teachers_for_gradebook(
+        discipline=gradebook.discipline,
+        group=gradebook.group,
+        semester=gradebook.semester_number
+    )
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/models/models.py", line 1563, in get_teachers_for_gradebook
+    return cls.objects.filter(
+           ~~~~~~~~~~~~~~~~~~^
+        discipline=discipline,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+        term=local_semester
+        ^^^^^^^^^^^^^^^^^^^
+    ).prefetch_related('teachers').first()
+    ^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1436, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1454, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1461, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1546, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+                ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1577, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ~~~~~~~~~~~~~~~~~^
+        child,
+        ^^^^^^
+    ...<6 lines>...
+        summarize=summarize,
+        ^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1427, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg, summarize)
+                                        ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1237, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+                                ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1725, in names_to_path
+    raise FieldError(
+    ...<2 lines>...
+    )
+django.core.exceptions.FieldError: Cannot resolve keyword 'groups' into field. Choices are: course, curriculum, curriculum_id, discipline, discipline_id, group, group_id, id, teachers, term
+Failed to generate gradebook for История, group Программис-1-24
+Processing discipline: Обществознание, type: Первичная сдача
+Ошибка обновления ведомости: Cannot resolve keyword 'groups' into field. Choices are: course, curriculum, curriculum_id, discipline, discipline_id, group, group_id, id, teachers, term
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 267, in update_grade_book_contingent
+    teacher_link = TeachersForDisciplineAndCurriculum.get_teachers_for_gradebook(
+        discipline=gradebook.discipline,
+        group=gradebook.group,
+        semester=gradebook.semester_number
+    )
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/models/models.py", line 1563, in get_teachers_for_gradebook
+    return cls.objects.filter(
+           ~~~~~~~~~~~~~~~~~~^
+        discipline=discipline,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+        term=local_semester
+        ^^^^^^^^^^^^^^^^^^^
+    ).prefetch_related('teachers').first()
+    ^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1436, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1454, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1461, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1546, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+                ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1577, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ~~~~~~~~~~~~~~~~~^
+        child,
+        ^^^^^^
+    ...<6 lines>...
+        summarize=summarize,
+        ^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1427, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg, summarize)
+                                        ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1237, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+                                ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1725, in names_to_path
+    raise FieldError(
+    ...<2 lines>...
+    )
+django.core.exceptions.FieldError: Cannot resolve keyword 'groups' into field. Choices are: course, curriculum, curriculum_id, discipline, discipline_id, group, group_id, id, teachers, term
+Failed to generate gradebook for Обществознание, group Программис-1-24
+Processing discipline: География, type: Первичная сдача
+Ошибка обновления ведомости: Cannot resolve keyword 'groups' into field. Choices are: course, curriculum, curriculum_id, discipline, discipline_id, group, group_id, id, teachers, term
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 267, in update_grade_book_contingent
+    teacher_link = TeachersForDisciplineAndCurriculum.get_teachers_for_gradebook(
+        discipline=gradebook.discipline,
+        group=gradebook.group,
+        semester=gradebook.semester_number
+    )
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/models/models.py", line 1563, in get_teachers_for_gradebook
+    return cls.objects.filter(
+           ~~~~~~~~~~~~~~~~~~^
+        discipline=discipline,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+        term=local_semester
+        ^^^^^^^^^^^^^^^^^^^
+    ).prefetch_related('teachers').first()
+    ^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1436, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1454, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1461, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1546, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+                ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1577, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ~~~~~~~~~~~~~~~~~^
+        child,
+        ^^^^^^
+    ...<6 lines>...
+        summarize=summarize,
+        ^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1427, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg, summarize)
+                                        ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1237, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+                                ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1725, in names_to_path
+    raise FieldError(
+    ...<2 lines>...
+    )
+django.core.exceptions.FieldError: Cannot resolve keyword 'groups' into field. Choices are: course, curriculum, curriculum_id, discipline, discipline_id, group, group_id, id, teachers, term
+Failed to generate gradebook for География, group Программис-1-24
+Processing discipline: Физическая культура, type: Первичная сдача
+Ошибка обновления ведомости: Cannot resolve keyword 'groups' into field. Choices are: course, curriculum, curriculum_id, discipline, discipline_id, group, group_id, id, teachers, term
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 267, in update_grade_book_contingent
+    teacher_link = TeachersForDisciplineAndCurriculum.get_teachers_for_gradebook(
+        discipline=gradebook.discipline,
+        group=gradebook.group,
+        semester=gradebook.semester_number
+    )
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/models/models.py", line 1563, in get_teachers_for_gradebook
+    return cls.objects.filter(
+           ~~~~~~~~~~~~~~~~~~^
+        discipline=discipline,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+        term=local_semester
+        ^^^^^^^^^^^^^^^^^^^
+    ).prefetch_related('teachers').first()
+    ^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1436, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1454, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1461, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1546, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+                ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1577, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ~~~~~~~~~~~~~~~~~^
+        child,
+        ^^^^^^
+    ...<6 lines>...
+        summarize=summarize,
+        ^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1427, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg, summarize)
+                                        ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1237, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+                                ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1725, in names_to_path
+    raise FieldError(
+    ...<2 lines>...
+    )
+django.core.exceptions.FieldError: Cannot resolve keyword 'groups' into field. Choices are: course, curriculum, curriculum_id, discipline, discipline_id, group, group_id, id, teachers, term
+Failed to generate gradebook for Физическая культура, group Программис-1-24
+Processing discipline: Основы безопасности и защиты Родины, type: Первичная сдача
+Ошибка обновления ведомости: Cannot resolve keyword 'groups' into field. Choices are: course, curriculum, curriculum_id, discipline, discipline_id, group, group_id, id, teachers, term
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 267, in update_grade_book_contingent
+    teacher_link = TeachersForDisciplineAndCurriculum.get_teachers_for_gradebook(
+        discipline=gradebook.discipline,
+        group=gradebook.group,
+        semester=gradebook.semester_number
+    )
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/models/models.py", line 1563, in get_teachers_for_gradebook
+    return cls.objects.filter(
+           ~~~~~~~~~~~~~~~~~~^
+        discipline=discipline,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+        term=local_semester
+        ^^^^^^^^^^^^^^^^^^^
+    ).prefetch_related('teachers').first()
+    ^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1436, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1454, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1461, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1546, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+                ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1577, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ~~~~~~~~~~~~~~~~~^
+        child,
+        ^^^^^^
+    ...<6 lines>...
+        summarize=summarize,
+        ^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1427, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg, summarize)
+                                        ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1237, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+                                ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1725, in names_to_path
+    raise FieldError(
+    ...<2 lines>...
+    )
+django.core.exceptions.FieldError: Cannot resolve keyword 'groups' into field. Choices are: course, curriculum, curriculum_id, discipline, discipline_id, group, group_id, id, teachers, term
+Failed to generate gradebook for Основы безопасности и защиты Родины, group Программис-1-24
+Processing discipline: Математика, type: Первичная сдача
+Ошибка обновления ведомости: Cannot resolve keyword 'groups' into field. Choices are: course, curriculum, curriculum_id, discipline, discipline_id, group, group_id, id, teachers, term
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 267, in update_grade_book_contingent
+    teacher_link = TeachersForDisciplineAndCurriculum.get_teachers_for_gradebook(
+        discipline=gradebook.discipline,
+        group=gradebook.group,
+        semester=gradebook.semester_number
+    )
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/models/models.py", line 1563, in get_teachers_for_gradebook
+    return cls.objects.filter(
+           ~~~~~~~~~~~~~~~~~~^
+        discipline=discipline,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+        term=local_semester
+        ^^^^^^^^^^^^^^^^^^^
+    ).prefetch_related('teachers').first()
+    ^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1436, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1454, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1461, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1546, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+                ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1577, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ~~~~~~~~~~~~~~~~~^
+        child,
+        ^^^^^^
+    ...<6 lines>...
+        summarize=summarize,
+        ^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1427, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg, summarize)
+                                        ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1237, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+                                ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1725, in names_to_path
+    raise FieldError(
+    ...<2 lines>...
+    )
+django.core.exceptions.FieldError: Cannot resolve keyword 'groups' into field. Choices are: course, curriculum, curriculum_id, discipline, discipline_id, group, group_id, id, teachers, term
+Failed to generate gradebook for Математика, group Программис-1-24
+Processing discipline: Информатика, type: Первичная сдача
+Ошибка обновления ведомости: Cannot resolve keyword 'groups' into field. Choices are: course, curriculum, curriculum_id, discipline, discipline_id, group, group_id, id, teachers, term
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 267, in update_grade_book_contingent
+    teacher_link = TeachersForDisciplineAndCurriculum.get_teachers_for_gradebook(
+        discipline=gradebook.discipline,
+        group=gradebook.group,
+        semester=gradebook.semester_number
+    )
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/models/models.py", line 1563, in get_teachers_for_gradebook
+    return cls.objects.filter(
+           ~~~~~~~~~~~~~~~~~~^
+        discipline=discipline,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+        term=local_semester
+        ^^^^^^^^^^^^^^^^^^^
+    ).prefetch_related('teachers').first()
+    ^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1436, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1454, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1461, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1546, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+                ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1577, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ~~~~~~~~~~~~~~~~~^
+        child,
+        ^^^^^^
+    ...<6 lines>...
+        summarize=summarize,
+        ^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1427, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg, summarize)
+                                        ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1237, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+                                ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1725, in names_to_path
+    raise FieldError(
+    ...<2 lines>...
+    )
+django.core.exceptions.FieldError: Cannot resolve keyword 'groups' into field. Choices are: course, curriculum, curriculum_id, discipline, discipline_id, group, group_id, id, teachers, term
+Failed to generate gradebook for Информатика, group Программис-1-24
+Processing discipline: Основы проектной деятельности (включая индивидуальный проект), type: Первичная сдача
+Ошибка обновления ведомости: Cannot resolve keyword 'groups' into field. Choices are: course, curriculum, curriculum_id, discipline, discipline_id, group, group_id, id, teachers, term
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 267, in update_grade_book_contingent
+    teacher_link = TeachersForDisciplineAndCurriculum.get_teachers_for_gradebook(
+        discipline=gradebook.discipline,
+        group=gradebook.group,
+        semester=gradebook.semester_number
+    )
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/models/models.py", line 1563, in get_teachers_for_gradebook
+    return cls.objects.filter(
+           ~~~~~~~~~~~~~~~~~~^
+        discipline=discipline,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+        term=local_semester
+        ^^^^^^^^^^^^^^^^^^^
+    ).prefetch_related('teachers').first()
+    ^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1436, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1454, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1461, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1546, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+                ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1577, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ~~~~~~~~~~~~~~~~~^
+        child,
+        ^^^^^^
+    ...<6 lines>...
+        summarize=summarize,
+        ^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1427, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg, summarize)
+                                        ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1237, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+                                ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1725, in names_to_path
+    raise FieldError(
+    ...<2 lines>...
+    )
+django.core.exceptions.FieldError: Cannot resolve keyword 'groups' into field. Choices are: course, curriculum, curriculum_id, discipline, discipline_id, group, group_id, id, teachers, term
+Failed to generate gradebook for Основы проектной деятельности (включая индивидуальный проект), group Программис-1-24
+Processing discipline: Введение в специальность (включая индивидуальный проект), type: Первичная сдача
+Ошибка обновления ведомости: Cannot resolve keyword 'groups' into field. Choices are: course, curriculum, curriculum_id, discipline, discipline_id, group, group_id, id, teachers, term
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 267, in update_grade_book_contingent
+    teacher_link = TeachersForDisciplineAndCurriculum.get_teachers_for_gradebook(
+        discipline=gradebook.discipline,
+        group=gradebook.group,
+        semester=gradebook.semester_number
+    )
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/models/models.py", line 1563, in get_teachers_for_gradebook
+    return cls.objects.filter(
+           ~~~~~~~~~~~~~~~~~~^
+        discipline=discipline,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    ...<3 lines>...
+        term=local_semester
+        ^^^^^^^^^^^^^^^^^^^
+    ).prefetch_related('teachers').first()
+    ^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1436, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1454, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1461, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1546, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+                ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1577, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ~~~~~~~~~~~~~~~~~^
+        child,
+        ^^^^^^
+    ...<6 lines>...
+        summarize=summarize,
+        ^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1427, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg, summarize)
+                                        ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1237, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+                                ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/query.py", line 1725, in names_to_path
+    raise FieldError(
+    ...<2 lines>...
+    )
+django.core.exceptions.FieldError: Cannot resolve keyword 'groups' into field. Choices are: course, curriculum, curriculum_id, discipline, discipline_id, group, group_id, id, teachers, term
+Failed to generate gradebook for Введение в специальность (включая индивидуальный проект), group Программис-1-24
+/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/models/models.py changed, reloading.
+Watching for file changes with StatReloader
+Processing group: Программис-1-24
+Found curriculum: Curriculum object (1)
+Found 15 clock cells for semester 2
+Processing discipline: Русский язык, type: Первичная сдача
+Ошибка обновления ведомости: no such column: Academhub_teachersfordisciplineandcurriculum.group_id
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 328, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such column: Academhub_teachersfordisciplineandcurriculum.group_id
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 267, in update_grade_book_contingent
+    teacher_link = TeachersForDisciplineAndCurriculum.get_teachers_for_gradebook(
+        discipline=gradebook.discipline,
+        group=gradebook.group,
+        semester=gradebook.semester_number
+    )
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/models/models.py", line 1569, in get_teachers_for_gradebook
+    ).prefetch_related('teachers').first()
+                                   ~~~~~^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1057, in first
+    for obj in queryset[:1]:
+               ~~~~~~~~^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 398, in __iter__
+    self._fetch_all()
+    ~~~~~~~~~~~~~~~^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1881, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 91, in __iter__
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 102, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 80, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 84, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 328, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such column: Academhub_teachersfordisciplineandcurriculum.group_id
+Failed to generate gradebook for Русский язык, group Программис-1-24
+Processing discipline: Литература, type: Первичная сдача
+Ошибка обновления ведомости: no such column: Academhub_teachersfordisciplineandcurriculum.group_id
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 328, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such column: Academhub_teachersfordisciplineandcurriculum.group_id
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 267, in update_grade_book_contingent
+    teacher_link = TeachersForDisciplineAndCurriculum.get_teachers_for_gradebook(
+        discipline=gradebook.discipline,
+        group=gradebook.group,
+        semester=gradebook.semester_number
+    )
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/models/models.py", line 1569, in get_teachers_for_gradebook
+    ).prefetch_related('teachers').first()
+                                   ~~~~~^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1057, in first
+    for obj in queryset[:1]:
+               ~~~~~~~~^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 398, in __iter__
+    self._fetch_all()
+    ~~~~~~~~~~~~~~~^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1881, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 91, in __iter__
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 102, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 80, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 84, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 328, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such column: Academhub_teachersfordisciplineandcurriculum.group_id
+Failed to generate gradebook for Литература, group Программис-1-24
+Processing discipline: Иностранный язык, type: Первичная сдача
+Gradebook already exists and not 'Не заполнена' for Иностранный язык
+Processing discipline: Физика, type: Первичная сдача
+Gradebook already exists and not 'Не заполнена' for Физика
+Processing discipline: Химия, type: Первичная сдача
+Ошибка обновления ведомости: no such column: Academhub_teachersfordisciplineandcurriculum.group_id
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 328, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such column: Academhub_teachersfordisciplineandcurriculum.group_id
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 267, in update_grade_book_contingent
+    teacher_link = TeachersForDisciplineAndCurriculum.get_teachers_for_gradebook(
+        discipline=gradebook.discipline,
+        group=gradebook.group,
+        semester=gradebook.semester_number
+    )
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/models/models.py", line 1569, in get_teachers_for_gradebook
+    ).prefetch_related('teachers').first()
+                                   ~~~~~^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1057, in first
+    for obj in queryset[:1]:
+               ~~~~~~~~^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 398, in __iter__
+    self._fetch_all()
+    ~~~~~~~~~~~~~~~^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1881, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 91, in __iter__
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 102, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 80, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 84, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 328, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such column: Academhub_teachersfordisciplineandcurriculum.group_id
+Failed to generate gradebook for Химия, group Программис-1-24
+Processing discipline: Биология, type: Первичная сдача
+Ошибка обновления ведомости: no such column: Academhub_teachersfordisciplineandcurriculum.group_id
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 328, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such column: Academhub_teachersfordisciplineandcurriculum.group_id
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 267, in update_grade_book_contingent
+    teacher_link = TeachersForDisciplineAndCurriculum.get_teachers_for_gradebook(
+        discipline=gradebook.discipline,
+        group=gradebook.group,
+        semester=gradebook.semester_number
+    )
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/models/models.py", line 1569, in get_teachers_for_gradebook
+    ).prefetch_related('teachers').first()
+                                   ~~~~~^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1057, in first
+    for obj in queryset[:1]:
+               ~~~~~~~~^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 398, in __iter__
+    self._fetch_all()
+    ~~~~~~~~~~~~~~~^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1881, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 91, in __iter__
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 102, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 80, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 84, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 328, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such column: Academhub_teachersfordisciplineandcurriculum.group_id
+Failed to generate gradebook for Биология, group Программис-1-24
+Processing discipline: История, type: Первичная сдача
+Ошибка обновления ведомости: no such column: Academhub_teachersfordisciplineandcurriculum.group_id
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 328, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such column: Academhub_teachersfordisciplineandcurriculum.group_id
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 267, in update_grade_book_contingent
+    teacher_link = TeachersForDisciplineAndCurriculum.get_teachers_for_gradebook(
+        discipline=gradebook.discipline,
+        group=gradebook.group,
+        semester=gradebook.semester_number
+    )
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/models/models.py", line 1569, in get_teachers_for_gradebook
+    ).prefetch_related('teachers').first()
+                                   ~~~~~^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1057, in first
+    for obj in queryset[:1]:
+               ~~~~~~~~^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 398, in __iter__
+    self._fetch_all()
+    ~~~~~~~~~~~~~~~^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1881, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 91, in __iter__
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 102, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 80, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 84, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 328, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such column: Academhub_teachersfordisciplineandcurriculum.group_id
+Failed to generate gradebook for История, group Программис-1-24
+Processing discipline: Обществознание, type: Первичная сдача
+Ошибка обновления ведомости: no such column: Academhub_teachersfordisciplineandcurriculum.group_id
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 328, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such column: Academhub_teachersfordisciplineandcurriculum.group_id
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 267, in update_grade_book_contingent
+    teacher_link = TeachersForDisciplineAndCurriculum.get_teachers_for_gradebook(
+        discipline=gradebook.discipline,
+        group=gradebook.group,
+        semester=gradebook.semester_number
+    )
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/models/models.py", line 1569, in get_teachers_for_gradebook
+    ).prefetch_related('teachers').first()
+                                   ~~~~~^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1057, in first
+    for obj in queryset[:1]:
+               ~~~~~~~~^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 398, in __iter__
+    self._fetch_all()
+    ~~~~~~~~~~~~~~~^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1881, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 91, in __iter__
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 102, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 80, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 84, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 328, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such column: Academhub_teachersfordisciplineandcurriculum.group_id
+Failed to generate gradebook for Обществознание, group Программис-1-24
+Processing discipline: География, type: Первичная сдача
+Ошибка обновления ведомости: no such column: Academhub_teachersfordisciplineandcurriculum.group_id
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 328, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such column: Academhub_teachersfordisciplineandcurriculum.group_id
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 267, in update_grade_book_contingent
+    teacher_link = TeachersForDisciplineAndCurriculum.get_teachers_for_gradebook(
+        discipline=gradebook.discipline,
+        group=gradebook.group,
+        semester=gradebook.semester_number
+    )
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/models/models.py", line 1569, in get_teachers_for_gradebook
+    ).prefetch_related('teachers').first()
+                                   ~~~~~^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1057, in first
+    for obj in queryset[:1]:
+               ~~~~~~~~^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 398, in __iter__
+    self._fetch_all()
+    ~~~~~~~~~~~~~~~^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1881, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 91, in __iter__
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 102, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 80, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 84, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 328, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such column: Academhub_teachersfordisciplineandcurriculum.group_id
+Failed to generate gradebook for География, group Программис-1-24
+Processing discipline: Физическая культура, type: Первичная сдача
+Ошибка обновления ведомости: no such column: Academhub_teachersfordisciplineandcurriculum.group_id
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 328, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such column: Academhub_teachersfordisciplineandcurriculum.group_id
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 267, in update_grade_book_contingent
+    teacher_link = TeachersForDisciplineAndCurriculum.get_teachers_for_gradebook(
+        discipline=gradebook.discipline,
+        group=gradebook.group,
+        semester=gradebook.semester_number
+    )
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/models/models.py", line 1569, in get_teachers_for_gradebook
+    ).prefetch_related('teachers').first()
+                                   ~~~~~^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1057, in first
+    for obj in queryset[:1]:
+               ~~~~~~~~^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 398, in __iter__
+    self._fetch_all()
+    ~~~~~~~~~~~~~~~^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1881, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 91, in __iter__
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 102, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 80, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 84, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 328, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such column: Academhub_teachersfordisciplineandcurriculum.group_id
+Failed to generate gradebook for Физическая культура, group Программис-1-24
+Processing discipline: Основы безопасности и защиты Родины, type: Первичная сдача
+Ошибка обновления ведомости: no such column: Academhub_teachersfordisciplineandcurriculum.group_id
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 328, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such column: Academhub_teachersfordisciplineandcurriculum.group_id
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 267, in update_grade_book_contingent
+    teacher_link = TeachersForDisciplineAndCurriculum.get_teachers_for_gradebook(
+        discipline=gradebook.discipline,
+        group=gradebook.group,
+        semester=gradebook.semester_number
+    )
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/models/models.py", line 1569, in get_teachers_for_gradebook
+    ).prefetch_related('teachers').first()
+                                   ~~~~~^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1057, in first
+    for obj in queryset[:1]:
+               ~~~~~~~~^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 398, in __iter__
+    self._fetch_all()
+    ~~~~~~~~~~~~~~~^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1881, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 91, in __iter__
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 102, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 80, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 84, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 328, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such column: Academhub_teachersfordisciplineandcurriculum.group_id
+Failed to generate gradebook for Основы безопасности и защиты Родины, group Программис-1-24
+Processing discipline: Математика, type: Первичная сдача
+Ошибка обновления ведомости: no such column: Academhub_teachersfordisciplineandcurriculum.group_id
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 328, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such column: Academhub_teachersfordisciplineandcurriculum.group_id
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 267, in update_grade_book_contingent
+    teacher_link = TeachersForDisciplineAndCurriculum.get_teachers_for_gradebook(
+        discipline=gradebook.discipline,
+        group=gradebook.group,
+        semester=gradebook.semester_number
+    )
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/models/models.py", line 1569, in get_teachers_for_gradebook
+    ).prefetch_related('teachers').first()
+                                   ~~~~~^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1057, in first
+    for obj in queryset[:1]:
+               ~~~~~~~~^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 398, in __iter__
+    self._fetch_all()
+    ~~~~~~~~~~~~~~~^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1881, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 91, in __iter__
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 102, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 80, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 84, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 328, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such column: Academhub_teachersfordisciplineandcurriculum.group_id
+Failed to generate gradebook for Математика, group Программис-1-24
+Processing discipline: Информатика, type: Первичная сдача
+Ошибка обновления ведомости: no such column: Academhub_teachersfordisciplineandcurriculum.group_id
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 328, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such column: Academhub_teachersfordisciplineandcurriculum.group_id
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 267, in update_grade_book_contingent
+    teacher_link = TeachersForDisciplineAndCurriculum.get_teachers_for_gradebook(
+        discipline=gradebook.discipline,
+        group=gradebook.group,
+        semester=gradebook.semester_number
+    )
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/models/models.py", line 1569, in get_teachers_for_gradebook
+    ).prefetch_related('teachers').first()
+                                   ~~~~~^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1057, in first
+    for obj in queryset[:1]:
+               ~~~~~~~~^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 398, in __iter__
+    self._fetch_all()
+    ~~~~~~~~~~~~~~~^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1881, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 91, in __iter__
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 102, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 80, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 84, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 328, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such column: Academhub_teachersfordisciplineandcurriculum.group_id
+Failed to generate gradebook for Информатика, group Программис-1-24
+Processing discipline: Основы проектной деятельности (включая индивидуальный проект), type: Первичная сдача
+Ошибка обновления ведомости: no such column: Academhub_teachersfordisciplineandcurriculum.group_id
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 328, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such column: Academhub_teachersfordisciplineandcurriculum.group_id
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 267, in update_grade_book_contingent
+    teacher_link = TeachersForDisciplineAndCurriculum.get_teachers_for_gradebook(
+        discipline=gradebook.discipline,
+        group=gradebook.group,
+        semester=gradebook.semester_number
+    )
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/models/models.py", line 1569, in get_teachers_for_gradebook
+    ).prefetch_related('teachers').first()
+                                   ~~~~~^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1057, in first
+    for obj in queryset[:1]:
+               ~~~~~~~~^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 398, in __iter__
+    self._fetch_all()
+    ~~~~~~~~~~~~~~~^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1881, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 91, in __iter__
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 102, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 80, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 84, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 328, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such column: Academhub_teachersfordisciplineandcurriculum.group_id
+Failed to generate gradebook for Основы проектной деятельности (включая индивидуальный проект), group Программис-1-24
+Processing discipline: Введение в специальность (включая индивидуальный проект), type: Первичная сдача
+Ошибка обновления ведомости: no such column: Academhub_teachersfordisciplineandcurriculum.group_id
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 328, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such column: Academhub_teachersfordisciplineandcurriculum.group_id
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Gradebook/views.py", line 267, in update_grade_book_contingent
+    teacher_link = TeachersForDisciplineAndCurriculum.get_teachers_for_gradebook(
+        discipline=gradebook.discipline,
+        group=gradebook.group,
+        semester=gradebook.semester_number
+    )
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/Academhub/Academhub/models/models.py", line 1569, in get_teachers_for_gradebook
+    ).prefetch_related('teachers').first()
+                                   ~~~~~^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1057, in first
+    for obj in queryset[:1]:
+               ~~~~~~~~^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 398, in __iter__
+    self._fetch_all()
+    ~~~~~~~~~~~~~~~^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 1881, in _fetch_all
+    self._result_cache = list(self._iterable_class(self))
+                         ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/query.py", line 91, in __iter__
+    results = compiler.execute_sql(
+        chunked_fetch=self.chunked_fetch, chunk_size=self.chunk_size
+    )
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 1562, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 102, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 67, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 80, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 84, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 89, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/anastasiaoreskina/Desktop/AcademHub/.venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 328, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such column: Academhub_teachersfordisciplineandcurriculum.group_id
+Failed to generate gradebook for Введение в специальность (включая индивидуальный проект), group Программис-1-24
+Watching for file changes with StatReloader
+Not Found: /favicon.ico
+Watching for file changes with StatReloader
+Not Found: /favicon.ico
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9+%D1%8F%D0%B7%D1%8B%D0%BA&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%9B%D0%B8%D1%82%D0%B5%D1%80%D0%B0%D1%82%D1%83%D1%80%D0%B0&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%98%D0%BD%D0%BE%D1%81%D1%82%D1%80%D0%B0%D0%BD%D0%BD%D1%8B%D0%B9+%D1%8F%D0%B7%D1%8B%D0%BA&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%A4%D0%B8%D0%B7%D0%B8%D0%BA%D0%B0&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%A5%D0%B8%D0%BC%D0%B8%D1%8F&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%91%D0%B8%D0%BE%D0%BB%D0%BE%D0%B3%D0%B8%D1%8F&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%98%D1%81%D1%82%D0%BE%D1%80%D0%B8%D1%8F&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%9E%D0%B1%D1%89%D0%B5%D1%81%D1%82%D0%B2%D0%BE%D0%B7%D0%BD%D0%B0%D0%BD%D0%B8%D0%B5&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%93%D0%B5%D0%BE%D0%B3%D1%80%D0%B0%D1%84%D0%B8%D1%8F&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%A4%D0%B8%D0%B7%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B0%D1%8F+%D0%BA%D1%83%D0%BB%D1%8C%D1%82%D1%83%D1%80%D0%B0&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%9E%D1%81%D0%BD%D0%BE%D0%B2%D1%8B+%D0%B1%D0%B5%D0%B7%D0%BE%D0%BF%D0%B0%D1%81%D0%BD%D0%BE%D1%81%D1%82%D0%B8+%D0%B8+%D0%B7%D0%B0%D1%89%D0%B8%D1%82%D1%8B+%D0%A0%D0%BE%D0%B4%D0%B8%D0%BD%D1%8B&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%9C%D0%B0%D1%82%D0%B5%D0%BC%D0%B0%D1%82%D0%B8%D0%BA%D0%B0&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%98%D0%BD%D1%84%D0%BE%D1%80%D0%BC%D0%B0%D1%82%D0%B8%D0%BA%D0%B0&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%9E%D1%81%D0%BD%D0%BE%D0%B2%D1%8B+%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82%D0%BD%D0%BE%D0%B9+%D0%B4%D0%B5%D1%8F%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D0%BE%D1%81%D1%82%D0%B8+%28%D0%B2%D0%BA%D0%BB%D1%8E%D1%87%D0%B0%D1%8F+%D0%B8%D0%BD%D0%B4%D0%B8%D0%B2%D0%B8%D0%B4%D1%83%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82%29&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%92%D0%B2%D0%B5%D0%B4%D0%B5%D0%BD%D0%B8%D0%B5+%D0%B2+%D1%81%D0%BF%D0%B5%D1%86%D0%B8%D0%B0%D0%BB%D1%8C%D0%BD%D0%BE%D1%81%D1%82%D1%8C+%28%D0%B2%D0%BA%D0%BB%D1%8E%D1%87%D0%B0%D1%8F+%D0%B8%D0%BD%D0%B4%D0%B8%D0%B2%D0%B8%D0%B4%D1%83%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82%29&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%AD%D0%BA%D0%B7%D0%B0%D0%BC%D0%B5%D0%BD+%D0%BF%D0%BE+%D0%BF%D1%80%D0%BE%D1%84%D0%B5%D1%81%D1%81%D0%B8%D0%BE%D0%BD%D0%B0%D0%BB%D1%8C%D0%BD%D0%BE%D0%BC%D1%83+%D0%BC%D0%BE%D0%B4%D1%83%D0%BB%D1%8E&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%A0%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%BA%D0%B0+%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%BD%D1%8B%D1%85+%D0%BC%D0%BE%D0%B4%D1%83%D0%BB%D0%B5%D0%B9&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%9F%D0%BE%D0%B4%D0%B4%D0%B5%D1%80%D0%B6%D0%BA%D0%B0+%D0%B8+%D1%82%D0%B5%D1%81%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5+%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%BD%D1%8B%D1%85+%D0%BC%D0%BE%D0%B4%D1%83%D0%BB%D0%B5%D0%B9&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%A0%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%BA%D0%B0+%D0%BC%D0%BE%D0%B1%D0%B8%D0%BB%D1%8C%D0%BD%D1%8B%D1%85+%D0%BF%D1%80%D0%B8%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D0%B9&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%A1%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D0%BD%D0%BE%D0%B5+%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%A3%D1%87%D0%B5%D0%B1%D0%BD%D0%B0%D1%8F+%D0%BF%D1%80%D0%B0%D0%BA%D1%82%D0%B8%D0%BA%D0%B0&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%9F%D1%80%D0%BE%D0%B8%D0%B7%D0%B2%D0%BE%D0%B4%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D0%B0%D1%8F+%D0%BF%D1%80%D0%B0%D0%BA%D1%82%D0%B8%D0%BA%D0%B0&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%A2%D0%B5%D1%85%D0%BD%D0%BE%D0%BB%D0%BE%D0%B3%D0%B8%D1%8F+%D1%80%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%BA%D0%B8+%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%BD%D0%BE%D0%B3%D0%BE+%D0%BE%D0%B1%D0%B5%D1%81%D0%BF%D0%B5%D1%87%D0%B5%D0%BD%D0%B8%D1%8F&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%98%D0%BD%D1%81%D1%82%D1%80%D1%83%D0%BC%D0%B5%D0%BD%D1%82%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B5+%D1%81%D1%80%D0%B5%D0%B4%D1%81%D1%82%D0%B2%D0%B0+%D1%80%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%BA%D0%B8+%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%BD%D0%BE%D0%B3%D0%BE+%D0%BE%D0%B1%D0%B5%D1%81%D0%BF%D0%B5%D1%87%D0%B5%D0%BD%D0%B8%D1%8F&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%9C%D0%B0%D1%82%D0%B5%D0%BC%D0%B0%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%BE%D0%B5+%D0%BC%D0%BE%D0%B4%D0%B5%D0%BB%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%92%D0%BD%D0%B5%D0%B4%D1%80%D0%B5%D0%BD%D0%B8%D0%B5+%D0%B8+%D0%BF%D0%BE%D0%B4%D0%B4%D0%B5%D1%80%D0%B6%D0%BA%D0%B0+%D0%BA%D0%BE%D0%BC%D0%BF%D1%8C%D1%8E%D1%82%D0%B5%D1%80%D0%BD%D1%8B%D1%85+%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%9E%D0%B1%D0%B5%D1%81%D0%BF%D0%B5%D1%87%D0%B5%D0%BD%D0%B8%D0%B5+%D0%BA%D0%B0%D1%87%D0%B5%D1%81%D1%82%D0%B2%D0%B0+%D1%84%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D0%BE%D0%BD%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F+%D0%BA%D0%BE%D0%BC%D0%BF%D1%8C%D1%8E%D1%82%D0%B5%D1%80%D0%BD%D1%8B%D1%85+%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%A2%D0%B5%D1%85%D0%BD%D0%BE%D0%BB%D0%BE%D0%B3%D0%B8%D1%8F+%D1%80%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%BA%D0%B8+%D0%B8+%D0%B7%D0%B0%D1%89%D0%B8%D1%82%D1%8B+%D0%B1%D0%B0%D0%B7+%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%A0%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%BA%D0%B0+%D0%B8+%D0%BE%D1%82%D0%BB%D0%B0%D0%B4%D0%BA%D0%B0+%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%BD%D0%BE%D0%B3%D0%BE+%D0%BE%D0%B1%D0%B5%D1%81%D0%BF%D0%B5%D1%87%D0%B5%D0%BD%D0%B8%D1%8F+%D1%83%D1%81%D1%82%D1%80%D0%BE%D0%B9%D1%81%D1%82%D0%B2+%D0%BF%D1%80%D0%BE%D0%BC%D1%8B%D1%88%D0%BB%D0%B5%D0%BD%D0%BD%D0%BE%D0%B3%D0%BE+%D0%B8%D0%BD%D1%82%D0%B5%D1%80%D0%BD%D0%B5%D1%82%D0%B0+%D0%B2%D0%B5%D1%89%D0%B5%D0%B9&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%9E%D1%81%D0%BD%D0%BE%D0%B2%D1%8B+%D1%84%D0%B8%D0%BB%D0%BE%D1%81%D0%BE%D1%84%D0%B8%D0%B8&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%9F%D1%81%D0%B8%D1%85%D0%BE%D0%BB%D0%BE%D0%B3%D0%B8%D1%8F+%D0%BE%D0%B1%D1%89%D0%B5%D0%BD%D0%B8%D1%8F&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%98%D0%BD%D0%BE%D1%81%D1%82%D1%80%D0%B0%D0%BD%D0%BD%D1%8B%D0%B9+%D1%8F%D0%B7%D1%8B%D0%BA+%D0%B2+%D0%BF%D1%80%D0%BE%D1%84%D0%B5%D1%81%D1%81%D0%B8%D0%BE%D0%BD%D0%B0%D0%BB%D1%8C%D0%BD%D0%BE%D0%B9+%D0%B4%D0%B5%D1%8F%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D0%BE%D1%81%D1%82%D0%B8&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%AD%D0%BB%D0%B5%D0%BC%D0%B5%D0%BD%D1%82%D1%8B+%D0%B2%D1%8B%D1%81%D1%88%D0%B5%D0%B9+%D0%BC%D0%B0%D1%82%D0%B5%D0%BC%D0%B0%D1%82%D0%B8%D0%BA%D0%B8&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%94%D0%B8%D1%81%D0%BA%D1%80%D0%B5%D1%82%D0%BD%D0%B0%D1%8F+%D0%BC%D0%B0%D1%82%D0%B5%D0%BC%D0%B0%D1%82%D0%B8%D0%BA%D0%B0+%D1%81+%D1%8D%D0%BB%D0%B5%D0%BC%D0%B5%D0%BD%D1%82%D0%B0%D0%BC%D0%B8+%D0%BC%D0%B0%D1%82%D0%B5%D0%BC%D0%B0%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%BE%D0%B9+%D0%BB%D0%BE%D0%B3%D0%B8%D0%BA%D0%B8&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%A2%D0%B5%D0%BE%D1%80%D0%B8%D1%8F+%D0%B2%D0%B5%D1%80%D0%BE%D1%8F%D1%82%D0%BD%D0%BE%D1%81%D1%82%D0%B5%D0%B9+%D0%B8+%D0%BC%D0%B0%D1%82%D0%B5%D0%BC%D0%B0%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B0%D1%8F+%D1%81%D1%82%D0%B0%D1%82%D0%B8%D1%81%D1%82%D0%B8%D0%BA%D0%B0&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%9E%D0%BF%D0%B5%D1%80%D0%B0%D1%86%D0%B8%D0%BE%D0%BD%D0%BD%D1%8B%D0%B5+%D1%81%D0%B8%D1%81%D1%82%D0%B5%D0%BC%D1%8B+%D0%B8+%D1%81%D1%80%D0%B5%D0%B4%D1%8B&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%90%D1%80%D1%85%D0%B8%D1%82%D0%B5%D0%BA%D1%82%D1%83%D1%80%D0%B0+%D0%B0%D0%BF%D0%BF%D0%B0%D1%80%D0%B0%D1%82%D0%BD%D1%8B%D1%85+%D1%81%D1%80%D0%B5%D0%B4%D1%81%D1%82%D0%B2&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%98%D0%BD%D1%84%D0%BE%D1%80%D0%BC%D0%B0%D1%86%D0%B8%D0%BE%D0%BD%D0%BD%D1%8B%D0%B5+%D1%82%D0%B5%D1%85%D0%BD%D0%BE%D0%BB%D0%BE%D0%B3%D0%B8%D0%B8&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%9E%D1%81%D0%BD%D0%BE%D0%B2%D1%8B+%D0%B0%D0%BB%D0%B3%D0%BE%D1%80%D0%B8%D1%82%D0%BC%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D0%B8+%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%9F%D1%80%D0%B0%D0%B2%D0%BE%D0%B2%D0%BE%D0%B5+%D0%BE%D0%B1%D0%B5%D1%81%D0%BF%D0%B5%D1%87%D0%B5%D0%BD%D0%B8%D0%B5+%D0%BF%D1%80%D0%BE%D1%84%D0%B5%D1%81%D1%81%D0%B8%D0%BE%D0%BD%D0%B0%D0%BB%D1%8C%D0%BD%D0%BE%D0%B9+%D0%B4%D0%B5%D1%8F%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D0%BE%D1%81%D1%82%D0%B8&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%91%D0%B5%D0%B7%D0%BE%D0%BF%D0%B0%D1%81%D0%BD%D0%BE%D1%81%D1%82%D1%8C+%D0%B6%D0%B8%D0%B7%D0%BD%D0%B5%D0%B4%D0%B5%D1%8F%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D0%BE%D1%81%D1%82%D0%B8&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%AD%D0%BA%D0%BE%D0%BD%D0%BE%D0%BC%D0%B8%D0%BA%D0%B0+%D0%BE%D1%82%D1%80%D0%B0%D1%81%D0%BB%D0%B8&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%9E%D1%81%D0%BD%D0%BE%D0%B2%D1%8B+%D0%BF%D1%80%D0%BE%D0%B5%D0%BA%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F+%D0%B1%D0%B0%D0%B7+%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%A1%D1%82%D0%B0%D0%BD%D0%B4%D0%B0%D1%80%D1%82%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D1%8F%2C+%D1%81%D0%B5%D1%80%D1%82%D0%B8%D1%84%D0%B8%D0%BA%D0%B0%D1%86%D0%B8%D1%8F+%D0%B8+%D1%82%D0%B5%D1%85%D0%BD%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%BE%D0%B5+%D0%B4%D0%BE%D0%BA%D1%83%D0%BC%D0%B5%D0%BD%D1%82%D0%BE%D0%B2%D0%B5%D0%B4%D0%B5%D0%BD%D0%B8%D0%B5&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%A7%D0%B8%D1%81%D0%BB%D0%B5%D0%BD%D0%BD%D1%8B%D0%B5+%D0%BC%D0%B5%D1%82%D0%BE%D0%B4%D1%8B&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%9A%D0%BE%D0%BC%D0%BF%D1%8C%D1%8E%D1%82%D0%B5%D1%80%D0%BD%D1%8B%D0%B5+%D1%81%D0%B5%D1%82%D0%B8&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%9C%D0%B5%D0%BD%D0%B5%D0%B4%D0%B6%D0%BC%D0%B5%D0%BD%D1%82+%D0%B2+%D0%BF%D1%80%D0%BE%D1%84%D0%B5%D1%81%D1%81%D0%B8%D0%BE%D0%BD%D0%B0%D0%BB%D1%8C%D0%BD%D0%BE%D0%B9+%D0%B4%D0%B5%D1%8F%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D0%BE%D1%81%D1%82%D0%B8&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%9F%D0%A0%D0%9E%D0%98%D0%97%D0%92%D0%9E%D0%94%D0%A1%D0%A2%D0%92%D0%95%D0%9D%D0%9D%D0%90%D0%AF+%D0%9F%D0%A0%D0%90%D0%9A%D0%A2%D0%98%D0%9A%D0%90+%28%D0%9F%D0%A0%D0%95%D0%94%D0%94%D0%98%D0%9F%D0%9B%D0%9E%D0%9C%D0%9D%D0%90%D0%AF%29&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%9F%D0%BE%D0%B4%D0%B3%D0%BE%D1%82%D0%BE%D0%B2%D0%BA%D0%B0+%D0%B2%D1%8B%D0%BF%D1%83%D1%81%D0%BA%D0%BD%D0%BE%D0%B9+%D0%BA%D0%B2%D0%B0%D0%BB%D0%B8%D1%84%D0%B8%D0%BA%D0%B0%D1%86%D0%B8%D0%BE%D0%BD%D0%BD%D0%BE%D0%B9+%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%8B&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%97%D0%B0%D1%89%D0%B8%D1%82%D0%B0+%D0%B2%D1%8B%D0%BF%D1%83%D1%81%D0%BA%D0%BD%D0%BE%D0%B9+%D0%BA%D0%B2%D0%B0%D0%BB%D0%B8%D1%84%D0%B8%D0%BA%D0%B0%D1%86%D0%B8%D0%BE%D0%BD%D0%BD%D0%BE%D0%B9+%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%8B&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%9F%D0%BE%D0%B4%D0%B3%D0%BE%D1%82%D0%BE%D0%B2%D0%BA%D0%B0+%D0%BA+%D0%B3%D0%BE%D1%81%D1%83%D0%B4%D0%B0%D1%80%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D0%BC+%D1%8D%D0%BA%D0%B7%D0%B0%D0%BC%D0%B5%D0%BD%D0%B0%D0%BC&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Starting new HTTPS connection (1): speller.yandex.net:443
+https://speller.yandex.net:443 "POST /services/spellservice.json/checkText HTTP/1.1" 200 2
+https://speller.yandex.net/services/spellservice.json/checkText?text=%D0%9F%D1%80%D0%BE%D0%B2%D0%B5%D0%B4%D0%B5%D0%BD%D0%B8%D0%B5+%D0%B3%D0%BE%D1%81%D1%83%D0%B4%D0%B0%D1%80%D1%81%D1%82%D0%B2%D0%B5%D0%BD%D0%BD%D1%8B%D1%85+%D1%8D%D0%BA%D0%B7%D0%B0%D0%BC%D0%B5%D0%BD%D0%BE%D0%B2&options=0&lang=en%2Cru%2Cuk&format=plain
+response: []
+Watching for file changes with StatReloader
+Processing group: П-1-24
+Found curriculum: Curriculum object (1)
+Found 15 clock cells for semester 2
+Processing discipline: Русский язык, type: Первичная сдача
+Generated gradebook for Русский язык, group П-1-24
+Processing discipline: Литература, type: Первичная сдача
+Generated gradebook for Литература, group П-1-24
+Processing discipline: Иностранный язык, type: Первичная сдача
+Generated gradebook for Иностранный язык, group П-1-24
+Processing discipline: Физика, type: Первичная сдача
+Generated gradebook for Физика, group П-1-24
+Processing discipline: Химия, type: Первичная сдача
+Generated gradebook for Химия, group П-1-24
+Processing discipline: Биология, type: Первичная сдача
+Generated gradebook for Биология, group П-1-24
+Processing discipline: История, type: Первичная сдача
+Generated gradebook for История, group П-1-24
+Processing discipline: Обществознание, type: Первичная сдача
+Generated gradebook for Обществознание, group П-1-24
+Processing discipline: География, type: Первичная сдача
+Generated gradebook for География, group П-1-24
+Processing discipline: Физическая культура, type: Первичная сдача
+Generated gradebook for Физическая культура, group П-1-24
+Processing discipline: Основы безопасности и защиты Родины, type: Первичная сдача
+Generated gradebook for Основы безопасности и защиты Родины, group П-1-24
+Processing discipline: Математика, type: Первичная сдача
+Generated gradebook for Математика, group П-1-24
+Processing discipline: Информатика, type: Первичная сдача
+Generated gradebook for Информатика, group П-1-24
+Processing discipline: Основы проектной деятельности (включая индивидуальный проект), type: Первичная сдача
+Generated gradebook for Основы проектной деятельности (включая индивидуальный проект), group П-1-24
+Processing discipline: Введение в специальность (включая индивидуальный проект), type: Первичная сдача
+Generated gradebook for Введение в специальность (включая индивидуальный проект), group П-1-24
+Watching for file changes with StatReloader
+Processing group: П-1-24
+Fetching disciplines for group П-1-24
+Adding 44 hours for Русский язык
+Adding 34 hours for Русский язык
+Adding 69 hours for Литература
+Adding 34 hours for Литература
+Adding 46 hours for Иностранный язык
+Adding 34 hours for Иностранный язык
+Adding 77 hours for Физика
+Adding 68 hours for Физика
+Adding 23 hours for Химия
+Adding 17 hours for Химия
+Adding 46 hours for Биология
+Adding 17 hours for Биология
+Adding 69 hours for История
+Adding 68 hours for История
+Adding 46 hours for Обществознание
+Adding 34 hours for Обществознание
+Adding 23 hours for География
+Adding 17 hours for География
+Adding 46 hours for Физическая культура
+Adding 34 hours for Физическая культура
+Adding 46 hours for Основы безопасности и защиты Родины
+Adding 34 hours for Основы безопасности и защиты Родины
+Adding 204 hours for Математика
+Adding 136 hours for Математика
+Adding 102 hours for Информатика
+Adding 68 hours for Информатика
+Adding 23 hours for Основы проектной деятельности (включая индивидуальный проект)
+Adding 17 hours for Основы проектной деятельности (включая индивидуальный проект)
+Adding 23 hours for Введение в специальность (включая индивидуальный проект)
+Adding 17 hours for Введение в специальность (включая индивидуальный проект)
+Using module Разработка модулей программного обеспечения для компьютерных систем for discipline Экзамен по профессиональному модулю: 68 hours
+Using module Разработка модулей программного обеспечения для компьютерных систем for discipline Экзамен по профессиональному модулю: 68 hours
+Using module Разработка модулей программного обеспечения для компьютерных систем for discipline Экзамен по профессиональному модулю: 68 hours
+Adding 72 hours for Разработка программных модулей
+Adding 90 hours for Разработка программных модулей
+Adding 96 hours for Разработка программных модулей
+Adding 90 hours for Поддержка и тестирование программных модулей
+Adding 68 hours for Поддержка и тестирование программных модулей
+Adding 36 hours for Разработка мобильных приложений
+Adding 36 hours for Разработка мобильных приложений
+Adding 72 hours for Разработка мобильных приложений
+Adding 54 hours for Системное программирование
+Adding 36 hours for Системное программирование
+Adding 108 hours for Учебная практика
+Adding 36 hours for Учебная практика
+Adding 144 hours for Производственная практика
+Using module Осуществление интеграции программных модулей for discipline Экзамен по профессиональному модулю: 162 hours
+Using module Осуществление интеграции программных модулей for discipline Экзамен по профессиональному модулю: 162 hours
+Using module Осуществление интеграции программных модулей for discipline Экзамен по профессиональному модулю: 162 hours
+Adding 24 hours for Технология разработки программного обеспечения
+Adding 24 hours for Технология разработки программного обеспечения
+Adding 54 hours for Инструментальные средства разработки программного обеспечения
+Adding 24 hours for Математическое моделирование
+Adding 24 hours for Математическое моделирование
+Adding 108 hours for Учебная практика
+Adding 144 hours for Производственная практика
+Using module Сопровождение и обслуживание программного обеспечения компьютерных систем for discipline Экзамен по профессиональному модулю: 180 hours
+Using module Сопровождение и обслуживание программного обеспечения компьютерных систем for discipline Экзамен по профессиональному модулю: 180 hours
+Using module Сопровождение и обслуживание программного обеспечения компьютерных систем for discipline Экзамен по профессиональному модулю: 180 hours
+Adding 36 hours for Внедрение и поддержка компьютерных систем
+Adding 36 hours for Внедрение и поддержка компьютерных систем
+Adding 36 hours for Обеспечение качества функционирования компьютерных систем
+Adding 36 hours for Обеспечение качества функционирования компьютерных систем
+Adding 108 hours for Учебная практика
+Adding 108 hours for Производственная практика
+Using module Разработка, администрирование и защита баз данных for discipline Экзамен по профессиональному модулю: 66 hours
+Using module Разработка, администрирование и защита баз данных for discipline Экзамен по профессиональному модулю: 66 hours
+Using module Разработка, администрирование и защита баз данных for discipline Экзамен по профессиональному модулю: 66 hours
+Adding 24 hours for Технология разработки и защиты баз данных
+Adding 90 hours for Технология разработки и защиты баз данных
+Adding 66 hours for Технология разработки и защиты баз данных
+Adding 72 hours for Учебная практика
+Adding 108 hours for Производственная практика
+Using module Разработка и обслуживание систем промышленного интернета вещей for discipline Экзамен по профессиональному модулю: 108 hours
+Using module Разработка и обслуживание систем промышленного интернета вещей for discipline Экзамен по профессиональному модулю: 108 hours
+Using module Разработка и обслуживание систем промышленного интернета вещей for discipline Экзамен по профессиональному модулю: 108 hours
+Adding 96 hours for Разработка и отладка программного обеспечения устройств промышленного интернета вещей
+Adding 72 hours for Разработка и отладка программного обеспечения устройств промышленного интернета вещей
+Adding 36 hours for Учебная практика
+Adding 36 hours for Учебная практика
+Adding 144 hours for Производственная практика
+Adding 48 hours for Основы философии
+Adding 51 hours for История
+Adding 48 hours for Психология общения
+Adding 24 hours for Иностранный язык в профессиональной деятельности
+Adding 24 hours for Иностранный язык в профессиональной деятельности
+Adding 36 hours for Иностранный язык в профессиональной деятельности
+Adding 24 hours for Иностранный язык в профессиональной деятельности
+Adding 48 hours for Иностранный язык в профессиональной деятельности
+Adding 34 hours for Иностранный язык в профессиональной деятельности
+Adding 24 hours for Физическая культура
+Adding 24 hours for Физическая культура
+Adding 36 hours for Физическая культура
+Adding 24 hours for Физическая культура
+Adding 48 hours for Физическая культура
+Adding 34 hours for Физическая культура
+Adding 48 hours for Элементы высшей математики
+Adding 34 hours for Элементы высшей математики
+Adding 51 hours for Дискретная математика с элементами математической логики
+Adding 48 hours for Теория вероятностей и математическая статистика
+Adding 48 hours for Операционные системы и среды
+Adding 51 hours for Архитектура аппаратных средств
+Adding 48 hours for Информационные технологии
+Adding 51 hours for Информационные технологии
+Adding 162 hours for Основы алгоритмизации программирования
+Adding 102 hours for Основы алгоритмизации программирования
+Adding 36 hours for Правовое обеспечение профессиональной деятельности
+Adding 68 hours for Безопасность жизнедеятельности
+Adding 24 hours for Экономика отрасли
+Adding 24 hours for Экономика отрасли
+Adding 68 hours for Основы проектирования баз данных
+Adding 48 hours for Стандартизация, сертификация и техническое документоведение
+Adding 48 hours for Численные методы
+Adding 48 hours for Компьютерные сети
+Adding 36 hours for Менеджмент в профессиональной деятельности
+Adding 144 hours for ПРОИЗВОДСТВЕННАЯ ПРАКТИКА (ПРЕДДИПЛОМНАЯ)
+Adding 36 hours for Подготовка выпускной квалификационной работы
+Adding 72 hours for Защита выпускной квалификационной работы
+Adding 36 hours for Подготовка к государственным экзаменам
+Adding 72 hours for Проведение государственных экзаменов
+Discipline: Русский язык, display name: Русский язык, semester: 2, hours: 78
+Discipline: Литература, display name: Литература, semester: 2, hours: 103
+Discipline: Иностранный язык, display name: Иностранный язык, semester: 2, hours: 80
+Discipline: Физика, display name: Физика, semester: 2, hours: 145
+Discipline: Химия, display name: Химия, semester: 2, hours: 40
+Discipline: Биология, display name: Биология, semester: 2, hours: 63
+Discipline: История, display name: История, semester: 2, hours: 137
+Discipline: Обществознание, display name: Обществознание, semester: 2, hours: 80
+Discipline: География, display name: География, semester: 2, hours: 40
+Discipline: Физическая культура, display name: Физическая культура, semester: 2, hours: 80
+Discipline: Основы безопасности и защиты Родины, display name: Основы безопасности и защиты Родины, semester: 2, hours: 80
+Discipline: Математика, display name: Математика, semester: 2, hours: 340
+Discipline: Информатика, display name: Информатика, semester: 2, hours: 170
+Discipline: Основы проектной деятельности (включая индивидуальный проект), display name: Основы проектной деятельности (включая индивидуальный проект), semester: 2, hours: 40
+Discipline: Введение в специальность (включая индивидуальный проект), display name: Введение в специальность (включая индивидуальный проект), semester: 2, hours: 40
+Discipline: Экзамен по профессиональному модулю, display name: Разработка модулей программного обеспечения для компьютерных систем, semester: 6, hours: 68
+Discipline: Разработка программных модулей, display name: Разработка программных модулей, semester: 6, hours: 258
+Discipline: Поддержка и тестирование программных модулей, display name: Поддержка и тестирование программных модулей, semester: 4, hours: 158
+Discipline: Разработка мобильных приложений, display name: Разработка мобильных приложений, semester: 6, hours: 144
+Discipline: Системное программирование, display name: Системное программирование, semester: 6, hours: 90
+Discipline: Учебная практика, display name: Учебная практика, semester: 5, hours: 108
+Discipline: Учебная практика, display name: Учебная практика, semester: 5, hours: 36
+Discipline: Производственная практика, display name: Производственная практика, semester: 5, hours: 144
+Discipline: Экзамен по профессиональному модулю, display name: Осуществление интеграции программных модулей, semester: 8, hours: 162
+Discipline: Технология разработки программного обеспечения, display name: Технология разработки программного обеспечения, semester: 8, hours: 48
+Discipline: Инструментальные средства разработки программного обеспечения, display name: Инструментальные средства разработки программного обеспечения, semester: 6, hours: 54
+Discipline: Математическое моделирование, display name: Математическое моделирование, semester: 8, hours: 48
+Discipline: Учебная практика, display name: Учебная практика, semester: 6, hours: 108
+Discipline: Производственная практика, display name: Производственная практика, semester: 7, hours: 144
+Discipline: Экзамен по профессиональному модулю, display name: Сопровождение и обслуживание программного обеспечения компьютерных систем, semester: 7, hours: 180
+Discipline: Внедрение и поддержка компьютерных систем, display name: Внедрение и поддержка компьютерных систем, semester: 7, hours: 72
+Discipline: Обеспечение качества функционирования компьютерных систем, display name: Обеспечение качества функционирования компьютерных систем, semester: 7, hours: 72
+Discipline: Учебная практика, display name: Учебная практика, semester: 7, hours: 108
+Discipline: Производственная практика, display name: Производственная практика, semester: 6, hours: 108
+Discipline: Экзамен по профессиональному модулю, display name: Разработка, администрирование и защита баз данных, semester: 7, hours: 66
+Discipline: Технология разработки и защиты баз данных, display name: Технология разработки и защиты баз данных, semester: 7, hours: 180
+Discipline: Учебная практика, display name: Учебная практика, semester: 6, hours: 72
+Discipline: Производственная практика, display name: Производственная практика, semester: 6, hours: 108
+Discipline: Экзамен по профессиональному модулю, display name: Разработка и обслуживание систем промышленного интернета вещей, semester: 8, hours: 108
+Discipline: Разработка и отладка программного обеспечения устройств промышленного интернета вещей, display name: Разработка и отладка программного обеспечения устройств промышленного интернета вещей, semester: 8, hours: 168
+Discipline: Учебная практика, display name: Учебная практика, semester: 7, hours: 36
+Discipline: Учебная практика, display name: Учебная практика, semester: 8, hours: 36
+Discipline: Производственная практика, display name: Производственная практика, semester: 8, hours: 144
+Discipline: Основы философии, display name: Основы философии, semester: 4, hours: 48
+Discipline: История, display name: История, semester: 3, hours: 51
+Discipline: Психология общения, display name: Психология общения, semester: 4, hours: 48
+Discipline: Иностранный язык в профессиональной деятельности, display name: Иностранный язык в профессиональной деятельности, semester: 8, hours: 190
+Discipline: Физическая культура, display name: Физическая культура, semester: 8, hours: 190
+Discipline: Элементы высшей математики, display name: Элементы высшей математики, semester: 4, hours: 82
+Discipline: Дискретная математика с элементами математической логики, display name: Дискретная математика с элементами математической логики, semester: 3, hours: 51
+Discipline: Теория вероятностей и математическая статистика, display name: Теория вероятностей и математическая статистика, semester: 4, hours: 48
+Discipline: Операционные системы и среды, display name: Операционные системы и среды, semester: 4, hours: 48
+Discipline: Архитектура аппаратных средств, display name: Архитектура аппаратных средств, semester: 3, hours: 51
+Discipline: Информационные технологии, display name: Информационные технологии, semester: 4, hours: 99
+Discipline: Основы алгоритмизации программирования, display name: Основы алгоритмизации программирования, semester: 4, hours: 264
+Discipline: Правовое обеспечение профессиональной деятельности, display name: Правовое обеспечение профессиональной деятельности, semester: 8, hours: 36
+Discipline: Безопасность жизнедеятельности, display name: Безопасность жизнедеятельности, semester: 3, hours: 68
+Discipline: Экономика отрасли, display name: Экономика отрасли, semester: 8, hours: 48
+Discipline: Основы проектирования баз данных, display name: Основы проектирования баз данных, semester: 3, hours: 68
+Discipline: Стандартизация, сертификация и техническое документоведение, display name: Стандартизация, сертификация и техническое документоведение, semester: 4, hours: 48
+Discipline: Численные методы, display name: Численные методы, semester: 5, hours: 48
+Discipline: Компьютерные сети, display name: Компьютерные сети, semester: 4, hours: 48
+Discipline: Менеджмент в профессиональной деятельности, display name: Менеджмент в профессиональной деятельности, semester: 8, hours: 36
+Discipline: ПРОИЗВОДСТВЕННАЯ ПРАКТИКА (ПРЕДДИПЛОМНАЯ), display name: ПРОИЗВОДСТВЕННАЯ ПРАКТИКА (ПРЕДДИПЛОМНАЯ), semester: 8, hours: 144
+Discipline: Подготовка выпускной квалификационной работы, display name: Подготовка выпускной квалификационной работы, semester: 8, hours: 36
+Discipline: Защита выпускной квалификационной работы, display name: Защита выпускной квалификационной работы, semester: 8, hours: 72
+Discipline: Подготовка к государственным экзаменам, display name: Подготовка к государственным экзаменам, semester: 8, hours: 36
+Discipline: Проведение государственных экзаменов, display name: Проведение государственных экзаменов, semester: 8, hours: 72
+Total hours: 6474
+Returning 68 disciplines
+Disciplines: [('Разработка программных модулей', 6, 258, 'Разработка программных модулей'), ('Поддержка и тестирование программных модулей', 4, 158, 'Поддержка и тестирование программных модулей'), ('Разработка мобильных приложений', 6, 144, 'Разработка мобильных приложений'), ('Системное программирование', 6, 90, 'Системное программирование'), ('Технология разработки программного обеспечения', 8, 48, 'Технология разработки программного обеспечения'), ('Инструментальные средства разработки программного обеспечения', 6, 54, 'Инструментальные средства разработки программного обеспечения'), ('Математическое моделирование', 8, 48, 'Математическое моделирование'), ('Внедрение и поддержка компьютерных систем', 7, 72, 'Внедрение и поддержка компьютерных систем'), ('Обеспечение качества функционирования компьютерных систем', 7, 72, 'Обеспечение качества функционирования компьютерных систем'), ('Технология разработки и защиты баз данных', 7, 180, 'Технология разработки и защиты баз данных'), ('Разработка и отладка программного обеспечения устройств промышленного интернета вещей', 8, 168, 'Разработка и отладка программного обеспечения устройств промышленного интернета вещей'), ('Учебная практика', 5, 108, 'Учебная практика'), ('Учебная практика', 5, 36, 'Учебная практика'), ('Учебная практика', 6, 108, 'Учебная практика'), ('Учебная практика', 7, 108, 'Учебная практика'), ('Учебная практика', 6, 72, 'Учебная практика'), ('Учебная практика', 7, 36, 'Учебная практика'), ('Учебная практика', 8, 36, 'Учебная практика'), ('Производственная практика', 5, 144, 'Производственная практика'), ('Производственная практика', 7, 144, 'Производственная практика'), ('Производственная практика', 6, 108, 'Производственная практика'), ('Производственная практика', 6, 108, 'Производственная практика'), ('Производственная практика', 8, 144, 'Производственная практика'), ('Подготовка выпускной квалификационной работы', 8, 36, 'Подготовка выпускной квалификационной работы'), ('Защита выпускной квалификационной работы', 8, 72, 'Защита выпускной квалификационной работы'), ('Подготовка к государственным экзаменам', 8, 36, 'Подготовка к государственным экзаменам'), ('Проведение государственных экзаменов', 8, 72, 'Проведение государственных экзаменов'), ('Элементы высшей математики', 4, 82, 'Элементы высшей математики'), ('Дискретная математика с элементами математической логики', 3, 51, 'Дискретная математика с элементами математической логики'), ('Теория вероятностей и математическая статистика', 4, 48, 'Теория вероятностей и математическая статистика'), ('Основы философии', 4, 48, 'Основы философии'), ('История', 3, 51, 'История'), ('Психология общения', 4, 48, 'Психология общения'), ('Иностранный язык в профессиональной деятельности', 8, 190, 'Иностранный язык в профессиональной деятельности'), ('Физическая культура', 8, 190, 'Физическая культура'), ('Русский язык', 2, 78, 'Русский язык'), ('Литература', 2, 103, 'Литература'), ('Иностранный язык', 2, 80, 'Иностранный язык'), ('Физика', 2, 145, 'Физика'), ('Химия', 2, 40, 'Химия'), ('Биология', 2, 63, 'Биология'), ('История', 2, 137, 'История'), ('Обществознание', 2, 80, 'Обществознание'), ('География', 2, 40, 'География'), ('Физическая культура', 2, 80, 'Физическая культура'), ('Основы безопасности и защиты Родины', 2, 80, 'Основы безопасности и защиты Родины'), ('Математика', 2, 340, 'Математика'), ('Информатика', 2, 170, 'Информатика'), ('Основы проектной деятельности (включая индивидуальный проект)', 2, 40, 'Основы проектной деятельности (включая индивидуальный проект)'), ('Введение в специальность (включая индивидуальный проект)', 2, 40, 'Введение в специальность (включая индивидуальный проект)'), ('Операционные системы и среды', 4, 48, 'Операционные системы и среды'), ('Архитектура аппаратных средств', 3, 51, 'Архитектура аппаратных средств'), ('Информационные технологии', 4, 99, 'Информационные технологии'), ('Основы алгоритмизации программирования', 4, 264, 'Основы алгоритмизации программирования'), ('Правовое обеспечение профессиональной деятельности', 8, 36, 'Правовое обеспечение профессиональной деятельности'), ('Безопасность жизнедеятельности', 3, 68, 'Безопасность жизнедеятельности'), ('Экономика отрасли', 8, 48, 'Экономика отрасли'), ('Основы проектирования баз данных', 3, 68, 'Основы проектирования баз данных'), ('Стандартизация, сертификация и техническое документоведение', 4, 48, 'Стандартизация, сертификация и техническое документоведение'), ('Численные методы', 5, 48, 'Численные методы'), ('Компьютерные сети', 4, 48, 'Компьютерные сети'), ('Менеджмент в профессиональной деятельности', 8, 36, 'Менеджмент в профессиональной деятельности'), ('Экзамен по профессиональному модулю', 6, 68, 'Разработка модулей программного обеспечения для компьютерных систем'), ('Экзамен по профессиональному модулю', 8, 162, 'Осуществление интеграции программных модулей'), ('Экзамен по профессиональному модулю', 7, 180, 'Сопровождение и обслуживание программного обеспечения компьютерных систем'), ('Экзамен по профессиональному модулю', 7, 66, 'Разработка, администрирование и защита баз данных'), ('Экзамен по профессиональному модулю', 8, 108, 'Разработка и обслуживание систем промышленного интернета вещей'), ('ПРОИЗВОДСТВЕННАЯ ПРАКТИКА (ПРЕДДИПЛОМНАЯ)', 8, 144, 'ПРОИЗВОДСТВЕННАЯ ПРАКТИКА (ПРЕДДИПЛОМНАЯ)')]
+Grade for student Иванов Иван Иванович, discipline Русский язык: None
+Grade for student Иванов Иван Иванович, discipline Литература: None
+Grade for student Иванов Иван Иванович, discipline Иностранный язык: None
+Grade for student Иванов Иван Иванович, discipline Физика: None
+Grade for student Иванов Иван Иванович, discipline Химия: None
+Grade for student Иванов Иван Иванович, discipline Биология: None
+Grade for student Иванов Иван Иванович, discipline История: None
+Grade for student Иванов Иван Иванович, discipline Обществознание: None
+Grade for student Иванов Иван Иванович, discipline География: None
+Grade for student Иванов Иван Иванович, discipline Физическая культура: None
+Grade for student Иванов Иван Иванович, discipline Основы безопасности и защиты Родины: None
+Grade for student Иванов Иван Иванович, discipline Математика: None
+Grade for student Иванов Иван Иванович, discipline Информатика: None
+Grade for student Иванов Иван Иванович, discipline Основы проектной деятельности (включая индивидуальный проект): None
+Grade for student Иванов Иван Иванович, discipline Введение в специальность (включая индивидуальный проект): None
+Grade for student Иванов Иван Иванович, discipline Дискретная математика с элементами математической логики: None
+Grade for student Иванов Иван Иванович, discipline История: None
+Grade for student Иванов Иван Иванович, discipline Архитектура аппаратных средств: None
+Grade for student Иванов Иван Иванович, discipline Безопасность жизнедеятельности: None
+Grade for student Иванов Иван Иванович, discipline Основы проектирования баз данных: None
+Grade for student Иванов Иван Иванович, discipline Поддержка и тестирование программных модулей: None
+Grade for student Иванов Иван Иванович, discipline Элементы высшей математики: None
+Grade for student Иванов Иван Иванович, discipline Теория вероятностей и математическая статистика: None
+Grade for student Иванов Иван Иванович, discipline Основы философии: None
+Grade for student Иванов Иван Иванович, discipline Психология общения: None
+Grade for student Иванов Иван Иванович, discipline Операционные системы и среды: None
+Grade for student Иванов Иван Иванович, discipline Информационные технологии: None
+Grade for student Иванов Иван Иванович, discipline Основы алгоритмизации программирования: None
+Grade for student Иванов Иван Иванович, discipline Стандартизация, сертификация и техническое документоведение: None
+Grade for student Иванов Иван Иванович, discipline Компьютерные сети: None
+Grade for student Иванов Иван Иванович, discipline Учебная практика: None
+Grade for student Иванов Иван Иванович, discipline Учебная практика: None
+Grade for student Иванов Иван Иванович, discipline Производственная практика: None
+Grade for student Иванов Иван Иванович, discipline Численные методы: None
+Grade for student Иванов Иван Иванович, discipline Разработка программных модулей: None
+Grade for student Иванов Иван Иванович, discipline Разработка мобильных приложений: None
+Grade for student Иванов Иван Иванович, discipline Системное программирование: None
+Grade for student Иванов Иван Иванович, discipline Инструментальные средства разработки программного обеспечения: None
+Grade for student Иванов Иван Иванович, discipline Учебная практика: None
+Grade for student Иванов Иван Иванович, discipline Учебная практика: None
+Grade for student Иванов Иван Иванович, discipline Производственная практика: None
+Grade for student Иванов Иван Иванович, discipline Производственная практика: None
+Grade for student Иванов Иван Иванович, discipline Экзамен по профессиональному модулю: None
+Grade for student Иванов Иван Иванович, discipline Внедрение и поддержка компьютерных систем: None
+Grade for student Иванов Иван Иванович, discipline Обеспечение качества функционирования компьютерных систем: None
+Grade for student Иванов Иван Иванович, discipline Технология разработки и защиты баз данных: None
+Grade for student Иванов Иван Иванович, discipline Учебная практика: None
+Grade for student Иванов Иван Иванович, discipline Учебная практика: None
+Grade for student Иванов Иван Иванович, discipline Производственная практика: None
+Grade for student Иванов Иван Иванович, discipline Экзамен по профессиональному модулю: None
+Grade for student Иванов Иван Иванович, discipline Экзамен по профессиональному модулю: None
+Grade for student Иванов Иван Иванович, discipline Технология разработки программного обеспечения: None
+Grade for student Иванов Иван Иванович, discipline Математическое моделирование: None
+Grade for student Иванов Иван Иванович, discipline Разработка и отладка программного обеспечения устройств промышленного интернета вещей: None
+Grade for student Иванов Иван Иванович, discipline Учебная практика: None
+Grade for student Иванов Иван Иванович, discipline Производственная практика: None
+Grade for student Иванов Иван Иванович, discipline Подготовка выпускной квалификационной работы: None
+Grade for student Иванов Иван Иванович, discipline Защита выпускной квалификационной работы: None
+Grade for student Иванов Иван Иванович, discipline Подготовка к государственным экзаменам: None
+Grade for student Иванов Иван Иванович, discipline Проведение государственных экзаменов: None
+Grade for student Иванов Иван Иванович, discipline Иностранный язык в профессиональной деятельности: None
+Grade for student Иванов Иван Иванович, discipline Физическая культура: None
+Grade for student Иванов Иван Иванович, discipline Правовое обеспечение профессиональной деятельности: None
+Grade for student Иванов Иван Иванович, discipline Экономика отрасли: None
+Grade for student Иванов Иван Иванович, discipline Менеджмент в профессиональной деятельности: None
+Grade for student Иванов Иван Иванович, discipline Экзамен по профессиональному модулю: None
+Grade for student Иванов Иван Иванович, discipline Экзамен по профессиональному модулю: None
+Grade for student Иванов Иван Иванович, discipline ПРОИЗВОДСТВЕННАЯ ПРАКТИКА (ПРЕДДИПЛОМНАЯ): None
+Grade for Иванов Иван Иванович, Разработка программных модулей, semester 6: None
+Grade for Иванов Иван Иванович, Поддержка и тестирование программных модулей, semester 4: None
+Grade for Иванов Иван Иванович, Разработка мобильных приложений, semester 6: None
+Grade for Иванов Иван Иванович, Системное программирование, semester 6: None
+Grade for Иванов Иван Иванович, Технология разработки программного обеспечения, semester 8: None
+Grade for Иванов Иван Иванович, Инструментальные средства разработки программного обеспечения, semester 6: None
+Grade for Иванов Иван Иванович, Математическое моделирование, semester 8: None
+Grade for Иванов Иван Иванович, Внедрение и поддержка компьютерных систем, semester 7: None
+Grade for Иванов Иван Иванович, Обеспечение качества функционирования компьютерных систем, semester 7: None
+Grade for Иванов Иван Иванович, Технология разработки и защиты баз данных, semester 7: None
+Grade for Иванов Иван Иванович, Разработка и отладка программного обеспечения устройств промышленного интернета вещей, semester 8: None
+Grade for Иванов Иван Иванович, Учебная практика, semester 5: None
+Grade for Иванов Иван Иванович, Учебная практика, semester 5: None
+Grade for Иванов Иван Иванович, Учебная практика, semester 6: None
+Grade for Иванов Иван Иванович, Учебная практика, semester 7: None
+Grade for Иванов Иван Иванович, Учебная практика, semester 6: None
+Grade for Иванов Иван Иванович, Учебная практика, semester 7: None
+Grade for Иванов Иван Иванович, Учебная практика, semester 8: None
+Grade for Иванов Иван Иванович, Производственная практика, semester 5: None
+Grade for Иванов Иван Иванович, Производственная практика, semester 7: None
+Grade for Иванов Иван Иванович, Производственная практика, semester 6: None
+Grade for Иванов Иван Иванович, Производственная практика, semester 6: None
+Grade for Иванов Иван Иванович, Производственная практика, semester 8: None
+Grade for Иванов Иван Иванович, Подготовка выпускной квалификационной работы, semester 8: None
+Grade for Иванов Иван Иванович, Защита выпускной квалификационной работы, semester 8: None
+Grade for Иванов Иван Иванович, Подготовка к государственным экзаменам, semester 8: None
+Grade for Иванов Иван Иванович, Проведение государственных экзаменов, semester 8: None
+Grade for Иванов Иван Иванович, Элементы высшей математики, semester 4: None
+Grade for Иванов Иван Иванович, Дискретная математика с элементами математической логики, semester 3: None
+Grade for Иванов Иван Иванович, Теория вероятностей и математическая статистика, semester 4: None
+Grade for Иванов Иван Иванович, Основы философии, semester 4: None
+Grade for Иванов Иван Иванович, История, semester 3: None
+Grade for Иванов Иван Иванович, Психология общения, semester 4: None
+Grade for Иванов Иван Иванович, Иностранный язык в профессиональной деятельности, semester 8: None
+Grade for Иванов Иван Иванович, Физическая культура, semester 8: None
+Grade for Иванов Иван Иванович, Русский язык, semester 2: -
+Grade for Иванов Иван Иванович, Литература, semester 2: -
+Grade for Иванов Иван Иванович, Иностранный язык, semester 2: -
+Grade for Иванов Иван Иванович, Физика, semester 2: -
+Grade for Иванов Иван Иванович, Химия, semester 2: -
+Grade for Иванов Иван Иванович, Биология, semester 2: -
+Grade for Иванов Иван Иванович, История, semester 2: -
+Grade for Иванов Иван Иванович, Обществознание, semester 2: -
+Grade for Иванов Иван Иванович, География, semester 2: -
+Grade for Иванов Иван Иванович, Физическая культура, semester 2: -
+Grade for Иванов Иван Иванович, Основы безопасности и защиты Родины, semester 2: -
+Grade for Иванов Иван Иванович, Математика, semester 2: -
+Grade for Иванов Иван Иванович, Информатика, semester 2: -
+Grade for Иванов Иван Иванович, Основы проектной деятельности (включая индивидуальный проект), semester 2: -
+Grade for Иванов Иван Иванович, Введение в специальность (включая индивидуальный проект), semester 2: -
+Grade for Иванов Иван Иванович, Операционные системы и среды, semester 4: None
+Grade for Иванов Иван Иванович, Архитектура аппаратных средств, semester 3: None
+Grade for Иванов Иван Иванович, Информационные технологии, semester 4: None
+Grade for Иванов Иван Иванович, Основы алгоритмизации программирования, semester 4: None
+Grade for Иванов Иван Иванович, Правовое обеспечение профессиональной деятельности, semester 8: None
+Grade for Иванов Иван Иванович, Безопасность жизнедеятельности, semester 3: None
+Grade for Иванов Иван Иванович, Экономика отрасли, semester 8: None
+Grade for Иванов Иван Иванович, Основы проектирования баз данных, semester 3: None
+Grade for Иванов Иван Иванович, Стандартизация, сертификация и техническое документоведение, semester 4: None
+Grade for Иванов Иван Иванович, Численные методы, semester 5: None
+Grade for Иванов Иван Иванович, Компьютерные сети, semester 4: None
+Grade for Иванов Иван Иванович, Менеджмент в профессиональной деятельности, semester 8: None
+Grade for Иванов Иван Иванович, Экзамен по профессиональному модулю, semester 6: None
+Grade for Иванов Иван Иванович, Экзамен по профессиональному модулю, semester 8: None
+Grade for Иванов Иван Иванович, Экзамен по профессиональному модулю, semester 7: None
+Grade for Иванов Иван Иванович, Экзамен по профессиональному модулю, semester 7: None
+Grade for Иванов Иван Иванович, Экзамен по профессиональному модулю, semester 8: None
+Grade for Иванов Иван Иванович, ПРОИЗВОДСТВЕННАЯ ПРАКТИКА (ПРЕДДИПЛОМНАЯ), semester 8: None
