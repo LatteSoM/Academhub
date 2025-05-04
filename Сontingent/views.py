@@ -91,14 +91,14 @@ class DisciplineTableView(ObjectTableView):
     filterset_class = DisciplineFilter
     queryset = Discipline.objects.all()
 
-    permission_required = getpermission('Contingent', 'view_discipline')
+    permission_required = getpermission('Сontingent', 'view_discipline')
 
     buttons = [
         Button (
             id='add',
             name = 'Добавить',
             link_name = getpattern(Discipline, 'add'),
-            permission = getpermission('Contingent', 'create_discipline')
+            permission = getpermission('Сontingent', 'create_discipline')
         )
     ]
 
@@ -109,7 +109,7 @@ class DisciplineDetailView(ObjectDetailView):
     model= Discipline
     paginate_by  = 30
 
-    permission_required = getpermission('Contingent', 'view_discipline')
+    permission_required = getpermission('Сontingent', 'view_discipline')
 
     fieldset = {
         'Основная информация':
@@ -122,13 +122,13 @@ class DisciplineDetailView(ObjectDetailView):
             name = 'Обновить',
             link_params = ['pk'],
             link_name = getpattern(Discipline, 'change'),
-            permission = getpermission('Contingent', 'update_discipline')
+            permission = getpermission('Сontingent', 'update_discipline')
         ),
         Button (
             id = 'to_list',
             name = 'К таблице',
             link_name = getpattern(Discipline, 'list'),
-            permission = getpermission('Contingent', 'view_discipline')
+            permission = getpermission('Сontingent', 'view_discipline')
         )
     ]
         
@@ -139,7 +139,7 @@ class DisciplineUpdateView(ObjectUpdateView):
     form_class = DisciplineForm
     queryset = Discipline.objects.all()
 
-    permission_required = getpermission('Contingent', 'update_discipline')
+    permission_required = getpermission('Сontingent', 'update_discipline')
 
     buttons = [
         Button (
@@ -147,13 +147,13 @@ class DisciplineUpdateView(ObjectUpdateView):
             name = 'К объекту',
             link_params = ['pk'],
             link_name = getpattern(Discipline, 'detail'),
-            permission = getpermission('Contingent', 'view_discipline')
+            permission = getpermission('Сontingent', 'view_discipline')
         ),
         Button (
             id = 'to_list',
             name = 'К таблице',
             link_name = getpattern(Discipline, 'list'),
-            permission = getpermission('Contingent', 'view_discipline')
+            permission = getpermission('Сontingent', 'view_discipline')
         )
     ]
     
@@ -164,14 +164,14 @@ class DisciplineCreateView(ObjectCreateView):
     model = Discipline
     form_class = DisciplineForm
 
-    permission_required = getpermission('Contingent', 'create_discipline')
+    permission_required = getpermission('Сontingent', 'create_discipline')
 
     buttons = [
         Button (
             id = 'to_list',
             name = 'К таблице',
             link_name = getpattern(Discipline, 'list'),
-            permission = getpermission('Contingent', 'view_discipline')
+            permission = getpermission('Сontingent', 'view_discipline')
         )
     ]
 
@@ -187,14 +187,14 @@ class SpecialtyTableView(ObjectTableView):
     filterset_class = SpecialtyFilter
     queryset = Specialty.objects.all()
 
-    permission_required = getpermission('Contingent', 'view_specialty')
+    permission_required = getpermission('Сontingent', 'view_specialty')
 
     buttons = [
         Button (
             id='add',
             name = 'Добавить',
             link_name = getpattern(Specialty, 'add'),
-            permission = getpermission('Contingent', 'create_specialty')
+            permission = getpermission('Сontingent', 'create_specialty')
         )
     ]
 
@@ -207,7 +207,7 @@ class SpecialtyDetailView(ObjectDetailView):
     paginate_by  = 30
     template_name = 'Contingent/detail/specialty_detail.html'
 
-    permission_required = getpermission('Contingent', 'view_specialty')
+    permission_required = getpermission('Сontingent', 'view_specialty')
 
     fieldset = {
         'Основная информация':
@@ -229,13 +229,13 @@ class SpecialtyDetailView(ObjectDetailView):
             name = 'Обновить',
             link_params = ['pk'],
             link_name = getpattern(Specialty, 'change'),
-            permission = getpermission('Contingent', 'update_specialty'),
+            permission = getpermission('Сontingent', 'update_specialty'),
         ),
         Button (
             id = 'to_list',
             name = 'К таблице',
             link_name = getpattern(Specialty, 'list'),
-            permission = getpermission('Contingent', 'view_specialty')
+            permission = getpermission('Сontingent', 'view_specialty')
         )
     ]
 
@@ -246,7 +246,7 @@ class SpecialtyUpdateView(ObjectUpdateView):
     form_class = SpecialtyForm
     queryset = Specialty.objects.all()
 
-    permission_required = getpermission('Contingent', 'update_specialty')
+    permission_required = getpermission('Сontingent', 'update_specialty')
 
     buttons = [
         Button (
@@ -254,13 +254,13 @@ class SpecialtyUpdateView(ObjectUpdateView):
             name = 'К объекту',
             link_params = ['pk'],
             link_name = getpattern(Specialty, 'detail'),
-            permission = getpermission('Contingent', 'view_specialty')
+            permission = getpermission('Сontingent', 'view_specialty')
         ),
         Button (
             id = 'to_list',
             name = 'К таблице',
             link_name = getpattern(Specialty, 'list'),
-            permission = getpermission('Contingent', 'view_specialty')
+            permission = getpermission('Сontingent', 'view_specialty')
         )
     ]
 
@@ -271,14 +271,14 @@ class SpecialtyCreateView(ObjectCreateView):
     model = Specialty
     form_class = SpecialtyForm
 
-    permission_required = getpermission('Contingent', 'create_specialty')
+    permission_required = getpermission('Сontingent', 'create_specialty')
 
     buttons = [
         Button (
             id = 'to_list',
             name = 'К таблице',
             link_name = getpattern(Specialty, 'list'),
-            permission = getpermission('Contingent', 'view_specialty')
+            permission = getpermission('Сontingent', 'view_specialty')
         )
     ]
 #
@@ -293,14 +293,14 @@ class QualificationTableView(ObjectTableView):
     filterset_class = QualificationFilter
     queryset = Qualification.objects.all()
 
-    permission_required = getpermission('Contingent', 'view_qualification')
+    permission_required = getpermission('Сontingent', 'view_qualification')
 
     buttons = [
         Button (
             id='add',
             name = 'Добавить',
             link_name = getpattern(Qualification, 'add'),
-            permission = getpermission('Contingent', 'create_qualification'),
+            permission = getpermission('Сontingent', 'create_qualification'),
         )
     ]
 
@@ -312,7 +312,7 @@ class QualificationDetailView(ObjectDetailView):
     paginate_by  = 30
     template_name = 'Contingent/detail/qualification_detail.html'
 
-    permission_required = getpermission('Contingent', 'view_qualification')
+    permission_required = getpermission('Сontingent', 'view_qualification')
 
     fieldset = {
         'Основная информация':
@@ -325,13 +325,13 @@ class QualificationDetailView(ObjectDetailView):
             name = 'Обновить',
             link_params = ['pk'],
             link_name = getpattern(Qualification, 'change'),
-            permission = getpermission('Contingent', 'update_qualification'),
+            permission = getpermission('Сontingent', 'update_qualification'),
         ),
         Button (
             id = 'to_list',
             name = 'К таблице',
             link_name = getpattern(Qualification, 'list'),
-            permission = getpermission('Contingent', 'view_qualification')
+            permission = getpermission('Сontingent', 'view_qualification')
         )
     ]
 
@@ -342,7 +342,7 @@ class QualificationUpdateView(ObjectUpdateView):
     form_class = QualificationForm
     queryset = Qualification.objects.all()
 
-    permission_required = getpermission('Contingent', 'update_qualification')
+    permission_required = getpermission('Сontingent', 'update_qualification')
 
     buttons = [
         Button (
@@ -350,13 +350,13 @@ class QualificationUpdateView(ObjectUpdateView):
             name = 'К объекту',
             link_params = ['pk'],
             link_name = getpattern(Qualification, 'detail'),
-            permission = getpermission('Contingent', 'view_qualification')
+            permission = getpermission('Сontingent', 'view_qualification')
         ),
         Button (
             id = 'to_list',
             name = 'К таблице',
             link_name = getpattern(Qualification, 'list'),
-            permission = getpermission('Contingent', 'view_qualification')
+            permission = getpermission('Сontingent', 'view_qualification')
         )
     ]
 
@@ -367,14 +367,14 @@ class QualificationCreateView(ObjectCreateView):
     model = Qualification
     form_class = QualificationForm
 
-    permission_required = getpermission('Contingent', 'create_qualification')
+    permission_required = getpermission('Сontingent', 'create_qualification')
 
     buttons = [
         Button (
             id = 'to_list',
             name = 'К таблице',
             link_name = getpattern(Qualification, 'list'),
-            permission = getpermission('Contingent', 'view_qualification')
+            permission = getpermission('Сontingent', 'view_qualification')
         )
     ]
 
@@ -391,14 +391,14 @@ class GroupTableView(ObjectTableView):
     filterset_class = GroupFilter
     queryset = GroupStudents.objects.all()
 
-    permission_required = getpermission('Contingent', 'view_group_student')
+    permission_required = getpermission('Сontingent', 'view_group_student')
 
     buttons = [
         Button (
             id='add',
             name = 'Добавить',
             link_name = getpattern(GroupStudents, 'add'),
-            permission = getpermission('Contingent', 'create_group_student'),
+            permission = getpermission('Сontingent', 'create_group_student'),
         )
     ]
 
@@ -412,7 +412,7 @@ class GroupDetailView(ObjectDetailView):
     model= GroupStudents
     template_name = 'Contingent/detail/group_detail.html'
 
-    permission_required = getpermission('Contingent', 'view_group_student')
+    permission_required = getpermission('Сontingent', 'view_group_student')
 
     fieldset = {
         'Основная информация':
@@ -434,13 +434,13 @@ class GroupDetailView(ObjectDetailView):
             name = 'Обновить',
             link_params = ['pk'],
             link_name = getpattern(GroupStudents, 'change'),
-            permission = getpermission('Contingent', 'update_group_student'),
+            permission = getpermission('Сontingent', 'update_group_student'),
         ),
         Button (
             id = 'to_list',
             name = 'К таблице',
             link_name = getpattern(GroupStudents, 'list'),
-            permission = getpermission('Contingent', 'view_group_student')
+            permission = getpermission('Сontingent', 'view_group_student')
         )
     ]
 
@@ -451,7 +451,7 @@ class GroupUpdateView(ObjectUpdateView):
     form_class = GroupForm
     queryset = GroupStudents.objects.all()
 
-    permission_required = getpermission('Contingent', 'update_group_student')
+    permission_required = getpermission('Сontingent', 'update_group_student')
 
     buttons = [
         Button (
@@ -459,13 +459,13 @@ class GroupUpdateView(ObjectUpdateView):
             name = 'К объекту',
             link_params = ['pk'],
             link_name = getpattern(GroupStudents, 'detail'),
-            permission = getpermission('Contingent', 'view_group_student')
+            permission = getpermission('Сontingent', 'view_group_student')
         ),
         Button (
             id = 'to_list',
             name = 'К таблице',
             link_name = getpattern(GroupStudents, 'list'),
-            permission = getpermission('Contingent', 'view_group_student')
+            permission = getpermission('Сontingent', 'view_group_student')
         )
     ]
 
@@ -479,7 +479,7 @@ class PromoteGroupStudentsView(SuccessMessageMixin, ObjectUpdateView):
     template_name = 'Contingent/promote_group_students_form.html'
     success_message = 'Группа и студенты были успешно переведены на следующий курс!'
 
-    permission_required = getpermission('Contingent', 'transfer_students')
+    permission_required = getpermission('Сontingent', 'transfer_students')
 
     def get_object(self, queryset=None):
         return get_object_or_404(GroupStudents, pk=self.kwargs['pk'])
@@ -504,14 +504,14 @@ class GroupCreateView(ObjectCreateView):
     model = GroupStudents
     form_class = GroupForm
 
-    permission_required = getpermission('Contingent', 'create_group_student')
+    permission_required = getpermission('Сontingent', 'create_group_student')
 
     buttons = [
         Button (
             id = 'to_list',
             name = 'К таблице',
             link_name = getpattern(GroupStudents, 'list'),
-            permission = getpermission('Contingent', 'view_group_student')
+            permission = getpermission('Сontingent', 'view_group_student')
         )
     ]
 
@@ -528,15 +528,15 @@ class StudentTableView(ObjectTableImportView):
     form_import = ContingentStudentImportForm
     queryset = CurrentStudent.objects.all()
 
-    permission_required = getpermission('Contingent', 'view_current_student')
-    permission_import_required = getpermission('Contingent', 'export_student')
+    permission_required = getpermission('Сontingent', 'view_current_student')
+    permission_import_required = getpermission('Сontingent', 'export_student')
 
     buttons = [
         Button (
             id='add',
             name = 'Добавить',
             link_name = getpattern(Student, 'add'),
-            permission = getpermission('Contingent', 'create_student'),
+            permission = getpermission('Сontingent', 'create_student'),
         ),
     ]
 
@@ -552,7 +552,7 @@ class PromoteStudentsView(PermissionBaseMixin, FormView):
     properties = ['education_base', 'education_basis', 'academic_debts', 'current_course']
     success_url = reverse_lazy('transfer_students_form')
 
-    permission_required = getpermission('Contingent', 'transfer_students')
+    permission_required = getpermission('Сontingent', 'transfer_students')
 
     buttons = [
         Button(
@@ -666,7 +666,7 @@ class StudentDetailView(ObjectDetailView):
     paginate_by  = 30
     template_name = 'Contingent/detail/student_detail.html'
 
-    permission_required = getpermission('Contingent', 'view_current_student', 'view_expulsion_student', 'view_academ_student')
+    permission_required = getpermission('Сontingent', 'view_current_student', 'view_expulsion_student', 'view_academ_student')
 
     fieldset = {
         'Основная информация':
@@ -685,7 +685,7 @@ class StudentDetailView(ObjectDetailView):
             name = 'Обновить',
             link_params = ['pk'],
             link_name = getpattern(Student, 'change'),
-            permission = getpermission('Contingent', 'update_student')
+            permission = getpermission('Сontingent', 'update_student')
         ),
     ]
 
@@ -697,7 +697,7 @@ class StudentUpdateView(ObjectUpdateView):
     form_class = StudentForm
     queryset = Student.objects.all()
 
-    permission_required = getpermission('Contingent', 'update_student')
+    permission_required = getpermission('Сontingent', 'update_student')
 
     buttons = [
         Button (
@@ -705,7 +705,7 @@ class StudentUpdateView(ObjectUpdateView):
             name = 'К объекту',
             link_params = ['pk'],
             link_name = getpattern(Student, 'detail'),
-            permission = getpermission('Contingent', 'update_student')
+            permission = getpermission('Сontingent', 'update_student')
         ),
     ]
 
@@ -722,7 +722,7 @@ class StudentCreateView(ObjectCreateView):
             id = 'to_list',
             name = 'К таблице',
             link_name = getpattern(CurrentStudent, 'list'),
-            permission = getpermission('Contingent', 'view_current_student')
+            permission = getpermission('Сontingent', 'view_current_student')
         )
     ]
 
@@ -737,7 +737,7 @@ class AcademUpdateView(ObjectUpdateView):
     form_class = AcademLeaveForm
     queryset = Student.objects.filter(is_in_academ=False, is_expelled=False)
 
-    permission_required = getpermission('Contingent', 'update_currentstudent')
+    permission_required = getpermission('Сontingent', 'update_currentstudent')
 
 class AcademListView(ObjectTableView):
     """
@@ -747,7 +747,7 @@ class AcademListView(ObjectTableView):
     filterset_class = AcademFilter
     queryset = AcademStudent.objects.all()
 
-    permission_required = getpermission('Contingent', 'view_academ_student')
+    permission_required = getpermission('Сontingent', 'view_academ_student')
 
 class AcademReturn(ObjectUpdateView):
     """
@@ -756,7 +756,7 @@ class AcademReturn(ObjectUpdateView):
     form_class = AcademReturnForm
     queryset = Student.objects.filter(is_in_academ=True, is_expelled=False)
 
-    permission_required = getpermission('Contingent', 'return_currentstudent')
+    permission_required = getpermission('Сontingent', 'return_currentstudent')
 
 #
 ## Отчисленные студенты
@@ -767,20 +767,20 @@ class ExpulsionListView(ObjectTableView):
     filterset_class = ExpulsionFilter
     queryset = Student.objects.filter(is_expelled=True, is_in_academ=False)
 
-    permission_required = getpermission('Contingent', 'view_expulsion_student')
+    permission_required = getpermission('Сontingent', 'view_expulsion_student')
 
 class ExpelStudent(ObjectUpdateView):
     form_class = ExpellStudentForm
     queryset = Student.objects.filter(is_in_academ=False, is_expelled=True)
 
-    permission_required = getpermission('Contingent', 'update_expulsion_student')
+    permission_required = getpermission('Сontingent', 'update_expulsion_student')
 
 
 class RecoverStudent(ObjectUpdateView):
     form_class = RecoverStudentForm
     queryset = Student.objects.filter(is_in_academ=False, is_expelled=True)
 
-    permission_required = getpermission('Contingent', 'return_expulsion_student')
+    permission_required = getpermission('Сontingent', 'return_expulsion_student')
 
 #
 ## Статистика
@@ -790,7 +790,7 @@ class RecoverStudent(ObjectUpdateView):
 class StatisticksView(ObjectTemplateView):
     template_name = 'Contingent/statisticks.html'
 
-    permission_required = getpermission('Contingent', 'view_statistic')
+    permission_required = getpermission('Сontingent', 'view_statistic')
 
     def get_context_data(self, **kwargs):
         student_list = student_format_to_list()
@@ -945,7 +945,7 @@ class ViewRecordBookView(ObjectTemplateView):
     """
     template_name = 'Contingent/record_book_view.html'
 
-    permission_required = getpermission('Contingent', 'view_record_book')
+    permission_required = getpermission('Сontingent', 'view_record_book')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -981,7 +981,7 @@ class ViewRecordBookView(ObjectTemplateView):
 
         return context
 
-@permission_required(getpermission('Contingent', 'save_record_book'))
+@permission_required(getpermission('Сontingent', 'save_record_book'))
 def generate_student_record_book(request, pk):
     """
     Функция для генерации зачетной книжки для конкретного студента
@@ -1020,7 +1020,7 @@ def generate_student_record_book(request, pk):
     return redirect('view_record_book', qualification_id=qualification.id, admission_year=admission_year, student_id=pk)
 
 
-@permission_required(getpermission('Contingent', 'save_record_book_template'))
+@permission_required(getpermission('Сontingent', 'save_record_book_template'))
 def create_auto_record_book_template(request, qualification_id, admission_year):
     """
     Функция для генерации Шаблона зачетной книжки  шаблон генерируется на квалификацию и год поступления,
@@ -1047,7 +1047,7 @@ def create_auto_record_book_template(request, qualification_id, admission_year):
     return redirect('view_record_book_template', qualification_id=qualification_id, admission_year=admission_year)
 
 
-@permission_required(getpermission('Contingent', 'save_record_book'))
+@permission_required(getpermission('Сontingent', 'save_record_book'))
 def generate_group_recordbooks(request, group_id):
     """
     Функция для генерации зачетных книжек на всю группу
@@ -1100,7 +1100,7 @@ class ContingentMovementTableView(ObjectTableView):
     queryset = ContingentMovement.objects.all()
     template_name = 'Contingent/contingent_movement_list.html'
 
-    permission_required = getpermission('Contingent', 'view_movement')
+    permission_required = getpermission('Сontingent', 'view_movement')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1112,7 +1112,7 @@ class ContingentMovementTableView(ObjectTableView):
 #######Обработка генерации доков
 #########
 
-@permission_required(getpermission('Contingent', 'export_group_student'))
+@permission_required(getpermission('Сontingent', 'export_group_student'))
 def generate_group_table(request):
     """
     Функция для генерации файла .xslx для всех групп
@@ -1158,7 +1158,7 @@ def generate_course_table(request, course):
     # except (CourseDifferenceError, EducationBaseDifferenceError) as e:
     #     return HttpResponse(f"Ошибка: {e.message}", status=400)
 
-@permission_required(getpermission('Contingent', 'export_statistic'))
+@permission_required(getpermission('Сontingent', 'export_statistic'))
 def generate_statistics_table(request):
     """
     Функция для генерации файла .xslx для статистики
@@ -1180,7 +1180,7 @@ def generate_statistics_table(request):
     os.remove(file_path)
     return response
 
-@permission_required(getpermission('Contingent', 'export_statistic'))
+@permission_required(getpermission('Сontingent', 'export_statistic'))
 def generate_vacation_table(request):
     """
     Функция для генерации файла .xslx для студентов находящихся в академическом отпуске
@@ -1201,7 +1201,7 @@ def generate_vacation_table(request):
     return response
 
 
-@permission_required(getpermission('Contingent', 'export_movement'))
+@permission_required(getpermission('Сontingent', 'export_movement'))
 def generate_movement_table(request):
     """
     Функция для генерации файла .xslx для движения кнтингента
@@ -1227,7 +1227,7 @@ def generate_movement_table(request):
 #
 
 class GenerateQualificationTemplate(PermissionBaseMixin, FormView):
-    permission_required = getpermission('Contingent', 'generate_qualification_template')
+    permission_required = getpermission('Сontingent', 'generate_qualification_template')
     template_name = 'Contingent/generate_qualification_template.html'
     form_class = GenerateQualificationTemplateForm
 

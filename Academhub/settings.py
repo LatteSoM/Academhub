@@ -43,10 +43,10 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 5000
 
 # Приложения которые пойдут в навигационную панель
 ACTIVE_APPS = [
-    'Сontingent',
     'AccessControl',
     'Gradebook',
     'Curriculum',
+    'Сontingent'
 ]
 
 INSTALLED_APPS = [
@@ -149,6 +149,7 @@ USE_I18N = True
 
 USE_TZ = True
 
+LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'login'
 
