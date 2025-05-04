@@ -32,14 +32,9 @@ class PermissionBaseMixin(PermissionRequiredMixin):
         Override this method to customize the way permissions are checked.
         """
         perms = self.get_permission_required()
-        print('Права view-шки')
-        print(perms)
         if not perms:
             return True
-        result = self.request.user.has_perms(perms)
-        print(self.request.user)
-        print(result)
-        return result
+        return self.request.user.has_perms(perms)
 
 class ButtonsMixin:
     """

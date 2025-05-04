@@ -26,4 +26,6 @@ README.txt
 
 Curriculum/media/
 
-debug.log
+*.log
+
+*.xlsx

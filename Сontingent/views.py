@@ -75,6 +75,7 @@ __all__ = (
     'ExpulsionListView',
     'AcademListView',
 
+    'GenerateStudentRecordBook',
     'GenerateQualificationTemplate',
 )
 
@@ -1476,6 +1477,25 @@ class GenerateQualificationTemplate(PermissionBaseMixin, FormView):
         if error_messages:
             messages.error(self.request, "Ошибки в форме:\n" + "\n".join(error_messages))
         
+        return super().form_invalid(form)
+    
+    def form_valid(self, form):
+        messages.success(self.request, "Шаблон успешно создан")
+        return redirect('generate_qualification_template')
+
+#
+## Создание зачеток для студентов
+#
+
+class GenerateStudentRecordBook(PermissionBaseMixin, FormView):
+    permission_required = getpermission('Сontingent', 'generate_student_recordbook')
+    template_name = 'Contingent/generate_student_recordbook.html'
+    form_class = GenerateStudentRecordBookForm
+
+    def get(self, request, pk, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+    def form_invalid(self, form): 
         return super().form_invalid(form)
     
     def form_valid(self, form):

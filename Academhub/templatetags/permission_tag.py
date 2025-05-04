@@ -23,15 +23,10 @@ def has_perm(context, permissions):
 
     if not permissions:
         return False
-    print('Навигация')
-    print(f'user: {user}')
-    print(permissions)
     
     if isinstance(permissions, Iterable):
         result = user.has_perms(permissions)
     else:
         result = user.has_perm(permissions)
-    print(result)
-    
 
     return result

@@ -20,6 +20,7 @@ __all__ = [
     'QualificationForm',
     'PromoteStudentsForm',
     'PromoteGroupStudentsForm',
+    'GenerateStudentRecordBookForm',
     'GenerateQualificationTemplateForm',
 ]
 
@@ -960,3 +961,42 @@ class GenerateQualificationTemplateForm(forms.Form):
             
             if result:
                 raise forms.ValidationError(result)
+
+class GenerateStudentRecordBookForm(forms.Form):
+
+    help_text = 'Введите номер(а) ячейки(ек) в которую(ые) будет(ут) вписываться информация'
+
+    curriculum = forms.ModelChoiceField(
+        queryset=Curriculum.objects.all(),
+        label='Учебный план',
+    )
+
+    sheet_name = forms.CharField(
+        label='Страница личных данных студента',
+        widget=ExcelCell,
+        help_text=help_text
+    )
+
+    recordbook_number_coord = forms.CharField(
+        label='Номер зачетной книжки',
+        widget=ExcelCell,
+        help_text=help_text
+    )
+    
+    student_name_coord = forms.CharField(
+        label='ФИО студента',
+        widget=ExcelCell,
+        help_text=help_text
+    )
+
+    specialty_coord = forms.CharField(
+        label='Специальность студента',
+        widget=ExcelCell,
+        help_text=help_text
+    )
+
+    order_number_coord = forms.CharField(
+        label='Номер приказа',
+        widget=ExcelCell,
+        help_text=help_text
+    )
