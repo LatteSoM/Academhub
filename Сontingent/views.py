@@ -415,8 +415,10 @@ class GroupDetailView(ObjectDetailView):
     permission_required = getpermission('Сontingent', 'view_group_student')
 
     fieldset = {
-        'Основная информация':
-            ['number', 'qualification']
+        'Основная информация':[
+            # 'number',
+            'qualification'
+        ]
     }
 
     tables = [
@@ -443,6 +445,19 @@ class GroupDetailView(ObjectDetailView):
             permission = getpermission('Сontingent', 'view_group_student')
         )
     ]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Подсчёт студентов
+        student_count = self.object.students.count()  # Через связь Student
+        try:
+            current_student_count = CurrentStudent.objects.filter(group=self.object).count()
+        except Exception as e:
+            current_student_count = None
+            print(f"Ошибка при подсчёте CurrentStudent: {e}")
+        print(f"Количество студентов (CurrentStudent): {current_student_count}")
+        context['student_count'] = student_count
+        return context
 
 class GroupUpdateView(ObjectUpdateView):
     """
@@ -541,120 +556,330 @@ class StudentTableView(ObjectTableImportView):
     ]
 
 
+# class PromoteStudentsView(PermissionBaseMixin, FormView):
+#     """
+#     Класс для фильтрации и отображения студентов по параметрам.
+#     """
+#     model = CurrentStudent
+#     form_class = PromoteStudentsForm
+#     template_name = 'Contingent/transfer/transfer_students_form.html'
+#
+#     properties = ['education_base', 'education_basis', 'academic_debts', 'current_course']
+#     success_url = reverse_lazy('transfer_students_form')
+#
+#     permission_required = getpermission('Contingent', 'transfer_students')
+#
+#     buttons = [
+#         Button(
+#             id='to_list',
+#             name='К таблице',
+#             link_name='transfer_students_list',
+#         )
+#     ]
+#
+#     def get_form_kwargs(self):
+#         kwargs = super().get_form_kwargs()
+#
+#         # Извлекаем параметры из URL
+#         properties = {
+#             'education_base': self.request.GET.get('education_base'),
+#             'education_basis': self.request.GET.get('education_basis'),
+#             'academic_debt': self.request.GET.get('academic_debts'),
+#             'current_course': self.request.GET.get('current_course'),
+#         }
+#
+#         # Передаем параметры в форму
+#         kwargs['properties'] = properties
+#         return kwargs
+#
+#     def get_form_kwargs(self):
+#         """
+#         Передаем параметры из URL в форму.
+#         """
+#         kwargs = super().get_form_kwargs()
+#         kwargs['properties'] = self.request.GET.dict()
+#         return kwargs
+#
+#     def form_valid(self, form):
+#         """
+#         Логика переводана студентов на следующий курс.
+#         """
+#         # Получаем список выбранных студентов
+#         students = form.cleaned_data.get('students')
+#         if not students:
+#             form.add_error(None, "Вы не выбрали студентов для перевода.")
+#             return self.form_invalid(form)
+#
+#         order_number = form.cleaned_data.get('order_number')
+#
+#         groups = set()
+#
+#         # Переводим студентов на следующий курс
+#         for student in students:
+#             try:
+#                 groups.add(student.group)
+#                 if student.group.current_course == 1:
+#                     student.transfer_to_2nd_year_order = order_number
+#                 elif student.group.current_course == 2:
+#                     student.transfer_to_3rd_year_order = order_number
+#                 elif student.group.current_course == 3:
+#                     student.transfer_to_4th_year_order = order_number
+#                 elif student.group.current_course == 4:
+#                     student.expell_order = order_number
+#                     student.is_expelled = True
+#
+#                 create_transfer_log(order_number, student)
+#                 student.save()
+#                 print('Зашли в валид')
+#
+#             except Exception as e:
+#                 print(f"Ошибка при обработке студента {student.id}: {e}")
+#                 continue
+#
+#             # print(type(student))
+#             #
+#             # create_transfer_log(order_number,student)
+#             # student.save()
+#
+#
+#         groups_qr = GroupStudents.objects.all()
+#         for group in groups_qr:
+#             if group in groups:
+#
+#                 # students.filter(group=group)
+#                 current_students = CurrentStudent.objects.filter(group=group)
+#
+#                 current_course = group.current_course
+#                 students_count = len(current_students)
+#                 if current_course == 1:
+#                     transfered_students = len(current_students.filter(transfer_to_2nd_year_order__isnull=False, transfer_to_3rd_year_order=None,
+#                                                      transfer_to_4th_year_order=None))
+#                     if students_count == transfered_students:
+#                         group.current_course = 2
+#                 if current_course == 2:
+#                     transfered_students = len(
+#                         current_students.filter(transfer_to_2nd_year_order__isnull=False, transfer_to_3rd_year_order__isnull=False,
+#                                                      transfer_to_4th_year_order=None))
+#                     if students_count == transfered_students:
+#                         group.current_course = 3
+#                 if current_course == 3:
+#                     transfered_students = len(
+#                         current_students.filter(transfer_to_2nd_year_order__isnull=False, transfer_to_3rd_year_order__isnull=False,
+#                                                      transfer_to_4th_year_order__isnull=False))
+#                     if students_count == transfered_students:
+#                         group.current_course = 3
+#
+#                 # group.current_course += 1
+#                 group.save()
+#
+#         return redirect(self.success_url)
+#
+#
+#     def form_invalid(self, form):
+#         """
+#         Обработка ошибок формы.
+#         """
+#         return super().form_invalid(form)
+
+
+#ЭТО РАБОТАЕТ
+# from django.db import transaction
+# from django.shortcuts import redirect
+#
+# class PromoteStudentsView(PermissionBaseMixin, FormView):
+#     model = CurrentStudent
+#     form_class = PromoteStudentsForm
+#     template_name = 'Contingent/transfer/transfer_students_form.html'
+#     success_url = reverse_lazy('transfer_students_form')
+#     permission_required = getpermission('Contingent', 'transfer_students')
+#
+#     def get_form_kwargs(self):
+#         kwargs = super().get_form_kwargs()
+#         kwargs['properties'] = self.request.GET.dict()
+#         return kwargs
+#
+#     def form_valid(self, form):
+#         students = form.cleaned_data.get('students')
+#         if not students:
+#             form.add_error(None, "Вы не выбрали студентов для перевода.")
+#             return self.form_invalid(form)
+#
+#         order_number = form.cleaned_data.get('order_number')
+#         groups = set()
+#
+#         print(f"Количество выбранных студентов: {len(students)}")
+#         print(f"Номер приказа: {order_number}")
+#
+#         with transaction.atomic():
+#             # Перевод студентов
+#             for student in students:
+#                 try:
+#                     groups.add(student.group)
+#                     print(f"Обрабатываем студента {student.id}, группа {student.group}, курс группы {student.group.current_course}")
+#                     if student.group.current_course == 1:
+#                         student.transfer_to_2nd_year_order = order_number
+#                     elif student.group.current_course == 2:
+#                         student.transfer_to_3rd_year_order = order_number
+#                     elif student.group.current_course == 3:
+#                         student.transfer_to_4th_year_order = order_number
+#                     elif student.group.current_course == 4:
+#                         student.expell_order = order_number
+#                         student.is_expelled = True
+#
+#                     create_transfer_log(order_number, student)
+#                     student.save()
+#                     print(f"Студент {student.id} сохранён")
+#                 except Exception as e:
+#                     print(f"Ошибка при обработке студента {student.id}: {e}")
+#                     continue
+#
+#             # Обновление курса групп
+#             for group in groups:
+#                 # Фильтруем только выбранных студентов в группе
+#                 selected_students_in_group = [s for s in students if s.group == group]
+#                 students_count = len(selected_students_in_group)
+#                 current_course = group.current_course
+#                 print(f"Группа {group.id}, курс {current_course}, выбрано студентов: {students_count}")
+#
+#                 if students_count == 0:
+#                     print(f"Пропускаем группу {group.id}, так как нет выбранных студентов")
+#                     continue
+#
+#                 if current_course == 1:
+#                     transfered_students = len([s for s in selected_students_in_group if s.transfer_to_2nd_year_order == order_number])
+#                     print(f"Переведено на 2-й курс: {transfered_students}")
+#                     if students_count == transfered_students:
+#                         group.current_course = 2
+#                         group.save()
+#                         print(f"Группа {group.id} переведена на 2-й курс")
+#                 elif current_course == 2:
+#                     transfered_students = len([s for s in selected_students_in_group if s.transfer_to_3rd_year_order == order_number])
+#                     print(f"Переведено на 3-й курс: {transfered_students}")
+#                     if students_count == transfered_students:
+#                         group.current_course = 3
+#                         group.save()
+#                         print(f"Группа {group.id} переведена на 3-й курс")
+#                 elif current_course == 3:
+#                     transfered_students = len([s for s in selected_students_in_group if s.transfer_to_4th_year_order == order_number])
+#                     print(f"Переведено на 4-й курс: {transfered_students}")
+#                     if students_count == transfered_students:
+#                         group.current_course = 4
+#                         group.save()
+#                         print(f"Группа {group.id} переведена на 4-й курс")
+#
+#         return redirect(self.success_url)
+#
+#     def form_invalid(self, form):
+#         return super().form_invalid(form)
+
+
+from django.db import transaction
+from django.shortcuts import redirect
+
 class PromoteStudentsView(PermissionBaseMixin, FormView):
-    """
-    Класс для фильтрации и отображения студентов по параметрам.
-    """
     model = CurrentStudent
     form_class = PromoteStudentsForm
-    template_name = 'Contingent/transfer/transfer_students_form.html'
-
-    properties = ['education_base', 'education_basis', 'academic_debts', 'current_course']
-    success_url = reverse_lazy('transfer_students_form')
-
-    permission_required = getpermission('Сontingent', 'transfer_students')
-
-    buttons = [
-        Button(
-            id='to_list',
-            name='К таблице',
-            link_name='transfer_students_list',
-        )
-    ]
+    template_name = "Contingent/transfer/transfer_students_form.html"
+    success_url = reverse_lazy("transfer_students_form")
+    permission_required = getpermission("Contingent", "transfer_students")
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-
-        # Извлекаем параметры из URL
-        properties = {
-            'education_base': self.request.GET.get('education_base'),
-            'education_basis': self.request.GET.get('education_basis'),
-            'academic_debt': self.request.GET.get('academic_debts'),
-            'current_course': self.request.GET.get('current_course'),
-        }
-
-        # Передаем параметры в форму
-        kwargs['properties'] = properties
-        return kwargs
-
-    def get_form_kwargs(self):
-        """
-        Передаем параметры из URL в форму.
-        """
-        kwargs = super().get_form_kwargs()
-        kwargs['properties'] = self.request.GET.dict()
+        kwargs["properties"] = self.request.GET.dict()
         return kwargs
 
     def form_valid(self, form):
-        """
-        Логика переводана студентов на следующий курс.
-        """
-        # Получаем список выбранных студентов
-        students = form.cleaned_data.get('students')
-        if not students:
-            form.add_error(None, "Вы не выбрали студентов для перевода.")
-            return self.form_invalid(form)
-
-        order_number = form.cleaned_data.get('order_number')
+        students = form.cleaned_data.get("students")
+        order_number = form.cleaned_data.get("order_number")
+        print(f"PromoteStudentsView: Количество выбранных студентов: {len(students)}")
+        print(f"PromoteStudentsView: ID студентов: {[student.id for student in students]}")
+        print(f"PromoteStudentsView: Номер приказа: {order_number}")
 
         groups = set()
 
-        # Переводим студентов на следующий курс
-        for student in students:
-            groups.add(student.group)
-            if student.group.current_course == 1:
-                student.transfer_to_2nd_year_order = order_number
-            elif student.group.current_course == 2:
-                student.transfer_to_3rd_year_order = order_number
-            elif student.group.current_course == 3:
-                student.transfer_to_4th_year_order = order_number
-            elif student.group.current_course == 4:
-                student.expell_order = order_number
-                student.is_expelled = True
+        with transaction.atomic():
+            for student in students:
+                try:
+                    groups.add(student.group)
+                    print(f"Обрабатываем студента {student.id}, группа {student.group.id}, курс группы {student.group.current_course}")
+                    if student.group.current_course == 1:
+                        student.transfer_to_2nd_year_order = order_number
+                    elif student.group.current_course == 2:
+                        student.transfer_to_3rd_year_order = order_number
+                    elif student.group.current_course == 3:
+                        student.transfer_to_4th_year_order = order_number
+                    elif student.group.current_course == 4:
+                        student.expell_order = order_number
+                        student.is_expelled = True
 
-            print(type(student))
+                    create_transfer_log(order_number, student)
+                    student.save()
+                    print(f"Студент {student.id} сохранён")
+                except Exception as e:
+                    print(f"Ошибка при обработке студента {student.id}: {e}")
+                    continue
 
-            create_transfer_log(order_number,student)
-            student.save()
-
-
-        groups_qr = GroupStudents.objects.all()
-        for group in groups_qr:
-            if group in groups:
-
-                # students.filter(group=group)
-                current_students = CurrentStudent.objects.filter(group=group)
-
+            for group in groups:
+                # Формируем список студентов текущей группы из выбранных в форме
+                selected_students_in_group = [s for s in students if s.group == group]
+                students_count = len(selected_students_in_group)
                 current_course = group.current_course
-                students_count = len(current_students)
-                if current_course == 1:
-                    transfered_students = len(current_students.filter(transfer_to_2nd_year_order__isnull=False, transfer_to_3rd_year_order=None,
-                                                     transfer_to_4th_year_order=None))
-                    if students_count == transfered_students:
-                        group.current_course = 2
-                if current_course == 2:
-                    transfered_students = len(
-                        current_students.filter(transfer_to_2nd_year_order__isnull=False, transfer_to_3rd_year_order__isnull=False,
-                                                     transfer_to_4th_year_order=None))
-                    if students_count == transfered_students:
-                        group.current_course = 3
-                if current_course == 3:
-                    transfered_students = len(
-                        current_students.filter(transfer_to_2nd_year_order__isnull=False, transfer_to_3rd_year_order__isnull=False,
-                                                     transfer_to_4th_year_order__isnull=False))
-                    if students_count == transfered_students:
-                        group.current_course = 3
+                print(f"Группа {group.id}, курс {current_course}, выбрано студентов: {students_count}")
 
-                # group.current_course += 1
-                group.save()
+                if students_count == 0:
+                    print(f"Пропускаем группу {group.id}, так как нет выбранных студентов")
+                    continue
+
+                # Проверяем, все ли студенты группы переведены на следующий курс
+                if current_course == 1:
+                    # Подсчитываем студентов, переведённых текущим приказом
+                    transfered_students = len(
+                        [s for s in selected_students_in_group if s.transfer_to_2nd_year_order == order_number])
+                    # Подсчитываем всех непереведённых студентов в группе
+                    remaining_students = Student.objects.filter(group=group,
+                                                                transfer_to_2nd_year_order__isnull=True).count()
+                    print(f"Переведено на 2-й курс текущим приказом: {transfered_students}")
+                    print(f"Осталось перевести на 2-й курс: {remaining_students}")
+                    # Если нет непереведённых студентов, обновляем курс группы
+                    if remaining_students == 0:
+                        group.current_course = 2
+                        group.save()
+                        print(f"Группа {group.id} переведена на 2-й курс")
+                elif current_course == 2:
+                    transfered_students = len(
+                        [s for s in selected_students_in_group if s.transfer_to_3rd_year_order == order_number])
+                    remaining_students = Student.objects.filter(group=group,
+                                                                transfer_to_3rd_year_order__isnull=True).count()
+                    print(f"Переведено на 3-й курс текущим приказом: {transfered_students}")
+                    print(f"Осталось перевести на 3-й курс: {remaining_students}")
+                    if remaining_students == 0:
+                        group.current_course = 3
+                        group.save()
+                        print(f"Группа {group.id} переведена на 3-й курс")
+                elif current_course == 3:
+                    transfered_students = len(
+                        [s for s in selected_students_in_group if s.transfer_to_4th_year_order == order_number])
+                    remaining_students = Student.objects.filter(group=group,
+                                                                transfer_to_4th_year_order__isnull=True).count()
+                    print(f"Переведено на 4-й курс текущим приказом: {transfered_students}")
+                    print(f"Осталось перевести на 4-й курс: {remaining_students}")
+                    if remaining_students == 0:
+                        group.current_course = 4
+                        group.save()
+                        print(f"Группа {group.id} переведена на 4-й курс")
+                elif current_course == 4:
+                    transfered_students = len([s for s in selected_students_in_group if s.is_expelled])
+                    remaining_students = Student.objects.filter(group=group, is_expelled=False).count()
+                    print(f"Отчислено текущим приказом: {transfered_students}")
+                    print(f"Осталось отчислить: {remaining_students}")
+                    if remaining_students == 0:
+                        group.is_active = False
+                        group.save()
+                        print(f"Группа {group.id} деактивирована")
 
         return redirect(self.success_url)
 
-
     def form_invalid(self, form):
-        """
-        Обработка ошибок формы.
-        """
         return super().form_invalid(form)
 
 
@@ -769,11 +994,19 @@ class ExpulsionListView(ObjectTableView):
 
     permission_required = getpermission('Сontingent', 'view_expulsion_student')
 
+# class ExpelStudent(ObjectUpdateView):
+#     form_class = ExpellStudentForm
+#     queryset = Student.objects.filter(is_in_academ=False, is_expelled=True)
+#
+#     permission_required = getpermission('Contingent', 'update_expulsion_student')
+
+from django.contrib import messages
+from django.shortcuts import redirect
+
 class ExpelStudent(ObjectUpdateView):
     form_class = ExpellStudentForm
-    queryset = Student.objects.filter(is_in_academ=False, is_expelled=True)
-
-    permission_required = getpermission('Сontingent', 'update_expulsion_student')
+    queryset = Student.objects.filter(is_in_academ=False, is_expelled=False)
+    permission_required = getpermission('Contingent', 'update_expulsion_student')
 
 
 class RecoverStudent(ObjectUpdateView):
@@ -1244,3 +1477,7 @@ class GenerateQualificationTemplate(PermissionBaseMixin, FormView):
             messages.error(self.request, "Ошибки в форме:\n" + "\n".join(error_messages))
         
         return super().form_invalid(form)
+    
+    def form_valid(self, form):
+        messages.success(self.request, "Шаблон успешно создан")
+        return redirect('generate_qualification_template')

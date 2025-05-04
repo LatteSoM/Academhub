@@ -278,7 +278,7 @@ class StatisticsTableGenerator:
                 for qualification in qualifications_specialty:
                     # Здесь я единожды разбираюсь с 1-м курсом исипа и выделяю место под него в таблице,
                     # после чего единожды заполняю их количество, больше в этом цикле заполнения связанного с ними не будет
-                    if specialty.discipline_name == "Информационные системы и программирование" and not isip_done:
+                    if specialty.name == "Информационные системы и программирование" and not isip_done:
                         worksheet.merge_cells(f"G{entry_index}:G{entry_index+(len(qualifications_specialty)-2)}")
                         worksheet.cell(row=entry_index, column=7).fill = PatternFill("solid", fgColor=Color(indexed=3))
                         worksheet.cell(row=entry_index, column=7).value = len(self.students.filter(group__qualification__name="Информационные системы и программирование")
@@ -307,16 +307,16 @@ class StatisticsTableGenerator:
                     
                     # В случае если нам попадается эта квалификация (это 1-ый курс исипа),
                     # ничего не делаем, т.к. до этого мы уже с ними разобрались
-                    if qualification.discipline_name == "Информационные системы и программирование":
+                    if qualification.name == "Информационные системы и программирование":
                         continue
                     
                     worksheet.cell(row=entry_index,column=1).value = entry_count
                     worksheet.cell(row=entry_index,column=2).value = specialty.code
-                    worksheet.cell(row=entry_index,column=3).value = specialty.discipline_name
-                    worksheet.cell(row=entry_index,column=4).value = qualification.discipline_name
+                    worksheet.cell(row=entry_index,column=3).value = specialty.name
+                    worksheet.cell(row=entry_index,column=4).value = qualification.name
                     worksheet.cell(row=entry_index,column=5).value = "Очная"
 
-                    students_qualification = self.students.filter(group__qualification__name=qualification.discipline_name)
+                    students_qualification = self.students.filter(group__qualification__name=qualification.name)
                     worksheet.merge_cells(f"A{entry_index}:A{entry_index+1}")
                     worksheet.merge_cells(f"B{entry_index}:B{entry_index+1}")
                     worksheet.merge_cells(f"C{entry_index}:C{entry_index+1}")
@@ -332,7 +332,7 @@ class StatisticsTableGenerator:
 
                     # 9 классники
                     for course in range(1, 5):
-                        if not(course == 1 and specialty.discipline_name == "Информационные системы и программирование"):
+                        if not(course == 1 and specialty.name == "Информационные системы и программирование"):
                             worksheet.cell(row=entry_index, column=6+course).value = len(students_qualification.filter(group__current_course=course).filter(education_basis="Бюджет")
                                                                                          .filter(education_base="Основное общее").filter(is_in_academ=False).filter(is_expelled=False))
                             worksheet.cell(row=entry_index+1, column=6+course).value = len(students_qualification.filter(group__current_course=course).filter(education_basis="Внебюджет")
@@ -1000,7 +1000,7 @@ class GradebookDocumentGenerator:
 class RecordBookDocumentGenerator:
     def __init__(self, recordbook_template_path):
         self.rb_template_path = recordbook_template_path
-        self.rb_qualification_template_path = os.path.abspath('./Academhub/modules/qualification_excel_template.xlsx')
+        self.rb_qualification_template_path = os.path.abspath('./qualification_excel_template.xlsx')
 
     def generate_qualification_template(self, curriculum, semester1_exam_coords: dict={}, semester1_zachet_coords: dict={},
                                         semester2_exam_coords: dict={}, semester2_zachet_coords: dict={}, 
@@ -1247,8 +1247,8 @@ class RecordBookDocumentGenerator:
         workbook.save(save_path)
 
 if __name__ == "__main__":
-    rbdg = RecordBookDocumentGenerator("Academhub/modules/test_excel_template.xlsx")
-    test_curriculum = Curriculum.objects.get(id=2)
+    rbdg = RecordBookDocumentGenerator("test_excel_template.xlsx")
+    test_curriculum = Curriculum.objects.get(id=1)
     
     # cur_clock_cells = ClockCell.objects.filter(curriculum=test_curriculum)
     # for i in range(1, 9):
@@ -1293,8 +1293,8 @@ if __name__ == "__main__":
                                                 )
     print(test)
 
-    test = rbdg.generate_student_recordbook(StudentRecordBook.objects.get(id=1), 'Sheet3', 'C3', 'C5', 'C9', 'C11', 'recordbook1.xlsx')
-    print(test)
+    # test = rbdg.generate_student_recordbook(StudentRecordBook.objects.get(id=1), 'Sheet3', 'C3', 'C5', 'C9', 'C11', 'recordbook1.xlsx')
+    # print(test)
     # students = Student.objects.all()
     # specialties = Specialty.objects.all()
     # qualifications = Qualification.objects.all()

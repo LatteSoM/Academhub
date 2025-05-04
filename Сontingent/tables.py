@@ -83,10 +83,21 @@ class StudentTransferTable(BaseTable):
 
 
 class StudentTable2(BaseTable):
+    row_number = tables.Column(
+        verbose_name='№',
+        orderable=False,
+        empty_values=()
+    )
+
+    def render_row_number(self):
+        self.row_number_counter = getattr(self, 'row_number_counter', 0) + 1
+        return self.row_number_counter
+
     class Meta:
         model = Student
-        paginate_by=30
-        fields = ('full_name', 'course',)
+        fields = ('row_number', 'full_name', 'course')
+        attrs = {'class': 'table table-striped'}
+        sequence = ('row_number', 'full_name', 'course')
 
 class AcademTable(BaseTable):
 

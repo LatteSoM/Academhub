@@ -3,9 +3,11 @@
 {% load util %}
 
 {% block detail-header %}
-<h1>
-    Студент {{ object.full_name }}
-</h1>
+<h3>
+    Студент:
+    <br>
+    {{ object.full_name }}
+</h3>
 {% endblock %}
 
 {% block buttons %}
