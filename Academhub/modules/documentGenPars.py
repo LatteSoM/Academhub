@@ -998,7 +998,7 @@ class GradebookDocumentGenerator:
 #        student = Student(full_name=student_row[1], )
 
 class RecordBookDocumentGenerator:
-    def __init__(self, recordbook_template_path):
+    def __init__(self, recordbook_template_path=None):
         self.rb_template_path = recordbook_template_path
         self.rb_qualification_template_path = os.path.abspath('./qualification_excel_template.xlsx')
 
