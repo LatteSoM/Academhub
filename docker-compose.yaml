@@ -43,11 +43,13 @@ services:
       TZ: ${TZ}
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./certs:/etc/nginx/certs:ro
       - static:/Academhub/static
     depends_on:
       - django
     ports:
       - "81:80"
+      - "443:443"
 
 volumes:
   postgres:
