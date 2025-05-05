@@ -66,6 +66,7 @@ class GetDiplomTypeGradebookForm(forms.Form):
         label="Группы"
     )
 
+
 class GradebookForm(forms.ModelForm):
     """
     Форма для создания и редактирования записей в журнале оценок.
@@ -84,7 +85,7 @@ class GradebookForm(forms.ModelForm):
         label='Группа'
     )
     students = forms.ModelMultipleChoiceField(
-        queryset=Student.objects.none(),
+        queryset=Student.objects.none(),  # Default empty, will be set in __init__
         label='Студенты',
         widget=forms.CheckboxSelectMultiple
     )
@@ -103,35 +104,38 @@ class GradebookForm(forms.ModelForm):
 
         Args:
             *args: Позиционные аргументы.
-            **kwargs: Именованные аргументы.
+            **kwargs: Именованные аргументы, включая 'properties' для дополнительных параметров.
         """
         properties = kwargs.pop('properties', {})
         super().__init__(*args, **kwargs)
 
+        # Determine group_id: use instance's group if editing, otherwise from properties
         if self.instance.pk:
-            self.group_id = properties.get('group_id', self.instance.group.pk)
-            if self.group_id == '':
-                self.group_id = self.instance.group.pk
+            self.group_id = self.instance.group.pk
         else:
             self.group_id = properties.get('group_id', None)
 
+        # Set initial group and configure students queryset
         if self.group_id:
             self.initial['group'] = self.group_id
             self.fields['students'].queryset = Student.objects.filter(group__id=self.group_id)
-            
-            group = GroupStudents.objects.filter(pk=self.group_id)
 
-            if  group.exists():
-                group = group.first()
+            # Set initial students for editing existing gradebook
+            if self.instance.pk:
+                self.initial['students'] = self.instance.students.all()
 
+            # Configure discipline queryset based on group's specialty
+            group = GroupStudents.objects.filter(pk=self.group_id).first()
+            if group:
                 specialty = group.qualification.specialty
-                self.fields['name'].queryset = specialty.disciplines.all()
+                self.fields['discipline'].queryset = specialty.disciplines.all()
 
-
+        # Handle case where group_id is not provided but instance exists
         elif self.instance.pk:
-            self.initial['group'] = self.group_id
-            self.fields['students'].queryset = Student.objects.filter(group__id=self.group_id)
-            self.fields['name'].queryset = self.instance.group.qualification.specialty.disciplines.all()
+            self.initial['group'] = self.instance.group.pk
+            self.fields['students'].queryset = Student.objects.filter(group__id=self.instance.group.pk)
+            self.initial['students'] = self.instance.students.all()  # Ensure assigned students are checked
+            self.fields['discipline'].queryset = self.instance.group.qualification.specialty.disciplines.all()
 
 class GradebookStudentsForm(forms.ModelForm):
     ticket_number = forms.IntegerField(

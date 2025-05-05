@@ -1311,7 +1311,7 @@ if __name__ == "__main__":
                                                 )
     print(test)
 
-    # test = rbdg.generate_student_recordbook(StudentRecordBook.objects.get(id=1), 'Sheet3', 'C3', 'C5', 'C9', 'C11', 'recordbook1.xlsx')
+    test = rbdg.generate_student_recordbook(StudentRecordBook.objects.get(id=1), 'Sheet3', 'C3', 'C5', 'C9', 'C11', 'recordbook1.xlsx')
     # print(test)
     # students = Student.objects.all()
     # specialties = Specialty.objects.all()
