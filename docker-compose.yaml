@@ -18,7 +18,7 @@ services:
       - postgres
   django:
     build: image/.
-    image: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
+    image: ${CI_REGISTRY_IMAGE:-academhub-django}:${CI_COMMIT_REF_SLUG:-latest}-${CI_COMMIT_SHORT_SHA:-local}
     container_name: django
     restart: always
     depends_on:
@@ -43,7 +43,7 @@ services:
       TZ: ${TZ}
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./certs:/etc/nginx/certs:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
       - static:/Academhub/static
     depends_on:
       - django
