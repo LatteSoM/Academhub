@@ -31,6 +31,9 @@ __all__ = (
     'Module',
     'Discipline',
     'ClockCell',
+    'TeachersForDisciplineAndCurriculum',
+    'AttestationPeriodForDisciplines',
+    'ReleaseFromCurriculum',
 )
 
 class AcademHubModel(UrlGenerateMixin, models.Model):
@@ -1611,3 +1614,16 @@ class AttestationPeriodForDisciplines(AcademHubModel):
             "start_date": self.start_date,
             "end_date": self.end_date,
         }
+
+
+class ReleaseFromCurriculum(AcademHubModel):
+
+    course = models.IntegerField(null=False)
+    curriculum = models.ForeignKey(Curriculum, related_name='releases',
+                                   on_delete=models.CASCADE)
+
+    study_year = models.CharField(max_length=100)
+
+
+
+

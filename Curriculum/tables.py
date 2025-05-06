@@ -1,8 +1,9 @@
-from django_tables2 import TemplateColumn
+from django_tables2 import TemplateColumn, tables
 
-from Academhub.models import Curriculum
+from Academhub.models import Curriculum, ReleaseFromCurriculum, Button
 from Academhub.tables import BaseTable
 from Academhub.tables.column import ButtonLinkColumn  # Import ButtonLinkColumn
+from Academhub.utils import getpattern, getpermission
 
 
 class CurriculumTable(BaseTable):  # Inherit from BaseTable
@@ -43,3 +44,24 @@ class CurriculumTable(BaseTable):  # Inherit from BaseTable
         attrs = {"class": "table table-bordered table-hover"}
 
     # render_actions method is no longer needed
+
+
+class ReleaseFromCurriculumTable(BaseTable):
+    qualification = tables.Column(accessor='curriculum.qualification_name',
+        verbose_name='Квалификация')
+    study_year = tables.Column(accessor='study_year', verbose_name='Учебный год')
+    course = tables.Column(accessor='course',  verbose_name='Курс')
+
+    buttons = [
+        Button(
+            id='add',
+            name='Добавить',
+            link_name=getpattern(ReleaseFromCurriculum, 'add'),
+            permission=getpermission('ReleaseFromCurriculum', 'create_group_student'),
+        )
+    ]
+
+    class Meta:
+        model = ReleaseFromCurriculum
+        paginate_by = 10
+        fields = ('qualification', 'study_year', 'course')
