@@ -8,7 +8,7 @@ from openpyxl.reader.excel import load_workbook
 
 from Academhub.forms import *
 from Academhub.models import Student, Discipline, GroupStudents, Specialty, Qualification
-from Academhub.modules.documentGenPars import RecordBookDocumentGenerator
+# from Academhub.modules.documentGenPars import RecordBookDocumentGenerator
 from .utils import *
 
 __all__ = [
