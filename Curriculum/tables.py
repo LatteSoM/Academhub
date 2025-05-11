@@ -61,6 +61,12 @@ class ReleaseFromCurriculumTable(BaseTable):
         )
     ]
 
+    view_detail = ButtonLinkColumn(
+        accessor='pk',
+        text='Просмотреть',
+        verbose_name=''
+    )
+
     class Meta:
         model = ReleaseFromCurriculum
         paginate_by = 10

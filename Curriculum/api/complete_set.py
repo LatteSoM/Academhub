@@ -1,28 +1,23 @@
 import json
-from collections import defaultdict
-
 import pandas as pd
 from django.db import transaction
-from django.db.models import Count
+from collections import defaultdict
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
-from lxml.objectify import annotate
-
+from Gradebook.utils import update_gradebooks_after_deactivation
 from Academhub.models import Specialty, Qualification, Curriculum, GroupStudents, ClockCell, CustomUser
+from Academhub.models.models import TeachersForDisciplineAndCurriculum, AttestationPeriodForDisciplines
 
 __all__ = (
     'get_study_plans',
     'get_courses_for_study_plan',
+    'get_courses_and_groups_for_study_plan',
     'get_disciplines_by_curriculum_course_term_for_attestation',
     'get_disciplines_by_curriculum_course_term',
     'import_teachers_excel_view',
     'save_teachers_for_groups_and_disciplines',
     'save_periods_for_groups_and_disciplines'
 )
-
-from Academhub.models.models import TeachersForDisciplineAndCurriculum, AttestationPeriodForDisciplines
-from Gradebook.utils import update_gradebooks_after_deactivation
 
 semester_dict = {
         "1-1": 1,
@@ -57,7 +52,7 @@ def get_study_plans(request):
     return JsonResponse(list(curriculums), safe=False)
 
 
-def get_courses_for_study_plan(request):
+def get_courses_and_groups_for_study_plan(request):
     curriculum_id = request.GET.get('curriculum_id')
     if not curriculum_id or curriculum_id == 'Выберите учебный план':
         return JsonResponse({'error': 'Missing specialty_id'}, status=400)
@@ -85,6 +80,24 @@ def get_courses_for_study_plan(request):
     response["study_groups"] = groups
 
     return JsonResponse(response, safe=False)
+
+
+def get_courses_for_study_plan(request):
+    curriculum_id = request.GET.get('curriculum_id')
+    if not curriculum_id or curriculum_id == 'Выберите учебный план':
+        return JsonResponse({'error': 'Missing specialty_id'}, status=400)
+
+    response = {}
+
+    curriculum = Curriculum.objects.get(id=curriculum_id)
+    if curriculum.basis_of_admission == 11:
+        response["courses"] = [1, 2, 3]
+
+    else:
+        response["courses"] = [1, 2, 3, 4]
+
+    return JsonResponse(response, safe=False)
+
 
 
 @require_POST

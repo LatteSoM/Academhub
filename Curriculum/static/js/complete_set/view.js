@@ -132,7 +132,6 @@ document.getElementById('sendFileBtn').addEventListener('click', function () {
 
   const url = '/CurriculumApp/api/import_teachers_excel/'
 
-  console.log(csrfToken)
   try {
     fetch(url, {
         method: 'POST',

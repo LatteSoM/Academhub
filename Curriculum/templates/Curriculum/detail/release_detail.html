@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block content %}
+    <link rel="stylesheet" href="{% static 'css/release_detail.css' %}">
+    <div>
+        <div class="reserve_container">
+            <p class="reserve_block getRelease" id="release{{ release_id }}">Учебный год: {{ release_study_year }}</p>
+
+            <p class="reserve_block getCourse">Курс: {{ release_course }}</p>
+
+            <p class="reserve_block getCurriculum" id="curriculum{{ curriculum_id }}">Специальность {{ curriculum_speciality }}</p>
+        </div>
+
+        <div class="weeks_container">
+            <div class="week_container">
+                <label for="weeks_at_first_term">Недель в первом семестре:</label>
+                <input class="week_input" id="weeks_at_first_term" type="text">
+            </div>
+
+            <div class="week_container">
+                <label for="weeks_at_second_term">Недель во втором семестре:</label>
+                <input class="week_input" id="weeks_at_second_term" type="text">
+            </div>
+
+        </div>
+    </div>
+
+
+
+    <script type="module" src="{% static 'js/releases_from_curriculums/release_detail.js' %}"></script>
+{#    <script type="module" src="{% static 'js/releases_from_curriculums/api_requests/detail_ajaxes.js' %}"></script>#}
+{% endblock %}

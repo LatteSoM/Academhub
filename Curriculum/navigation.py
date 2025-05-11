@@ -7,7 +7,7 @@ navigation = Navigation(
         sub_links=[
             ChildLink('Учебные планы', 'curriculum_list'),
             ChildLink("Укомплектация учебных планов", 'curriculum_complete_set'),
-            ChildLink("Выписки из учебных планов", getpattern('ReleaseFromCurriculum', 'detail')),
+            ChildLink("Выписки из учебных планов", getpattern('ReleaseFromCurriculum', 'list')),
         ]
     )
 )

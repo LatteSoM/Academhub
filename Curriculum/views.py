@@ -1,5 +1,6 @@
 import json
 from collections import defaultdict
+from platform import release
 
 import pandas as pd  # Import pandas for Excel processing
 from django.contrib import messages
@@ -28,7 +29,11 @@ __all__ = (
     'CurriculumDeleteView',
     'CurriculumEditableFormView',
     'CurriculumPreviewView',
-    'CompleteSetCurriculum', # Add the new view to __all__
+    'CompleteSetCurriculum',
+    'SetAttestationPeriodView',
+    'ReleaseFromCurriculumDetailView',
+    'ReleaseFromCurriculumCreateView',
+    'ReleaseFromCurriculumView',
 )
 
 
@@ -286,5 +291,26 @@ class ReleaseFromCurriculumCreateView(ObjectTemplateView):
         request = self.request
 
         context["qualifications"] = Qualification.objects.all()
+
+        return context
+
+
+class ReleaseFromCurriculumDetailView(ObjectTemplateView):
+    template_name = 'Curriculum/detail/release_detail.html'
+    model = ReleaseFromCurriculum
+
+    permission_required = getpermission('ReleaseFromCurriculum', 'view_release_from_curriculum')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pk = context['pk']
+        release = ReleaseFromCurriculum.objects.get(pk=pk)
+        curriculum = release.curriculum
+
+        context["release_id"] = release.id
+        context["release_course"] = release.course
+        context["release_study_year"] = release.study_year
+        context["curriculum_id"] = curriculum.id
+        context["curriculum_speciality"] = curriculum.qualification.specialty.code
 
         return context
