@@ -42,6 +42,9 @@ urlpatterns = [
     path('api/create_new_release_from_curriculum/',
          create_new_release_from_curriculum,
          name='create_new_release_from_curriculum'),
+    path('api/get_weeks_count_for_release/',
+         get_weeks_count_for_release,
+         name='get_weeks_count_for_release'),
 
     path('api/get_groups_by_curriculum_id/',
          get_groups_by_curriculum_id,
@@ -50,6 +53,12 @@ urlpatterns = [
     path('api/get_disciplines_and_teacher_for_theme/',
          get_disciplines_and_teacher_for_theme,
          name='get_disciplines_and_teacher_for_theme'),
+    path('api/get_disciplines_with_cells/',
+         get_disciplines_with_cells,
+         name='get_disciplines_with_cells'),
+    path('api/save_all_cells/',
+         save_all_cells,
+         name='save_all_cells'),
 
 
     path("curriculum/complete_set/", CompleteSetCurriculum.as_view(), name='curriculum_complete_set'),

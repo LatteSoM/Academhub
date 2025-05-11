@@ -9684,3 +9684,404 @@ Watching for file changes with StatReloader
 C:\Users\Kliker\Documents\MPTLab\Academhub\Curriculum\api\releases_from_curriculums.py changed, reloading.
 Watching for file changes with StatReloader
 Watching for file changes with StatReloader
+Watching for file changes with StatReloader
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\Curriculum\urls.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\Curriculum\api\releases_from_curriculums.py changed, reloading.
+Watching for file changes with StatReloader
+Internal Server Error: /CurriculumApp/api/get_weeks_count_for_release/
+Traceback (most recent call last):
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\Curriculum\api\releases_from_curriculums.py", line 203, in get_weeks_count_for_release
+    weeks = ReleaseWeeksInTerms.objects.get(release_id=release_id)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\db\models\query.py", line 623, in get
+    clone = self._chain() if self.query.combinator else self.filter(*args, **kwargs)
+                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\db\models\query.py", line 1436, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\db\models\query.py", line 1454, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\db\models\query.py", line 1461, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\db\models\sql\query.py", line 1546, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\db\models\sql\query.py", line 1577, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\db\models\sql\query.py", line 1427, in build_filter
+    lookups, parts, reffed_expression = self.solve_lookup_type(arg, summarize)
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\db\models\sql\query.py", line 1237, in solve_lookup_type
+    _, field, _, lookup_parts = self.names_to_path(lookup_splitted, self.get_meta())
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\db\models\sql\query.py", line 1725, in names_to_path
+    raise FieldError(
+django.core.exceptions.FieldError: Cannot resolve keyword 'release_id' into field. Choices are: cells, curriculum, curriculum_id, id, weeks_at_first_term, weeks_at_second_term
+Not Found: /favicon.ico
+Watching for file changes with StatReloader
+Internal Server Error: /CurriculumApp/api/get_weeks_count_for_release/
+Traceback (most recent call last):
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\db\models\fields\__init__.py", line 2053, in get_prep_value
+    return int(value)
+           ^^^^^^^^^^
+TypeError: int() argument must be a string, a bytes-like object or a real number, not 'WSGIRequest'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\Curriculum\api\releases_from_curriculums.py", line 203, in get_weeks_count_for_release
+    weeks = ReleaseWeeksInTerms.objects.get(release_id=release_id)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\db\models\query.py", line 623, in get
+    clone = self._chain() if self.query.combinator else self.filter(*args, **kwargs)
+                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\db\models\query.py", line 1436, in filter
+    return self._filter_or_exclude(False, args, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\db\models\query.py", line 1454, in _filter_or_exclude
+    clone._filter_or_exclude_inplace(negate, args, kwargs)
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\db\models\query.py", line 1461, in _filter_or_exclude_inplace
+    self._query.add_q(Q(*args, **kwargs))
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\db\models\sql\query.py", line 1546, in add_q
+    clause, _ = self._add_q(q_object, self.used_aliases)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\db\models\sql\query.py", line 1577, in _add_q
+    child_clause, needed_inner = self.build_filter(
+                                 ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\db\models\sql\query.py", line 1492, in build_filter
+    condition = self.build_lookup(lookups, col, value)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\db\models\sql\query.py", line 1319, in build_lookup
+    lookup = lookup_class(lhs, rhs)
+             ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\db\models\lookups.py", line 27, in __init__
+    self.rhs = self.get_prep_lookup()
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\db\models\fields\related_lookups.py", line 166, in get_prep_lookup
+    self.rhs = target_field.get_prep_value(self.rhs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\db\models\fields\__init__.py", line 2055, in get_prep_value
+    raise e.__class__(
+TypeError: Field 'id' expected a number but got <WSGIRequest: GET '/CurriculumApp/api/get_weeks_count_for_release/?release_id=1'>.
+C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\Curriculum\api\releases_from_curriculums.py changed, reloading.
+Watching for file changes with StatReloader
+Internal Server Error: /CurriculumApp/api/get_weeks_count_for_release/
+Traceback (most recent call last):
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\Curriculum\api\releases_from_curriculums.py", line 203, in get_weeks_count_for_release
+    weeks = ReleaseWeeksInTerms.objects.get(release_id=int(release_id))
+                                                       ^^^^^^^^^^^^^^^
+TypeError: int() argument must be a string, a bytes-like object or a real number, not 'WSGIRequest'
+C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\Curriculum\api\releases_from_curriculums.py changed, reloading.
+Watching for file changes with StatReloader
+Internal Server Error: /CurriculumApp/api/get_weeks_count_for_release/
+Traceback (most recent call last):
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\Curriculum\api\releases_from_curriculums.py", line 204, in get_weeks_count_for_release
+    weeks = ReleaseWeeksInTerms.objects.get(release_id=int(release_id))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\db\models\query.py", line 637, in get
+    raise self.model.DoesNotExist(
+Academhub.models.models.ReleaseWeeksInTerms.DoesNotExist: ReleaseWeeksInTerms matching query does not exist.
+C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\Curriculum\api\releases_from_curriculums.py changed, reloading.
+Watching for file changes with StatReloader
+Internal Server Error: /CurriculumApp/api/get_weeks_count_for_release/
+Traceback (most recent call last):
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\Curriculum\api\releases_from_curriculums.py", line 204, in get_weeks_count_for_release
+    weeks = ReleaseWeeksInTerms.objects.get(release_id=release_id)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\db\models\query.py", line 637, in get
+    raise self.model.DoesNotExist(
+Academhub.models.models.ReleaseWeeksInTerms.DoesNotExist: ReleaseWeeksInTerms matching query does not exist.
+C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\Curriculum\api\releases_from_curriculums.py changed, reloading.
+Watching for file changes with StatReloader
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Watching for file changes with StatReloader
+Using proactor: IocpProactor
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Using proactor: IocpProactor
+Watching for file changes with StatReloader
+Not Found: /favicon.ico
+C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\Curriculum\api\releases_from_curriculums.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\Curriculum\api\releases_from_curriculums.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\Curriculum\api\releases_from_curriculums.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\Curriculum\api\releases_from_curriculums.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\Curriculum\api\releases_from_curriculums.py changed, reloading.
+Watching for file changes with StatReloader
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Watching for file changes with StatReloader
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\Curriculum\urls.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\Curriculum\api\releases_from_curriculums.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\Curriculum\api\releases_from_curriculums.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\Curriculum\api\releases_from_curriculums.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\Curriculum\api\releases_from_curriculums.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\Curriculum\api\releases_from_curriculums.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\Curriculum\api\releases_from_curriculums.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\Curriculum\api\releases_from_curriculums.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\Curriculum\api\releases_from_curriculums.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\Curriculum\api\releases_from_curriculums.py changed, reloading.
+Watching for file changes with StatReloader
+C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\Curriculum\api\releases_from_curriculums.py changed, reloading.
+Watching for file changes with StatReloader
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Watching for file changes with StatReloader
+Using proactor: IocpProactor
+C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\Curriculum\api\releases_from_curriculums.py changed, reloading.
+Watching for file changes with StatReloader
+Not Found: /favicon.ico
+Using proactor: IocpProactor
+C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\Curriculum\api\releases_from_curriculums.py changed, reloading.
+Watching for file changes with StatReloader
+Using proactor: IocpProactor
+Internal Server Error: /CurriculumApp/api/get_weeks_count_for_release/
+Traceback (most recent call last):
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\Curriculum\api\releases_from_curriculums.py", line 208, in get_weeks_count_for_release
+    'first_term': weeks.weeks_at_first_term,
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'QuerySet' object has no attribute 'weeks_at_first_term'
+Internal Server Error: /CurriculumApp/api/get_weeks_count_for_release/
+Traceback (most recent call last):
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\Curriculum\api\releases_from_curriculums.py", line 208, in get_weeks_count_for_release
+    'first_term': weeks.weeks_at_first_term,
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'QuerySet' object has no attribute 'weeks_at_first_term'
+Internal Server Error: /CurriculumApp/api/get_weeks_count_for_release/
+Traceback (most recent call last):
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\Curriculum\api\releases_from_curriculums.py", line 208, in get_weeks_count_for_release
+    'first_term': weeks.weeks_at_first_term,
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'QuerySet' object has no attribute 'weeks_at_first_term'
+Internal Server Error: /CurriculumApp/api/get_weeks_count_for_release/
+Traceback (most recent call last):
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\Curriculum\api\releases_from_curriculums.py", line 208, in get_weeks_count_for_release
+    'first_term': weeks.weeks_at_first_term,
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'QuerySet' object has no attribute 'weeks_at_first_term'
+Internal Server Error: /CurriculumApp/api/get_weeks_count_for_release/
+Traceback (most recent call last):
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\Curriculum\api\releases_from_curriculums.py", line 208, in get_weeks_count_for_release
+    'first_term': weeks.weeks_at_first_term,
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'QuerySet' object has no attribute 'weeks_at_first_term'
+Not Found: /favicon.ico
+Internal Server Error: /CurriculumApp/api/get_weeks_count_for_release/
+Traceback (most recent call last):
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\Curriculum\api\releases_from_curriculums.py", line 208, in get_weeks_count_for_release
+    'first_term': weeks.weeks_at_first_term,
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'QuerySet' object has no attribute 'weeks_at_first_term'
+Not Found: /favicon.ico
+Using proactor: IocpProactor
+C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\Curriculum\api\releases_from_curriculums.py changed, reloading.
+Watching for file changes with StatReloader
+Using proactor: IocpProactor
+C:\Users\Overkliker\Documents\MPT_gitlab\Academhub\Curriculum\api\releases_from_curriculums.py changed, reloading.
+Watching for file changes with StatReloader
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico

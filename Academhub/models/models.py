@@ -1629,13 +1629,14 @@ class ReleaseWeeksInTerms(AcademHubModel):
     weeks_at_first_term = models.IntegerField(null=False)
     weeks_at_second_term = models.IntegerField(null=False)
 
-    curriculum = models.ForeignKey(ReleaseFromCurriculum, related_name='weeks_in_terms',
+    release = models.ForeignKey(ReleaseFromCurriculum, related_name='weeks_in_terms',
                                    on_delete=models.CASCADE)
 
 
 class ReleaseCell(AcademHubModel):
     type_cell = models.CharField(max_length=100)
     hours_count = models.IntegerField(null=False)
+    term = models.IntegerField(null=False)
     release = models.ForeignKey(ReleaseWeeksInTerms,
                                 related_name='cells',
                                 on_delete=models.CASCADE)
