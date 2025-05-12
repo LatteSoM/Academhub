@@ -24,6 +24,7 @@ __all__ = (
     'ContingentMovement',
     'MiddleCertification',
     'CalendarGraphicOfLearningProcess',
+    'TeachersForDisciplineAndCurriculum',
 
     'Curriculum',
     'Category',
