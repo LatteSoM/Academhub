@@ -7,8 +7,8 @@ from django.utils.dateparse import parse_date
 from openpyxl.reader.excel import load_workbook
 
 from Academhub.forms import *
+from Academhub.modules.documentGenPars import generate_qualification_template
 from Academhub.models import Student, Discipline, GroupStudents, Specialty, Qualification
-from Academhub.modules.documentGenPars import generate_qualification_template, generate_student_recordbook
 # from Academhub.modules.documentGenPars import RecordBookDocumentGenerator
 from .utils import *
 
@@ -828,27 +828,35 @@ class GenerateQualificationTemplateForm(forms.Form):
 
     file = forms.FileField(
         help_text='Поддерживает только .xlsx и .xls файлы',
-        label='Шаблон'
+        label='Шаблон',
+    )
+
+    semester1_exam_coords = ExcelField(
+        label='Экзамены 1 семестра',
+        required=False,
+        help_text='Обязательна для учебного плана 11 класса'
+    )
+
+    semester2_semester1_zachet_coordsexam_coords = ExcelField(
+        label='Зачет 1 семестра',
+        required=False,
+        help_text='Обязательна для учебного плана 11 класса'
     )
 
     semester2_exam_coords = ExcelField(
         label='Экзамены 2 семестра',
-
     )
 
     semester2_zachet_coords = ExcelField(
         label='Зачеты 2 семестра',
-
     )
 
     semester3_zachet_coords = ExcelField(
         label='Зачеты 3 семестра',
-
     )
 
     semester4_exam_coords = ExcelField(
         label='Экзамены 4 семестра',
-
     )
 
     semester4_zachet_coords = ExcelField(
@@ -918,9 +926,10 @@ class GenerateQualificationTemplateForm(forms.Form):
         file = self.cleaned_data.get('file')
 
         if file:
-            # rbdg = RecordBookDocumentGenerator(file)
-            сurriculum = self.cleaned_data.get('сurriculum')
+            curriculum = self.cleaned_data.get('сurriculum')
 
+            semester1_exam_coords = self.cleaned_data.get('semester1_exam_coords')
+            semester1_zachet_coords = self.cleaned_data.get('semester1_zachet_coords')
             semester2_exam_coords = self.cleaned_data.get('semester2_exam_coords')
             semester2_zachet_coords = self.cleaned_data.get('semester2_zachet_coords')
             semester3_zachet_coords = self.cleaned_data.get('semester3_zachet_coords')
@@ -940,7 +949,10 @@ class GenerateQualificationTemplateForm(forms.Form):
             professional_modules_coords = self.cleaned_data.get('professional_modules_coords')
 
             result = generate_qualification_template(
-                сurriculum, 
+                curriculum=curriculum,
+                recordbook_template_path=file,
+                semester1_exam_coords = semester1_exam_coords,
+                semester1_zachet_coords = semester1_zachet_coords,
                 semester2_exam_coords=semester2_exam_coords,
                 semester2_zachet_coords=semester2_zachet_coords,
                 semester3_zachet_coords=semester3_zachet_coords,
@@ -958,10 +970,12 @@ class GenerateQualificationTemplateForm(forms.Form):
                 study_practices_coords=study_practices_coords,
                 industrial_practices_coords=industrial_practices_coords,
                 professional_modules_coords=professional_modules_coords
-                )
+            )
             
             if result:
                 raise forms.ValidationError(result)
+        else:
+            raise forms.ValidationError('Ошибка загрузки файла')
 
 class GenerateStudentRecordBookForm(forms.Form):
 
@@ -1001,29 +1015,3 @@ class GenerateStudentRecordBookForm(forms.Form):
         widget=ExcelCell,
         help_text=help_text
     )
-
-    def __init__(self, *args, **kwargs):
-        student_pk = kwargs.pop('student_pk')
-        self.student = Student.objects.get(pk=student_pk)
-        super().__init__(*args, **kwargs)
-
-    def clean(self):
-        super().clean()
-
-        сurriculum = self.cleaned_data.get('сurriculum')
-        sheet_name = self.cleaned_data.get('sheet_name')
-        recordbook_number_coord = self.cleaned_data.get('recordbook_number_coord')
-        student_name_coord = self.cleaned_data.get('student_name_coord')
-        specialty_coord = self.cleaned_data.get('specialty_coord')
-        order_number_coord = self.cleaned_data.get('order_number_coord')
-
-
-        rb_template = RecordBookTemplate.objects.filter(
-            qualification=сurriculum.qualification,
-            admission_year=сurriculum.admission_year,
-            curriculum=сurriculum
-        )
-
-
-        generate_student_recordbook(rb_template, self.student, sheet_name, recordbook_number_coord,
-                                    student_name_coord, specialty_coord, order_number_coord)
