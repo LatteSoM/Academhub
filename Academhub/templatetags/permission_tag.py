@@ -13,6 +13,7 @@ def has_perm(context, permissions):
     :return: True, если право есть, иначе False.
     """
     user = context.get('user')
+    
 
     if not user:
         return False
@@ -24,6 +25,8 @@ def has_perm(context, permissions):
         return False
     
     if isinstance(permissions, Iterable):
-        return user.has_perms(permissions)
+        result = user.has_perms(permissions)
     else:
-        return user.has_perm(permissions)
+        result = user.has_perm(permissions)
+
+    return result

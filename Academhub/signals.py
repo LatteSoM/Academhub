@@ -15,7 +15,7 @@ def create_custom_permissions(sender, **kwargs):
 
     for app_config in all_apps:
         app_label = app_config.label
-        # Пропускаем системные приложения Django, если нужно
+        # Пропускаем системные приложения Django
         if app_label in ACTIVE_APPS:
             permissions = []
             # Проверяем, есть ли в приложении файл permissions.py с PERMISSIONS
@@ -23,13 +23,15 @@ def create_custom_permissions(sender, **kwargs):
                 permissions_module = importlib.import_module(f"{app_label}.permissions")
                 permissions = getattr(permissions_module, 'PERMISSIONS', [])
             except (ImportError, AttributeError) as e:
-                print(e)
+                pass
 
             # Создаём фиктивный ContentType для приложения
             content_type, created = ContentType.objects.get_or_create(
                 app_label=app_label,
                 model=app_label,  # Фиктивная модель
             )
+
+            print(app_label)
 
             # Создаём права из словаря PERMISSIONS
             for perm in permissions:
