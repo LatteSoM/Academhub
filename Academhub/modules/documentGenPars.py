@@ -4,7 +4,6 @@ import logging
 import os
 import re
 import sys
-from copy import copy
 from io import BytesIO
 
 import django
@@ -1035,7 +1034,7 @@ def generate_unique_record_book_number(admission_year, student):
         return record_book_number
 
 
-def generate_qualification_template(recordbook_template_path, save_path, curriculum,
+def generate_qualification_template(recordbook_template_path, curriculum,
                                     semester1_exam_coords: dict={}, semester1_zachet_coords: dict={},
                                     semester2_exam_coords: dict={}, semester2_zachet_coords: dict={},
                                     semester3_exam_coords: dict={}, semester3_zachet_coords: dict={},
@@ -1113,7 +1112,7 @@ def generate_qualification_template(recordbook_template_path, save_path, curricu
                 ).filter(
                         term=semester_iter+1
                         ).exclude(discipline__code__icontains='ПM.').exclude(discipline_id=None)
-
+        print(semester_exam_clocks)
         semester_zachet_clocks = cur_clock_cells.filter(
                 Q(
                     code_of_type_work__in=[
@@ -1125,7 +1124,7 @@ def generate_qualification_template(recordbook_template_path, save_path, curricu
                 ).filter(term=semester_iter+1).exclude(
                         Q(discipline__code__icontains='ПП.') | Q(discipline__code__icontains='УП.')
                         ).exclude(discipline_id=None)
-
+        print(semester_zachet_clocks)
         for semester_clocks, step_iter in ((semester_exam_clocks, 0), (semester_zachet_clocks, 1)):
             if semester_clocks.count() > 0:
                 for coord in exam_zachet_coords[semester_iter][step_iter].keys():
@@ -1279,14 +1278,17 @@ def generate_qualification_template(recordbook_template_path, save_path, curricu
             curriculum=curriculum
             )
 
-    filename = f'Template_{curriculum.qualification_name}_{curriculum.admission_year}_{curriculum.basis_of_admission}.xlsx'
-    workbook.save(os.path.abspath(save_path + filename))
+    filename = generate_filename(curriculum)
+    workbook.save(filename)
+
+def generate_filename(curriculum):
+    filename = f'./Template_{curriculum.qualification_name}_{curriculum.admission_year}_{curriculum.basis_of_admission}.xlsx'
+    return filename
 
 
-
-def generate_student_recordbook(recordbook_qualification_template_path: str, recordbook_template, student, sheet_name: str,
+def generate_student_recordbook(recordbook_template, student, sheet_name: str,
                                 recordbook_number_coord: str, student_name_coord: str,
-                                specialty_coord: str, order_number_coord: str, save_path: str):
+                                specialty_coord: str, order_number_coord: str):
 
     """
     Функция для генерации итогового шаблона зачетной книжки, по итогу работы сохраняет
@@ -1315,8 +1317,9 @@ def generate_student_recordbook(recordbook_qualification_template_path: str, rec
     if StudentRecordBook.objects.filter(student=student):
         return f'Зачетная книжка для данного студента ({student.full_name}) уже была сгенерирована'
 
+    filename = generate_filename(recordbook_template.curriculum)
 
-    workbook = load_workbook(filename=recordbook_qualification_template_path)
+    workbook = load_workbook(filename=filename)
 
     if sheet_name not in workbook:
         return f'Название листа {sheet_name} неверное, либо такой лист отсутствует'
@@ -1347,10 +1350,10 @@ def generate_student_recordbook(recordbook_qualification_template_path: str, rec
     student.save()
 
     filename = f'ЗачетнаяКнижка_{student.group.full_name}_{student.full_name}.xlsx'
-    workbook.save(os.path.abspath(save_path + filename))
+    workbook.save(filename)
 
 if __name__ == "__main__":
-    test_curriculum = Curriculum.objects.get(id=1)
+    test_curriculum = Curriculum.objects.get(id=2)
     
     # cur_clock_cells = ClockCell.objects.filter(curriculum=test_curriculum)
     # for i in range(1, 9):
@@ -1373,36 +1376,39 @@ if __name__ == "__main__":
                             # term=8
                             # ).exclude(discipline_id=None).(discipline__code__startswith='ПМ.')
     # print(semester_exam_clocks)
-    test = generate_qualification_template(curriculum=test_curriculum, recordbook_template_path='./Academhub/modules/test_excel_template.xlsx', save_path='./',
-                                                semester2_exam_coords={'B5:C7': 'Sheet1'},
-                                                semester2_zachet_coords={'E5:F15': 'Sheet1'},
-                                                semester3_zachet_coords={'E17:F27': 'Sheet1'},
-                                                semester4_exam_coords={'B11:C12': 'Sheet1'},
-                                                semester4_zachet_coords={'E29:F40': 'Sheet1'},
-                                                semester5_exam_coords={'B14:C15': 'Sheet1'},
-                                                semester5_zachet_coords={'E42:F46': 'Sheet1'},
-                                                semester6_exam_coords={'B17:C17': 'Sheet1'},
-                                                semester6_zachet_coords={'E51:F58': 'Sheet1'},
-                                                semester7_exam_coords={'B20:C21': 'Sheet1'},
-                                                semester7_zachet_coords={'E64:F72': 'Sheet1'},
-                                                semester8_exam_coords={'B23:C24': 'Sheet1'},
-                                                semester8_zachet_coords={'E77:F83': 'Sheet1'},
-                                                coursework_coords={'B4': 'Sheet2', 'D4': 'Sheet2', 'F4': 'Sheet2'},
-                                                study_practices_coords=('I4:K10', 'L4:L10', 'Sheet2'),
-                                                industrial_practices_coords=('N4:P8', 'Q4:Q8', 'Sheet2'),
-                                                professional_modules_coords={'B20': 'Sheet2', 'B22': 'Sheet2', 'B24': 'Sheet2', 
-                                                                             'B26': 'Sheet2', 'B28': 'Sheet2'}
-                                                )
+    test = generate_qualification_template(curriculum=test_curriculum, 
+                                            recordbook_template_path='./test_excel_template.xlsx',
+                                            semester1_exam_coords={'':''},
+                                            semester1_zachet_coords={"":''},
+                                            semester2_exam_coords={'B5:C7': 'Sheet1'},
+                                            semester2_zachet_coords={'E5:F16': 'Sheet1'},
+                                            semester3_zachet_coords={'E17:F27': 'Sheet1'},
+                                            semester4_exam_coords={'B11:C12': 'Sheet1'},
+                                            semester4_zachet_coords={'E29:F40': 'Sheet1'},
+                                            semester5_exam_coords={'B14:C15': 'Sheet1'},
+                                            semester5_zachet_coords={'E42:F46': 'Sheet1'},
+                                            semester6_exam_coords={'B17:C17': 'Sheet1'},
+                                            semester6_zachet_coords={'E51:F58': 'Sheet1'},
+                                            semester7_exam_coords={'B20:C21': 'Sheet1'},
+                                            semester7_zachet_coords={'E64:F72': 'Sheet1'},
+                                            semester8_exam_coords={'B23:C24': 'Sheet1'},
+                                            semester8_zachet_coords={'E77:F83': 'Sheet1'},
+                                            coursework_coords={'B4': 'Sheet2', 'D4': 'Sheet2', 'F4': 'Sheet2'},
+                                            study_practices_coords=('I4:K10', 'L4:L10', 'Sheet2'),
+                                            industrial_practices_coords=('N4:P8', 'Q4:Q8', 'Sheet2'),
+                                            professional_modules_coords={'B20': 'Sheet2', 'B22': 'Sheet2', 'B24': 'Sheet2', 
+                                                                            'B26': 'Sheet2', 'B28': 'Sheet2'}
+    )
     print(test)
 
-    test_template = RecordBookTemplate.objects.get(id=2)
-    test_student = Student.objects.get(id=1)
-    test = generate_student_recordbook(recordbook_qualification_template_path='./Template_Программист_2024_9.xlsx',
-                                       recordbook_template=test_template,
-                                       student=test_student,
-                                       sheet_name='Sheet3', recordbook_number_coord='C3',
-                                       student_name_coord='C5', specialty_coord='C9',
-                                       order_number_coord='C11', save_path='./')
+    # test_template = RecordBookTemplate.objects.get(id=2)
+    # test_student = Student.objects.get(id=1)
+    # test = generate_student_recordbook(recordbook_qualification_template_path='./Template_Программист_2024_9.xlsx',
+    #                                    recordbook_template=test_template,
+    #                                    student=test_student,
+    #                                    sheet_name='Sheet3', recordbook_number_coord='C3',
+    #                                    student_name_coord='C5', specialty_coord='C9',
+    #                                    order_number_coord='C11', save_path='./')
     print(test)
     # students = Student.objects.all()
     # specialties = Specialty.objects.all()
