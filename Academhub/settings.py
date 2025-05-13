@@ -43,10 +43,10 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 5000
 
 # Приложения которые пойдут в навигационную панель
 ACTIVE_APPS = [
-    'Сontingent',
     'AccessControl',
     'Gradebook',
     'Curriculum',
+    'Сontingent'
 ]
 
 INSTALLED_APPS = [

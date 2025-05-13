@@ -86,7 +86,11 @@ class StudentFilter(FilterSet):
         (False, "Нет задолжностей",)
     )
 
-    course = ChoiceFilter(choices=COURSE_CHOICES, label='Курс')
+    course = ChoiceFilter(
+        field_name='group__current_course',
+        choices=COURSE_CHOICES,
+        label='Курс'
+    )
 
     academic_debts = ChoiceFilter(choices=ACADEMIC_DEBTS_CHOICE, label='Наличие академических задолжностей')
 
@@ -176,6 +180,8 @@ class AcademFilter(FilterSet):
 
     REASONS_OF_ACADEM_CHOICES = (
         ("с/о", "с/о"),
+        ("Призыв в ВС", "Призыв в ВС"),
+        ("По состоянию здоровья", "По состоянию здоровья"),
     )
 
     left_course = ChoiceFilter(choices=COURSE_CHOICES, label='Курс, с которого ушел')

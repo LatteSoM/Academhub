@@ -18,7 +18,7 @@ navigation = Navigation(
             ChildLink(
                 name='Группы', 
                 url=getpattern('GroupStudents', 'list'),
-                permission_required=getpermission('Сontingent', 'view_group_student')
+                permission_required=getpermission('Сontingent1', 'view_group_student')
             ),
             ParentLink(
                 name='Студенты', 
