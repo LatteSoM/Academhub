@@ -27,7 +27,7 @@ class UserFilter(FilterSet):
 
     def filter_search(self, queryset, name, value):
         if value:
-            return queryset.filter(
+            return self.queryset.filter(
                 Q(email__icontains=value) |
                 Q(full_name__icontains=value)
             )
