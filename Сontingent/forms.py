@@ -8,6 +8,7 @@ from openpyxl.reader.excel import load_workbook
 
 from Academhub.forms import *
 from Academhub.models import Student, Discipline, GroupStudents, Specialty, Qualification
+from Academhub.modules.documentGenPars import generate_qualification_template, generate_student_recordbook
 # from Academhub.modules.documentGenPars import RecordBookDocumentGenerator
 from .utils import *
 
@@ -917,7 +918,7 @@ class GenerateQualificationTemplateForm(forms.Form):
         file = self.cleaned_data.get('file')
 
         if file:
-            rbdg = RecordBookDocumentGenerator(file)
+            # rbdg = RecordBookDocumentGenerator(file)
             сurriculum = self.cleaned_data.get('сurriculum')
 
             semester2_exam_coords = self.cleaned_data.get('semester2_exam_coords')
@@ -938,7 +939,7 @@ class GenerateQualificationTemplateForm(forms.Form):
             industrial_practices_coords = self.cleaned_data.get('industrial_practices_coords')
             professional_modules_coords = self.cleaned_data.get('professional_modules_coords')
 
-            result = rbdg.generate_qualification_template(
+            result = generate_qualification_template(
                 сurriculum, 
                 semester2_exam_coords=semester2_exam_coords,
                 semester2_zachet_coords=semester2_zachet_coords,
@@ -1000,3 +1001,29 @@ class GenerateStudentRecordBookForm(forms.Form):
         widget=ExcelCell,
         help_text=help_text
     )
+
+    def __init__(self, *args, **kwargs):
+        student_pk = kwargs.pop('student_pk')
+        self.student = Student.objects.get(pk=student_pk)
+        super().__init__(*args, **kwargs)
+
+    def clean(self):
+        super().clean()
+
+        сurriculum = self.cleaned_data.get('сurriculum')
+        sheet_name = self.cleaned_data.get('sheet_name')
+        recordbook_number_coord = self.cleaned_data.get('recordbook_number_coord')
+        student_name_coord = self.cleaned_data.get('student_name_coord')
+        specialty_coord = self.cleaned_data.get('specialty_coord')
+        order_number_coord = self.cleaned_data.get('order_number_coord')
+
+
+        rb_template = RecordBookTemplate.objects.filter(
+            qualification=сurriculum.qualification,
+            admission_year=сurriculum.admission_year,
+            curriculum=сurriculum
+        )
+
+
+        generate_student_recordbook(rb_template, self.student, sheet_name, recordbook_number_coord,
+                                    student_name_coord, specialty_coord, order_number_coord)

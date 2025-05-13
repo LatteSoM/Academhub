@@ -1495,6 +1495,16 @@ class GenerateStudentRecordBook(PermissionBaseMixin, FormView):
     def get(self, request, pk, *args, **kwargs):
         return super().get(request, *args, **kwargs)
 
+    def post(self, request, pk, *args, **kwargs):
+        self.pk = pk
+        return super().post(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        """Return the keyword arguments for instantiating the form."""
+        kwargs = super().get_form_kwargs()
+        kwargs["student_pk"] = self.pk
+        return kwargs
+
     def form_invalid(self, form): 
         return super().form_invalid(form)
     

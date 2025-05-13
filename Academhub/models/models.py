@@ -1235,6 +1235,9 @@ class Curriculum(AcademHubModel):
         verbose_name_plural = "Учебные планы"
         unique_together = ['qualification', 'admission_year', 'basis_of_admission']
 
+    def __str__(self):
+        return f"{self.qualification.name}_{self.admission_year}_{self.basis_of_admission}"
+
     @classmethod
     def from_dict(cls, data):
         qual_obj = Qualification.from_dict(data["qualification"])
