@@ -1,8 +1,10 @@
 from datetime import datetime
+import io
 import logging
 import os
 import re
 import sys
+from copy import copy
 from io import BytesIO
 
 import django
@@ -20,6 +22,13 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Academhub.settings")
 django.setup()
 
 from Academhub.models import GradebookStudents, ClockCell, Curriculum, Module, StudentRecordBook, RecordBookTemplate, Student
+
+GRADE_MAPPING = {
+        "5": "(Отлично)",
+        "4": "(Хорошо)",
+        "3": "(Удовлетворительно)",
+        "2": "(Неудовлетворительно)"
+    }
 
 class GroupTableGenerator:
     """
@@ -903,10 +912,10 @@ class GradebookDocumentGenerator:
                 if len(row_cells) == 5:
                     row_cells[1].text = str(gradebook_student.ticket_number or '')
                     row_cells[2].text = gradebook_student.student.full_name
-                    row_cells[3].text = str(gradebook_student.grade or '')
+                    row_cells[3].text = str(gradebook_student.grade + GRADE_MAPPING.get(gradebook_student.grade, "") or '')
                 else:
                     row_cells[1].text = gradebook_student.student.full_name
-                    row_cells[2].text = str(gradebook_student.grade or '')
+                    row_cells[2].text = str(gradebook_student.grade + GRADE_MAPPING.get(gradebook_student.grade, "") or '')
                 row_cells[1 if len(row_cells) == 4 else 2].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.LEFT
                 for i in [0, 2, 3] if len(row_cells) == 4 else [0, 1, 3, 4]:
                     row_cells[i].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -953,11 +962,20 @@ class GradebookDocumentGenerator:
                         run.font.size = Pt(10)
 
             # Сохранение в буфер
-            buffer = BytesIO()
+            buffer = io.BytesIO()
             document.save(buffer)
-            buffer.seek(0)
+            buffer.seek(0)  # Сбрасываем указатель перед чтением
+            buffer_length = len(buffer.getvalue())
+            logger.debug(f"Buffer length before return: {buffer_length}")
+            if buffer_length == 0:
+                logger.error("Buffer is empty after saving document")
+                raise ValueError("Document buffer is empty after saving")
+
+            # Создаем новый буфер и копируем содержимое
+            new_buffer = io.BytesIO(buffer.getvalue())
+            new_buffer.seek(0)
             logger.info("Document generated in memory")
-            return buffer
+            return new_buffer
 
         except Exception as e:
             logger.error(f"Error generating document: {str(e)}", exc_info=True)
@@ -1017,13 +1035,13 @@ def generate_unique_record_book_number(admission_year, student):
         return record_book_number
 
 
-def generate_qualification_template(recordbook_template_path, save_path, curriculum, 
+def generate_qualification_template(recordbook_template_path, save_path, curriculum,
                                     semester1_exam_coords: dict={}, semester1_zachet_coords: dict={},
-                                    semester2_exam_coords: dict={}, semester2_zachet_coords: dict={}, 
-                                    semester3_exam_coords: dict={}, semester3_zachet_coords: dict={}, 
+                                    semester2_exam_coords: dict={}, semester2_zachet_coords: dict={},
+                                    semester3_exam_coords: dict={}, semester3_zachet_coords: dict={},
                                     semester4_exam_coords: dict={}, semester4_zachet_coords: dict={},
-                                    semester5_exam_coords: dict={}, semester5_zachet_coords: dict={}, 
-                                    semester6_exam_coords: dict={}, semester6_zachet_coords: dict={}, 
+                                    semester5_exam_coords: dict={}, semester5_zachet_coords: dict={},
+                                    semester6_exam_coords: dict={}, semester6_zachet_coords: dict={},
                                     semester7_exam_coords: dict={}, semester7_zachet_coords: dict={},
                                     semester8_exam_coords: dict={}, semester8_zachet_coords: dict={},
                                     coursework_coords: dict={}, study_practices_coords: tuple=(),
@@ -1045,7 +1063,7 @@ def generate_qualification_template(recordbook_template_path, save_path, curricu
     об экзаменах и часах дисциплины соответствующего семестра; представляет из себя словарь от 1-го
     до 2х значений:
     1) <Диапазон координат для таблицы>: <название листа>
-    2) <Диапазон координат для второй таблицы>: <название того же листа или другого>: 
+    2) <Диапазон координат для второй таблицы>: <название того же листа или другого>:
     Например: {"A1:B10":"Sheet1", "A1:B10":"Sheet2"}
 
     semester*_zachet_coords - координаты выделенной таблицы в excel для заполнения информации
@@ -1060,7 +1078,7 @@ def generate_qualification_template(recordbook_template_path, save_path, curricu
     из себя кортеж фиксированного количества значений - 3 значения - (Диапазон ячеек для таблицы
     для номера курса, семестра, наименования практики; Диапазон ячеек для таблицы количества часов учебных практик; Название листа)
     Например: ("E10:G14", "K10:K14", "Sheet2")
-    
+
     industrial_practice_coords - координаты ячеек для заполнения информации о производственных практиках;
     представляет из себя кортеж фиксированного количества значений - 3 значение - (Диапазон ячеек для таблицы для номера курса,
     семестра, наименования практики; Диапазон ячеек для таблицы количества часов производственных практик; Название листа)
@@ -1072,22 +1090,22 @@ def generate_qualification_template(recordbook_template_path, save_path, curricu
     """
 
     exam_zachet_coords = (
-            (semester1_exam_coords, semester1_zachet_coords), 
-            (semester2_exam_coords, semester2_zachet_coords), 
+            (semester1_exam_coords, semester1_zachet_coords),
+            (semester2_exam_coords, semester2_zachet_coords),
             (semester3_exam_coords, semester3_zachet_coords),
-            (semester4_exam_coords, semester4_zachet_coords), 
-            (semester5_exam_coords, semester5_zachet_coords), 
+            (semester4_exam_coords, semester4_zachet_coords),
+            (semester5_exam_coords, semester5_zachet_coords),
             (semester6_exam_coords, semester6_zachet_coords),
-            (semester7_exam_coords, semester7_zachet_coords), 
+            (semester7_exam_coords, semester7_zachet_coords),
             (semester8_exam_coords, semester8_zachet_coords))
 
     cur_clock_cells = ClockCell.objects.filter(curriculum=curriculum)
-    
+
     if RecordBookTemplate.objects.filter(qualification=curriculum.qualification, admission_year=curriculum.admission_year).exists():
         return f'Шаблон зачетной книжки для данного потока ({curriculum.qualification}-{curriculum.admission_year}) уже был сгенерирован'
-    
+
     workbook = load_workbook(filename=recordbook_template_path)
-    
+
     # Заполнение таблиц экзаменов и зачетов
     for semester_iter in range(8):
         semester_exam_clocks = cur_clock_cells.filter(
@@ -1099,34 +1117,34 @@ def generate_qualification_template(recordbook_template_path, save_path, curricu
         semester_zachet_clocks = cur_clock_cells.filter(
                 Q(
                     code_of_type_work__in=[
-                        'Зачет', 
-                        'Зачет с оценкой', 
+                        'Зачет',
+                        'Зачет с оценкой',
                         'Другие формы контроля'
                         ]
                     )
                 ).filter(term=semester_iter+1).exclude(
                         Q(discipline__code__icontains='ПП.') | Q(discipline__code__icontains='УП.')
                         ).exclude(discipline_id=None)
-        
+
         for semester_clocks, step_iter in ((semester_exam_clocks, 0), (semester_zachet_clocks, 1)):
-            if semester_clocks.count() > 0:                                                                      
+            if semester_clocks.count() > 0:
                 for coord in exam_zachet_coords[semester_iter][step_iter].keys():
                     if exam_zachet_coords[semester_iter][step_iter][coord] not in workbook:
                         return f"Название листа {exam_zachet_coords[semester_iter][step_iter][coord]} неверное, либо такой лист отсутствует"
-                coords_row_count = 0 
-                
+                coords_row_count = 0
+
                 for coord in exam_zachet_coords[semester_iter][step_iter].keys():
                     # Проверяем одинаковые ли буквы у ячеек диапазона
                     if re.search(r'\D+', coord.split(':')[0]).group(0) == re.search(r'\D+', coord.split(':')[1]).group(0):
                         return f'Количество столбцов в таблице должно быть больше одного "{coord}"'
-                    coords_row_count += int(re.search(r'\d+', coord.split(':')[1]).group(0)) - int(re.search(r'\d+', coord.split(':')[0]).group(0)) + 1  
+                    coords_row_count += int(re.search(r'\d+', coord.split(':')[1]).group(0)) - int(re.search(r'\d+', coord.split(':')[0]).group(0)) + 1
 
                 if coords_row_count != semester_clocks.count():
                     word_choose = 'экзаменов'
                     if step_iter == 1: word_choose = 'зачетов'
                     print(coords_row_count)
                     return f"Суммарное количество строк в таблицах не соответствует количеству {word_choose} {semester_iter+1}-го семестра, необходимо {semester_clocks.count()}"
-                
+
                 data_iter = 0
 
                 for coord in exam_zachet_coords[semester_iter][step_iter].keys():
@@ -1135,7 +1153,7 @@ def generate_qualification_template(recordbook_template_path, save_path, curricu
 
                     for row in table_cells:
                         row[0].value = str(semester_clocks[data_iter].discipline.name)
-                        row[1].value = str(ClockCell.objects.get(discipline_id=semester_clocks[data_iter].discipline_id, 
+                        row[1].value = str(ClockCell.objects.get(discipline_id=semester_clocks[data_iter].discipline_id,
                                                                  code_of_type_work='Итого часов', term=semester_iter+1).count_of_clocks)
                         data_iter += 1
             else:
@@ -1146,7 +1164,7 @@ def generate_qualification_template(recordbook_template_path, save_path, curricu
 
     if len(coursework_coords.keys()) != coursework_clocks.count():
         return f"Количество выделенных ячеек для курсовых работ не соответствует необходимому - {coursework_clocks.count()}"
-    
+
     clock_iter = 0
     for coursework_coord in coursework_coords.keys():
         if str(coursework_coords[coursework_coord]) not in workbook:
@@ -1162,16 +1180,16 @@ def generate_qualification_template(recordbook_template_path, save_path, curricu
     study_practices_clocks = cur_clock_cells.filter(discipline__code__icontains='УП.').filter(code_of_type_work='Итого часов')
     if len(study_practices_coords) != 3:
         return f"Количество данных значений не соответствует необходимому: (Ячейки для 1-ой таблицы, ячейки для 2-ой, название листа)"
-    
+
     if str(study_practices_coords[2]) not in workbook:
         return f'Название листа {study_practices_coords[2]} неверное, либо такой лист отсутствует'
 
     count_coord_study_p1 = int(re.search(r'\d+', study_practices_coords[0].split(':')[1]).group(0)) - int(re.search(r'\d+', study_practices_coords[0].split(':')[0]).group(0)) + 1
     count_coord_study_p2 = int(re.search(r'\d+', study_practices_coords[1].split(':')[1]).group(0)) - int(re.search(r'\d+', study_practices_coords[1].split(':')[0]).group(0)) + 1
-    
+
     if count_coord_study_p1 != study_practices_clocks.count():
         return f'Количество строк ячеек {study_practices_coords[0]} не соответствует необходимому - {study_practices_clocks.count()}'
-    
+
     if count_coord_study_p2 != study_practices_clocks.count():
         return f'Количество строк ячеек {study_practices_coords[1]} не соответствует необходимому - {study_practices_clocks.count()}'
 
@@ -1180,7 +1198,7 @@ def generate_qualification_template(recordbook_template_path, save_path, curricu
     table_cells = worksheet[study_practices_coords[0]]
     if len(table_cells[0]) != 3:
         return f"Количество столбцов ячеек {study_practices_coords[0]} не соответствует необходимому - 3"
-        
+
     clock_iter = 0
     for row in table_cells:
         row[0].value = str(study_practices_clocks[clock_iter].course)
@@ -1190,26 +1208,26 @@ def generate_qualification_template(recordbook_template_path, save_path, curricu
 
     # Заполнение часов практик
     table_cells = worksheet[study_practices_coords[1]]
-    
+
     clock_iter = 0
     for row in table_cells:
         row[0].value = str(study_practices_clocks[clock_iter].count_of_clocks)
         clock_iter += 1
-    
+
     # Заполнение производственных практик
     ind_practices_clocks = cur_clock_cells.filter(discipline__code__icontains='ПП.').filter(code_of_type_work='Итого часов')
     if len(industrial_practices_coords) != 3:
         return f"Количество данных значений не соответствует необходимому: (Ячейки для 1-ой таблицы, ячейки для 2-ой, название листа)"
-    
+
     if str(industrial_practices_coords[2]) not in workbook:
         return f'Название листа {industrial_practices_coords[2]} неверное, либо такой лист отсутствует'
 
     count_coord_study_p1 = int(re.search(r'\d+', industrial_practices_coords[0].split(':')[1]).group(0)) - int(re.search(r'\d+', industrial_practices_coords[0].split(':')[0]).group(0)) + 1
     count_coord_study_p2 = int(re.search(r'\d+', industrial_practices_coords[1].split(':')[1]).group(0)) - int(re.search(r'\d+', industrial_practices_coords[1].split(':')[0]).group(0)) + 1
-    
+
     if count_coord_study_p1 != ind_practices_clocks.count():
         return f'Количество строк ячеек {industrial_practices_coords[0]} не соответствует необходимому - {ind_practices_clocks.count()}'
-    
+
     if count_coord_study_p2 != ind_practices_clocks.count():
         return f'Количество строк ячеек {industrial_practices_coords[1]} не соответствует необходимому - {ind_practices_clocks.count()}'
     worksheet = workbook[industrial_practices_coords[2]]
@@ -1217,7 +1235,7 @@ def generate_qualification_template(recordbook_template_path, save_path, curricu
     table_cells = worksheet[industrial_practices_coords[0]]
     if len(table_cells[0]) != 3:
         return f"Количество столбцов ячеек {industrial_practices_coords[0]} не соответствует необходимому - 3"
-        
+
     clock_iter = 0
     for row in table_cells:
         row[0].value = str(ind_practices_clocks[clock_iter].course)
@@ -1227,14 +1245,14 @@ def generate_qualification_template(recordbook_template_path, save_path, curricu
 
     # Заполнение часов практик
     table_cells = worksheet[industrial_practices_coords[1]]
-    
+
     clock_iter = 0
     for row in table_cells:
         row[0].value = str(ind_practices_clocks[clock_iter].count_of_clocks)
         clock_iter += 1
 
     # Заполнение профессиональных модулей
-    pm_clocks = cur_clock_cells.filter(discipline__code__icontains='ПM.').filter(code_of_type_work='Экзамен')       
+    pm_clocks = cur_clock_cells.filter(discipline__code__icontains='ПM.').filter(code_of_type_work='Экзамен')
     if len(professional_modules_coords.keys()) != pm_clocks.count():
         return f"Количество выделенных ячеек для профессиональных модулей не соответствует необходимому - {pm_clocks.count()}"
 
@@ -1244,7 +1262,7 @@ def generate_qualification_template(recordbook_template_path, save_path, curricu
             return f'Название листа {coursework_coords[pm_coord]} неверное, либо такой лист отсутствует'
 
         worksheet = workbook[str(professional_modules_coords[pm_coord])]
-        
+
         worksheet[str(pm_coord)] = pm_clocks[clock_iter].discipline.code.lstrip(' ').rstrip('.ЭК') + ' ' + str(
                 Module.objects.get(code_of_discipline=str(' ПМ.' + pm_clocks[clock_iter].discipline.code.lstrip('ПM.').rstrip('.ЭК'))).name)
         # Почему-то при импорте пм'ы хранятся с английской буквой M, это надо исправить
@@ -1259,23 +1277,23 @@ def generate_qualification_template(recordbook_template_path, save_path, curricu
             admission_order='Не указан',
             issue_date=datetime.now().date(),
             curriculum=curriculum
-            ) 
+            )
 
-    filename = f'Template_{curriculum.qualification_name}_{curriculum.admission_year}_{curriculum.basis_of_admission}.xlsx' 
+    filename = f'Template_{curriculum.qualification_name}_{curriculum.admission_year}_{curriculum.basis_of_admission}.xlsx'
     workbook.save(os.path.abspath(save_path + filename))
 
 
 
-def generate_student_recordbook(recordbook_qualification_template_path: str, recordbook_template, student, sheet_name: str, 
+def generate_student_recordbook(recordbook_qualification_template_path: str, recordbook_template, student, sheet_name: str,
                                 recordbook_number_coord: str, student_name_coord: str,
                                 specialty_coord: str, order_number_coord: str, save_path: str):
-    
+
     """
     Функция для генерации итогового шаблона зачетной книжки, по итогу работы сохраняет
     итоговый шаблон зачетки в формате xlsx и создает объект модели StudentRecordBook
 
     recordbook_qualification_template_path - путь к xlsx файлу полученному по итогу работы функции generate_qualification_template
-    
+
     recordbook_template - объект модели RecordBookTemplate полученный по итогу работы функции generate_qualification_template
 
     student - объект модели Student студента для которого будет генерироваться зачетная книжка
@@ -1311,9 +1329,9 @@ def generate_student_recordbook(recordbook_qualification_template_path: str, rec
     worksheet[student_name_coord] = student.full_name
     worksheet[specialty_coord] = recordbook_template.qualification.specialty.name
     worksheet[order_number_coord] = student.admission_order
-    
+
     # Здесь должна быть проверка на существование уже этой зачетной книжки
-    
+
     new_recordbook = StudentRecordBook.objects.create(
             student=student,
             qualification=recordbook_template.qualification,
@@ -1355,7 +1373,7 @@ if __name__ == "__main__":
                             # term=8
                             # ).exclude(discipline_id=None).(discipline__code__startswith='ПМ.')
     # print(semester_exam_clocks)
-    test = generate_qualification_template(curriculum=test_curriculum, recordbook_template_path='./Academhub/modules/test_excel_template.xlsx', save_path='./', 
+    test = generate_qualification_template(curriculum=test_curriculum, recordbook_template_path='./Academhub/modules/test_excel_template.xlsx', save_path='./',
                                                 semester2_exam_coords={'B5:C7': 'Sheet1'},
                                                 semester2_zachet_coords={'E5:F15': 'Sheet1'},
                                                 semester3_zachet_coords={'E17:F27': 'Sheet1'},
@@ -1376,14 +1394,14 @@ if __name__ == "__main__":
                                                                              'B26': 'Sheet2', 'B28': 'Sheet2'}
                                                 )
     print(test)
-    
+
     test_template = RecordBookTemplate.objects.get(id=2)
     test_student = Student.objects.get(id=1)
-    test = generate_student_recordbook(recordbook_qualification_template_path='./Template_Программист_2024_9.xlsx', 
+    test = generate_student_recordbook(recordbook_qualification_template_path='./Template_Программист_2024_9.xlsx',
                                        recordbook_template=test_template,
-                                       student=test_student,                                      
-                                       sheet_name='Sheet3', recordbook_number_coord='C3', 
-                                       student_name_coord='C5', specialty_coord='C9', 
+                                       student=test_student,
+                                       sheet_name='Sheet3', recordbook_number_coord='C3',
+                                       student_name_coord='C5', specialty_coord='C9',
                                        order_number_coord='C11', save_path='./')
     print(test)
     # students = Student.objects.all()

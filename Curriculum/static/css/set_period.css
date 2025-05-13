@@ -1,0 +1,183 @@
+/* Container for the table with scrolling */
+.custom-table-container {
+    max-height: 450px; /* Adjust as needed */
+    min-height: 300px; /* Minimum height */
+    overflow-y: auto;
+    overflow-x: auto; /* Add horizontal scroll if needed */
+    border: 1px solid var(--border-color); /* Use theme variable */
+    border-radius: 0.375rem; /* Standard Bootstrap radius */
+}
+
+/* Table styling */
+.table {
+    table-layout: fixed; /* Prevent column width changes */
+    width: 100%; /* Ensure table takes full width */
+}
+/* Table header styling */
+.table thead th {
+    background-color: var(--surface-color); /* Theme surface color */
+    color: var(--text-color); /* Theme text color */
+    padding: 0.75rem 1rem;
+    border-bottom: 2px solid var(--border-color); /* Theme border color */
+    white-space: nowrap;
+    position: sticky; /* Keep header visible */
+    top: 0; /* Stick to the top of the container */
+    z-index: 10; /* Ensure header is above body */
+    vertical-align: middle;
+}
+ .table thead th:first-child { /* Style for checkbox header */
+     padding: 0.75rem 0.5rem;
+     text-align: center;
+ }
+
+
+/* Table body cell styling */
+.table tbody td {
+    padding: 0.5rem 1rem; /* Slightly reduced padding for denser table */
+    border-top: 1px solid var(--border-color); /* Theme border color */
+    background-color: var(--surface-color); /* Use theme surface color */
+    color: var(--text-color); /* Use theme text color */
+    vertical-align: middle;
+    white-space: normal; /* Allow text wrapping */
+    overflow: hidden; /* Hide overflow */
+    text-overflow: ellipsis; /* Add ellipsis for overflow */
+}
+ .table tbody td:first-child { /* Style for checkbox cell */
+     padding: 0.5rem 0.5rem;
+     text-align: center;
+ }
+
+/* Ensure selects/inputs within table cells use theme */
+.table .form-select,
+.table .form-control {
+    background-color: var(--bg-color); /* Use background for contrast */
+    border-color: var(--border-color);
+    color: var(--text-color);
+    font-size: 0.875rem; /* Smaller font size for inputs in table */
+}
+ .table .form-control[type="date"] {
+     min-width: 150px; /* Ensure date inputs have enough space */
+ }
+
+/* Scrollbar styling for theme consistency */
+#groups::-webkit-scrollbar,
+.custom-table-container::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+#groups::-webkit-scrollbar-track,
+.custom-table-container::-webkit-scrollbar-track {
+    background: var(--surface-color); /* Scrollbar track */
+    border-radius: 4px;
+}
+
+#groups::-webkit-scrollbar-thumb,
+.custom-table-container::-webkit-scrollbar-thumb {
+    background-color: var(--border-color); /* Scrollbar handle */
+    border-radius: 4px;
+    border: 2px solid var(--surface-color); /* Padding around thumb */
+}
+
+#groups::-webkit-scrollbar-thumb:hover,
+.custom-table-container::-webkit-scrollbar-thumb:hover {
+    background-color: var(--text-color); /* Darker on hover */
+}
+
+/* General form select styling */
+.form-select.theme-input,
+.form-control.theme-input {
+    background-color: var(--surface-color); /* Use surface color */
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    min-width: 200px; /* Adjust as needed */
+}
+
+.form-select.theme-input:disabled,
+.form-control.theme-input:disabled {
+    background-color: var(--bg-color); /* Different background when disabled */
+    opacity: 0.7;
+}
+
+/* Theme buttons */
+.theme-button {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+    color: white;
+}
+.theme-button-secondary {
+    background-color: var(--bs-secondary);
+    border-color: var(--bs-secondary);
+    color: white;
+}
+ .theme-button-success {
+    background-color: var(--bs-success);
+    border-color: var(--bs-success);
+    color: white;
+}
+.theme-button-outline {
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+.theme-button-outline:hover {
+    background-color: var(--surface-color);
+    color: var(--text-color);
+}
+
+/* Secondary text color utility */
+.theme-text-secondary {
+    color: var(--text-secondary, #6c757d); /* Fallback color */
+    opacity: 0.8;
+}
+ .theme-surface-secondary {
+     background-color: var(--surface-secondary, #f8f9fa); /* Example fallback */
+     border-color: var(--border-color) !important;
+ }
+
+/* Placeholder row styling */
+.empty-placeholder td {
+    height: 200px; /* Adjust height */
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* Responsive adjustments */
+@media (max-width: 991.98px) {
+    .d-flex.flex-column.flex-lg-row {
+        gap: 1.5rem !important;
+    }
+    .table th,
+    .table td {
+        min-width: 150px;
+        font-size: 0.9rem;
+    }
+     .table .form-control[type="date"] {
+         min-width: 130px;
+     }
+}
+
+@media (max-width: 767.98px) {
+    .table th,
+    .table td {
+        min-width: 120px;
+        font-size: 0.85rem;
+    }
+     .table .form-control[type="date"] {
+         min-width: 120px;
+     }
+     .d-flex.gap-2.w-100.pt-3 {
+        flex-direction: column;
+        align-items: stretch;
+     }
+     .d-flex.gap-2.w-100.pt-3 .btn {
+        width: 100%;
+     }
+     .d-flex.gap-3.mb-3.p-3 { /* Stack bulk controls */
+         flex-direction: column;
+         align-items: stretch;
+         gap: 0.5rem !important;
+     }
+     .d-flex.gap-3.mb-3.p-3 .btn {
+         margin-top: 0.5rem;
+     }
+}

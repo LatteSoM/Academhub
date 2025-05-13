@@ -24,6 +24,7 @@ __all__ = (
     'ContingentMovement',
     'MiddleCertification',
     'CalendarGraphicOfLearningProcess',
+    'TeachersForDisciplineAndCurriculum',
 
     'Curriculum',
     'Category',
@@ -86,6 +87,13 @@ class CustomUser(AcademHubModel, AbstractBaseUser, PermissionsMixin):
         max_length=255,
         verbose_name='ЦМК '
     )
+
+    speciality = models.ForeignKey('Specialty',
+                                      related_name="teachers",
+                                      null=True,
+                                      verbose_name="Специальность",
+                                      on_delete=models.SET_NULL,
+                                      )
 
     is_active = models.BooleanField(default=True, verbose_name='Активный?')
     is_staff = models.BooleanField(default=False, verbose_name='Персонал?')
@@ -1518,12 +1526,12 @@ class TeachersForDisciplineAndCurriculum(AcademHubModel):
     term = models.IntegerField(null=False)
     discipline = models.ForeignKey(Discipline, related_name='teachers_for_curriculum_and_discipline', on_delete=models.CASCADE)
     curriculum = models.ForeignKey(Curriculum, related_name='teachers_disciplines', on_delete=models.CASCADE)
-    groups = models.ManyToManyField(GroupStudents, 'teachers_for_groups')
+    group = models.ForeignKey(GroupStudents, related_name='teachers_to_discipline', on_delete=models.CASCADE)
 
 
     class Meta:
-        verbose_name = "Преподаватель дисциплины в семестре"
-        verbose_name_plural = "Преподаватели дисциплины в семестре"
+        verbose_name = "Преподаватель дисциплины для группы"
+        verbose_name_plural = "Преподаватели дисциплины для группы"
 
     @classmethod
     def from_dict(cls, data):
@@ -1552,13 +1560,13 @@ class TeachersForDisciplineAndCurriculum(AcademHubModel):
             return None
 
         # Определяем курс и локальный семестр из глобального семестра
-        course = (semester + 1) // 2
-        local_semester = 2 if semester % 2 == 0 else 1
+        course = (int(semester) + 1) // 2
+        local_semester = 2 if int(semester) % 2 == 0 else 1
 
         return cls.objects.filter(
             discipline=discipline,
             curriculum=group.curriculum,
-            groups=group,
+            group=group,
             course=course,
             term=local_semester
         ).prefetch_related('teachers').first()
@@ -1573,7 +1581,7 @@ def get_global_semester(course, local_semester):
       2 курс, 2 семестр → 4
       и т.д.
     """
-    return (course - 1) * 2 + local_semester
+    return (int(course) - 1) * 2 + int(local_semester)
 
 
 class AttestationPeriodForDisciplines(AcademHubModel):
@@ -1581,7 +1589,7 @@ class AttestationPeriodForDisciplines(AcademHubModel):
     term = models.IntegerField(null=False)
     discipline = models.ForeignKey(Discipline, related_name='attestations_periods', on_delete=models.CASCADE)
     curriculum = models.ForeignKey(Curriculum, related_name='attestations_periods_disciplines', on_delete=models.CASCADE)
-    groups = models.ManyToManyField(GroupStudents, 'teachers_for_groups_attestation')
+    group = models.ForeignKey(GroupStudents, related_name='attestations_periods_disciplines', on_delete=models.CASCADE)
     start_date = models.DateField(null=False)
     end_date = models.DateField(null=False)
 

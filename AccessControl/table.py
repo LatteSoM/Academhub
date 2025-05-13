@@ -6,7 +6,7 @@ from Academhub.tables import BaseTable, EmailColumn
 __all__ = (
     'UserTable',
     'GroupTable',
-    'UserGroupTable',
+    'GroupUserTable',
     'PermissionTable',
 )
 

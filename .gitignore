@@ -23,6 +23,7 @@ README.txt
 # Visual Studio Code #
 .vscode/*
 .history
+.log
 
 Curriculum/media/
 
