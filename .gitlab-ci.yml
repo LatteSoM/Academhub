@@ -29,6 +29,8 @@ variables:
 
 build_job:
   stage: build
+  before_script:
+    - docker login "${CI_REGISTRY}" -p "${REGISTRY_TOKEN}"
   script:
     - docker-compose build
     - docker-compose push
