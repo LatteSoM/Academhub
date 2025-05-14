@@ -697,13 +697,6 @@ class Student(AcademHubModel):
         from django.utils import timezone  # Импортируем внутри метода, чтобы избежать проблем с импортом
         # :TODO нада что-то придумать для импорта, потому что в доке может быть как 'Основное общее' так и 'основное общее', еще закоментил подобную строку в forms.py 104 строка
 
-        # Проверка соответствия education_base группы и студента
-        # if self.group and self.education_base != self.group.education_base:
-        #     raise ValidationError(
-        #         f"База образования студента ({self.education_base}) не соответствует "
-        #         f"базе образования группы ({self.group.education_base})"
-        #     )
-
         # Сохраняем старые значения перед обновлением
         if self.pk:  # Если это обновление существующего объекта
             old_student = Student.objects.get(pk=self.pk)
@@ -724,7 +717,7 @@ class Student(AcademHubModel):
         # 1. Перевод в другую группу
         if old_group and old_group != current_group:
             ContingentMovement.objects.create(
-                order_number=self.reinstaitment_order if self.reinstaitment_order else f"TR-{self.pk}-{timezone.now().strftime('%Y%m%d')}",
+                order_number=self.reinstaitment_order if self.reinstaitment_order else f"№{self.pk}-{timezone.now().strftime('%Y%m%d')}",
                 action_type='transfer',
                 action_date=timezone.now().date(),
                 previous_group=old_group,

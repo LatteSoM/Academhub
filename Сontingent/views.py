@@ -777,12 +777,13 @@ class StudentTableView(ObjectTableImportView):
 from django.db import transaction
 from django.shortcuts import redirect
 
-class PromoteStudentsView(PermissionBaseMixin, FormView):
+class PromoteStudentsView(SuccessMessageMixin, PermissionBaseMixin, FormView):
     model = CurrentStudent
     form_class = PromoteStudentsForm
     template_name = "Contingent/transfer/transfer_students_form.html"
     success_url = reverse_lazy("transfer_students_form")
-    permission_required = getpermission("Contingent", "transfer_students")
+    permission_required = getpermission("Сontingent", "transfer_students")
+    success_message = 'Студенты успешно переведены!'
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -1007,7 +1008,7 @@ from django.shortcuts import redirect
 class ExpelStudent(ObjectUpdateView):
     form_class = ExpellStudentForm
     queryset = Student.objects.filter(is_in_academ=False, is_expelled=False)
-    permission_required = getpermission('Contingent', 'update_expulsion_student')
+    permission_required = getpermission('Сontingent', 'update_expulsion_student')
 
 
 class RecoverStudent(ObjectUpdateView):
@@ -1151,7 +1152,7 @@ class StatisticksView(ObjectTemplateView):
             for (code, _, _), counts in specialty_data.items()
             if code == "09.02.07"
             for key in counts
-            if "budget" in key and key.startswith("students_9_1")
+            if "budget" in key and not key.startswith("students_9_1")
         )
 
         total_1_09_02_07_paid = sum(
@@ -1159,7 +1160,7 @@ class StatisticksView(ObjectTemplateView):
             for (code, _, _), counts in specialty_data.items()
             if code == "09.02.07"
             for key in counts
-            if "paid" in key and key.startswith("students_9_1")
+            if "paid" in key and not key.startswith("students_9_1")
         )
 
         context = super().get_context_data(**kwargs)
@@ -1369,14 +1370,14 @@ def generate_group_table(request):
     return response
 
 
-@permission_required(getpermission(Student, 'export'))
+# @permission_required(getpermission('Сontingent', 'export'))
 def generate_course_table(request, course):
     """
     Функция для генерации файла .xslx для статистики по определенному курсу
     """
     students = Student.objects.filter(group__current_course=course)
     # try:
-    generator = CourseTableGenerator(students)
+    generator = CourseTableGenerator(students, course)
     file_path = os.path.join(settings.MEDIA_ROOT, f'course_{course}_table.xlsx')
 
     os.makedirs(settings.MEDIA_ROOT, exist_ok=True)

@@ -87,5 +87,6 @@ class UserPasswordChangeView(SuccessMessageMixin, PasswordChangeView):
     Изменение пароля пользователя
     """
     form_class = UserPasswordChangeForm
+    success_url = reverse_lazy('home')
     template_name = 'Academhub/user/change_password.html'
     success_message = 'Ваш пароль был успешно изменён!'

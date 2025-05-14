@@ -246,6 +246,10 @@ class PermissionTableView(ObjectTableView):
 
 class PermissionDetailView(ObjectDetailView):
     model = PermissionProxy
+    queryset = PermissionProxy.objects.all()
+
+    def get_model_name(self):
+        return 'Права'
 
 class PermissionUpdateView(ObjectUpdateView):
     form_class = PermissionForm
