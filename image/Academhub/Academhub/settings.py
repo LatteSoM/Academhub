@@ -38,7 +38,10 @@ USE_TZ = True
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 5000
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-
+CSRF_TRUSTED_ORIGINS = [
+    "https://test-academhub.mpt.ru",
+    "https://academhub.mpt.ru"
+]
 
 # Application definition
 
