@@ -29,7 +29,6 @@ variables:
 build_job:
   stage: build
   script:
-    - echo ${REGISTRY_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
     - docker-compose build
     - docker-compose push
   tags:
@@ -37,7 +36,7 @@ build_job:
 
 test_job:
   extends: .deploy-job
-  before_script:
+  script:
     - sed -i "s/_DOMAIN_NAME_/test-academhub.ru/g" ${NGINX_CONF}
   stage: test
   tags:
