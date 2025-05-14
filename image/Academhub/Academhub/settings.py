@@ -37,6 +37,7 @@ USE_TZ = True
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 5000
 
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 
 # Application definition
