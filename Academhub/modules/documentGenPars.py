@@ -5,7 +5,7 @@ import os
 import re
 import sys
 from io import BytesIO
-
+from django.conf import settings
 import django
 from django.db.models import Q
 from docx import Document
@@ -1282,13 +1282,16 @@ def generate_qualification_template(recordbook_template_path, curriculum,
     workbook.save(filename)
 
 def generate_filename(curriculum):
-    filename = f'./Template_{curriculum.qualification_name}_{curriculum.admission_year}_{curriculum.basis_of_admission}.xlsx'
-    return filename
+    filename = f'/Template_{curriculum.qualification_name}_{curriculum.admission_year}_{curriculum.basis_of_admission}.xlsx'
+    return settings.MEDIA_ROOT + filename
 
 
-def generate_student_recordbook(recordbook_template, student, sheet_name: str,
-                                recordbook_number_coord: str, student_name_coord: str,
-                                specialty_coord: str, order_number_coord: str):
+def generate_student_recordbook(student, 
+                                sheet_name: str,
+                                recordbook_number_coord: str, 
+                                student_name_coord: str,
+                                specialty_coord: str, 
+                                order_number_coord: str):
 
     """
     Функция для генерации итогового шаблона зачетной книжки, по итогу работы сохраняет
@@ -1313,16 +1316,24 @@ def generate_student_recordbook(recordbook_template, student, sheet_name: str,
     save_path - путь сохранения итогового файла шаблона в формате xlsx, важно учитывать что в этом пути нужно указать только путь
     и папку в котором будет располагаться файл, т.к. имя файла генерируется самой функцией
     """
+    student_group = student.group
+    try:
+        recordbook_template = RecordBookTemplate.objects.get(
+            admission_year = student_group.year_create,
+            qualification = student_group.qualification
+        )
+    except RecordBookTemplate.DoesNotExist:
+        raise Exception(f'Для этой группы текущего студента не существует учебного плана')
 
     if StudentRecordBook.objects.filter(student=student):
-        return f'Зачетная книжка для данного студента ({student.full_name}) уже была сгенерирована'
+        raise Exception(f'Зачетная книжка для данного студента ({student.full_name}) уже была сгенерирована')
 
     filename = generate_filename(recordbook_template.curriculum)
 
     workbook = load_workbook(filename=filename)
 
     if sheet_name not in workbook:
-        return f'Название листа {sheet_name} неверное, либо такой лист отсутствует'
+        raise Exception(f'Название листа {sheet_name} неверное, либо такой лист отсутствует')
 
     worksheet = workbook[sheet_name]
 
@@ -1331,26 +1342,31 @@ def generate_student_recordbook(recordbook_template, student, sheet_name: str,
     worksheet[recordbook_number_coord] = recordbook_number
     worksheet[student_name_coord] = student.full_name
     worksheet[specialty_coord] = recordbook_template.qualification.specialty.name
-    worksheet[order_number_coord] = student.admission_order
+    worksheet[order_number_coord] = student_group.year_create
 
     # Здесь должна быть проверка на существование уже этой зачетной книжки
 
     new_recordbook = StudentRecordBook.objects.create(
-            student=student,
-            qualification=recordbook_template.qualification,
-            admission_year=student.group.year_create,
-            student_name=student.full_name,
-            record_book_number=recordbook_number,
-            admission_order=student.admission_order,
-            issue_date=recordbook_template.issue_date,
-            curriculum=recordbook_template.curriculum
-            )
+        student=student,
+        qualification=recordbook_template.qualification,
+        admission_year=student.group.year_create,
+        student_name=student.full_name,
+        record_book_number=recordbook_number,
+        admission_order=student_group.year_create,
+        issue_date=recordbook_template.issue_date,
+        curriculum=recordbook_template.curriculum
+    )
 
     student.record_book = new_recordbook
     student.save()
 
-    filename = f'ЗачетнаяКнижка_{student.group.full_name}_{student.full_name}.xlsx'
-    workbook.save(filename)
+    path = get_recordbook_student(student)
+    workbook.save(path)
+
+def get_recordbook_student(student):
+    filename = f'/ЗачетнаяКнижка_{student.group.full_name}_{student.full_name}.xlsx'
+    path = settings.MEDIA_ROOT + filename
+    return path
 
 if __name__ == "__main__":
     test_curriculum = Curriculum.objects.get(id=2)
@@ -1401,14 +1417,15 @@ if __name__ == "__main__":
     )
     print(test)
 
-    # test_template = RecordBookTemplate.objects.get(id=2)
-    # test_student = Student.objects.get(id=1)
-    # test = generate_student_recordbook(recordbook_qualification_template_path='./Template_Программист_2024_9.xlsx',
-    #                                    recordbook_template=test_template,
-    #                                    student=test_student,
-    #                                    sheet_name='Sheet3', recordbook_number_coord='C3',
-    #                                    student_name_coord='C5', specialty_coord='C9',
-    #                                    order_number_coord='C11', save_path='./')
+    test_template = RecordBookTemplate.objects.get(id=2)
+    test_student = Student.objects.get(id=1)
+    test = generate_student_recordbook(recordbook_template=test_template,
+                                       student=test_student,
+                                       sheet_name='Sheet3', 
+                                       recordbook_number_coord='C3',
+                                       student_name_coord='C5', 
+                                       specialty_coord='C9',
+                                       order_number_coord='C11')
     print(test)
     # students = Student.objects.all()
     # specialties = Specialty.objects.all()

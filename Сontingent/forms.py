@@ -7,7 +7,7 @@ from django.utils.dateparse import parse_date
 from openpyxl.reader.excel import load_workbook
 
 from Academhub.forms import *
-from Academhub.modules.documentGenPars import generate_qualification_template
+from Academhub.modules.documentGenPars import generate_qualification_template, generate_student_recordbook
 from Academhub.models import Student, Discipline, GroupStudents, Specialty, Qualification
 # from Academhub.modules.documentGenPars import RecordBookDocumentGenerator
 from .utils import *
@@ -767,11 +767,6 @@ class PromoteStudentsForm(forms.ModelForm):
         model = CurrentStudent
         fields = []
 
-    def __init__(self, *args, **kwargs):
-        properties = kwargs.pop("properties", {})
-        super().__init__(*args, **kwargs)
-        self._configure_new_instance(properties)
-
     def _configure_new_instance(self, properties):
         education_base = properties.get("education_base")
         education_basis = properties.get("education_basis")
@@ -978,17 +973,15 @@ class GenerateQualificationTemplateForm(forms.Form):
             raise forms.ValidationError('Ошибка загрузки файла')
 
 class GenerateStudentRecordBookForm(forms.Form):
-
     help_text = 'Введите номер(а) ячейки(ек) в которую(ые) будет(ут) вписываться информация'
-
-    curriculum = forms.ModelChoiceField(
-        queryset=Curriculum.objects.all(),
-        label='Учебный план',
-    )
 
     sheet_name = forms.CharField(
         label='Страница личных данных студента',
-        widget=ExcelCell,
+        widget=forms.TextInput(
+            attrs={
+                'placeholder': 'Sheet1'
+            }
+        ),
         help_text=help_text
     )
 
@@ -1015,3 +1008,23 @@ class GenerateStudentRecordBookForm(forms.Form):
         widget=ExcelCell,
         help_text=help_text
     )
+
+    def __init__(self, *args, **kwargs):
+        student_pk = kwargs.pop("student_pk", {})
+        super().__init__(*args, **kwargs)
+        self.student = Student.objects.get(pk = student_pk)
+    
+    def clean(self):
+        super().clean()
+        
+        try:
+            self.result = generate_student_recordbook(
+                student=self.student,
+                sheet_name=self.cleaned_data.get('sheet_name'),
+                recordbook_number_coord=self.cleaned_data.get('recordbook_number_coord'),
+                student_name_coord=self.cleaned_data.get('student_name_coord'),
+                specialty_coord=self.cleaned_data.get('specialty_coord'),
+                order_number_coord=self.cleaned_data.get('order_number_coord')
+            )
+        except Exception as e:
+            raise forms.ValidationError(e)

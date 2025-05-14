@@ -10,9 +10,12 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import FormView
+from django.http import FileResponse
+
+from Academhub.modules.documentGenPars import get_recordbook_student
 
 from Academhub.generic import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView, ObjectTemplateView, \
-    ObjectTableImportView, PermissionBaseMixin
+    ObjectTableImportView, PermissionBaseMixin, ButtonsMixin
 from Academhub.models import (
     Student,
     Specialty,
@@ -41,9 +44,6 @@ from .utils import *
 __all__ = (
 
     'ViewRecordBookView',
-    'create_auto_record_book_template',
-    'generate_student_record_book',
-    'generate_group_recordbooks',
     'PromoteGroupStudentsView',
 
     'DisciplineTableView',
@@ -1173,13 +1173,30 @@ class StatisticksView(ObjectTemplateView):
 ## Зачетка
 #
 
-class ViewRecordBookView(ObjectTemplateView):
+class ViewRecordBookView(ButtonsMixin, ObjectTemplateView):
     """
     Класс для отображения информации о зачетной книжке конкретного студента.
     """
     template_name = 'Contingent/record_book_view.html'
 
     permission_required = getpermission('Сontingent', 'view_record_book')
+
+    buttons  = [
+        Button (
+            id='to_object',
+            name = 'К объекту',
+            link_params = ['pk'],
+            link_name = getpattern(Student, 'detail'),
+            permission = getpermission('Сontingent', 'update_student')
+        ),
+        Button(
+            id='download_recordbook',
+            name = 'Скачать',
+            link_params = ['pk'],
+            link_name = 'download_recordbook',
+            permission = getpermission('Сontingent', 'download_recordbook')
+        )
+    ]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1196,6 +1213,7 @@ class ViewRecordBookView(ObjectTemplateView):
         context['url_list'] = 'student_list'
         context['is_student_gradebook'] = True
         context['student_id'] = self.kwargs['student_id']
+        context['object'] = Student.objects.get(pk=self.kwargs['student_id'])
 
         # Передаем данные из словаря напрямую
         context['middle_certifications'] = context_record_book_object['middle_certifications']
@@ -1215,109 +1233,19 @@ class ViewRecordBookView(ObjectTemplateView):
 
         return context
 
-@permission_required(getpermission('Сontingent', 'save_record_book'))
-def generate_student_record_book(request, pk):
-    """
-    Функция для генерации зачетной книжки для конкретного студента
-    """
-    try:
-        student = get_object_or_404(Student, pk=pk)
-    except StudentRecordBook.DoesNotExist as e:
-        print("Студент не найден")
-    qualification = student.group.qualification
-    admission_year = student.group.year_create
+@permission_required(getpermission('Сontingent', 'download_recordbook_student'))
+def download_recordbook_student(request, pk):
+    student = get_object_or_404(Student, pk=pk)
 
-    print(qualification, admission_year)
-    try:
-        template = get_object_or_404(RecordBookTemplate, qualification=qualification, admission_year=admission_year)
-    except RecordBookTemplate.DoesNotExist as e:
-        print("Шаблон не найден")
+    path = get_recordbook_student(student)
 
-    # Генерация уникального номера зачетки
-    record_book_number = generate_unique_record_book_number(admission_year, student)
-    print(2)
-    # Создаём новый объект StudentRecordBook для студента
-    new_record_book = StudentRecordBook.objects.create(
-        student=student,
-        qualification=qualification,
-        admission_year=admission_year,
-        student_name=f"{student.full_name}",
-        record_book_number=record_book_number,
-        admission_order=student.admission_order,
-        issue_date=template.issue_date,
-        curriculum=template.curriculum
+    filename = os.path.basename(path)
+
+    return FileResponse(
+        open(path, 'rb'),
+        as_attachment=True,
+        filename=filename
     )
-    print(new_record_book)
-    student.record_book = new_record_book
-    student.save()
-
-    return redirect('view_record_book', qualification_id=qualification.id, admission_year=admission_year, student_id=pk)
-
-
-@permission_required(getpermission('Сontingent', 'save_record_book_template'))
-def create_auto_record_book_template(request, qualification_id, admission_year):
-    """
-    Функция для генерации Шаблона зачетной книжки  шаблон генерируется на квалификацию и год поступления,
-    Например для всех групп П 2021 года поступления
-    """
-    qualification = get_object_or_404(Qualification, id=qualification_id)
-    curriculum = get_object_or_404(Curriculum, qualification=qualification, admission_year=admission_year)
-
-    # Проверяем, существует ли шаблон, чтобы не дублировать
-    if RecordBookTemplate.objects.filter(qualification=qualification, admission_year=admission_year).exists():
-        return redirect('view_record_book_template', qualification_id=qualification_id, admission_year=admission_year)
-
-    # Создаём шаблон
-    template = RecordBookTemplate.objects.create(
-        qualification=qualification,
-        admission_year=admission_year,
-        student_name="",  # Пустое, так как это шаблон
-        record_book_number="",  # Пустое для шаблона
-        admission_order="Не указан",  # Можно заполнить позже
-        issue_date=datetime.now().date(),
-        curriculum=curriculum
-    )
-
-    return redirect('view_record_book_template', qualification_id=qualification_id, admission_year=admission_year)
-
-
-@permission_required(getpermission('Сontingent', 'save_record_book'))
-def generate_group_recordbooks(request, group_id):
-    """
-    Функция для генерации зачетных книжек на всю группу
-    """
-    group = get_object_or_404(GroupStudents, id=group_id)
-    qualification = group.qualification
-    admission_year = group.year_create
-
-    # проверка на то что шаблон есть
-    if not RecordBookTemplate.objects.filter(qualification=qualification, admission_year=admission_year).exists():
-        create_auto_record_book_template(request, qualification.id, admission_year)
-
-    template = get_object_or_404(RecordBookTemplate, qualification=qualification, admission_year=admission_year)
-    students = group.students.all()
-
-    for student in students:
-        # if student.record_book:  # Пропускаем студентов с уже существующей зачёткой
-        #     continue
-
-        record_book_number = generate_unique_record_book_number(admission_year, student)
-        new_record_book = StudentRecordBook.objects.create(
-            student=student,
-            qualification=qualification,
-            admission_year=admission_year,
-            student_name=f"{student.full_name}",
-            record_book_number=record_book_number,
-            admission_order=template.admission_order,
-            issue_date=template.issue_date,
-            curriculum=template.curriculum
-        )
-
-        student.record_book = new_record_book
-        student.save()
-
-    return redirect('groupstudents_detail', pk=group_id)
-
 
 #########
 #######Движения контингента
@@ -1487,27 +1415,52 @@ class GenerateQualificationTemplate(PermissionBaseMixin, FormView):
 ## Создание зачеток для студентов
 #
 
-class GenerateStudentRecordBook(PermissionBaseMixin, FormView):
+class GenerateStudentRecordBook(PermissionBaseMixin, ButtonsMixin, FormView):
     permission_required = getpermission('Сontingent', 'generate_student_recordbook')
     template_name = 'Contingent/generate_student_recordbook.html'
     form_class = GenerateStudentRecordBookForm
 
+    buttons  = [
+        Button (
+            id='to_object',
+            name = 'К объекту',
+            link_params = ['pk'],
+            link_name = getpattern(Student, 'detail'),
+            permission = getpermission('Сontingent', 'update_student')
+        ),
+    ]
+
     def get(self, request, pk, *args, **kwargs):
-        return super().get(request, *args, **kwargs)
+        self.pk = pk
+        return super().get(request, pk, *args, **kwargs)
 
     def post(self, request, pk, *args, **kwargs):
         self.pk = pk
-        return super().post(request, *args, **kwargs)
+        return super().post(request, pk, *args, **kwargs)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['object'] = Student.objects.get(pk=self.pk)
+        return context
 
     def get_form_kwargs(self):
-        """Return the keyword arguments for instantiating the form."""
         kwargs = super().get_form_kwargs()
         kwargs["student_pk"] = self.pk
         return kwargs
 
-    def form_invalid(self, form): 
+    def form_invalid(self, form):
+        error_messages = []
+        
+        # Общие ошибки формы (non-field errors)
+        for error in form.non_field_errors():
+            error_messages.append(error)
+        
+        # Объединяем все ошибки в одно сообщение
+        if error_messages:
+            messages.error(self.request, "Ошибки в форме:\n" + "\n".join(error_messages))
+        
         return super().form_invalid(form)
     
     def form_valid(self, form):
-        messages.success(self.request, "Шаблон успешно создан")
-        return redirect('generate_qualification_template')
+        messages.success(self.request, "Зачетная книжка сгенерирована")
+        return redirect(getpattern(Student, 'detail'), pk=self.pk)
