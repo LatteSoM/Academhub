@@ -16,6 +16,16 @@ SECURE_HSTS_PRELOAD = True
 TIME_ZONE = "Europe/Moscow"
 USE_TZ = True
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 5000
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+CSRF_TRUSTED_ORIGINS = [
+    "https://test-academhub.mpt.ru",
+    "https://academhub.mpt.ru"
+]
+
+# Application definition
+
+# Приложения которые пойдут в навигационную панель
 ACTIVE_APPS = [
     'Сontingent',
     'AccessControl',

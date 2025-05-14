@@ -7,6 +7,7 @@ variables:
   ENV_TEMPLATE: .env.template
   ENV_OUTPUT: .env
   COMPOSE_PROJECT_NAME: "${CI_PROJECT_NAME}_${CI_PROJECT_ID}"
+  NGINX_CONF: "${CI_PROJECT_DIR}/nginx/conf.d/django.conf"
 
 .deploy-job:
   before_script:
@@ -17,6 +18,7 @@ variables:
     - sed -i "s/_DJANGO_PASS_/${DJANGO_PASS}/g" ${ENV_TEMPLATE}
     - sed -i "s/_DJANGO_KEY_/${DJANGO_KEY}/g" ${ENV_TEMPLATE}
     - mv ${ENV_TEMPLATE} ${ENV_OUTPUT}
+    - echo "${REGISTRY_TOKEN}" | docker login -u "${CI_REGISTRY_USER}" --password-stdin "${CI_REGISTRY}"
     - docker-compose pull
   script:
     - |
@@ -28,8 +30,8 @@ variables:
 build_job:
   stage: build
   before_script:
-    - echo ${REGISTRY_TOKEN} | docker login -u gitlab-ci-token --password-stdin ${CI_REGISTRY}
-  script: 
+    - echo "${REGISTRY_TOKEN}" | docker login -u "${CI_REGISTRY_USER}" --password-stdin "${CI_REGISTRY}"
+  script:
     - docker-compose build
     - docker-compose push
   tags:
@@ -37,6 +39,19 @@ build_job:
 
 test_job:
   extends: .deploy-job
+  before_script:
+    - sed -i "s/_DOMAIN_NAME_/test-academhub.ru/g" "${NGINX_CONF}"
+    - !reference [.deploy-job, before_script]
   stage: test
   tags:
     - bt-srv
+
+prod_job:
+  extends: .deploy-job
+  before_script:
+    - sed -i "s/_DOMAIN_NAME_/academhub.ru/g" "${NGINX_CONF}"
+    - !reference [.deploy-job, before_script]
+  stage: prod
+  tags:
+    - academhub-prod
+  when: manual
