@@ -42,3 +42,13 @@ test_job:
   stage: test
   tags:
     - bt-srv
+
+prod_job:
+  extends: .deploy-job
+  before_script:
+    - sed -i "s/_DOMAIN_NAME_/academhub.ru/g" "${NGINX_CONF}"
+    - !reference [.deploy-job, before_script]
+  stage: test
+  tags:
+    - academhub-prod
+  when: manual
