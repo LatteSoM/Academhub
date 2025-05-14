@@ -35,7 +35,7 @@ build_job:
     - bt-srv
 
 test_job:
-  <<: *deploy-job
+  <<: .deploy-job
   before_script:
     - sed -i "s/_DOMAIN_NAME_/test-academhub.ru/g" "${NGINX_CONF}"
   stage: test
