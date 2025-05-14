@@ -30,7 +30,7 @@ variables:
 build_job:
   stage: build
   before_script:
-    - docker login "${CI_REGISTRY}" -p "${REGISTRY_TOKEN}"
+    - echo "${REGISTRY_TOKEN}" | docker login -u "${CI_REGISTRY_USER}" --password-stdin "${CI_REGISTRY}"
   script:
     - docker-compose build
     - docker-compose push
