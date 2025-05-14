@@ -18,7 +18,7 @@ variables:
     - sed -i "s/_DJANGO_PASS_/${DJANGO_PASS}/g" ${ENV_TEMPLATE}
     - sed -i "s/_DJANGO_KEY_/${DJANGO_KEY}/g" ${ENV_TEMPLATE}
     - mv ${ENV_TEMPLATE} ${ENV_OUTPUT}
-    - echo "${REGISTRY_TOKEN}" | docker login --username "${REGISTRY_USER}" --password-stdin "${CI_REGISTRY}"
+    - docker login "${CI_REGISTRY}" -p "${REGISTRY_TOKEN}"
     - docker-compose pull
   script:
     - |
