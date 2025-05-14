@@ -54,4 +54,6 @@ prod_job:
   stage: prod
   tags:
     - academhub-prod
-  when: manual
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      when: manual
