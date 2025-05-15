@@ -1,27 +1,23 @@
 import json
-from collections import defaultdict
-
 import pandas as pd
 from django.db import transaction
-from django.db.models import Count
+from collections import defaultdict
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
-
+from Gradebook.utils import update_gradebooks_after_deactivation
 from Academhub.models import Specialty, Qualification, Curriculum, GroupStudents, ClockCell, CustomUser
+from Academhub.models.models import TeachersForDisciplineAndCurriculum, AttestationPeriodForDisciplines
 
 __all__ = (
     'get_study_plans',
     'get_courses_for_study_plan',
+    'get_courses_and_groups_for_study_plan',
     'get_disciplines_by_curriculum_course_term_for_attestation',
     'get_disciplines_by_curriculum_course_term',
     'import_teachers_excel_view',
     'save_teachers_for_groups_and_disciplines',
     'save_periods_for_groups_and_disciplines'
 )
-
-from Academhub.models.models import TeachersForDisciplineAndCurriculum, AttestationPeriodForDisciplines
-
 
 semester_dict = {
         "1-1": 1,
@@ -56,7 +52,7 @@ def get_study_plans(request):
     return JsonResponse(list(curriculums), safe=False)
 
 
-def get_courses_for_study_plan(request):
+def get_courses_and_groups_for_study_plan(request):
     curriculum_id = request.GET.get('curriculum_id')
     if not curriculum_id or curriculum_id == 'Выберите учебный план':
         return JsonResponse({'error': 'Missing specialty_id'}, status=400)
@@ -86,12 +82,31 @@ def get_courses_for_study_plan(request):
     return JsonResponse(response, safe=False)
 
 
+def get_courses_for_study_plan(request):
+    curriculum_id = request.GET.get('curriculum_id')
+    if not curriculum_id or curriculum_id == 'Выберите учебный план':
+        return JsonResponse({'error': 'Missing specialty_id'}, status=400)
+
+    response = {}
+
+    curriculum = Curriculum.objects.get(id=curriculum_id)
+    if curriculum.basis_of_admission == 11:
+        response["courses"] = [1, 2, 3]
+
+    else:
+        response["courses"] = [1, 2, 3, 4]
+
+    return JsonResponse(response, safe=False)
+
+
+
+@require_POST
 def get_disciplines_by_curriculum_course_term_for_attestation(request):
     curriculum_id = request.GET.get('curriculum_id')
     course = int(request.GET.get('course'))
     term = int(request.GET.get('term'))
     checked_groups = json.loads(request.POST.get('checked_groups', '[]'))
-    checked_group_ids = {group['id'] for group in checked_groups}  # Используем множество для быстрого поиска
+    checked_group_ids = {group['id'] for group in checked_groups}  # Множество для быстрого поиска
 
     response = []
     term_db = semester_dict.get(f'{course}-{term}')
@@ -109,13 +124,16 @@ def get_disciplines_by_curriculum_course_term_for_attestation(request):
     attestation_periods = AttestationPeriodForDisciplines.objects.filter(
         curriculum=curriculum_id,
         course=course,
-        term=term_db
-    ).prefetch_related('groups')
+        term=term_db,
+        group_id__in=checked_group_ids
+    ).select_related('discipline', 'group')
 
-    # Создаем словарь {discipline_id: [periods]}
-    periods_by_discipline = defaultdict(list)
+    # Создаем словарь {discipline_id: {period_data: set(group_ids)}}
+    discipline_periods = defaultdict(lambda: defaultdict(set))
+
     for period in attestation_periods:
-        periods_by_discipline[period.discipline_id].append(period)
+        period_key = (period.start_date, period.end_date)
+        discipline_periods[period.discipline_id][period_key].add(period.group_id)
 
     for clock_cell in clock_cells:
         if not clock_cell.discipline or clock_cell.discipline.id in processed_disciplines:
@@ -130,42 +148,33 @@ def get_disciplines_by_curriculum_course_term_for_attestation(request):
             "end_attestation": ''
         }
 
-        # Получаем все периоды аттестации для этой дисциплины
-        periods = periods_by_discipline.get(clock_cell.discipline.id, [])
+        # Проверяем периоды для текущей дисциплины
+        periods_info = discipline_periods.get(clock_cell.discipline.id, {})
 
-        if checked_group_ids:
-            # Ищем период, который содержит ВСЕ выбранные группы
-            matching_period = None
-            for period in periods:
-                period_group_ids = {group.id for group in period.groups.all()}
-                if checked_group_ids.issubset(period_group_ids):
-                    matching_period = period
-                    break
+        # Ищем период, который содержит ВСЕ выбранные группы
+        common_period = None
+        for (start_date, end_date), group_ids in periods_info.items():
+            if group_ids == checked_group_ids:
+                common_period = (start_date, end_date)
+                break
 
-            if matching_period:
-                discipline_data.update({
-                    "start_attestation": matching_period.start_date.strftime('%Y-%m-%d') if matching_period.start_date else '',
-                    "end_attestation": matching_period.end_date.strftime('%Y-%m-%d') if matching_period.end_date else ''
-                })
-        else:
-            # Если группы не выбраны, берем первый подходящий период (если есть)
-            if periods:
-                period = periods[0]
-                discipline_data.update({
-                    "start_attestation": period.start_date.strftime('%Y-%m-%d') if period.start_date else '',
-                    "end_attestation": period.end_date.strftime('%Y-%m-%d') if period.end_date else ''
-                })
+        if common_period:
+            start_date, end_date = common_period
+            discipline_data.update({
+                "start_attestation": start_date.strftime('%Y-%m-%d') if start_date else '',
+                "end_attestation": end_date.strftime('%Y-%m-%d') if end_date else ''
+            })
 
         response.append(discipline_data)
         processed_disciplines.add(clock_cell.discipline.id)
 
     return JsonResponse(response, safe=False)
 
-
+@require_POST
 def get_disciplines_by_curriculum_course_term(request):
-    curriculum_id = request.GET.get('curriculum_id')
-    course = int(request.GET.get('course'))
-    term = int(request.GET.get('term'))
+    curriculum_id = request.POST.get('curriculum_id')
+    course = int(request.POST.get('course'))
+    term = int(request.POST.get('term'))
     checked_groups = json.loads(request.POST.get('checked_groups', '[]'))
     checked_group_ids = [group['id'] for group in checked_groups]
 
@@ -197,25 +206,34 @@ def get_disciplines_by_curriculum_course_term(request):
 
     # 2. Фильтрация преподавателей по группам (если группы выбраны)
     if checked_group_ids:
-        # Получаем всех преподавателей, привязанных ко ВСЕМ выбранным группам
-        teachers_for_groups = TeachersForDisciplineAndCurriculum.objects.filter(
-            groups__id__in=checked_group_ids
-        ).annotate(
-            num_groups=Count('groups')
-        ).filter(
-            num_groups=len(checked_group_ids)
-        ).distinct()
-
-        # Группируем преподавателей по дисциплинам
-        teachers_by_discipline = defaultdict(list)
-        for relation in teachers_for_groups:
-            for teacher in relation.teachers.all():
-                teachers_by_discipline[relation.discipline_id].append(teacher)
-
-        # Обновляем данные дисциплин
         for discipline_data in response:
-            discipline_id = discipline_data['discipline_id']
-            if discipline_id in teachers_by_discipline:
+            # Получаем всех преподавателей для данной дисциплины и групп
+            teacher_relations = TeachersForDisciplineAndCurriculum.objects.filter(
+                curriculum_id=curriculum_id,
+                course=course,
+                term=term_db,
+                discipline_id=discipline_data['discipline_id'],
+                group_id__in=checked_group_ids
+            ).prefetch_related('teachers')
+
+            # Собираем словарь {teacher_id: количество групп, в которых он встречается}
+            teacher_group_counts = {}
+
+            for relation in teacher_relations:
+                for teacher in relation.teachers.all():
+                    if teacher.id not in teacher_group_counts:
+                        teacher_group_counts[teacher.id] = 0
+                    teacher_group_counts[teacher.id] += 1
+
+            # Отбираем только тех преподавателей, которые есть во всех группах
+            common_teachers = [
+                teacher_id for teacher_id, count in teacher_group_counts.items()
+                if count == len(checked_group_ids)
+            ]
+
+            # Получаем полные данные о преподавателях
+            if common_teachers:
+                teachers = CustomUser.objects.filter(id__in=common_teachers).select_related('speciality')
                 discipline_data['teachers'] = [
                     {
                         "teacher_id": teacher.id,
@@ -223,33 +241,13 @@ def get_disciplines_by_curriculum_course_term(request):
                         "cmc": teacher.cmc,
                         "speciality": teacher.speciality.name if teacher.speciality else '',
                     }
-                    for teacher in teachers_by_discipline[discipline_id]
+                    for teacher in teachers
                 ]
-    else:
-        # Если группы не выбраны - оставляем всех преподавателей
-        for discipline_data in response:
-            teaching_relations = TeachersForDisciplineAndCurriculum.objects.filter(
-                curriculum_id=curriculum_id,
-                course=course,
-                term=term_db,
-                discipline_id=discipline_data['discipline_id']
-            )
 
-            teachers_set = set()
-            for relation in teaching_relations:
-                teachers_set.update(relation.teachers.all())
-
-            discipline_data['teachers'] = [
-                {
-                    "teacher_id": teacher.id,
-                    "full_name": teacher.full_name,
-                    "cmc": teacher.cmc,
-                    "speciality": teacher.speciality.name if teacher.speciality else '',
-                }
-                for teacher in teachers_set
-            ]
 
     return JsonResponse(response, safe=False)
+
+
 
 
 def import_teachers_excel_view(request):
@@ -314,9 +312,8 @@ def import_teachers_excel_view(request):
                         'is_teacher': True,
                     }
 
-                    #TODO Придумать где хранить связи с ЦМК
-
                     speciality_name, code = specialty.split('_')
+
                     specialty_obj, created = Specialty.objects.get_or_create(
                         name=speciality_name,
                         code=code,
@@ -327,7 +324,6 @@ def import_teachers_excel_view(request):
                         email=email,
                         full_name=full_name,
                         is_teacher=True,
-                        speciality=specialty_obj
                     )
 
                     if len(filter_user) == 0:
@@ -355,26 +351,44 @@ def import_teachers_excel_view(request):
                         else:
                             updated_count += 1
 
-                        excel_emails.add(email)
-
                     else:
                         found_count += 1
-                        teachers_list.append({
-                            'teacher_id': filter_user[0].id,
-                            'full_name': filter_user[0].full_name,
-                            'cmc': filter_user[0].cmc,
-                            'speciality': filter_user[0].speciality.name,
-                        })
+
+                        if filter_user[0].speciality is not None:
+                            teachers_list.append({
+                                'teacher_id': filter_user[0].id,
+                                'full_name': filter_user[0].full_name,
+                                'cmc': filter_user[0].cmc,
+                                'speciality': filter_user[0].speciality.name,
+                            })
+
+                        else:
+                            teachers_list.append({
+                                'teacher_id': filter_user[0].id,
+                                'full_name': filter_user[0].full_name,
+                                'cmc': filter_user[0].cmc,
+                                'speciality': "",
+                            })
+
+
+                    excel_emails.add(email)
 
                 except Exception as e:
                     errors.append(f"Строка {index + 2}: Ошибка обработки - {e}")
                     skipped_count += 1
 
             existing_teacher_emails = set(CustomUser.objects.filter(is_teacher=True, is_active=True).values_list('email', flat=True))
+            print(type(existing_teacher_emails))
+            print(type(excel_emails))
+            print("existing_teacher_emails:", existing_teacher_emails)
+            print("excel_emails:", excel_emails)
             emails_to_deactivate = existing_teacher_emails - excel_emails
+            print("emails_to_deactivate:", emails_to_deactivate)
 
             if emails_to_deactivate:
                 users_to_deactivate = CustomUser.objects.filter(email__in=emails_to_deactivate, is_teacher=True)
+                print(users_to_deactivate)
+                update_gradebooks_after_deactivation(users_to_deactivate)
                 for user in users_to_deactivate:
                     user.is_active = False
                     user.save()
@@ -431,37 +445,37 @@ def save_teachers_for_groups_and_disciplines(request):
                 selected_group_ids = [str(group['id']) for group in checked_groups if group.get('checked')]
                 groups = GroupStudents.objects.filter(id__in=selected_group_ids)
 
-                # Обрабатываем каждую дисциплину
-                for discipline_data in disciplines_with_teachers:
-                    # Получаем или создаем базовую запись
-                    term_db = semester_dict.get(f"{course}-{term}")
-                    obj, created = TeachersForDisciplineAndCurriculum.objects.get_or_create(
-                        curriculum_id=curriculum_id,
-                        course=course,
-                        term=term_db,
-                        discipline_id=discipline_data['discipline_id'],
-                        defaults={
-                            'curriculum_id': curriculum_id,
-                            'course': course,
-                            'term': term_db,
-                            'discipline_id': discipline_data['discipline_id']
-                        }
-                    )
+                for group in groups:
+                    # Обрабатываем каждую дисциплину
+                    for discipline_data in disciplines_with_teachers:
+                        # Получаем или создаем базовую запись
+                        term_db = semester_dict.get(f"{course}-{term}")
+                        obj, created = TeachersForDisciplineAndCurriculum.objects.get_or_create(
+                            curriculum_id=curriculum_id,
+                            course=course,
+                            term=term_db,
+                            discipline_id=discipline_data['discipline_id'],
+                            group_id=group.id,
+                            defaults={
+                                'curriculum_id': curriculum_id,
+                                'course': course,
+                                'term': term_db,
+                                'discipline_id': discipline_data['discipline_id'],
+                                'group_id': group.id,
+                            }
+                        )
 
-                    # Обновляем преподавателей
-                    teacher_ids = [str(t['teacher_id']) for t in discipline_data['teachers']]
-                    obj.teachers.set(CustomUser.objects.filter(id__in=teacher_ids))
+                        # Обновляем преподавателей
+                        teacher_ids = [str(t['teacher_id']) for t in discipline_data['teachers']]
+                        obj.teachers.set(CustomUser.objects.filter(id__in=teacher_ids))
 
-                    # Связываем группы
-                    obj.groups.set(groups)
-
-                # Удаляем записи которых нет в полученных данных
-                existing_discipline_ids = [d['discipline_id'] for d in disciplines_with_teachers]
-                TeachersForDisciplineAndCurriculum.objects.filter(
-                    curriculum_id=curriculum_id,
-                    course=course,
-                    term=term
-                ).exclude(discipline_id__in=existing_discipline_ids).delete()
+                        # Удаляем записи которых нет в полученных данных
+                        # existing_discipline_ids = [d['discipline_id'] for d in disciplines_with_teachers]
+                        # TeachersForDisciplineAndCurriculum.objects.filter(
+                        #     curriculum_id=curriculum_id,
+                        #     course=course,
+                        #     term=term
+                        # ).exclude(discipline_id__in=existing_discipline_ids).delete()
 
                 response['status'] = 'success'
                 response['message'] = 'Данные успешно сохранены'
@@ -490,29 +504,27 @@ def save_periods_for_groups_and_disciplines(request):
                 groups = GroupStudents.objects.filter(id__in=selected_group_ids)
 
                 # Обрабатываем каждую дисциплину
-                for discipline_data in disciplines_with_periods:
-
-                    if discipline_data['start_attestation'] != "" and discipline_data['end_attestation'] != "":
-                        # Получаем или создаем базовую запись
-                        term_db = semester_dict.get(f"{course}-{term}")
-                        obj, created = AttestationPeriodForDisciplines.objects.update_or_create(
-                            curriculum_id=curriculum_id,
-                            course=course,
-                            term=term_db,
-                            discipline_id=discipline_data['discipline_id'],
-                            start_date=discipline_data['start_attestation'],
-                            end_date=discipline_data['end_attestation'],
-                            defaults={
-                                'curriculum_id': curriculum_id,
-                                'course': course,
-                                'term': term_db,
-                                'discipline_id': discipline_data['discipline_id'],
-                                'start_date': discipline_data['start_attestation'],
-                                'end_date': discipline_data['end_attestation'],
-                            }
-                        )
-                        # Связываем группы
-                        obj.groups.set(groups)
+                for group in groups:
+                    for discipline_data in disciplines_with_periods:
+                        if discipline_data['start_attestation'] != "" and discipline_data['end_attestation'] != "":
+                            # Получаем или создаем базовую запись
+                            term_db = semester_dict.get(f"{course}-{term}")
+                            obj, created = AttestationPeriodForDisciplines.objects.get_or_create(
+                                curriculum_id=curriculum_id,
+                                course=course,
+                                term=term_db,
+                                discipline_id=discipline_data['discipline_id'],
+                                group_id=group.id,
+                                defaults={
+                                    'curriculum_id': curriculum_id,
+                                    'course': course,
+                                    'term': term_db,
+                                    'discipline_id': discipline_data['discipline_id'],
+                                    'start_date': discipline_data['start_attestation'],
+                                    'end_date': discipline_data['end_attestation'],
+                                    'group_id': group.id,
+                                }
+                            )
 
                 response['status'] = 'success'
                 response['message'] = 'Данные успешно сохранены'

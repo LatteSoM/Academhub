@@ -1,0 +1,102 @@
+.reserve_block {
+    max-width: 540px;
+    height: 40px;
+
+    border-radius: 10px;
+    font-size: 20px;
+    margin-left: 50px;
+}
+
+.reserve_container{
+    display: flex;
+}
+
+.weeks_container{
+    display: flex;
+
+}
+
+.week_container{
+    display: flex;
+    flex-direction: column;
+    margin-left: 50px;
+}
+
+.week_input{
+    margin-top: 10px;
+}
+
+.tables_container{
+    margin-top: 40px;
+    display: flex;
+    height: 33vw;
+}
+
+.release_table{
+    width: 55vw;
+    overflow-x: scroll;
+}
+
+.groups_table{
+    width: 35vw;
+    overflow-x: scroll;
+}
+
+table{
+    border: 2px solid black;
+    border-radius: 5px;
+}
+
+th{
+    padding: 8px; /* Внутренний отступ */
+    text-align: center; /* Выравнивание текста */
+    border: 2px solid black;
+    white-space: nowrap;
+}
+
+td {
+    white-space: nowrap;
+    padding: 2px; /* Внутренний отступ */
+    text-align: center; /* Выравнивание текста */
+    border: 2px solid black;
+    min-height: 30px;
+}
+
+.p_table{
+    height: 20px;
+}
+
+.input_cell{
+    height: 20px;
+    width: 40px;
+    text-align: center;
+}
+
+.results_container{
+    display: flex;
+    margin-top: 10px;
+}
+
+.result_table{
+    margin-left: 30px;
+}
+
+button {
+    margin-left: 140px;
+    margin-top: 30px;
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    height: 70px;
+}
+button:hover {
+    background-color: #45a049;
+}
+
+.selected {
+    background-color: grey;
+}

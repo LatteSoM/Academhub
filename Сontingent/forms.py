@@ -705,28 +705,26 @@ class GenerateQualificationTemplateForm(forms.Form):
             industrial_practices_coords = self.cleaned_data.get('industrial_practices_coords')
             professional_modules_coords = self.cleaned_data.get('professional_modules_coords')
 
-            print(semester2_exam_coords)
-
             result = rbdg.generate_qualification_template(
                 сurriculum, 
-                semester2_exam_coords,
-                semester2_zachet_coords,
-                semester3_zachet_coords,
-                semester4_exam_coords,
-                semester4_zachet_coords,
-                semester5_exam_coords,
-                semester5_zachet_coords,
-                semester6_exam_coords,
-                semester6_zachet_coords,
-                semester7_exam_coords,
-                semester7_zachet_coords,
-                semester8_exam_coords,
-                semester8_zachet_coords,
-                coursework_coords,
-                study_practices_coords,
-                industrial_practices_coords,
-                professional_modules_coords
-            )
+                semester2_exam_coords=semester2_exam_coords,
+                semester2_zachet_coords=semester2_zachet_coords,
+                semester3_zachet_coords=semester3_zachet_coords,
+                semester4_exam_coords=semester4_exam_coords,
+                semester4_zachet_coords=semester4_zachet_coords,
+                semester5_exam_coords=semester5_exam_coords,
+                semester5_zachet_coords=semester5_zachet_coords,
+                semester6_exam_coords=semester6_exam_coords,
+                semester6_zachet_coords=semester6_zachet_coords,
+                semester7_exam_coords=semester7_exam_coords,
+                semester7_zachet_coords=semester7_zachet_coords,
+                semester8_exam_coords=semester8_exam_coords,
+                semester8_zachet_coords=semester8_zachet_coords,
+                coursework_coords=coursework_coords,
+                study_practices_coords=study_practices_coords,
+                industrial_practices_coords=industrial_practices_coords,
+                professional_modules_coords=professional_modules_coords
+                )
             
             if result:
                 raise forms.ValidationError(result)
