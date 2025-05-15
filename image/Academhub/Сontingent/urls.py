@@ -6,7 +6,7 @@ from .views import (AcademListView, AcademUpdateView, AcademReturn, ExpulsionLis
                     StatisticksView, ContingentMovementTableView, generate_group_table, generate_course_table,
                     generate_statistics_table, \
                     generate_vacation_table, generate_movement_table, \
-                    generate_student_record_book, create_auto_record_book_template, PromoteGroupStudentsView,
+                    download_recordbook_student, PromoteGroupStudentsView,
     # StudentTransferView
                     )
 
@@ -100,11 +100,9 @@ urlpatterns = [
      #
      # path('qualification/<int:qualification_id>/<int:admission_year>/record-book/save/', save_record_book_template, name='save_record_book_template'),
      #генерация зачетки для студента
-     path('student/<int:pk>/generate-record-book/', generate_student_record_book, name='generate_record_book'),
+     path('student/<int:pk>/generate-record-book/', GenerateStudentRecordBook.as_view(), name='generate_record_book'),
+     path('student/<int:pk>/download_recordbook', download_recordbook_student, name='download_recordbook'),
      # генерация зачетки для группы
-     path('group/<int:group_id>/generate-group-record-books/', generate_group_recordbooks, name='group_record_books_generate'),
-     path('qualification/<int:qualification_id>/<int:admission_year>/record-book/auto-add/', create_auto_record_book_template, name='create_auto_record_book_template'),
-
      #
      ## Генерация контингента
      #

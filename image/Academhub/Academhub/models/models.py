@@ -24,6 +24,7 @@ __all__ = (
     'ContingentMovement',
     'MiddleCertification',
     'CalendarGraphicOfLearningProcess',
+    'TeachersForDisciplineAndCurriculum',
 
     'Curriculum',
     'Category',
@@ -31,6 +32,9 @@ __all__ = (
     'Module',
     'Discipline',
     'ClockCell',
+    'TeachersForDisciplineAndCurriculum',
+    'AttestationPeriodForDisciplines',
+    'ReleaseFromCurriculum',
 )
 
 class AcademHubModel(UrlGenerateMixin, models.Model):
@@ -86,6 +90,13 @@ class CustomUser(AcademHubModel, AbstractBaseUser, PermissionsMixin):
         max_length=255,
         verbose_name='ЦМК '
     )
+
+    speciality = models.ForeignKey('Specialty',
+                                      related_name="teachers",
+                                      null=True,
+                                      verbose_name="Специальность",
+                                      on_delete=models.SET_NULL,
+                                      )
 
     is_active = models.BooleanField(default=True, verbose_name='Активный?')
     is_staff = models.BooleanField(default=False, verbose_name='Персонал?')
@@ -325,10 +336,10 @@ class GroupStudents(AcademHubModel):
         if not self.pk:
             self.number = self.get_default_number_value()
 
-        if self.education_base != "Основное общее":
-            self.full_name = f"{self.qualification.short_name}-11/{self.number}-{str(self.year_create)[-2:]}"
-        else:
-            self.full_name = f"{self.qualification.short_name}-{self.number}-{str(self.year_create)[-2:]}"
+        # if self.education_base != "Основное общее":
+        #     self.full_name = f"{self.qualification.short_name}-11/{self.number}-{str(self.year_create)[-2:]}"
+        # else:
+        #     self.full_name = f"{self.qualification.short_name}-{self.number}-{str(self.year_create)[-2:]}"
 
         return super().save(*args, **kwargs)
 
@@ -631,7 +642,9 @@ class Student(AcademHubModel):
 
     REASONS_OF_ACADEM_CHOICES = (
         ("с/о", "с/о"),
-        ("Смерть", "Смерть"),
+        ("Призыв в ВС", "Призыв в ВС"),
+        ("По состоянию здоровья", "По состоянию здоровья"),
+
         # TODO: Выяснить про другие причины
     )
 
@@ -647,7 +660,7 @@ class Student(AcademHubModel):
     group = models.ForeignKey(
         'GroupStudents', on_delete=models.CASCADE, related_name="students", verbose_name="Группа"
     )
-    admission_order = models.CharField(max_length=255, verbose_name="Приказ о зачислении") # TODO: Приказ о приеме
+    admission_order = models.CharField(max_length=255, verbose_name="Приказ о зачислении",  blank=True, null=True) # TODO: Приказ о приеме
     transfer_to_2nd_year_order = models.CharField(max_length=255, verbose_name="Переводной приказ на 2 курс", blank=True, null=True) # TODO: Приказ о переводе на 2 курс
     transfer_to_3rd_year_order = models.CharField(max_length=255, verbose_name="Переводной приказ на 3 курс", blank=True, null=True) # TODO: Приказ о переводе на 3 курс
     transfer_to_4th_year_order = models.CharField(max_length=255, verbose_name="Переводной приказ на 4 курс", blank=True, null=True) # TODO: Приказ о переводе на 4 курс
@@ -1222,6 +1235,9 @@ class Curriculum(AcademHubModel):
         verbose_name_plural = "Учебные планы"
         unique_together = ['qualification', 'admission_year', 'basis_of_admission']
 
+    def __str__(self):
+        return f"{self.qualification.name}_{self.admission_year}_{self.basis_of_admission}"
+
     @classmethod
     def from_dict(cls, data):
         qual_obj = Qualification.from_dict(data["qualification"])
@@ -1516,12 +1532,12 @@ class TeachersForDisciplineAndCurriculum(AcademHubModel):
     term = models.IntegerField(null=False)
     discipline = models.ForeignKey(Discipline, related_name='teachers_for_curriculum_and_discipline', on_delete=models.CASCADE)
     curriculum = models.ForeignKey(Curriculum, related_name='teachers_disciplines', on_delete=models.CASCADE)
-    groups = models.ManyToManyField(GroupStudents, 'teachers_for_groups')
+    group = models.ForeignKey(GroupStudents, related_name='teachers_to_discipline', on_delete=models.CASCADE)
 
 
     class Meta:
-        verbose_name = "Преподаватель дисциплины в семестре"
-        verbose_name_plural = "Преподаватели дисциплины в семестре"
+        verbose_name = "Преподаватель дисциплины для группы"
+        verbose_name_plural = "Преподаватели дисциплины для группы"
 
     @classmethod
     def from_dict(cls, data):
@@ -1550,13 +1566,13 @@ class TeachersForDisciplineAndCurriculum(AcademHubModel):
             return None
 
         # Определяем курс и локальный семестр из глобального семестра
-        course = (semester + 1) // 2
-        local_semester = 2 if semester % 2 == 0 else 1
+        course = (int(semester) + 1) // 2
+        local_semester = 2 if int(semester) % 2 == 0 else 1
 
         return cls.objects.filter(
             discipline=discipline,
             curriculum=group.curriculum,
-            groups=group,
+            group=group,
             course=course,
             term=local_semester
         ).prefetch_related('teachers').first()
@@ -1571,7 +1587,7 @@ def get_global_semester(course, local_semester):
       2 курс, 2 семестр → 4
       и т.д.
     """
-    return (course - 1) * 2 + local_semester
+    return (int(course) - 1) * 2 + int(local_semester)
 
 
 class AttestationPeriodForDisciplines(AcademHubModel):
@@ -1579,7 +1595,7 @@ class AttestationPeriodForDisciplines(AcademHubModel):
     term = models.IntegerField(null=False)
     discipline = models.ForeignKey(Discipline, related_name='attestations_periods', on_delete=models.CASCADE)
     curriculum = models.ForeignKey(Curriculum, related_name='attestations_periods_disciplines', on_delete=models.CASCADE)
-    groups = models.ManyToManyField(GroupStudents, 'teachers_for_groups_attestation')
+    group = models.ForeignKey(GroupStudents, related_name='attestations_periods_disciplines', on_delete=models.CASCADE)
     start_date = models.DateField(null=False)
     end_date = models.DateField(null=False)
 
@@ -1604,3 +1620,31 @@ class AttestationPeriodForDisciplines(AcademHubModel):
             "start_date": self.start_date,
             "end_date": self.end_date,
         }
+
+
+class ReleaseFromCurriculum(AcademHubModel):
+
+    course = models.IntegerField(null=False)
+    curriculum = models.ForeignKey(Curriculum, related_name='releases',
+                                   on_delete=models.CASCADE)
+
+    study_year = models.CharField(max_length=100)
+
+
+class ReleaseWeeksInTerms(AcademHubModel):
+    weeks_at_first_term = models.IntegerField(null=False)
+    weeks_at_second_term = models.IntegerField(null=False)
+
+    release = models.ForeignKey(ReleaseFromCurriculum, related_name='weeks_in_terms',
+                                   on_delete=models.CASCADE)
+
+
+class ReleaseCell(AcademHubModel):
+    type_cell = models.CharField(max_length=100)
+    hours_count = models.IntegerField(null=False)
+    term = models.IntegerField(null=False)
+    release = models.ForeignKey(ReleaseWeeksInTerms,
+                                related_name='cells',
+                                on_delete=models.CASCADE)
+
+    discipline = models.ForeignKey(Discipline, related_name='cells', on_delete=models.CASCADE)

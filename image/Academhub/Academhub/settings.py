@@ -20,12 +20,11 @@ load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG")
@@ -43,10 +42,10 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 5000
 
 # Приложения которые пойдут в навигационную панель
 ACTIVE_APPS = [
-    'Сontingent',
     'AccessControl',
     'Gradebook',
     'Curriculum',
+    'Сontingent'
 ]
 
 INSTALLED_APPS = [
@@ -73,8 +72,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 'Academhub.middleware.AuthMiddleware',
+    #'Academhub.middleware.AuthMiddleware',
 ]
+
 
 ROOT_URLCONF = 'Academhub.urls'
 TEMPLATES = [

@@ -107,6 +107,10 @@ PERMISSIONS = [
         'codename': 'export_student',
         'name': 'Экспорт студентов'
     },
+    {
+        'codename': 'download_recordbook',
+        'name': 'Скачать зачетную книжку'
+    },
 
     #
     ## Зачетная книжка
@@ -170,6 +174,19 @@ PERMISSIONS = [
     {
         'codename': 'export_movement',
         'name': 'Экспорт движения контингента'
-    }
+    },
 
+
+    #
+    ## Зачетка студентов
+    #
+
+    {
+        'codename': 'generate_qualification_template',
+        'name': 'Создание шаблона зачеток для учебного плана'
+    },
+    {
+        'codename': 'generate_student_recordbook',
+        'name': 'Создание зачеток для студентов'
+    },
 ]

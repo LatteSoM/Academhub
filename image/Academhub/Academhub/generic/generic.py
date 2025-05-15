@@ -1,10 +1,9 @@
 from django.core.exceptions import ObjectDoesNotExist
+from .mixin import LoginRequiredMixin, SubTablesMixin, BaseContextMixin, ImportViewMixin, PermissionBaseMixin
 from django.http import JsonResponse
 from django.views.generic import TemplateView, ListView, DetailView, UpdateView, CreateView, DeleteView, View
 from django_filters.views import FilterView
 from django_tables2 import SingleTableView
-
-from .mixin import SubTablesMixin, BaseContextMixin, ImportViewMixin, PermissionBaseMixin, LoginRequiredMixin
 
 __all__  = [
   'ObjectListView',

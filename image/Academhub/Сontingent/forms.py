@@ -7,8 +7,9 @@ from django.utils.dateparse import parse_date
 from openpyxl.reader.excel import load_workbook
 
 from Academhub.forms import *
+from Academhub.modules.documentGenPars import generate_qualification_template, generate_student_recordbook
 from Academhub.models import Student, Discipline, GroupStudents, Specialty, Qualification
-from Academhub.modules.documentGenPars import RecordBookDocumentGenerator
+# from Academhub.modules.documentGenPars import RecordBookDocumentGenerator
 from .utils import *
 
 __all__ = [
@@ -20,6 +21,7 @@ __all__ = [
     'QualificationForm',
     'PromoteStudentsForm',
     'PromoteGroupStudentsForm',
+    'GenerateStudentRecordBookForm',
     'GenerateQualificationTemplateForm',
 ]
 
@@ -141,6 +143,7 @@ class GroupForm(forms.ModelForm):
     class Meta:
         model = GroupStudents
         fields = [
+            'full_name',
             'qualification',
             'year_create',
             'education_base',
@@ -384,12 +387,12 @@ class ContingentStudentImportForm(StudentImportForm):
         self.data_list = []
         required_sheets = [
             "1 курс (9 кл)",
-            '1 курс (11 кл)',
-            '2 курс (9 кл)',
-            '3 курс (9кл)',
-            '2 курс (11 кл) ',
-            '4 курс (9 кл.)  ',
-            '3 курс (11 кл)',
+            "1 курс (11 кл)",
+            "2 курс (9 кл)",
+            "3 курс (9кл)",
+            "2 курс (11 кл)",
+            "4 курс (9 кл.)  ",
+            "3 курс (11 кл)",
             # 'Статистика',
             # 'Движение ',
             # 'Академический отпуск'
@@ -434,11 +437,19 @@ class ContingentStudentImportForm(StudentImportForm):
                                 print(f"Ошибка даты у {data['full_name']}: {cell_value}")
 
                     # Проверка группы
-                    group_filter = GroupStudents.objects.filter(full_name=data['group_number'])
-                    if group_filter.exists():
-                        data['group'] = group_filter.first()
-                    else:
+                    try:
+                        group_filter = GroupStudents.objects.get(full_name=data['group_number'])
+                        if group_filter:
+                            data['group'] = group_filter
+                            print(data['group_number'], data['full_name'])
+                        else:
+                            raise ValidationError(f'Группы {data["group_number"]} не существует')
+                    except:
+                        print(data)
+                        print(data['group_number'])
+                        print(data['full_name'])
                         raise ValidationError(f'Группы {data["group_number"]} не существует')
+
 
                     # print(f"Добавляем: {data}")
                     self.data_list.append(data)
@@ -469,66 +480,285 @@ class ContingentStudentImportForm(StudentImportForm):
             # print(f"{'Создан' if created else 'Обновлен'} студент: {student.full_name}")
 
 
+# class PromoteStudentsForm(forms.ModelForm):
+#     EDUCATION_BASE_CHOICES = (
+#         ("", "Выберите базу образования"),  # Пустой вариант
+#         ("основное общее", "Основное общее"),
+#         ("среднее общее", "Среднее общее"),
+#     )
+#
+#     EDUCATION_BASIS_CHOICES = (
+#         ("", "Выберите основу обучения"),  # Пустой вариант
+#         ("бюджет", 'Бюджет'),
+#         ("внебюджет", "Внебюджет")
+#     )
+#
+#     ACADEMIC_DEBTS = (
+#         ("", "Выберите наличие задолженностей"),  # Пустой вариант
+#         (True, 'Есть задолженности'),
+#         (False, 'Нет задолженностей')
+#     )
+#
+#     CURRENT_COURSE = (
+#         ("", "Выберите курс"),  # Пустой вариант
+#         (1, '1'),
+#         (2, '2'),
+#         (3, '3'),
+#         (4, '4')
+#     )
+#
+#     education_base = forms.ChoiceField(
+#         label='База образования',
+#         choices=EDUCATION_BASE_CHOICES,
+#         required=False,
+#     )
+#     education_basis = forms.ChoiceField(
+#         label='Основа обучения',
+#         choices=EDUCATION_BASIS_CHOICES,
+#         required=False
+#     )
+#     academic_debts = forms.ChoiceField(
+#         label='Наличие академических задолженностей',
+#         choices=ACADEMIC_DEBTS,
+#         required=False
+#     )
+#     current_course = forms.ChoiceField(
+#         label='Текущий курс',
+#         choices=CURRENT_COURSE,
+#         required=False
+#     )
+#
+#     students = forms.ModelMultipleChoiceField(
+#         queryset=Student.objects.none(),
+#         label='Студенты',
+#         widget=forms.CheckboxSelectMultiple,
+#         required=False
+#     )
+#
+#     order_number = forms.CharField(
+#         label='Номер приказа',
+#         widget=forms.TextInput(
+#             attrs={
+#                 'placeholder': 'Номер переводного приказа'
+#             }
+#         )
+#     )
+#
+#     class Meta:
+#         model = CurrentStudent
+#         fields = []
+#
+#     def __init__(self, *args, **kwargs):
+#         properties = kwargs.pop('properties', {})
+#         super().__init__(*args, **kwargs)
+#         self._configure_new_instance(properties)
+#
+#     def _configure_new_instance(self, properties):
+#         """Настройка для фильтрации студентов"""
+#
+#         # Получаем параметры фильтрации из properties
+#         education_base = properties.get('education_base')
+#         education_basis = properties.get('education_basis')
+#         academic_debt = properties.get('academic_debts')
+#         current_course = properties.get('current_course')
+#
+#         # Базовый пустой QuerySet
+#         students_qs = Student.objects.none()
+#
+#         # Проверяем, указаны ли какие-либо параметры
+#         if education_base or education_basis or academic_debt or current_course:
+#             # Строим QuerySet постепенно
+#             students_qs = Student.objects.all()
+#
+#             if education_base:
+#                 students_qs = students_qs.filter(education_base=education_base)
+#
+#             if education_basis:
+#                 students_qs = students_qs.filter(education_basis=education_basis)
+#
+#             if academic_debt != "":
+#                 has_debt = True if academic_debt == 'True' else False
+#                 students_qs = students_qs.filter(academic_debts=has_debt)
+#
+#             if current_course:
+#                 # students_qs = students_qs.filter(group__current_course=int(current_course))
+#
+#                 if int(current_course) == 1:
+#                     students_qs = students_qs.filter(transfer_to_2nd_year_order=None, transfer_to_3rd_year_order=None,
+#                                                      transfer_to_4th_year_order=None)
+#                 if int(current_course) == 2:
+#                     students_qs = students_qs.filter(transfer_to_2nd_year_order__isnull=False, transfer_to_3rd_year_order=None,
+#                                                      transfer_to_4th_year_order=None)
+#                 if int(current_course) == 3:
+#                     students_qs = students_qs.filter(transfer_to_2nd_year_order__isnull=False, transfer_to_3rd_year_order__isnull=False,
+#                                                      transfer_to_4th_year_order=None)
+#
+#         # Устанавливаем отфильтрованный (или пустой) список студентов
+#         self.fields['students'].queryset = students_qs.order_by('full_name')
+
+
+#это работает
+# class PromoteStudentsForm(forms.ModelForm):
+#     EDUCATION_BASE_CHOICES = (
+#         ("", "Выберите базу образования"),
+#         ("основное общее", "Основное общее"),
+#         ("среднее общее", "Среднее общее"),
+#     )
+#
+#     EDUCATION_BASIS_CHOICES = (
+#         ("", "Выберите основу обучения"),
+#         ("бюджет", "Бюджет"),
+#         ("внебюджет", "Внебюджет")
+#     )
+#
+#     ACADEMIC_DEBTS = (
+#         ("", "Выберите наличие задолженностей"),
+#         (True, "Есть задолженности"),
+#         (False, "Нет задолженностей")
+#     )
+#
+#     CURRENT_COURSE = (
+#         ("", "Выберите курс"),
+#         (1, "1"),
+#         (2, "2"),
+#         (3, "3"),
+#         (4, "4")
+#     )
+#
+#     education_base = forms.ChoiceField(
+#         label="База образования",
+#         choices=EDUCATION_BASE_CHOICES,
+#         required=False,
+#     )
+#     education_basis = forms.ChoiceField(
+#         label="Основа обучения",
+#         choices=EDUCATION_BASIS_CHOICES,
+#         required=False
+#     )
+#     academic_debts = forms.ChoiceField(
+#         label="Наличие академических задолженностей",
+#         choices=ACADEMIC_DEBTS,
+#         required=False
+#     )
+#     current_course = forms.ChoiceField(
+#         label="Текущий курс",
+#         choices=CURRENT_COURSE,
+#         required=False
+#     )
+#
+#     students = forms.ModelMultipleChoiceField(
+#         queryset=Student.objects.none(),
+#         label="Студенты",
+#         widget=forms.CheckboxSelectMultiple,
+#         required=False
+#     )
+#
+#     order_number = forms.CharField(
+#         label="Номер приказа",
+#         widget=forms.TextInput(
+#             attrs={
+#                 "placeholder": "Номер переводного приказа"
+#             }
+#         )
+#     )
+#
+#     class Meta:
+#         model = CurrentStudent
+#         fields = []
+#
+#     def __init__(self, *args, **kwargs):
+#         properties = kwargs.pop("properties", {})
+#         super().__init__(*args, **kwargs)
+#         self._configure_new_instance(properties)
+#
+#     def _configure_new_instance(self, properties):
+#         education_base = properties.get("education_base")
+#         education_basis = properties.get("education_basis")
+#         academic_debt = properties.get("academic_debts")
+#         current_course = properties.get("current_course")
+#
+#         students_qs = Student.objects.all()
+#
+#         if education_base:
+#             students_qs = students_qs.filter(education_base=education_base)
+#         if education_basis:
+#             students_qs = students_qs.filter(education_basis=education_basis)
+#         if academic_debt != "":
+#             has_debt = True if academic_debt == "True" else False
+#             students_qs = students_qs.filter(academic_debts=has_debt)
+#         if current_course:
+#             students_qs = students_qs.filter(group__current_course=int(current_course))
+#
+#         self.fields["students"].queryset = students_qs.order_by("full_name")
+#
+#     def clean_students(self):
+#         students = self.cleaned_data.get("students")
+#         print(f"PromoteStudentsForm: Выбрано студентов: {len(students)}")
+#         print(f"PromoteStudentsForm: ID студентов: {[student.id for student in students]}")
+#         if not students:
+#             raise forms.ValidationError("Выберите хотя бы одного студента.")
+#         return students
+
 class PromoteStudentsForm(forms.ModelForm):
     EDUCATION_BASE_CHOICES = (
-        ("", "Выберите базу образования"),  # Пустой вариант
+        ("", "Выберите базу образования"),
         ("основное общее", "Основное общее"),
         ("среднее общее", "Среднее общее"),
     )
 
     EDUCATION_BASIS_CHOICES = (
-        ("", "Выберите основу обучения"),  # Пустой вариант
-        ("бюджет", 'Бюджет'),
+        ("", "Выберите основу обучения"),
+        ("бюджет", "Бюджет"),
         ("внебюджет", "Внебюджет")
     )
 
     ACADEMIC_DEBTS = (
-        ("", "Выберите наличие задолженностей"),  # Пустой вариант
-        (True, 'Есть задолженности'),
-        (False, 'Нет задолженностей')
+        ("", "Выберите наличие задолженностей"),
+        (True, "Есть задолженности"),
+        (False, "Нет задолженностей")
     )
 
     CURRENT_COURSE = (
-        ("", "Выберите курс"),  # Пустой вариант
-        (1, '1'),
-        (2, '2'),
-        (3, '3'),
-        (4, '4')
+        ("", "Выберите курс"),
+        (1, "1"),
+        (2, "2"),
+        (3, "3"),
+        (4, "4")
     )
 
     education_base = forms.ChoiceField(
-        label='База образования',
+        label="База образования",
         choices=EDUCATION_BASE_CHOICES,
         required=False,
     )
     education_basis = forms.ChoiceField(
-        label='Основа обучения',
+        label="Основа обучения",
         choices=EDUCATION_BASIS_CHOICES,
         required=False
     )
     academic_debts = forms.ChoiceField(
-        label='Наличие академических задолженностей',
+        label="Наличие академических задолженностей",
         choices=ACADEMIC_DEBTS,
         required=False
     )
     current_course = forms.ChoiceField(
-        label='Текущий курс',
+        label="Текущий курс",
         choices=CURRENT_COURSE,
         required=False
     )
 
     students = forms.ModelMultipleChoiceField(
         queryset=Student.objects.none(),
-        label='Студенты',
+        label="Студенты",
         widget=forms.CheckboxSelectMultiple,
         required=False
     )
 
     order_number = forms.CharField(
-        label='Номер приказа',
+        label="Номер приказа",
         widget=forms.TextInput(
             attrs={
-                'placeholder': 'Номер переводного приказа'
+                "placeholder": "Номер переводного приказа"
             }
         )
     )
@@ -537,53 +767,52 @@ class PromoteStudentsForm(forms.ModelForm):
         model = CurrentStudent
         fields = []
 
-    def __init__(self, *args, **kwargs):
-        properties = kwargs.pop('properties', {})
-        super().__init__(*args, **kwargs)
-        self._configure_new_instance(properties)
-
     def _configure_new_instance(self, properties):
-        """Настройка для фильтрации студентов"""
+        education_base = properties.get("education_base")
+        education_basis = properties.get("education_basis")
+        academic_debt = properties.get("academic_debts")
+        current_course = properties.get("current_course")
 
-        # Получаем параметры фильтрации из properties
-        education_base = properties.get('education_base')
-        education_basis = properties.get('education_basis')
-        academic_debt = properties.get('academic_debts')
-        current_course = properties.get('current_course')
+        # Если ни один фильтр не задан, оставляем пустой queryset
+        if not any([education_base, education_basis, academic_debt, current_course]):
+            self.fields["students"].queryset = Student.objects.none()
+            return
 
-        # Базовый пустой QuerySet
-        students_qs = Student.objects.none()
+        # Формируем queryset, если есть хотя бы один фильтр
+        students_qs = Student.objects.all()
 
-        # Проверяем, указаны ли какие-либо параметры
-        if education_base or education_basis or academic_debt or current_course:
-            # Строим QuerySet постепенно
-            students_qs = Student.objects.all()
+        if education_base:
+            students_qs = students_qs.filter(education_base=education_base)
+        if education_basis:
+            students_qs = students_qs.filter(education_basis=education_basis)
+        if academic_debt != "":
+            has_debt = True if academic_debt == "True" else False
+            students_qs = students_qs.filter(academic_debts=has_debt)
+        if current_course:
+            # students_qs = students_qs.filter(group__current_course=int(current_course))
 
-            if education_base:
-                students_qs = students_qs.filter(education_base=education_base)
+            if int(current_course) == 1:
+                students_qs = students_qs.filter(transfer_to_2nd_year_order=None, transfer_to_3rd_year_order=None,
+                                                 transfer_to_4th_year_order=None)
+            if int(current_course) == 2:
+                students_qs = students_qs.filter(transfer_to_2nd_year_order__isnull=False, transfer_to_3rd_year_order=None,
+                                                 transfer_to_4th_year_order=None)
+            if int(current_course) == 3:
+                students_qs = students_qs.filter(transfer_to_2nd_year_order__isnull=False, transfer_to_3rd_year_order__isnull=False,
+                                                 transfer_to_4th_year_order=None)
+            if int(current_course) == 4:
+                students_qs = students_qs.filter(transfer_to_2nd_year_order__isnull=False, transfer_to_3rd_year_order__isnull=False,
+                                                 transfer_to_4th_year_order=False)
 
-            if education_basis:
-                students_qs = students_qs.filter(education_basis=education_basis)
+        self.fields["students"].queryset = students_qs.order_by("full_name")
 
-            if academic_debt != "":
-                has_debt = True if academic_debt == 'True' else False
-                students_qs = students_qs.filter(academic_debts=has_debt)
-
-            if current_course:
-                # students_qs = students_qs.filter(group__current_course=int(current_course))
-
-                if int(current_course) == 1:
-                    students_qs = students_qs.filter(transfer_to_2nd_year_order=None, transfer_to_3rd_year_order=None,
-                                                     transfer_to_4th_year_order=None)
-                if int(current_course) == 2:
-                    students_qs = students_qs.filter(transfer_to_2nd_year_order__isnull=False, transfer_to_3rd_year_order=None,
-                                                     transfer_to_4th_year_order=None)
-                if int(current_course) == 3:
-                    students_qs = students_qs.filter(transfer_to_2nd_year_order__isnull=False, transfer_to_3rd_year_order__isnull=False,
-                                                     transfer_to_4th_year_order=None)
-
-        # Устанавливаем отфильтрованный (или пустой) список студентов
-        self.fields['students'].queryset = students_qs.order_by('full_name')
+    def clean_students(self):
+        students = self.cleaned_data.get("students")
+        print(f"PromoteStudentsForm: Выбрано студентов: {len(students)}")
+        print(f"PromoteStudentsForm: ID студентов: {[student.id for student in students]}")
+        if not students:
+            raise forms.ValidationError("Выберите хотя бы одного студента.")
+        return students
 
 
 class GenerateQualificationTemplateForm(forms.Form):
@@ -594,27 +823,35 @@ class GenerateQualificationTemplateForm(forms.Form):
 
     file = forms.FileField(
         help_text='Поддерживает только .xlsx и .xls файлы',
-        label='Шаблон'
+        label='Шаблон',
+    )
+
+    semester1_exam_coords = ExcelField(
+        label='Экзамены 1 семестра',
+        required=False,
+        help_text='Обязательна для учебного плана 11 класса'
+    )
+
+    semester2_semester1_zachet_coordsexam_coords = ExcelField(
+        label='Зачет 1 семестра',
+        required=False,
+        help_text='Обязательна для учебного плана 11 класса'
     )
 
     semester2_exam_coords = ExcelField(
         label='Экзамены 2 семестра',
-
     )
 
     semester2_zachet_coords = ExcelField(
         label='Зачеты 2 семестра',
-
     )
 
     semester3_zachet_coords = ExcelField(
         label='Зачеты 3 семестра',
-
     )
 
     semester4_exam_coords = ExcelField(
         label='Экзамены 4 семестра',
-
     )
 
     semester4_zachet_coords = ExcelField(
@@ -684,9 +921,10 @@ class GenerateQualificationTemplateForm(forms.Form):
         file = self.cleaned_data.get('file')
 
         if file:
-            rbdg = RecordBookDocumentGenerator(file)
-            сurriculum = self.cleaned_data.get('сurriculum')
+            curriculum = self.cleaned_data.get('сurriculum')
 
+            semester1_exam_coords = self.cleaned_data.get('semester1_exam_coords')
+            semester1_zachet_coords = self.cleaned_data.get('semester1_zachet_coords')
             semester2_exam_coords = self.cleaned_data.get('semester2_exam_coords')
             semester2_zachet_coords = self.cleaned_data.get('semester2_zachet_coords')
             semester3_zachet_coords = self.cleaned_data.get('semester3_zachet_coords')
@@ -705,28 +943,88 @@ class GenerateQualificationTemplateForm(forms.Form):
             industrial_practices_coords = self.cleaned_data.get('industrial_practices_coords')
             professional_modules_coords = self.cleaned_data.get('professional_modules_coords')
 
-            print(semester2_exam_coords)
-
-            result = rbdg.generate_qualification_template(
-                сurriculum, 
-                semester2_exam_coords,
-                semester2_zachet_coords,
-                semester3_zachet_coords,
-                semester4_exam_coords,
-                semester4_zachet_coords,
-                semester5_exam_coords,
-                semester5_zachet_coords,
-                semester6_exam_coords,
-                semester6_zachet_coords,
-                semester7_exam_coords,
-                semester7_zachet_coords,
-                semester8_exam_coords,
-                semester8_zachet_coords,
-                coursework_coords,
-                study_practices_coords,
-                industrial_practices_coords,
-                professional_modules_coords
+            result = generate_qualification_template(
+                curriculum=curriculum,
+                recordbook_template_path=file,
+                semester1_exam_coords = semester1_exam_coords,
+                semester1_zachet_coords = semester1_zachet_coords,
+                semester2_exam_coords=semester2_exam_coords,
+                semester2_zachet_coords=semester2_zachet_coords,
+                semester3_zachet_coords=semester3_zachet_coords,
+                semester4_exam_coords=semester4_exam_coords,
+                semester4_zachet_coords=semester4_zachet_coords,
+                semester5_exam_coords=semester5_exam_coords,
+                semester5_zachet_coords=semester5_zachet_coords,
+                semester6_exam_coords=semester6_exam_coords,
+                semester6_zachet_coords=semester6_zachet_coords,
+                semester7_exam_coords=semester7_exam_coords,
+                semester7_zachet_coords=semester7_zachet_coords,
+                semester8_exam_coords=semester8_exam_coords,
+                semester8_zachet_coords=semester8_zachet_coords,
+                coursework_coords=coursework_coords,
+                study_practices_coords=study_practices_coords,
+                industrial_practices_coords=industrial_practices_coords,
+                professional_modules_coords=professional_modules_coords
             )
             
             if result:
                 raise forms.ValidationError(result)
+        else:
+            raise forms.ValidationError('Ошибка загрузки файла')
+
+class GenerateStudentRecordBookForm(forms.Form):
+    help_text = 'Введите номер(а) ячейки(ек) в которую(ые) будет(ут) вписываться информация'
+
+    sheet_name = forms.CharField(
+        label='Страница личных данных студента',
+        widget=forms.TextInput(
+            attrs={
+                'placeholder': 'Sheet1'
+            }
+        ),
+        help_text=help_text
+    )
+
+    recordbook_number_coord = forms.CharField(
+        label='Номер зачетной книжки',
+        widget=ExcelCell,
+        help_text=help_text
+    )
+    
+    student_name_coord = forms.CharField(
+        label='ФИО студента',
+        widget=ExcelCell,
+        help_text=help_text
+    )
+
+    specialty_coord = forms.CharField(
+        label='Специальность студента',
+        widget=ExcelCell,
+        help_text=help_text
+    )
+
+    order_number_coord = forms.CharField(
+        label='Номер приказа',
+        widget=ExcelCell,
+        help_text=help_text
+    )
+
+    def __init__(self, *args, **kwargs):
+        student_pk = kwargs.pop("student_pk", {})
+        super().__init__(*args, **kwargs)
+        self.student = Student.objects.get(pk = student_pk)
+    
+    def clean(self):
+        super().clean()
+        
+        try:
+            self.result = generate_student_recordbook(
+                student=self.student,
+                sheet_name=self.cleaned_data.get('sheet_name'),
+                recordbook_number_coord=self.cleaned_data.get('recordbook_number_coord'),
+                student_name_coord=self.cleaned_data.get('student_name_coord'),
+                specialty_coord=self.cleaned_data.get('specialty_coord'),
+                order_number_coord=self.cleaned_data.get('order_number_coord')
+            )
+        except Exception as e:
+            raise forms.ValidationError(e)

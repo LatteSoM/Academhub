@@ -2,8 +2,6 @@ from django.urls import path
 
 from Academhub.utils import getpattern
 from .views import *
-from .views import GradebookGenerateView, ViewStudentsGradesForSemester, export_grades, \
-    DiplomTypeIdentifier, GradebookRedirectView
 
 urlpatterns = [
     #

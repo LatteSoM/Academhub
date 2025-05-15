@@ -23,3 +23,5 @@ class ChildLink:
         self.url = url
         self.permission_required = permission_required
         self.teacher = teacher
+
+        print(self.permission_required)

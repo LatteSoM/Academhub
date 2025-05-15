@@ -37,6 +37,7 @@ class PermissionBaseMixin(PermissionRequiredMixin):
         perms = self.get_permission_required()
         if not perms:
             return True
+        print(perms)
         return self.request.user.has_perms(perms)
 
 class ButtonsMixin:

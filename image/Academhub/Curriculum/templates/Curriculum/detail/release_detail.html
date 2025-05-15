@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block content %}
+    <link rel="stylesheet" href="{% static 'css/release_detail.css' %}">
+    <div>
+        <div class="reserve_container">
+            <p class="reserve_block getRelease" id="release{{ release_id }}">Учебный год: {{ release_study_year }}</p>
+
+            <p class="reserve_block getCourse">Курс: {{ release_course }}</p>
+
+            <p class="reserve_block getCurriculum" id="curriculum{{ curriculum_id }}">Специальность {{ curriculum_speciality }}</p>
+        </div>
+
+        <div class="weeks_container">
+            <div class="week_container">
+                <label for="weeks_at_first_term">Недель в первом семестре:</label>
+                <input class="week_input" id="weeks_at_first_term" type="number">
+            </div>
+
+            <div class="week_container">
+                <label for="weeks_at_second_term">Недель во втором семестре:</label>
+                <input class="week_input" id="weeks_at_second_term" type="number">
+            </div>
+
+        </div>
+    </div>
+
+    <div class="tables_container">
+        <div class="release_table" id="disciplines-table">
+        </div>
+
+        <div class="groups_table" id="groups-table">
+        </div>
+    </div>
+
+    <div class="results_container">
+        <div>
+            <p>1 семестр</p>
+            <table>
+                <thead>
+                    <tr>
+                       <th><p>Час в нед</p></th>
+                       <th><p>Час в сем</p></th>
+                       <th><p>2п/гр</p></th>
+                       <th><p>с/р</p></th>
+                       <th><p>конс</p></th>
+                       <th><p>КП</p></th>
+                       <th><p>экз</p></th>
+                    </tr>
+                </thead>
+                <tbody id="result_1">
+                    <tr>
+                       <td><p>12</p></td>
+                       <td><p>12</p></td>
+                       <td><p>12</p></td>
+                       <td><p>с/р</p></td>
+                       <td><p>12</p></td>
+                       <td><p>12</p></td>
+                       <td><p>12</p></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="result_table">
+            <p>2 семестр</p>
+            <table>
+                <thead>
+                    <tr>
+                       <th><p>Час в нед</p></th>
+                       <th><p>Час в сем</p></th>
+                       <th><p>2п/гр</p></th>
+                       <th><p>с/р</p></th>
+                       <th><p>конс</p></th>
+                       <th><p>КП</p></th>
+                       <th><p>экз</p></th>
+                    </tr>
+                </thead>
+                <tbody id="result_2">
+                    <tr>
+                       <td><p>12</p></td>
+                       <td><p>12</p></td>
+                       <td><p>12</p></td>
+                       <td><p>с/р</p></td>
+                       <td><p>12</p></td>
+                       <td><p>12</p></td>
+                       <td><p>12</p></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <button id="save_btn">Сохранить изменения</button>
+    </div>
+
+
+
+
+    <script type="module" src="{% static 'js/releases_from_curriculums/release_detail.js' %}"></script>
+{% endblock %}

@@ -10,9 +10,12 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import FormView
+from django.http import FileResponse
+
+from Academhub.modules.documentGenPars import get_recordbook_student
 
 from Academhub.generic import ObjectTableView, ObjectDetailView, ObjectUpdateView, ObjectCreateView, ObjectTemplateView, \
-    ObjectTableImportView, PermissionBaseMixin
+    ObjectTableImportView, PermissionBaseMixin, ButtonsMixin
 from Academhub.models import (
     Student,
     Specialty,
@@ -41,9 +44,6 @@ from .utils import *
 __all__ = (
 
     'ViewRecordBookView',
-    'create_auto_record_book_template',
-    'generate_student_record_book',
-    'generate_group_recordbooks',
     'PromoteGroupStudentsView',
 
     'DisciplineTableView',
@@ -75,6 +75,7 @@ __all__ = (
     'ExpulsionListView',
     'AcademListView',
 
+    'GenerateStudentRecordBook',
     'GenerateQualificationTemplate',
 )
 
@@ -91,14 +92,14 @@ class DisciplineTableView(ObjectTableView):
     filterset_class = DisciplineFilter
     queryset = Discipline.objects.all()
 
-    permission_required = getpermission('Contingent', 'view_discipline')
+    permission_required = getpermission('Сontingent', 'view_discipline')
 
     buttons = [
         Button (
             id='add',
             name = 'Добавить',
             link_name = getpattern(Discipline, 'add'),
-            permission = getpermission('Contingent', 'create_discipline')
+            permission = getpermission('Сontingent', 'create_discipline')
         )
     ]
 
@@ -109,7 +110,7 @@ class DisciplineDetailView(ObjectDetailView):
     model= Discipline
     paginate_by  = 30
 
-    permission_required = getpermission('Contingent', 'view_discipline')
+    permission_required = getpermission('Сontingent', 'view_discipline')
 
     fieldset = {
         'Основная информация':
@@ -122,13 +123,13 @@ class DisciplineDetailView(ObjectDetailView):
             name = 'Обновить',
             link_params = ['pk'],
             link_name = getpattern(Discipline, 'change'),
-            permission = getpermission('Contingent', 'update_discipline')
+            permission = getpermission('Сontingent', 'update_discipline')
         ),
         Button (
             id = 'to_list',
             name = 'К таблице',
             link_name = getpattern(Discipline, 'list'),
-            permission = getpermission('Contingent', 'view_discipline')
+            permission = getpermission('Сontingent', 'view_discipline')
         )
     ]
         
@@ -139,7 +140,7 @@ class DisciplineUpdateView(ObjectUpdateView):
     form_class = DisciplineForm
     queryset = Discipline.objects.all()
 
-    permission_required = getpermission('Contingent', 'update_discipline')
+    permission_required = getpermission('Сontingent', 'update_discipline')
 
     buttons = [
         Button (
@@ -147,13 +148,13 @@ class DisciplineUpdateView(ObjectUpdateView):
             name = 'К объекту',
             link_params = ['pk'],
             link_name = getpattern(Discipline, 'detail'),
-            permission = getpermission('Contingent', 'view_discipline')
+            permission = getpermission('Сontingent', 'view_discipline')
         ),
         Button (
             id = 'to_list',
             name = 'К таблице',
             link_name = getpattern(Discipline, 'list'),
-            permission = getpermission('Contingent', 'view_discipline')
+            permission = getpermission('Сontingent', 'view_discipline')
         )
     ]
     
@@ -164,14 +165,14 @@ class DisciplineCreateView(ObjectCreateView):
     model = Discipline
     form_class = DisciplineForm
 
-    permission_required = getpermission('Contingent', 'create_discipline')
+    permission_required = getpermission('Сontingent', 'create_discipline')
 
     buttons = [
         Button (
             id = 'to_list',
             name = 'К таблице',
             link_name = getpattern(Discipline, 'list'),
-            permission = getpermission('Contingent', 'view_discipline')
+            permission = getpermission('Сontingent', 'view_discipline')
         )
     ]
 
@@ -187,14 +188,14 @@ class SpecialtyTableView(ObjectTableView):
     filterset_class = SpecialtyFilter
     queryset = Specialty.objects.all()
 
-    permission_required = getpermission('Contingent', 'view_specialty')
+    permission_required = getpermission('Сontingent', 'view_specialty')
 
     buttons = [
         Button (
             id='add',
             name = 'Добавить',
             link_name = getpattern(Specialty, 'add'),
-            permission = getpermission('Contingent', 'create_specialty')
+            permission = getpermission('Сontingent', 'create_specialty')
         )
     ]
 
@@ -207,7 +208,7 @@ class SpecialtyDetailView(ObjectDetailView):
     paginate_by  = 30
     template_name = 'Contingent/detail/specialty_detail.html'
 
-    permission_required = getpermission('Contingent', 'view_specialty')
+    permission_required = getpermission('Сontingent', 'view_specialty')
 
     fieldset = {
         'Основная информация':
@@ -229,13 +230,13 @@ class SpecialtyDetailView(ObjectDetailView):
             name = 'Обновить',
             link_params = ['pk'],
             link_name = getpattern(Specialty, 'change'),
-            permission = getpermission('Contingent', 'update_specialty'),
+            permission = getpermission('Сontingent', 'update_specialty'),
         ),
         Button (
             id = 'to_list',
             name = 'К таблице',
             link_name = getpattern(Specialty, 'list'),
-            permission = getpermission('Contingent', 'view_specialty')
+            permission = getpermission('Сontingent', 'view_specialty')
         )
     ]
 
@@ -246,7 +247,7 @@ class SpecialtyUpdateView(ObjectUpdateView):
     form_class = SpecialtyForm
     queryset = Specialty.objects.all()
 
-    permission_required = getpermission('Contingent', 'update_specialty')
+    permission_required = getpermission('Сontingent', 'update_specialty')
 
     buttons = [
         Button (
@@ -254,13 +255,13 @@ class SpecialtyUpdateView(ObjectUpdateView):
             name = 'К объекту',
             link_params = ['pk'],
             link_name = getpattern(Specialty, 'detail'),
-            permission = getpermission('Contingent', 'view_specialty')
+            permission = getpermission('Сontingent', 'view_specialty')
         ),
         Button (
             id = 'to_list',
             name = 'К таблице',
             link_name = getpattern(Specialty, 'list'),
-            permission = getpermission('Contingent', 'view_specialty')
+            permission = getpermission('Сontingent', 'view_specialty')
         )
     ]
 
@@ -271,14 +272,14 @@ class SpecialtyCreateView(ObjectCreateView):
     model = Specialty
     form_class = SpecialtyForm
 
-    permission_required = getpermission('Contingent', 'create_specialty')
+    permission_required = getpermission('Сontingent', 'create_specialty')
 
     buttons = [
         Button (
             id = 'to_list',
             name = 'К таблице',
             link_name = getpattern(Specialty, 'list'),
-            permission = getpermission('Contingent', 'view_specialty')
+            permission = getpermission('Сontingent', 'view_specialty')
         )
     ]
 #
@@ -293,14 +294,14 @@ class QualificationTableView(ObjectTableView):
     filterset_class = QualificationFilter
     queryset = Qualification.objects.all()
 
-    permission_required = getpermission('Contingent', 'view_qualification')
+    permission_required = getpermission('Сontingent', 'view_qualification')
 
     buttons = [
         Button (
             id='add',
             name = 'Добавить',
             link_name = getpattern(Qualification, 'add'),
-            permission = getpermission('Contingent', 'create_qualification'),
+            permission = getpermission('Сontingent', 'create_qualification'),
         )
     ]
 
@@ -312,7 +313,7 @@ class QualificationDetailView(ObjectDetailView):
     paginate_by  = 30
     template_name = 'Contingent/detail/qualification_detail.html'
 
-    permission_required = getpermission('Contingent', 'view_qualification')
+    permission_required = getpermission('Сontingent', 'view_qualification')
 
     fieldset = {
         'Основная информация':
@@ -325,13 +326,13 @@ class QualificationDetailView(ObjectDetailView):
             name = 'Обновить',
             link_params = ['pk'],
             link_name = getpattern(Qualification, 'change'),
-            permission = getpermission('Contingent', 'update_qualification'),
+            permission = getpermission('Сontingent', 'update_qualification'),
         ),
         Button (
             id = 'to_list',
             name = 'К таблице',
             link_name = getpattern(Qualification, 'list'),
-            permission = getpermission('Contingent', 'view_qualification')
+            permission = getpermission('Сontingent', 'view_qualification')
         )
     ]
 
@@ -342,7 +343,7 @@ class QualificationUpdateView(ObjectUpdateView):
     form_class = QualificationForm
     queryset = Qualification.objects.all()
 
-    permission_required = getpermission('Contingent', 'update_qualification')
+    permission_required = getpermission('Сontingent', 'update_qualification')
 
     buttons = [
         Button (
@@ -350,13 +351,13 @@ class QualificationUpdateView(ObjectUpdateView):
             name = 'К объекту',
             link_params = ['pk'],
             link_name = getpattern(Qualification, 'detail'),
-            permission = getpermission('Contingent', 'view_qualification')
+            permission = getpermission('Сontingent', 'view_qualification')
         ),
         Button (
             id = 'to_list',
             name = 'К таблице',
             link_name = getpattern(Qualification, 'list'),
-            permission = getpermission('Contingent', 'view_qualification')
+            permission = getpermission('Сontingent', 'view_qualification')
         )
     ]
 
@@ -367,14 +368,14 @@ class QualificationCreateView(ObjectCreateView):
     model = Qualification
     form_class = QualificationForm
 
-    permission_required = getpermission('Contingent', 'create_qualification')
+    permission_required = getpermission('Сontingent', 'create_qualification')
 
     buttons = [
         Button (
             id = 'to_list',
             name = 'К таблице',
             link_name = getpattern(Qualification, 'list'),
-            permission = getpermission('Contingent', 'view_qualification')
+            permission = getpermission('Сontingent', 'view_qualification')
         )
     ]
 
@@ -391,14 +392,14 @@ class GroupTableView(ObjectTableView):
     filterset_class = GroupFilter
     queryset = GroupStudents.objects.all()
 
-    permission_required = getpermission('Contingent', 'view_group_student')
+    permission_required = getpermission('Сontingent', 'view_group_student')
 
     buttons = [
         Button (
             id='add',
             name = 'Добавить',
             link_name = getpattern(GroupStudents, 'add'),
-            permission = getpermission('Contingent', 'create_group_student'),
+            permission = getpermission('Сontingent', 'create_group_student'),
         )
     ]
 
@@ -412,11 +413,13 @@ class GroupDetailView(ObjectDetailView):
     model= GroupStudents
     template_name = 'Contingent/detail/group_detail.html'
 
-    permission_required = getpermission('Contingent', 'view_group_student')
+    permission_required = getpermission('Сontingent', 'view_group_student')
 
     fieldset = {
-        'Основная информация':
-            ['number', 'qualification']
+        'Основная информация':[
+            # 'number',
+            'qualification'
+        ]
     }
 
     tables = [
@@ -434,15 +437,28 @@ class GroupDetailView(ObjectDetailView):
             name = 'Обновить',
             link_params = ['pk'],
             link_name = getpattern(GroupStudents, 'change'),
-            permission = getpermission('Contingent', 'update_group_student'),
+            permission = getpermission('Сontingent', 'update_group_student'),
         ),
         Button (
             id = 'to_list',
             name = 'К таблице',
             link_name = getpattern(GroupStudents, 'list'),
-            permission = getpermission('Contingent', 'view_group_student')
+            permission = getpermission('Сontingent', 'view_group_student')
         )
     ]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Подсчёт студентов
+        student_count = self.object.students.count()  # Через связь Student
+        try:
+            current_student_count = CurrentStudent.objects.filter(group=self.object).count()
+        except Exception as e:
+            current_student_count = None
+            print(f"Ошибка при подсчёте CurrentStudent: {e}")
+        print(f"Количество студентов (CurrentStudent): {current_student_count}")
+        context['student_count'] = student_count
+        return context
 
 class GroupUpdateView(ObjectUpdateView):
     """
@@ -451,7 +467,7 @@ class GroupUpdateView(ObjectUpdateView):
     form_class = GroupForm
     queryset = GroupStudents.objects.all()
 
-    permission_required = getpermission('Contingent', 'update_group_student')
+    permission_required = getpermission('Сontingent', 'update_group_student')
 
     buttons = [
         Button (
@@ -459,13 +475,13 @@ class GroupUpdateView(ObjectUpdateView):
             name = 'К объекту',
             link_params = ['pk'],
             link_name = getpattern(GroupStudents, 'detail'),
-            permission = getpermission('Contingent', 'view_group_student')
+            permission = getpermission('Сontingent', 'view_group_student')
         ),
         Button (
             id = 'to_list',
             name = 'К таблице',
             link_name = getpattern(GroupStudents, 'list'),
-            permission = getpermission('Contingent', 'view_group_student')
+            permission = getpermission('Сontingent', 'view_group_student')
         )
     ]
 
@@ -479,7 +495,7 @@ class PromoteGroupStudentsView(SuccessMessageMixin, ObjectUpdateView):
     template_name = 'Contingent/promote_group_students_form.html'
     success_message = 'Группа и студенты были успешно переведены на следующий курс!'
 
-    permission_required = getpermission('Contingent', 'transfer_students')
+    permission_required = getpermission('Сontingent', 'transfer_students')
 
     def get_object(self, queryset=None):
         return get_object_or_404(GroupStudents, pk=self.kwargs['pk'])
@@ -504,14 +520,14 @@ class GroupCreateView(ObjectCreateView):
     model = GroupStudents
     form_class = GroupForm
 
-    permission_required = getpermission('Contingent', 'create_group_student')
+    permission_required = getpermission('Сontingent', 'create_group_student')
 
     buttons = [
         Button (
             id = 'to_list',
             name = 'К таблице',
             link_name = getpattern(GroupStudents, 'list'),
-            permission = getpermission('Contingent', 'view_group_student')
+            permission = getpermission('Сontingent', 'view_group_student')
         )
     ]
 
@@ -528,133 +544,343 @@ class StudentTableView(ObjectTableImportView):
     form_import = ContingentStudentImportForm
     queryset = CurrentStudent.objects.all()
 
-    permission_required = getpermission('Contingent', 'view_current_student')
-    permission_import_required = getpermission('Contingent', 'export_student')
+    permission_required = getpermission('Сontingent', 'view_current_student')
+    permission_import_required = getpermission('Сontingent', 'export_student')
 
     buttons = [
         Button (
             id='add',
             name = 'Добавить',
             link_name = getpattern(Student, 'add'),
-            permission = getpermission('Contingent', 'create_student'),
+            permission = getpermission('Сontingent', 'create_student'),
         ),
     ]
 
 
+# class PromoteStudentsView(PermissionBaseMixin, FormView):
+#     """
+#     Класс для фильтрации и отображения студентов по параметрам.
+#     """
+#     model = CurrentStudent
+#     form_class = PromoteStudentsForm
+#     template_name = 'Contingent/transfer/transfer_students_form.html'
+#
+#     properties = ['education_base', 'education_basis', 'academic_debts', 'current_course']
+#     success_url = reverse_lazy('transfer_students_form')
+#
+#     permission_required = getpermission('Contingent', 'transfer_students')
+#
+#     buttons = [
+#         Button(
+#             id='to_list',
+#             name='К таблице',
+#             link_name='transfer_students_list',
+#         )
+#     ]
+#
+#     def get_form_kwargs(self):
+#         kwargs = super().get_form_kwargs()
+#
+#         # Извлекаем параметры из URL
+#         properties = {
+#             'education_base': self.request.GET.get('education_base'),
+#             'education_basis': self.request.GET.get('education_basis'),
+#             'academic_debt': self.request.GET.get('academic_debts'),
+#             'current_course': self.request.GET.get('current_course'),
+#         }
+#
+#         # Передаем параметры в форму
+#         kwargs['properties'] = properties
+#         return kwargs
+#
+#     def get_form_kwargs(self):
+#         """
+#         Передаем параметры из URL в форму.
+#         """
+#         kwargs = super().get_form_kwargs()
+#         kwargs['properties'] = self.request.GET.dict()
+#         return kwargs
+#
+#     def form_valid(self, form):
+#         """
+#         Логика переводана студентов на следующий курс.
+#         """
+#         # Получаем список выбранных студентов
+#         students = form.cleaned_data.get('students')
+#         if not students:
+#             form.add_error(None, "Вы не выбрали студентов для перевода.")
+#             return self.form_invalid(form)
+#
+#         order_number = form.cleaned_data.get('order_number')
+#
+#         groups = set()
+#
+#         # Переводим студентов на следующий курс
+#         for student in students:
+#             try:
+#                 groups.add(student.group)
+#                 if student.group.current_course == 1:
+#                     student.transfer_to_2nd_year_order = order_number
+#                 elif student.group.current_course == 2:
+#                     student.transfer_to_3rd_year_order = order_number
+#                 elif student.group.current_course == 3:
+#                     student.transfer_to_4th_year_order = order_number
+#                 elif student.group.current_course == 4:
+#                     student.expell_order = order_number
+#                     student.is_expelled = True
+#
+#                 create_transfer_log(order_number, student)
+#                 student.save()
+#                 print('Зашли в валид')
+#
+#             except Exception as e:
+#                 print(f"Ошибка при обработке студента {student.id}: {e}")
+#                 continue
+#
+#             # print(type(student))
+#             #
+#             # create_transfer_log(order_number,student)
+#             # student.save()
+#
+#
+#         groups_qr = GroupStudents.objects.all()
+#         for group in groups_qr:
+#             if group in groups:
+#
+#                 # students.filter(group=group)
+#                 current_students = CurrentStudent.objects.filter(group=group)
+#
+#                 current_course = group.current_course
+#                 students_count = len(current_students)
+#                 if current_course == 1:
+#                     transfered_students = len(current_students.filter(transfer_to_2nd_year_order__isnull=False, transfer_to_3rd_year_order=None,
+#                                                      transfer_to_4th_year_order=None))
+#                     if students_count == transfered_students:
+#                         group.current_course = 2
+#                 if current_course == 2:
+#                     transfered_students = len(
+#                         current_students.filter(transfer_to_2nd_year_order__isnull=False, transfer_to_3rd_year_order__isnull=False,
+#                                                      transfer_to_4th_year_order=None))
+#                     if students_count == transfered_students:
+#                         group.current_course = 3
+#                 if current_course == 3:
+#                     transfered_students = len(
+#                         current_students.filter(transfer_to_2nd_year_order__isnull=False, transfer_to_3rd_year_order__isnull=False,
+#                                                      transfer_to_4th_year_order__isnull=False))
+#                     if students_count == transfered_students:
+#                         group.current_course = 3
+#
+#                 # group.current_course += 1
+#                 group.save()
+#
+#         return redirect(self.success_url)
+#
+#
+#     def form_invalid(self, form):
+#         """
+#         Обработка ошибок формы.
+#         """
+#         return super().form_invalid(form)
+
+
+#ЭТО РАБОТАЕТ
+# from django.db import transaction
+# from django.shortcuts import redirect
+#
+# class PromoteStudentsView(PermissionBaseMixin, FormView):
+#     model = CurrentStudent
+#     form_class = PromoteStudentsForm
+#     template_name = 'Contingent/transfer/transfer_students_form.html'
+#     success_url = reverse_lazy('transfer_students_form')
+#     permission_required = getpermission('Contingent', 'transfer_students')
+#
+#     def get_form_kwargs(self):
+#         kwargs = super().get_form_kwargs()
+#         kwargs['properties'] = self.request.GET.dict()
+#         return kwargs
+#
+#     def form_valid(self, form):
+#         students = form.cleaned_data.get('students')
+#         if not students:
+#             form.add_error(None, "Вы не выбрали студентов для перевода.")
+#             return self.form_invalid(form)
+#
+#         order_number = form.cleaned_data.get('order_number')
+#         groups = set()
+#
+#         print(f"Количество выбранных студентов: {len(students)}")
+#         print(f"Номер приказа: {order_number}")
+#
+#         with transaction.atomic():
+#             # Перевод студентов
+#             for student in students:
+#                 try:
+#                     groups.add(student.group)
+#                     print(f"Обрабатываем студента {student.id}, группа {student.group}, курс группы {student.group.current_course}")
+#                     if student.group.current_course == 1:
+#                         student.transfer_to_2nd_year_order = order_number
+#                     elif student.group.current_course == 2:
+#                         student.transfer_to_3rd_year_order = order_number
+#                     elif student.group.current_course == 3:
+#                         student.transfer_to_4th_year_order = order_number
+#                     elif student.group.current_course == 4:
+#                         student.expell_order = order_number
+#                         student.is_expelled = True
+#
+#                     create_transfer_log(order_number, student)
+#                     student.save()
+#                     print(f"Студент {student.id} сохранён")
+#                 except Exception as e:
+#                     print(f"Ошибка при обработке студента {student.id}: {e}")
+#                     continue
+#
+#             # Обновление курса групп
+#             for group in groups:
+#                 # Фильтруем только выбранных студентов в группе
+#                 selected_students_in_group = [s for s in students if s.group == group]
+#                 students_count = len(selected_students_in_group)
+#                 current_course = group.current_course
+#                 print(f"Группа {group.id}, курс {current_course}, выбрано студентов: {students_count}")
+#
+#                 if students_count == 0:
+#                     print(f"Пропускаем группу {group.id}, так как нет выбранных студентов")
+#                     continue
+#
+#                 if current_course == 1:
+#                     transfered_students = len([s for s in selected_students_in_group if s.transfer_to_2nd_year_order == order_number])
+#                     print(f"Переведено на 2-й курс: {transfered_students}")
+#                     if students_count == transfered_students:
+#                         group.current_course = 2
+#                         group.save()
+#                         print(f"Группа {group.id} переведена на 2-й курс")
+#                 elif current_course == 2:
+#                     transfered_students = len([s for s in selected_students_in_group if s.transfer_to_3rd_year_order == order_number])
+#                     print(f"Переведено на 3-й курс: {transfered_students}")
+#                     if students_count == transfered_students:
+#                         group.current_course = 3
+#                         group.save()
+#                         print(f"Группа {group.id} переведена на 3-й курс")
+#                 elif current_course == 3:
+#                     transfered_students = len([s for s in selected_students_in_group if s.transfer_to_4th_year_order == order_number])
+#                     print(f"Переведено на 4-й курс: {transfered_students}")
+#                     if students_count == transfered_students:
+#                         group.current_course = 4
+#                         group.save()
+#                         print(f"Группа {group.id} переведена на 4-й курс")
+#
+#         return redirect(self.success_url)
+#
+#     def form_invalid(self, form):
+#         return super().form_invalid(form)
+
+
+from django.db import transaction
+from django.shortcuts import redirect
+
 class PromoteStudentsView(PermissionBaseMixin, FormView):
-    """
-    Класс для фильтрации и отображения студентов по параметрам.
-    """
     model = CurrentStudent
     form_class = PromoteStudentsForm
-    template_name = 'Contingent/transfer/transfer_students_form.html'
-
-    properties = ['education_base', 'education_basis', 'academic_debts', 'current_course']
-    success_url = reverse_lazy('transfer_students_form')
-
-    permission_required = getpermission('Contingent', 'transfer_students')
-
-    buttons = [
-        Button(
-            id='to_list',
-            name='К таблице',
-            link_name='transfer_students_list',
-        )
-    ]
+    template_name = "Contingent/transfer/transfer_students_form.html"
+    success_url = reverse_lazy("transfer_students_form")
+    permission_required = getpermission("Contingent", "transfer_students")
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-
-        # Извлекаем параметры из URL
-        properties = {
-            'education_base': self.request.GET.get('education_base'),
-            'education_basis': self.request.GET.get('education_basis'),
-            'academic_debt': self.request.GET.get('academic_debts'),
-            'current_course': self.request.GET.get('current_course'),
-        }
-
-        # Передаем параметры в форму
-        kwargs['properties'] = properties
-        return kwargs
-
-    def get_form_kwargs(self):
-        """
-        Передаем параметры из URL в форму.
-        """
-        kwargs = super().get_form_kwargs()
-        kwargs['properties'] = self.request.GET.dict()
+        kwargs["properties"] = self.request.GET.dict()
         return kwargs
 
     def form_valid(self, form):
-        """
-        Логика переводана студентов на следующий курс.
-        """
-        # Получаем список выбранных студентов
-        students = form.cleaned_data.get('students')
-        if not students:
-            form.add_error(None, "Вы не выбрали студентов для перевода.")
-            return self.form_invalid(form)
-
-        order_number = form.cleaned_data.get('order_number')
+        students = form.cleaned_data.get("students")
+        order_number = form.cleaned_data.get("order_number")
+        print(f"PromoteStudentsView: Количество выбранных студентов: {len(students)}")
+        print(f"PromoteStudentsView: ID студентов: {[student.id for student in students]}")
+        print(f"PromoteStudentsView: Номер приказа: {order_number}")
 
         groups = set()
 
-        # Переводим студентов на следующий курс
-        for student in students:
-            groups.add(student.group)
-            if student.group.current_course == 1:
-                student.transfer_to_2nd_year_order = order_number
-            elif student.group.current_course == 2:
-                student.transfer_to_3rd_year_order = order_number
-            elif student.group.current_course == 3:
-                student.transfer_to_4th_year_order = order_number
-            elif student.group.current_course == 4:
-                student.expell_order = order_number
-                student.is_expelled = True
+        with transaction.atomic():
+            for student in students:
+                try:
+                    groups.add(student.group)
+                    print(f"Обрабатываем студента {student.id}, группа {student.group.id}, курс группы {student.group.current_course}")
+                    if student.group.current_course == 1:
+                        student.transfer_to_2nd_year_order = order_number
+                    elif student.group.current_course == 2:
+                        student.transfer_to_3rd_year_order = order_number
+                    elif student.group.current_course == 3:
+                        student.transfer_to_4th_year_order = order_number
+                    elif student.group.current_course == 4:
+                        student.expell_order = order_number
+                        student.is_expelled = True
 
-            print(type(student))
+                    create_transfer_log(order_number, student)
+                    student.save()
+                    print(f"Студент {student.id} сохранён")
+                except Exception as e:
+                    print(f"Ошибка при обработке студента {student.id}: {e}")
+                    continue
 
-            create_transfer_log(order_number,student)
-            student.save()
-
-
-        groups_qr = GroupStudents.objects.all()
-        for group in groups_qr:
-            if group in groups:
-
-                # students.filter(group=group)
-                current_students = CurrentStudent.objects.filter(group=group)
-
+            for group in groups:
+                # Формируем список студентов текущей группы из выбранных в форме
+                selected_students_in_group = [s for s in students if s.group == group]
+                students_count = len(selected_students_in_group)
                 current_course = group.current_course
-                students_count = len(current_students)
-                if current_course == 1:
-                    transfered_students = len(current_students.filter(transfer_to_2nd_year_order__isnull=False, transfer_to_3rd_year_order=None,
-                                                     transfer_to_4th_year_order=None))
-                    if students_count == transfered_students:
-                        group.current_course = 2
-                if current_course == 2:
-                    transfered_students = len(
-                        current_students.filter(transfer_to_2nd_year_order__isnull=False, transfer_to_3rd_year_order__isnull=False,
-                                                     transfer_to_4th_year_order=None))
-                    if students_count == transfered_students:
-                        group.current_course = 3
-                if current_course == 3:
-                    transfered_students = len(
-                        current_students.filter(transfer_to_2nd_year_order__isnull=False, transfer_to_3rd_year_order__isnull=False,
-                                                     transfer_to_4th_year_order__isnull=False))
-                    if students_count == transfered_students:
-                        group.current_course = 3
+                print(f"Группа {group.id}, курс {current_course}, выбрано студентов: {students_count}")
 
-                # group.current_course += 1
-                group.save()
+                if students_count == 0:
+                    print(f"Пропускаем группу {group.id}, так как нет выбранных студентов")
+                    continue
+
+                # Проверяем, все ли студенты группы переведены на следующий курс
+                if current_course == 1:
+                    # Подсчитываем студентов, переведённых текущим приказом
+                    transfered_students = len(
+                        [s for s in selected_students_in_group if s.transfer_to_2nd_year_order == order_number])
+                    # Подсчитываем всех непереведённых студентов в группе
+                    remaining_students = Student.objects.filter(group=group,
+                                                                transfer_to_2nd_year_order__isnull=True).count()
+                    print(f"Переведено на 2-й курс текущим приказом: {transfered_students}")
+                    print(f"Осталось перевести на 2-й курс: {remaining_students}")
+                    # Если нет непереведённых студентов, обновляем курс группы
+                    if remaining_students == 0:
+                        group.current_course = 2
+                        group.save()
+                        print(f"Группа {group.id} переведена на 2-й курс")
+                elif current_course == 2:
+                    transfered_students = len(
+                        [s for s in selected_students_in_group if s.transfer_to_3rd_year_order == order_number])
+                    remaining_students = Student.objects.filter(group=group,
+                                                                transfer_to_3rd_year_order__isnull=True).count()
+                    print(f"Переведено на 3-й курс текущим приказом: {transfered_students}")
+                    print(f"Осталось перевести на 3-й курс: {remaining_students}")
+                    if remaining_students == 0:
+                        group.current_course = 3
+                        group.save()
+                        print(f"Группа {group.id} переведена на 3-й курс")
+                elif current_course == 3:
+                    transfered_students = len(
+                        [s for s in selected_students_in_group if s.transfer_to_4th_year_order == order_number])
+                    remaining_students = Student.objects.filter(group=group,
+                                                                transfer_to_4th_year_order__isnull=True).count()
+                    print(f"Переведено на 4-й курс текущим приказом: {transfered_students}")
+                    print(f"Осталось перевести на 4-й курс: {remaining_students}")
+                    if remaining_students == 0:
+                        group.current_course = 4
+                        group.save()
+                        print(f"Группа {group.id} переведена на 4-й курс")
+                elif current_course == 4:
+                    transfered_students = len([s for s in selected_students_in_group if s.is_expelled])
+                    remaining_students = Student.objects.filter(group=group, is_expelled=False).count()
+                    print(f"Отчислено текущим приказом: {transfered_students}")
+                    print(f"Осталось отчислить: {remaining_students}")
+                    if remaining_students == 0:
+                        group.is_active = False
+                        group.save()
+                        print(f"Группа {group.id} деактивирована")
 
         return redirect(self.success_url)
 
-
     def form_invalid(self, form):
-        """
-        Обработка ошибок формы.
-        """
         return super().form_invalid(form)
 
 
@@ -666,7 +892,7 @@ class StudentDetailView(ObjectDetailView):
     paginate_by  = 30
     template_name = 'Contingent/detail/student_detail.html'
 
-    permission_required = getpermission('Contingent', 'view_current_student', 'view_expulsion_student', 'view_academ_student')
+    permission_required = getpermission('Сontingent', 'view_current_student', 'view_expulsion_student', 'view_academ_student')
 
     fieldset = {
         'Основная информация':
@@ -685,7 +911,7 @@ class StudentDetailView(ObjectDetailView):
             name = 'Обновить',
             link_params = ['pk'],
             link_name = getpattern(Student, 'change'),
-            permission = getpermission('Contingent', 'update_student')
+            permission = getpermission('Сontingent', 'update_student')
         ),
     ]
 
@@ -697,7 +923,7 @@ class StudentUpdateView(ObjectUpdateView):
     form_class = StudentForm
     queryset = Student.objects.all()
 
-    permission_required = getpermission('Contingent', 'update_student')
+    permission_required = getpermission('Сontingent', 'update_student')
 
     buttons = [
         Button (
@@ -705,7 +931,7 @@ class StudentUpdateView(ObjectUpdateView):
             name = 'К объекту',
             link_params = ['pk'],
             link_name = getpattern(Student, 'detail'),
-            permission = getpermission('Contingent', 'update_student')
+            permission = getpermission('Сontingent', 'update_student')
         ),
     ]
 
@@ -722,7 +948,7 @@ class StudentCreateView(ObjectCreateView):
             id = 'to_list',
             name = 'К таблице',
             link_name = getpattern(CurrentStudent, 'list'),
-            permission = getpermission('Contingent', 'view_current_student')
+            permission = getpermission('Сontingent', 'view_current_student')
         )
     ]
 
@@ -737,7 +963,7 @@ class AcademUpdateView(ObjectUpdateView):
     form_class = AcademLeaveForm
     queryset = Student.objects.filter(is_in_academ=False, is_expelled=False)
 
-    permission_required = getpermission('Contingent', 'update_currentstudent')
+    permission_required = getpermission('Сontingent', 'update_currentstudent')
 
 class AcademListView(ObjectTableView):
     """
@@ -747,7 +973,7 @@ class AcademListView(ObjectTableView):
     filterset_class = AcademFilter
     queryset = AcademStudent.objects.all()
 
-    permission_required = getpermission('Contingent', 'view_academ_student')
+    permission_required = getpermission('Сontingent', 'view_academ_student')
 
 class AcademReturn(ObjectUpdateView):
     """
@@ -756,7 +982,7 @@ class AcademReturn(ObjectUpdateView):
     form_class = AcademReturnForm
     queryset = Student.objects.filter(is_in_academ=True, is_expelled=False)
 
-    permission_required = getpermission('Contingent', 'return_currentstudent')
+    permission_required = getpermission('Сontingent', 'return_currentstudent')
 
 #
 ## Отчисленные студенты
@@ -767,12 +993,20 @@ class ExpulsionListView(ObjectTableView):
     filterset_class = ExpulsionFilter
     queryset = Student.objects.filter(is_expelled=True, is_in_academ=False)
 
-    permission_required = getpermission('Contingent', 'view_expulsion_student')
+    permission_required = getpermission('Сontingent', 'view_expulsion_student')
+
+# class ExpelStudent(ObjectUpdateView):
+#     form_class = ExpellStudentForm
+#     queryset = Student.objects.filter(is_in_academ=False, is_expelled=True)
+#
+#     permission_required = getpermission('Contingent', 'update_expulsion_student')
+
+from django.contrib import messages
+from django.shortcuts import redirect
 
 class ExpelStudent(ObjectUpdateView):
     form_class = ExpellStudentForm
-    queryset = Student.objects.filter(is_in_academ=False, is_expelled=True)
-
+    queryset = Student.objects.filter(is_in_academ=False, is_expelled=False)
     permission_required = getpermission('Contingent', 'update_expulsion_student')
 
 
@@ -780,7 +1014,7 @@ class RecoverStudent(ObjectUpdateView):
     form_class = RecoverStudentForm
     queryset = Student.objects.filter(is_in_academ=False, is_expelled=True)
 
-    permission_required = getpermission('Contingent', 'return_expulsion_student')
+    permission_required = getpermission('Сontingent', 'return_expulsion_student')
 
 #
 ## Статистика
@@ -790,7 +1024,7 @@ class RecoverStudent(ObjectUpdateView):
 class StatisticksView(ObjectTemplateView):
     template_name = 'Contingent/statisticks.html'
 
-    permission_required = getpermission('Contingent', 'view_statistic')
+    permission_required = getpermission('Сontingent', 'view_statistic')
 
     def get_context_data(self, **kwargs):
         student_list = student_format_to_list()
@@ -939,13 +1173,30 @@ class StatisticksView(ObjectTemplateView):
 ## Зачетка
 #
 
-class ViewRecordBookView(ObjectTemplateView):
+class ViewRecordBookView(ButtonsMixin, ObjectTemplateView):
     """
     Класс для отображения информации о зачетной книжке конкретного студента.
     """
     template_name = 'Contingent/record_book_view.html'
 
-    permission_required = getpermission('Contingent', 'view_record_book')
+    permission_required = getpermission('Сontingent', 'view_record_book')
+
+    buttons  = [
+        Button (
+            id='to_object',
+            name = 'К объекту',
+            link_params = ['pk'],
+            link_name = getpattern(Student, 'detail'),
+            permission = getpermission('Сontingent', 'update_student')
+        ),
+        Button(
+            id='download_recordbook',
+            name = 'Скачать',
+            link_params = ['pk'],
+            link_name = 'download_recordbook',
+            permission = getpermission('Сontingent', 'download_recordbook')
+        )
+    ]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -962,6 +1213,7 @@ class ViewRecordBookView(ObjectTemplateView):
         context['url_list'] = 'student_list'
         context['is_student_gradebook'] = True
         context['student_id'] = self.kwargs['student_id']
+        context['object'] = Student.objects.get(pk=self.kwargs['student_id'])
 
         # Передаем данные из словаря напрямую
         context['middle_certifications'] = context_record_book_object['middle_certifications']
@@ -981,109 +1233,19 @@ class ViewRecordBookView(ObjectTemplateView):
 
         return context
 
-@permission_required(getpermission('Contingent', 'save_record_book'))
-def generate_student_record_book(request, pk):
-    """
-    Функция для генерации зачетной книжки для конкретного студента
-    """
-    try:
-        student = get_object_or_404(Student, pk=pk)
-    except StudentRecordBook.DoesNotExist as e:
-        print("Студент не найден")
-    qualification = student.group.qualification
-    admission_year = student.group.year_create
+@permission_required(getpermission('Сontingent', 'download_recordbook_student'))
+def download_recordbook_student(request, pk):
+    student = get_object_or_404(Student, pk=pk)
 
-    print(qualification, admission_year)
-    try:
-        template = get_object_or_404(RecordBookTemplate, qualification=qualification, admission_year=admission_year)
-    except RecordBookTemplate.DoesNotExist as e:
-        print("Шаблон не найден")
+    path = get_recordbook_student(student)
 
-    # Генерация уникального номера зачетки
-    record_book_number = generate_unique_record_book_number(admission_year, student)
-    print(2)
-    # Создаём новый объект StudentRecordBook для студента
-    new_record_book = StudentRecordBook.objects.create(
-        student=student,
-        qualification=qualification,
-        admission_year=admission_year,
-        student_name=f"{student.full_name}",
-        record_book_number=record_book_number,
-        admission_order=student.admission_order,
-        issue_date=template.issue_date,
-        curriculum=template.curriculum
+    filename = os.path.basename(path)
+
+    return FileResponse(
+        open(path, 'rb'),
+        as_attachment=True,
+        filename=filename
     )
-    print(new_record_book)
-    student.record_book = new_record_book
-    student.save()
-
-    return redirect('view_record_book', qualification_id=qualification.id, admission_year=admission_year, student_id=pk)
-
-
-@permission_required(getpermission('Contingent', 'save_record_book_template'))
-def create_auto_record_book_template(request, qualification_id, admission_year):
-    """
-    Функция для генерации Шаблона зачетной книжки  шаблон генерируется на квалификацию и год поступления,
-    Например для всех групп П 2021 года поступления
-    """
-    qualification = get_object_or_404(Qualification, id=qualification_id)
-    curriculum = get_object_or_404(Curriculum, qualification=qualification, admission_year=admission_year)
-
-    # Проверяем, существует ли шаблон, чтобы не дублировать
-    if RecordBookTemplate.objects.filter(qualification=qualification, admission_year=admission_year).exists():
-        return redirect('view_record_book_template', qualification_id=qualification_id, admission_year=admission_year)
-
-    # Создаём шаблон
-    template = RecordBookTemplate.objects.create(
-        qualification=qualification,
-        admission_year=admission_year,
-        student_name="",  # Пустое, так как это шаблон
-        record_book_number="",  # Пустое для шаблона
-        admission_order="Не указан",  # Можно заполнить позже
-        issue_date=datetime.now().date(),
-        curriculum=curriculum
-    )
-
-    return redirect('view_record_book_template', qualification_id=qualification_id, admission_year=admission_year)
-
-
-@permission_required(getpermission('Contingent', 'save_record_book'))
-def generate_group_recordbooks(request, group_id):
-    """
-    Функция для генерации зачетных книжек на всю группу
-    """
-    group = get_object_or_404(GroupStudents, id=group_id)
-    qualification = group.qualification
-    admission_year = group.year_create
-
-    # проверка на то что шаблон есть
-    if not RecordBookTemplate.objects.filter(qualification=qualification, admission_year=admission_year).exists():
-        create_auto_record_book_template(request, qualification.id, admission_year)
-
-    template = get_object_or_404(RecordBookTemplate, qualification=qualification, admission_year=admission_year)
-    students = group.students.all()
-
-    for student in students:
-        # if student.record_book:  # Пропускаем студентов с уже существующей зачёткой
-        #     continue
-
-        record_book_number = generate_unique_record_book_number(admission_year, student)
-        new_record_book = StudentRecordBook.objects.create(
-            student=student,
-            qualification=qualification,
-            admission_year=admission_year,
-            student_name=f"{student.full_name}",
-            record_book_number=record_book_number,
-            admission_order=template.admission_order,
-            issue_date=template.issue_date,
-            curriculum=template.curriculum
-        )
-
-        student.record_book = new_record_book
-        student.save()
-
-    return redirect('groupstudents_detail', pk=group_id)
-
 
 #########
 #######Движения контингента
@@ -1100,7 +1262,7 @@ class ContingentMovementTableView(ObjectTableView):
     queryset = ContingentMovement.objects.all()
     template_name = 'Contingent/contingent_movement_list.html'
 
-    permission_required = getpermission('Contingent', 'view_movement')
+    permission_required = getpermission('Сontingent', 'view_movement')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -1112,7 +1274,7 @@ class ContingentMovementTableView(ObjectTableView):
 #######Обработка генерации доков
 #########
 
-@permission_required(getpermission('Contingent', 'export_group_student'))
+@permission_required(getpermission('Сontingent', 'export_group_student'))
 def generate_group_table(request):
     """
     Функция для генерации файла .xslx для всех групп
@@ -1158,7 +1320,7 @@ def generate_course_table(request, course):
     # except (CourseDifferenceError, EducationBaseDifferenceError) as e:
     #     return HttpResponse(f"Ошибка: {e.message}", status=400)
 
-@permission_required(getpermission('Contingent', 'export_statistic'))
+@permission_required(getpermission('Сontingent', 'export_statistic'))
 def generate_statistics_table(request):
     """
     Функция для генерации файла .xslx для статистики
@@ -1180,7 +1342,7 @@ def generate_statistics_table(request):
     os.remove(file_path)
     return response
 
-@permission_required(getpermission('Contingent', 'export_statistic'))
+@permission_required(getpermission('Сontingent', 'export_statistic'))
 def generate_vacation_table(request):
     """
     Функция для генерации файла .xslx для студентов находящихся в академическом отпуске
@@ -1201,7 +1363,7 @@ def generate_vacation_table(request):
     return response
 
 
-@permission_required(getpermission('Contingent', 'export_movement'))
+@permission_required(getpermission('Сontingent', 'export_movement'))
 def generate_movement_table(request):
     """
     Функция для генерации файла .xslx для движения кнтингента
@@ -1227,7 +1389,7 @@ def generate_movement_table(request):
 #
 
 class GenerateQualificationTemplate(PermissionBaseMixin, FormView):
-    permission_required = getpermission('Contingent', 'generate_qualification_template')
+    permission_required = getpermission('Сontingent', 'generate_qualification_template')
     template_name = 'Contingent/generate_qualification_template.html'
     form_class = GenerateQualificationTemplateForm
 
@@ -1244,3 +1406,61 @@ class GenerateQualificationTemplate(PermissionBaseMixin, FormView):
             messages.error(self.request, "Ошибки в форме:\n" + "\n".join(error_messages))
         
         return super().form_invalid(form)
+    
+    def form_valid(self, form):
+        messages.success(self.request, "Шаблон успешно создан")
+        return redirect('generate_qualification_template')
+
+#
+## Создание зачеток для студентов
+#
+
+class GenerateStudentRecordBook(PermissionBaseMixin, ButtonsMixin, FormView):
+    permission_required = getpermission('Сontingent', 'generate_student_recordbook')
+    template_name = 'Contingent/generate_student_recordbook.html'
+    form_class = GenerateStudentRecordBookForm
+
+    buttons  = [
+        Button (
+            id='to_object',
+            name = 'К объекту',
+            link_params = ['pk'],
+            link_name = getpattern(Student, 'detail'),
+            permission = getpermission('Сontingent', 'update_student')
+        ),
+    ]
+
+    def get(self, request, pk, *args, **kwargs):
+        self.pk = pk
+        return super().get(request, pk, *args, **kwargs)
+
+    def post(self, request, pk, *args, **kwargs):
+        self.pk = pk
+        return super().post(request, pk, *args, **kwargs)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['object'] = Student.objects.get(pk=self.pk)
+        return context
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["student_pk"] = self.pk
+        return kwargs
+
+    def form_invalid(self, form):
+        error_messages = []
+        
+        # Общие ошибки формы (non-field errors)
+        for error in form.non_field_errors():
+            error_messages.append(error)
+        
+        # Объединяем все ошибки в одно сообщение
+        if error_messages:
+            messages.error(self.request, "Ошибки в форме:\n" + "\n".join(error_messages))
+        
+        return super().form_invalid(form)
+    
+    def form_valid(self, form):
+        messages.success(self.request, "Зачетная книжка сгенерирована")
+        return redirect(getpattern(Student, 'detail'), pk=self.pk)
