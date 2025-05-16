@@ -298,8 +298,8 @@
                 {% endfor %}
                 {% with grades=student|get_all_grades:disciplines_with_semesters %}
                 {% with bad_grades=grades|filter_bad_grades all_grades=grades|filter_valid_grades %}
-                <td class="fixed-column diploma-column {% if bad_grades or all_grades.count_4 > all_grades.total|multiply:0.25 %}diploma-blue{% else %}diploma-red{% endif %}">
-                    {% if bad_grades or all_grades.count_4 > all_grades.total|multiply:0.25 %}Синий{% else %}Красный{% endif %}
+                <td class="fixed-column diploma-column {% if bad_grades or all_grades.count_4 < all_grades.total|multiply:0.25 %}diploma-blue{% else %}diploma-red{% endif %}">
+                    {% if bad_grades or all_grades.count_4 < all_grades.total|multiply:0.25 %}Синий{% else %}Красный{% endif %}
                 </td>
                 {% endwith %}
                 {% endwith %}
