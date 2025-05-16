@@ -93,7 +93,7 @@ class CurriculumEditableFormView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         uploaded_data_json = False
-        # uploaded_data_json = self.request.session.get('uploaded_data')
+        uploaded_data_json = self.request.session.get('uploaded_data')
         if uploaded_data_json:
             form = EditableCurriculumForm(uploaded_data_json)
             context['editable_form'] = form
@@ -105,13 +105,13 @@ class CurriculumEditableFormView(TemplateView):
 
     def post(self, request, *args, **kwargs):
         uploaded_data_json = request.session.get('uploaded_data')
-        form = EditableCurriculumForm(uploaded_data_json, data=request.POST)
-        if self.form_valid(form):
-            return redirect('curriculum_list')
-        else:
-            context = self.get_context_data(**kwargs)
-            context['editable_form'] = form
-            return self.render_to_response(context)
+        # form = EditableCurriculumForm(uploaded_data_json, data=request.POST)
+        # if self.form_valid(form):
+        #     return redirect('curriculum_list')
+        # else:
+        #     context = self.get_context_data(**kwargs)
+        #     context['editable_form'] = form
+        #     return self.render_to_response(context)
 
     def form_valid(self, form):
         form.save()
