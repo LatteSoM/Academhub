@@ -105,13 +105,13 @@ class CurriculumEditableFormView(TemplateView):
 
     def post(self, request, *args, **kwargs):
         uploaded_data_json = request.session.get('uploaded_data')
-        # form = EditableCurriculumForm(uploaded_data_json, data=request.POST)
+        form = EditableCurriculumForm(uploaded_data_json, data=request.POST)
         # if self.form_valid(form):
         #     return redirect('curriculum_list')
         # else:
-        #     context = self.get_context_data(**kwargs)
-        #     context['editable_form'] = form
-        #     return self.render_to_response(context)
+        context = self.get_context_data(**kwargs)
+        context['editable_form'] = form
+        return self.render_to_response(context)
 
     def form_valid(self, form):
         form.save()
