@@ -878,18 +878,22 @@ class GenerateQualificationTemplateForm(forms.Form):
 
     semester7_exam_coords = ExcelField(
         label='Экзамены 7 семестра',
+        required=False
     )
 
     semester7_zachet_coords = ExcelField(
         label='Зачеты 7 семестра',
+        required=False
     )
 
     semester8_exam_coords = ExcelField(
         label='Экзамены 8 семестра',
+        required=False
     )
 
     semester8_zachet_coords = ExcelField(
         label='Зачеты 8 семестра',
+        required=False
     )
 
     coursework_coords = DictCoordsField(
