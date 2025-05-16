@@ -56,4 +56,5 @@ def getpermission(app: str, *actions: str) -> list[str]:
     permissions = []
     for action in actions:
         permissions.append(f"{app}.{action}")
+        print(permissions)
     return permissions

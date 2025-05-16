@@ -1194,7 +1194,7 @@ class ViewRecordBookView(ButtonsMixin, ObjectTemplateView):
             name = 'Скачать',
             link_params = ['pk'],
             link_name = 'download_recordbook',
-            # permission = getpermission('Сontingent', 'download_recordbook')
+            permission = getpermission('Сontingent', 'download_recordbook')
         )
     ]
 
@@ -1233,7 +1233,7 @@ class ViewRecordBookView(ButtonsMixin, ObjectTemplateView):
 
         return context
 
-# @permission_required(getpermission('Сontingent', 'download_recordbook_student'))
+@permission_required(getpermission('Сontingent', 'download_recordbook_student'))
 def download_recordbook_student(request, pk):
     student = get_object_or_404(Student, pk=pk)
 
@@ -1389,7 +1389,7 @@ def generate_movement_table(request):
 #
 
 class GenerateQualificationTemplate(PermissionBaseMixin, FormView):
-    # permission_required = getpermission('Сontingent', 'generate_qualification_template')
+    permission_required = getpermission('Сontingent', 'generate_qualification_template')
     template_name = 'Contingent/generate_qualification_template.html'
     form_class = GenerateQualificationTemplateForm
 

@@ -116,22 +116,22 @@ PERMISSIONS = [
     ## Зачетная книжка
     #
 
-    {
-        'codename': 'view_record_book',
-        'name': 'Просмотр зачетной книжки'
-    },
-    {
-        'codename': 'update_recorde_book',
-        'name': 'Изменить зачеткную книжку'
-    },
-    {
-        'codename': 'save_record_book_template',
-        'name': 'Сохранить шаблон зачетной книжки'
-    },
-    {
-        'codename': 'save_record_book',
-        'name': 'Создать зачетную книжку на студента/группу'
-    },
+    # {
+    #     'codename': 'view_record_book',
+    #     'name': 'Просмотр зачетной книжки'
+    # },
+    # {
+    #     'codename': 'update_recorde_book',
+    #     'name': 'Изменить зачеткную книжку'
+    # },
+    # {
+    #     'codename': 'save_record_book_template',
+    #     'name': 'Сохранить шаблон зачетной книжки'
+    # },
+    # {
+    #     'codename': 'save_record_book',
+    #     'name': 'Создать зачетную книжку на студента/группу'
+    # },
     
     #
     ## Дисциплины
@@ -189,4 +189,8 @@ PERMISSIONS = [
         'codename': 'generate_student_recordbook',
         'name': 'Создание зачеток для студентов'
     },
+    {
+        'codename': 'download_recordbook_student',
+        'name': 'Скачивание персонализированной зачетной книжки'
+    }
 ]
