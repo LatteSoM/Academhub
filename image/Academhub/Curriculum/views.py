@@ -92,7 +92,8 @@ class CurriculumEditableFormView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        uploaded_data_json = self.request.session.get('uploaded_data')
+        uploaded_data_json = False
+        # uploaded_data_json = self.request.session.get('uploaded_data')
         if uploaded_data_json:
             form = EditableCurriculumForm(uploaded_data_json)
             context['editable_form'] = form
