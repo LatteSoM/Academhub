@@ -18,7 +18,7 @@ services:
       - postgres
   django:
     build: image/.
-    image: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
+#    image: ${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}
     container_name: django
     restart: always
     depends_on:
