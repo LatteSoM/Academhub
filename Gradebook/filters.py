@@ -18,13 +18,13 @@ class GradebookFilter(filters.FilterSet):
     )
 
     teachers = filters.ModelMultipleChoiceFilter(
-        queryset=CustomUser.objects.filter(is_teacher=True),
+        queryset=CustomUser.objects.filter(is_teacher=True, is_active=True),
         label='Учителя',
         widget=forms.CheckboxSelectMultiple
     )
 
     group = filters.ModelMultipleChoiceFilter(
-        queryset=GroupStudents.objects.all(),
+        queryset=GroupStudents.objects.filter(is_active=True),
         label='Группа',
         widget=forms.CheckboxSelectMultiple
     )
@@ -103,7 +103,7 @@ class GradeBookTeachersFilter(filters.FilterSet):
     )
 
     group = filters.ModelMultipleChoiceFilter(
-        queryset=GroupStudents.objects.all(),
+        queryset=GroupStudents.objects.filter(is_active=True),
         label='Группа',
         widget=forms.CheckboxSelectMultiple
     )

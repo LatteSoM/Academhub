@@ -37,7 +37,7 @@ class GradebookTable(BaseTable):
     class Meta:
         model = Gradebook
         paginate_by = 30
-        fields = ('name', 'teachers', 'group', 'discipline', 'status', 'type_of_grade_book')
+        fields = ('name', 'teachers', 'group', 'discipline', 'status', 'type_of_grade_book', 'semester_number')
         row_attrs = {
             "class": lambda record: STATUS_CLASS_MAP.get(record.status, 'status-unknown')
         }
@@ -53,7 +53,7 @@ class TeacherGradeBookTable(BaseTable2):
     )
     class Meta:
         model = Gradebook
-        fields = ('name', 'group', 'discipline')
+        fields = ('name', 'group', 'discipline', 'type_of_grade_book', 'semester_number')
 
 
 
@@ -69,7 +69,7 @@ class GradebookTable2(BaseTable):
     class Meta:
         model = Gradebook
         paginate_by=30
-        fields = ('name', 'teachers', 'discipline', 'status')
+        fields = ('name', 'teachers', 'discipline', 'status', 'type_of_grade_book', 'semester_number')
         row_attrs = {
             "class": lambda record: STATUS_CLASS_MAP.get(record.status, 'status-unknown')
         }

@@ -107,6 +107,10 @@ PERMISSIONS = [
         'codename': 'export_student',
         'name': 'Экспорт студентов'
     },
+    {
+        'codename': 'download_recordbook',
+        'name': 'Скачать зачетную книжку'
+    },
 
     #
     ## Зачетная книжка
