@@ -63,7 +63,7 @@ navigation = Navigation(
             ChildLink(
                 name='Задать шаблон зачетной книжки',
                 url = 'generate_qualification_template',
-                permission_required=getpermission('Contingent', 'generate_qualification_template')
+                permission_required=getpermission('Сontingent', 'generate_qualification_template')
             )
         ]
     )

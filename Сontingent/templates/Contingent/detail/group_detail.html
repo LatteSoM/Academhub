@@ -13,10 +13,7 @@
 {% block buttons %}
 
     {{ block.super }}
-    
-    <a class="btn-primary" href="{% url 'group_record_books_generate' group_id=object.pk %}">
-        Сгенерировать ЗК для группы
-    </a>
+
 
 {#    {% if object.current_course == 4 %}#}
 {#        <a class="btn-primary" href="{% url 'group_record_books_generate' group_id=object.pk %}">#}

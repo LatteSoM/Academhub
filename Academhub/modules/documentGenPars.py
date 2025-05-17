@@ -1,3 +1,4 @@
+import random
 from datetime import datetime
 import io
 import logging
@@ -1037,7 +1038,8 @@ def generate_unique_record_book_number(admission_year, student):
         suffix = 'Б' if student.education_basis == 'бюджет' else 'В'
         number = student.ancete_number if student.ancete_number else ''
         year_short = str(admission_year)[-2:]
-        record_book_number = f"{prefix}{number}{suffix}/{year_short}/СПО"
+        number = random.randint(1, 100)
+        record_book_number = f"{prefix}{number}{suffix}/{year_short}/{number}/СПО"
         # if not StudentRecordBook.objects.filter(record_book_number=record_book_number).exists():
         return record_book_number
 
@@ -1108,7 +1110,7 @@ def generate_qualification_template(recordbook_template_path, curriculum,
 
     cur_clock_cells = ClockCell.objects.filter(curriculum=curriculum)
 
-    if RecordBookTemplate.objects.filter(qualification=curriculum.qualification, admission_year=curriculum.admission_year).exists():
+    if RecordBookTemplate.objects.filter(qualification=curriculum.qualification, admission_year=curriculum.admission_year, curriculum__basis_of_admission=curriculum.basis_of_admission).exists():
         return f'Шаблон зачетной книжки для данного потока ({curriculum.qualification}-{curriculum.admission_year}) уже был сгенерирован'
 
     workbook = load_workbook(filename=recordbook_template_path)
@@ -1159,9 +1161,15 @@ def generate_qualification_template(recordbook_template_path, curriculum,
                     table_cells = worksheet[coord]
 
                     for row in table_cells:
+                        clock_cell = ClockCell.objects.filter(
+                            discipline_id=semester_clocks[data_iter].discipline_id,
+                            code_of_type_work='Итого часов',
+                            term=semester_iter + 1
+                        ).first()  # берёт первый подходящий или None
+
                         row[0].value = str(semester_clocks[data_iter].discipline.name)
-                        row[1].value = str(ClockCell.objects.get(discipline_id=semester_clocks[data_iter].discipline_id,
-                                                                 code_of_type_work='Итого часов', term=semester_iter+1).count_of_clocks)
+                        row[1].value = str(clock_cell.count_of_clocks)
+
                         data_iter += 1
             else:
                 continue
@@ -1270,8 +1278,11 @@ def generate_qualification_template(recordbook_template_path, curriculum,
 
         worksheet = workbook[str(professional_modules_coords[pm_coord])]
 
-        worksheet[str(pm_coord)] = pm_clocks[clock_iter].discipline.code.lstrip(' ').rstrip('.ЭК') + ' ' + str(
-                Module.objects.get(code_of_discipline=str(' ПМ.' + pm_clocks[clock_iter].discipline.code.lstrip('ПM.').rstrip('.ЭК'))).name)
+        module = Module.objects.filter(
+            code_of_discipline=str(' ПМ.' + pm_clocks[clock_iter].discipline.code.lstrip('ПM.').rstrip('.ЭК'))
+        ).first()  # берёт первый или None
+
+        worksheet[str(pm_coord)] = pm_clocks[clock_iter].discipline.code.lstrip(' ').rstrip('.ЭК') + ' ' + str(module.name)
         # Почему-то при импорте пм'ы хранятся с английской буквой M, это надо исправить
 
         clock_iter += 1
