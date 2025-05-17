@@ -814,6 +814,12 @@ class PromoteStudentsForm(forms.ModelForm):
             raise forms.ValidationError("Выберите хотя бы одного студента.")
         return students
 
+    def __init__(self, *args, **kwargs):
+        properties = kwargs.pop('properties', None)  # Извлекаем properties из kwargs
+        super().__init__(*args, **kwargs)  # Вызываем родительский __init__
+        if properties:
+            self._configure_new_instance(properties)  # Настраиваем queryset на основе properties
+
 
 class GenerateQualificationTemplateForm(forms.Form):
     сurriculum = forms.ModelChoiceField(
