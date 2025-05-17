@@ -1,24 +1,3 @@
-{#{% extends 'base_view.html' %}#}
-{##}
-{#{% block tabs %}#}
-{#	{{ block.super }}#}
-{#    <button class="tab-button" data-tab="import">Импорт</button>#}
-{#{% endblock %}#}
-{##}
-{#{% block tab-content %}#}
-{#	{{ block.super }}#}
-{#	<div id="import" class="tab-pane">#}
-{#        <div class="page-header">#}
-{#            <h2>Импорт студентов из Excel</h2>#}
-{#        </div>#}
-{#        <form method="post" enctype="multipart/form-data">#}
-{#            {% csrf_token %}#}
-{#            {{ from_import }}#}
-{#            <button type="submit" class="btn-primary">Загрузить</button>#}
-{#        </form>#}
-{#    </div>#}
-{#{% endblock %}#}
-
 {% extends 'base_view.html' %}
 
 {% block tabs %}

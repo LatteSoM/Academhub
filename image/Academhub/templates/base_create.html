@@ -16,9 +16,13 @@
                 {% endblock %}
                 {{ mobel_verbosename }} 
             </h2>
-            {% block buttons %}
-                {% include 'inc/buttons.html' %}
-            {% endblock %}
+
+            <div class="button_container" style="display: flex; flex-direction: row; gap: 10px;">
+                {% block buttons %}
+                    {% include 'inc/buttons.html' %}
+                {% endblock %}
+            </div>
+
         </div>
         <form id="edit-form" class="form" method="post" enctype="multipart/form-data">
             {% csrf_token %}

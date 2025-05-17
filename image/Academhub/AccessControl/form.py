@@ -4,6 +4,7 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.contenttypes.models import ContentType
 
 from Academhub.forms import PermissionSelectField
+from django.utils.translation import gettext_lazy as _
 from Academhub.models import CustomUser, PermissionProxy, GroupProxy
 
 __all__ = (
@@ -19,16 +20,55 @@ class UserPasswordChangeForm(SetPasswordForm):
     """
     Форма изменения пароля
     """
+    new_password1 = forms.CharField(
+        label=_("Новый пароль"),
+        widget=forms.PasswordInput(attrs={'autocomplete': 'new-password'}),
+        strip=False,
+    )
+    new_password2 = forms.CharField(
+        label=_("Подтверждение пароля"),
+        widget=forms.PasswordInput(attrs={'autocomplete': 'new-password'}),
+        strip=False,
+    )
+
+    error_messages = {
+        'password_mismatch': _("Введённые пароли не совпадают."),
+        'password_incorrect': _("Неверный старый пароль. Пожалуйста, попробуйте снова."),
+        'password_too_short': _("Пароль слишком короткий. Он должен содержать не менее 8 символов."),
+        'password_too_common': _("Этот пароль слишком простой."),
+        'password_entirely_numeric': _("Пароль не может состоять только из цифр."),
+    }
+
     def __init__(self, *args, **kwargs):
-        """
-        Обновление стилей формы
-        """
         super().__init__(*args, **kwargs)
         for field in self.fields:
             self.fields[field].widget.attrs.update({
                 'class': 'form-control',
                 'autocomplete': 'off'
             })
+
+    def clean_new_password2(self):
+        password1 = self.cleaned_data.get('new_password1')
+        password2 = self.cleaned_data.get('new_password2')
+        if password1 and password2 and password1 != password2:
+            raise forms.ValidationError(
+                self.error_messages['password_mismatch'],
+                code='password_mismatch',
+            )
+        # Дополнительные проверки пароля (например, сложность)
+        if password1:
+            if len(password1) < 8:
+                raise forms.ValidationError(
+                    self.error_messages['password_too_short'],
+                    code='password_too_short',
+                )
+            if password1.isdigit():
+                raise forms.ValidationError(
+                    self.error_messages['password_entirely_numeric'],
+                    code='password_entirely_numeric',
+                )
+            # Добавьте другие проверки по необходимости
+        return password2
 
 class UserEmailChangeForm(forms.ModelForm):
     """
