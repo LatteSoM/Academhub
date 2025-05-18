@@ -12,7 +12,7 @@ env/
 venv/
 
 # Django
-db.sqlite3
+#db.sqlite3
 /static/
 README.txt
 **/migrations/**

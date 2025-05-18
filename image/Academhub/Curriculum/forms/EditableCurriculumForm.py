@@ -175,7 +175,7 @@ class EditableCurriculumForm(forms.Form):
 
         restored_disciplines = []
         for discipline_id, d_data in enumerate(data_objects.get("disciplines", [])):
-            discipline_data = disciplines_data[discipline_id]
+            discipline_data = d_data
             prompt = Discipline.objects.filter(name=discipline_data['name'], code=discipline_data['code'])
             discipline = prompt[0] if prompt else None
             if discipline:
