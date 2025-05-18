@@ -13,15 +13,7 @@ def get_grade(student, discipline):
     """
     Возвращает самую последнюю оценку студента по дисциплине на основе даты закрытия ведомости.
     Учитывает только закрытые ведомости (status='Закрыта' и date_of_closing в прошлом).
-
-    Args:
-        student: Объект модели Student.
-        discipline: Объект модели Discipline.
-
-    Returns:
-        Объект GradebookStudents с последней оценкой или None, если оценок нет.
     """
-    # Получаем самую последнюю закрытую ведомость студента по дисциплине
     latest_grade = student.gradebookstudents_set.filter(
         gradebook__discipline=discipline,
         gradebook__status='Закрыта'
@@ -34,8 +26,6 @@ def get_grade(student, discipline):
             f"closed: {latest_grade.gradebook.date_of_closing})"
         )
         return latest_grade
-
-    # Если ничего не найдено
     logger.debug(f"Grade for student {student.full_name}, discipline {discipline.name}: None")
     return None
 
@@ -47,7 +37,11 @@ def get_grade_for_semester(grade, semester):
 
 @register.filter
 def filter_bad_grades(grades):
-    return [g for g in grades if g and g.grade in ['2', 'Неявка']]
+    """
+    Проверяет, есть ли среди оценок плохие (2 или 'Неявка').
+    Обрабатывает случаи, когда grade может быть None.
+    """
+    return any(grade and grade.grade in ['2', 'Неявка'] for grade in grades)
 
 @register.filter
 def multiply(value, arg):
@@ -59,9 +53,11 @@ def get_semesters_order(disciplines):
 
 @register.filter
 def get_all_grades(student, disciplines_with_semesters):
-    """Возвращает все оценки студента для списка (дисциплина, семестр, часы, имя)."""
+    """
+    Возвращает все оценки студента для списка (дисциплина, семестр, часы, имя).
+    """
     grades = []
-    for discipline, semester, hours, display_name in disciplines_with_semesters:  # Распаковываем четыре значения
+    for discipline, semester, hours, display_name in disciplines_with_semesters:
         grade = GradebookStudents.objects.filter(
             student=student,
             gradebook__discipline=discipline,
@@ -73,12 +69,21 @@ def get_all_grades(student, disciplines_with_semesters):
 
 @register.filter
 def filter_valid_grades(grades):
-    """Возвращает объект с количеством '4' и общим числом оценок."""
-    valid_grades = [g for g in grades if g and g.grade not in ['2', 'Неявка']]
-    return type('GradesSummary', (), {
-        'count_4': len([g for g in valid_grades if g.grade == '4']),
-        'total': len(valid_grades)
-    })
+    """
+    Подсчитывает количество четвёрок и общее количество валидных оценок.
+    Обрабатывает случаи, когда grade может быть None.
+    """
+    class GradeStats:
+        def __init__(self):
+            self.count_4 = 0
+            self.total = 0
+    stats = GradeStats()
+    for grade in grades:
+        if grade and grade.grade in ['2', '3', '4', '5', 'Неявка']:
+            stats.total += 1
+            if grade.grade == '4':
+                stats.count_4 += 1
+    return stats
 
 @register.filter
 def get_grade_for_discipline(student, discipline_semester):
@@ -90,8 +95,26 @@ def get_grade_for_discipline(student, discipline_semester):
 
 @register.filter
 def calculate_diploma_type(all_grades):
-    bad_grades = [g for g in all_grades if str(g.grade).lower() in ['2', 'неявка', 'н/я', 'неудовлетворительно']]
-    valid_grades = [g for g in all_grades if str(g.grade).lower() not in ['2', 'неявка', 'н/я', 'неудовлетворительно']]
+    """
+    Определяет тип диплома на основе оценок.
+    """
+    bad_grades = [g for g in all_grades if g and str(g.grade).lower() in ['2', 'неявка', 'н/я', 'неудовлетворительно']]
+    valid_grades = [g for g in all_grades if g and str(g.grade).lower() not in ['2', 'неявка', 'н/я', 'неудовлетворительно']]
     count_4 = len([g for g in valid_grades if g.grade == '4'])
     total_grades = len(valid_grades)
-    return "Синий" if bad_grades or (total_grades and count_4 < total_grades * 0.25) else "Красный"
+    return "Синий" if bad_grades or (total_grades and count_4 > total_grades * 0.25) else "Красный"
+
+@register.filter
+def filter_significant_grades(grades):
+    """
+    Подсчитывает количество значимых оценок (не "-").
+    Обрабатывает случаи, когда grade может быть None.
+    """
+    class SignificantStats:
+        def __init__(self):
+            self.count = 0
+    stats = SignificantStats()
+    for grade in grades:
+        if grade and grade.grade != "-":
+            stats.count += 1
+    return stats
