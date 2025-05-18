@@ -1,5 +1,6 @@
 import logging
 import re
+from django.core.cache import cache
 
 from django.db.models import Func, Q, F, Prefetch
 
@@ -194,22 +195,20 @@ def check_students_for_academic_debts(group, semester):
         print(f"Студент {student}: {'есть долги' if has_debt else 'нет долгов'}")
 
 
+class Strip(Func):
+    function = 'TRIM'
+    template = '%(function)s(%(expressions)s)'
+
 def is_pm_discipline(discipline):
     """Проверяет, является ли дисциплина ПМ по формату кода ПМ.XX.XXX"""
     code = str(discipline.code).strip().upper()
     return re.match(r'^П[МM]\.\d{2}\.', code, re.IGNORECASE) is not None
 
-
 def extract_pm_number(pm_code):
     """Извлекает номер из кода ПМ (например, '01' из 'ПМ.01.ЭК')"""
     normalized_code = str(pm_code).upper().replace("M", "М")
-    print(f"Normalized code: {normalized_code}")  # Отладочный вывод
-
     match = re.match(r"^ПМ\.(\d{2})\..*", normalized_code)
-    if match:
-        print(f"Match groups: {match.groups()}")  # Проверка групп
     return match.group(1) if match else None
-
 
 def get_required_prefixes(pm_number):
     """Генерирует префиксы для проверяемых дисциплин"""
@@ -219,71 +218,50 @@ def get_required_prefixes(pm_number):
         f'ПП.{pm_number}.'
     ]
 
-
-class Strip(Func):
-    function = 'TRIM'
-    template = '%(function)s(%(expressions)s)'
-
-
 def has_required_grades(student, pm_discipline):
     """
     Проверяет, имеет ли студент допустимую оценку (3, 4, 5) в последней ведомости
-    по каждой дисциплине с соответствующими кодами. Если оценка 2, 'н/я' или '-',
-    студент не допускается.
-
-    Args:
-        student: Объект студента.
-        pm_discipline: Объект дисциплины, для которой проверяется допуск.
-
-    Returns:
-        bool: True, если все оценки в последних ведомостях 3, 4 или 5, иначе False.
+    по каждой дисциплине с соответствующими кодами.
     """
-    # Извлекаем номер ПМ из кода дисциплины
     pm_number = extract_pm_number(pm_discipline.code)
     if not pm_number:
+        logger.warning(f"Invalid PM code: {pm_discipline.code}")
         return False
 
-    # Получаем префиксы для требуемых дисциплин
     prefixes = get_required_prefixes(pm_number)
 
-    # Фильтруем дисциплины по префиксам (с очисткой пробелов)
+    # Оптимизированный запрос для дисциплин
     disciplines = Discipline.objects.annotate(
         clean_code=Strip('code')
     ).filter(
         Q(clean_code__startswith=prefixes[0]) |
         Q(clean_code__startswith=prefixes[1]) |
         Q(clean_code__startswith=prefixes[2])
+    ).prefetch_related(
+        Prefetch(
+            'gradebooks',
+            queryset=Gradebook.objects.order_by('-date_of_closing')
+        )
     )
 
-    # Проверяем каждую дисциплину
     valid_grades = {'3', '4', '5'}
     invalid_grades = {'2', 'н/я', '-'}
 
     for discipline in disciplines:
-        # Находим последнюю ведомость для этой дисциплины по дате закрытия
-        latest_gradebook = Gradebook.objects.filter(
-            discipline=discipline
-        ).order_by('-date_of_closing').first()
-
-        # Если нет ведомости, студент не допускается
+        latest_gradebook = discipline.gradebooks.first()
         if not latest_gradebook:
+            logger.debug(f"No gradebook for discipline: {discipline.name}")
             return False
 
-        # Получаем оценку студента из последней ведомости
         grade_entry = GradebookStudents.objects.filter(
             student=student,
             gradebook=latest_gradebook
         ).first()
 
-        # Если нет оценки, студент не допускается
-        if not grade_entry:
+        if not grade_entry or grade_entry.grade not in valid_grades or grade_entry.grade in invalid_grades:
+            logger.debug(f"Invalid grade for {student.full_name} in {discipline.name}: {grade_entry.grade if grade_entry else 'None'}")
             return False
 
-        # Проверяем, что оценка валидна
-        if grade_entry.grade not in valid_grades or grade_entry.grade in invalid_grades:
-            return False
-
-    # Если все проверки пройдены, студент допускается
     return True
 
 
@@ -299,18 +277,18 @@ def update_grade_book_contingent(gradebook, students):
         if teacher_link:
             gradebook.teachers.set(teacher_link.teachers.all())
 
-        # Обновляем студентов
+        # Удаляем старые записи
         GradebookStudents.objects.filter(gradebook=gradebook).delete()
 
         if is_pm_discipline(gradebook.discipline):
             students = [s for s in students if has_required_grades(s, gradebook.discipline)]
 
-        for student in students:
-            GradebookStudents.objects.create(
-                student=student,
-                gradebook=gradebook,
-                grade='-'
-            )
+        # Массовое создание новых записей
+        gradebook_students = [
+            GradebookStudents(student=student, gradebook=gradebook, grade='-')
+            for student in students
+        ]
+        GradebookStudents.objects.bulk_create(gradebook_students)
 
         gradebook.status = 'Не заполнена'
         gradebook.save()
@@ -349,7 +327,7 @@ def create_gradebook_with_fields(discipline, group, semester, grade_type, clock_
             status='Не заполнена'
         )
 
-        # Назначаем преподавателей, если они есть
+        # Назначаем преподавателей
         if teacher_link:
             gradebook.teachers.set(teacher_link.teachers.all())
 
@@ -359,12 +337,12 @@ def create_gradebook_with_fields(discipline, group, semester, grade_type, clock_
         if is_pm_discipline(discipline):
             students = [s for s in students if has_required_grades(s, discipline)]
 
-        for student in students:
-            GradebookStudents.objects.create(
-                student=student,
-                gradebook=gradebook,
-                grade='-'
-            )
+        # Массовое создание записей GradebookStudents
+        gradebook_students = [
+            GradebookStudents(student=student, gradebook=gradebook, grade='-')
+            for student in students
+        ]
+        GradebookStudents.objects.bulk_create(gradebook_students)
 
         return True
     except Exception as e:
@@ -380,161 +358,162 @@ def perform_generation(semester_number, grade_book_type):
     generated = 0
     updated = 0
     errors = 0
-    success = False
-    updated_success = False
 
     # Оптимизированный запрос для групп
     current_course = (int(semester_number) + 1) // 2
     groups = GroupStudents.objects.filter(
         is_active=True,
         current_course=current_course
-    ).select_related('qualification')
+    ).select_related('qualification').prefetch_related(
+        Prefetch(
+            'students',
+            queryset=Student.objects.filter(is_expelled=False, is_in_academ=False)
+        )
+    )
 
     for group in groups:
         logger.debug(f"Processing group: {group.full_name}")
 
         group_edu_base = 9 if group.education_base == "Основное общее" else 11
 
-        # Получаем учебный план группы
-        curriculum = Curriculum.objects.filter(
-            qualification=group.qualification,
-            admission_year=group.year_create,
-            basis_of_admission=group_edu_base
-        ).first()
+        # Кэшируем учебный план
+        cache_key = f"curriculum_{group.id}_{semester_number}"
+        curriculum = cache.get(cache_key)
+        if not curriculum:
+            curriculum = Curriculum.objects.filter(
+                qualification=group.qualification,
+                admission_year=group.year_create,
+                basis_of_admission=group_edu_base
+            ).first()
+            cache.set(cache_key, curriculum, 3600)  # Кэш на 1 час
 
         if not curriculum:
-            logger.warning(f"No curriculum found for group {group.full_name}, qualification {group.qualification}, year {group.year_create}")
+            logger.warning(f"No curriculum found for group {group.full_name}")
             continue
-
-        logger.debug(f"Found curriculum: {curriculum}")
 
         # Выбираем необходимые ячейки часов
         clock_cells = ClockCell.objects.filter(
             curriculum=curriculum,
             term=semester_number,
-            module__isnull=True,  # Заменяем module=None на isnull для надёжности
+            module__isnull=True,
             code_of_type_work__in=[
                 'Экзамен',
                 'Другие формы контроля',
                 'Зачет с оценкой',
                 'Курсовая работа'
             ]
-        ).select_related('discipline')
+        ).select_related('discipline').prefetch_related(
+            Prefetch('discipline__gradebooks', queryset=Gradebook.objects.filter(semester_number=semester_number))
+        )
 
         if not clock_cells.exists():
-            logger.warning(f"No clock cells found for curriculum {curriculum.id}, semester {semester_number}. Found {clock_cells.count()} records.")
-            # Отладка: выведем все значения code_of_type_work и term
-            all_cells = ClockCell.objects.filter(curriculum=curriculum).values('term', 'code_of_type_work', 'module')
-            logger.debug(f"All clock cells for curriculum: {list(all_cells)}")
+            logger.warning(f"No clock cells found for curriculum {curriculum.id}, semester {semester_number}")
             continue
 
-        logger.debug(f"Found {clock_cells.count()} clock cells for semester {semester_number}")
+        # Предварительно загружаем студентов
+        students = list(group.students.all())
 
         for clock_cell in clock_cells:
             if not clock_cell.discipline:
                 logger.warning(f"Clock cell {clock_cell.id} has no discipline")
                 continue
 
-            logger.debug(f"Processing discipline: {clock_cell.discipline.name}, type: {grade_book_type}")
+            discipline = clock_cell.discipline
+            logger.debug(f"Processing discipline: {discipline.name}, type: {grade_book_type}")
 
-            # Основная логика обработки
             if grade_book_type == "Первичная сдача":
                 gradebook = Gradebook.objects.filter(
-                    discipline=clock_cell.discipline,
+                    discipline=discipline,
                     group=group,
                     semester_number=semester_number,
                     type_of_grade_book=grade_book_type
                 ).first()
 
                 if gradebook and gradebook.status == "Не заполнена":
-
-                    updated_success = update_grade_book_contingent(
-                        gradebook,
-                        Student.objects.filter(group=group)
-                    )
+                    success = update_grade_book_contingent(gradebook, students)
+                    if success:
+                        updated += 1
+                        logger.info(f"Updated gradebook for {discipline.name}, group {group.full_name}")
+                    else:
+                        errors += 1
+                        logger.error(f"Failed to update gradebook for {discipline.name}, group {group.full_name}")
                 elif not gradebook:
-
                     success = create_gradebook_with_fields(
-                        clock_cell.discipline,
-                        group,
-                        semester_number,
-                        grade_book_type,
-                        clock_cell
+                        discipline=discipline,
+                        group=group,
+                        semester=semester_number,
+                        grade_type=grade_book_type,
+                        clock_cell=clock_cell,
+                        resist_students=students
                     )
+                    if success:
+                        generated += 1
+                        logger.info(f"Generated gradebook for {discipline.name}, group {group.full_name}")
+                    else:
+                        errors += 1
+                        logger.error(f"Failed to generate gradebook for {discipline.name}, group {group.full_name}")
                 else:
-                    logger.debug(f"Gradebook already exists and not 'Не заполнена' for {clock_cell.discipline.name}")
+                    logger.debug(f"Gradebook already exists for {discipline.name}")
                     continue
 
-                if success:
-                    generated += 1
-                    logger.info(f"Generated gradebook for {clock_cell.discipline.name}, group {group.full_name}")
-                elif updated_success:
-                    updated += 1
-                    logger.info(f"Updated gradebook for {clock_cell.discipline.name}, group {group.full_name}")
-                else:
-                    errors += 1
-                    logger.error(f"Failed to generate gradebook for {clock_cell.discipline.name}, group {group.full_name}")
-
             elif grade_book_type in ["Пересдача", "Комиссия"]:
-                # Ищем предыдущую ведомость
                 previous_type = "Первичная сдача" if grade_book_type == "Пересдача" else "Пересдача"
                 primary_gradebook = Gradebook.objects.filter(
-                    discipline=clock_cell.discipline,
+                    discipline=discipline,
                     group=group,
                     semester_number=semester_number,
                     type_of_grade_book=previous_type,
                     status="Закрыта"
+                ).prefetch_related(
+                    Prefetch(
+                        'gradebookstudents_set',
+                        queryset=GradebookStudents.objects.filter(grade__in=['2', 'Неявка']).select_related('student')
+                    )
                 ).first()
 
                 if not primary_gradebook:
-                    logger.debug(f"No {previous_type} gradebook found for {clock_cell.discipline.name}")
+                    logger.debug(f"No {previous_type} gradebook found for {discipline.name}")
                     continue
 
-                # Получаем студентов с неудовлетворительными оценками
-                students_for_resit = Student.objects.filter(
-                    gradebookstudents__gradebook=primary_gradebook,
-                    gradebookstudents__grade__in=['2', 'Неявка']
-                ).distinct()
+                students_for_resit = [gs.student for gs in primary_gradebook.gradebookstudents_set.all()]
 
-                if not students_for_resit.exists():
-                    logger.debug(f"No students for {grade_book_type} in {clock_cell.discipline.name}")
+                if not students_for_resit:
+                    logger.debug(f"No students for {grade_book_type} in {discipline.name}")
                     continue
 
-                # Проверяем существование ведомости пересдачи/комиссии
                 resit_gradebook = Gradebook.objects.filter(
-                    discipline=clock_cell.discipline,
+                    discipline=discipline,
                     group=group,
                     semester_number=semester_number,
                     type_of_grade_book=grade_book_type
                 ).first()
 
                 if resit_gradebook and resit_gradebook.status == 'Не заполнена':
-                    updated_success = update_grade_book_contingent(
-                        resit_gradebook,
-                        students_for_resit
-                    )
+                    success = update_grade_book_contingent(resit_gradebook, students_for_resit)
+                    if success:
+                        updated += 1
+                        logger.info(f"Updated {grade_book_type} gradebook for {discipline.name}, group {group.full_name}")
+                    else:
+                        errors += 1
+                        logger.error(f"Failed to update {grade_book_type} gradebook for {discipline.name}, group {group.full_name}")
                 elif not resit_gradebook:
                     success = create_gradebook_with_fields(
-                        discipline=clock_cell.discipline,
+                        discipline=discipline,
                         group=group,
                         semester=semester_number,
                         grade_type=grade_book_type,
                         clock_cell=clock_cell,
                         resist_students=students_for_resit
                     )
+                    if success:
+                        generated += 1
+                        logger.info(f"Generated {grade_book_type} gradebook for {discipline.name}, group {group.full_name}")
+                    else:
+                        errors += 1
+                        logger.error(f"Failed to generate {grade_book_type} gradebook for {discipline.name}, group {group.full_name}")
                 else:
-                    logger.debug(f"Gradebook {grade_book_type} already exists for {clock_cell.discipline.name}")
+                    logger.debug(f"Gradebook {grade_book_type} already exists for {discipline.name}")
                     continue
-
-                if success:
-                    generated += 1
-                    logger.info(f"Generated {grade_book_type} gradebook for {clock_cell.discipline.name}, group {group.full_name}")
-                elif updated_success:
-                    updated += 1
-                    logger.info(f"Updated {grade_book_type} gradebook for {clock_cell.discipline.name}, group {group.full_name}")
-                else:
-                    errors += 1
-                    logger.error(f"Failed to generate {grade_book_type} gradebook for {clock_cell.discipline.name}, group {group.full_name}")
 
     return {
         'generated': generated,
