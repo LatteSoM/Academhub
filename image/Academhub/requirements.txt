@@ -47,8 +47,8 @@ pillow==11.1.0
 pip-chill==1.0.3
 pipreqs==0.4.13
 psutil==7.0.0
-psycopg2==2.9.10
-psycopg2-binary==2.9.10
+# psycopg2==2.9.10
+# psycopg2-binary==2.9.10
 pyaspeller==2.0.2
 pyenchant==3.2.2
 pyflakes==3.3.2
