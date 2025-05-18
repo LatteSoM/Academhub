@@ -376,20 +376,27 @@ def perform_generation(semester_number, grade_book_type):
 
         group_edu_base = 9 if group.education_base == "Основное общее" else 11
 
-        # Кэшируем учебный план
+        # Кэшируем учебный план с проверкой актуальности
         cache_key = f"curriculum_{group.id}_{semester_number}"
         curriculum = cache.get(cache_key)
+
+        # Проверяем, подходит ли кэшированный учебный план текущей группе
+        if curriculum and (curriculum.qualification != group.qualification or
+                           curriculum.admission_year != group.year_create or
+                           curriculum.basis_of_admission != group_edu_base):
+            curriculum = None  # Учебный план не подходит, сбрасываем
+
         if not curriculum:
             curriculum = Curriculum.objects.filter(
                 qualification=group.qualification,
                 admission_year=group.year_create,
                 basis_of_admission=group_edu_base
             ).first()
-            cache.set(cache_key, curriculum, 3600)  # Кэш на 1 час
-
-        if not curriculum:
-            logger.warning(f"No curriculum found for group {group.full_name}")
-            continue
+            if curriculum:
+                cache.set(cache_key, curriculum, 3600)  # Кэш на 1 час
+            else:
+                logger.warning(f"No curriculum found for group {group.full_name}")
+                continue
 
         # Выбираем необходимые ячейки часов
         clock_cells = ClockCell.objects.filter(
@@ -492,10 +499,12 @@ def perform_generation(semester_number, grade_book_type):
                     success = update_grade_book_contingent(resit_gradebook, students_for_resit)
                     if success:
                         updated += 1
-                        logger.info(f"Updated {grade_book_type} gradebook for {discipline.name}, group {group.full_name}")
+                        logger.info(
+                            f"Updated {grade_book_type} gradebook for {discipline.name}, group {group.full_name}")
                     else:
                         errors += 1
-                        logger.error(f"Failed to update {grade_book_type} gradebook for {discipline.name}, group {group.full_name}")
+                        logger.error(
+                            f"Failed to update {grade_book_type} gradebook for {discipline.name}, group {group.full_name}")
                 elif not resit_gradebook:
                     success = create_gradebook_with_fields(
                         discipline=discipline,
@@ -507,10 +516,12 @@ def perform_generation(semester_number, grade_book_type):
                     )
                     if success:
                         generated += 1
-                        logger.info(f"Generated {grade_book_type} gradebook for {discipline.name}, group {group.full_name}")
+                        logger.info(
+                            f"Generated {grade_book_type} gradebook for {discipline.name}, group {group.full_name}")
                     else:
                         errors += 1
-                        logger.error(f"Failed to generate {grade_book_type} gradebook for {discipline.name}, group {group.full_name}")
+                        logger.error(
+                            f"Failed to generate {grade_book_type} gradebook for {discipline.name}, group {group.full_name}")
                 else:
                     logger.debug(f"Gradebook {grade_book_type} already exists for {discipline.name}")
                     continue
