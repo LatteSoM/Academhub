@@ -544,6 +544,7 @@ def perform_generation(semester_number, grade_book_type):
     }
 
 
+# Функция для получения данных таблицы
 def fetch_group_semester_attestation_table(semester, group):
     """
     Функция для передачи данных на страницу статистики.
@@ -559,15 +560,21 @@ def fetch_group_semester_attestation_table(semester, group):
 
     group_edu_base = 9 if group.education_base == "Основное общее" else 11
 
-    # 2. Получаем дисциплины из учебного плана
+    # 2. Проверяем наличие учебного плана
     curriculum = Curriculum.objects.filter(
         qualification_name=group.qualification.name,
         admission_year=group.year_create,
         basis_of_admission=group_edu_base
     )
 
+    if not curriculum.exists():
+        return None  # Учебный план не найден
+
+    curriculum = curriculum.first()
+
+    # Получаем дисциплины из учебного плана
     curriculum_items = ClockCell.objects.filter(
-        curriculum=curriculum.first(),
+        curriculum=curriculum,
         module=None,
         term=int(semester),
     ).filter(
@@ -593,14 +600,12 @@ def fetch_group_semester_attestation_table(semester, group):
             disciplines.append(discipline)
             print(discipline)
 
-    # 3. Создаём матрицу студентов
     grade_matrix = {}
     for student in students:
         grade_matrix[student.id] = {
             discipline.id: "-" for discipline in disciplines
         }
 
-    # 4. Получаем все ведомости для семестра, сортируя по дате/времени закрытия
     gradebooks = Gradebook.objects.filter(
         semester_number=semester,
         discipline__in=disciplines,
@@ -616,7 +621,6 @@ def fetch_group_semester_attestation_table(semester, group):
         'discipline'
     )
 
-    # 5. Заполняем оценки, выбирая самую последнюю по date_of_closing
     for gb in gradebooks:
         discipline_id = gb.discipline.id
         for grade_entry in gb.grades_list:
@@ -625,12 +629,10 @@ def fetch_group_semester_attestation_table(semester, group):
             if student in students and grade_matrix[student_id][discipline_id] == "-":
                 grade_matrix[student_id][discipline_id] = grade_entry
 
-    # 6. Рассчитываем метрики для каждого предмета
     quality_percentages = {}
     success_percentages = {}
     average_grades = {}
     for discipline in disciplines:
-        # Собираем все оценки для дисциплины
         grades = [
             grade_entry.grade if hasattr(grade_entry, 'grade') and grade_entry.grade in ["2", "3", "4", "5"]
             else 0 if str(grade_entry.grade).lower() in ['неявка', 'н/я']
@@ -647,13 +649,8 @@ def fetch_group_semester_attestation_table(semester, group):
             count_3 = sum(1 for g in valid_grades if g == "3")
             count_2 = sum(1 for g in valid_grades if g == "2")
 
-            # % качества
             quality_percentages[discipline.id] = ((count_5 + count_4) / total_grades) * 100
-
-            # % успеваемости
             success_percentages[discipline.id] = ((count_5 + count_4 + count_3) / total_grades) * 100
-
-            # Средний балл
             average_grades[discipline.id] = (
                 (count_5 * 5 + count_4 * 4 + count_3 * 3 + count_2 * 2) / total_grades
             )
@@ -662,7 +659,6 @@ def fetch_group_semester_attestation_table(semester, group):
             success_percentages[discipline.id] = 0.0
             average_grades[discipline.id] = 0.0
 
-    # Рассчитываем общие метрики по группе
     num_disciplines = len(disciplines)
     if num_disciplines > 0:
         total_quality_percentage = sum(quality_percentages.values()) / num_disciplines

@@ -187,6 +187,11 @@ class ViewStudentsGradesForSemester(ObjectTemplateView):
                 # Получаем данные с помощью функции
                 data = fetch_group_semester_attestation_table(semester, group)
 
+                # Проверяем, найден ли учебный план
+                if data is None:
+                    messages.error(request, "Учебный план для данной группы не найден.")
+                    return render(request, self.template_name, {'form': form})
+
                 # Передаем все данные в шаблон
                 return render(request, 'Gradebook/list/group_semester_grades.html', {
                     'students': data['students'],
@@ -195,9 +200,9 @@ class ViewStudentsGradesForSemester(ObjectTemplateView):
                     'semestr': data['semestr'],
                     'group': data['group'],
                     'curriculum_items': data['curriculum_items'],
-                    'quality_percentages': data['quality_percentages'],  # Добавляем % качества
-                    'success_percentages': data['success_percentages'],  # Добавляем % успеваемости
-                    'average_grades': data['average_grades'],  # Добавляем средний балл
+                    'quality_percentages': data['quality_percentages'],
+                    'success_percentages': data['success_percentages'],
+                    'average_grades': data['average_grades'],
                     'total_quality_percentage': data['total_quality_percentage'],
                     'total_success_percentage': data['total_success_percentage'],
                     'total_average_grade': data['total_average_grade'],
@@ -512,7 +517,8 @@ class DiplomTypeIdentifier(ObjectTemplateView):
                     'semesters_order': semesters_order,
                     'total_all_hours': total_all_hours,
                     'current_year': timezone.now().year,
-                    'education_basis': 'После 11 класса' if group.education_base == 'Среднее общее' else 'После 9 класса'
+                    'education_basis': 'После 11 класса' if group.education_base == 'Среднее общее' else 'После 9 класса',
+                    'total_disciplines': len(disciplines_with_semesters)
                 }
 
                 return render(request, 'Gradebook/list/diplom_type_identifier.html', context)
@@ -980,46 +986,19 @@ def export_diplom_types(request):
         for student in students:
             grades_data[student.id] = {}
             for discipline, semester, _, _ in sorted_disciplines:
+                # Получаем все оценки для дисциплины и семестра
                 gradebooks = student.gradebookstudents_set.filter(
                     gradebook__discipline=discipline,
                     gradebook__semester_number=semester
-                )
+                ).order_by('-gradebook__date_of_closing')
 
-                # Логика получения оценки
-                primary_grade = gradebooks.filter(gradebook__type_of_grade_book='Первичная сдача').first()
-
-                if primary_grade and primary_grade.grade in ['2', 'неявка', 'н/я']:
-                    retake_grade = gradebooks.filter(gradebook__type_of_grade_book='Пересдача').first()
-
-                    if retake_grade and retake_grade.grade in ['2', 'неявка', 'н/я']:
-                        commission_grade = gradebooks.filter(gradebook__type_of_grade_book='Комиссия').first()
-                        if commission_grade:
-                            grades_data[student.id][(discipline.id, semester)] = commission_grade
-                        else:
-                            grades_data[student.id][(discipline.id, semester)] = retake_grade
-                    elif retake_grade:
-                        grades_data[student.id][(discipline.id, semester)] = retake_grade
-                    else:
-                        grades_data[student.id][(discipline.id, semester)] = primary_grade
-                elif primary_grade:
-                    grades_data[student.id][(discipline.id, semester)] = primary_grade
-                else:
-                    retake_grade = gradebooks.filter(gradebook__type_of_grade_book='Пересдача').first()
-                    if retake_grade and retake_grade.grade in ['2', 'неявка', 'н/я']:
-                        commission_grade = gradebooks.filter(gradebook__type_of_grade_book='Комиссия').first()
-                        if commission_grade:
-                            grades_data[student.id][(discipline.id, semester)] = commission_grade
-                        else:
-                            grades_data[student.id][(discipline.id, semester)] = retake_grade
-                    elif retake_grade:
-                        grades_data[student.id][(discipline.id, semester)] = retake_grade
-                    else:
-                        commission_grade = gradebooks.filter(gradebook__type_of_grade_book='Комиссия').first()
-                        grades_data[student.id][(discipline.id, semester)] = commission_grade
-
-                grade_obj = grades_data[student.id].get((discipline.id, semester))
+                # Логика получения последней актуальной оценки
+                grade_obj = gradebooks.first()  # Берём самую последнюю оценку
+                grades_data[student.id][(discipline.id, semester)] = grade_obj
                 logger.debug(
-                    f"Pre-fetched grade for {student.full_name}, {discipline.name}, semester {semester}: {grade_obj.grade if grade_obj else None}, type={grade_obj.gradebook.type_of_grade_book if grade_obj else None}")
+                    f"Pre-fetched grade for {student.full_name}, {discipline.name}, semester {semester}: "
+                    f"{grade_obj.grade if grade_obj else None}, type={grade_obj.gradebook.type_of_grade_book if grade_obj else None}"
+                )
 
         # Создаём Excel-файл
         wb = Workbook()
@@ -1038,14 +1017,14 @@ def export_diplom_types(request):
         FILLS = {
             'Первичная сдача': PatternFill(start_color="D4EDDA", end_color="D4EDDA", fill_type="solid"),
             'Пересдача': PatternFill(start_color="CCE5FF", end_color="CCE5FF", fill_type="solid"),
-            'Комиссия': PatternFill(start_color="9370DB", end_color="9370DB", fill_type="solid"),
+            'Комиссия': PatternFill(start_color="E2D9F3", end_color="9370DB", fill_type="solid"),
             'неуд': PatternFill(start_color="F5C6CB", end_color="F5C6CB", fill_type="solid")
         }
         red_fill = PatternFill(start_color="FF0000", end_color="FF0000", fill_type="solid")
         blue_fill = PatternFill(start_color="2196F3", end_color="2196F3", fill_type="solid")
 
         # Заголовок
-        education_basis = 'После 11 класcа' if group.education_base == 'Среднее общее' else 'После 9 класса'
+        education_basis = 'После 11 класса' if group.education_base == 'Среднее общее' else 'После 9 класса'
         ws.append([f"СПЕЦИАЛЬНОСТЬ {group.qualification.name} ({education_basis})"])
         ws.append([f"СВОДНАЯ ВЕДОМОСТЬ УСПЕВАЕМОСТИ СТУДЕНТОВ ГРУППЫ {group.full_name}"])
         ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=2 + len(sorted_disciplines) + 1)
@@ -1090,23 +1069,28 @@ def export_diplom_types(request):
         ws.append(hours_row)
 
         # Данные студентов
+        total_disciplines = len(sorted_disciplines)
         for idx, student in enumerate(students, 1):
             row = [idx, student.full_name]
-            for discipline, disp_semester, hours, display_name in sorted_disciplines:
-                grade_obj = grades_data[student.id].get((discipline.id, disp_semester))
-                row.append(grade_obj.grade if grade_obj else "-")
-            # Тип диплома
             grades = []
             for discipline, semester, hours, display_name in sorted_disciplines:
-                grade = grades_data[student.id].get((discipline.id, semester))
-                grades.append(grade)
-            bad_grades = [g for g in grades if
-                          g and str(g.grade).lower() in ['2', 'неявка', 'н/я', 'неудовлетворительно']]
-            valid_grades = [g for g in grades if
-                            g and str(g.grade).lower() not in ['2', 'неявка', 'н/я', 'неудовлетворительно']]
-            count_4 = len([g for g in valid_grades if g.grade == '4'])
-            total_grades = len(valid_grades)
-            diploma_type = "Синий" if bad_grades or (total_grades and count_4 < total_grades * 0.25) else "Красный"
+                grade_obj = grades_data[student.id].get((discipline.id, semester))
+                row.append(grade_obj.grade if grade_obj else "-")
+                grades.append(grade_obj)
+
+            # Подсчёт значимых оценок
+            significant_grades = len([g for g in grades if g and g.grade != "-"])
+
+            # Определение типа диплома
+            if significant_grades < total_disciplines * 0.25:
+                diploma_type = "Синий"
+            else:
+                bad_grades = [g for g in grades if g and str(g.grade).lower() in ['2', 'неявка', 'н/я', 'неудовлетворительно']]
+                valid_grades = [g for g in grades if g and str(g.grade).lower() not in ['2', 'неявка', 'н/я', 'неудовлетворительно']]
+                count_4 = len([g for g in valid_grades if g.grade == '4'])
+                total_grades = len(valid_grades)
+                diploma_type = "Синий" if bad_grades or (total_grades and count_4 > total_grades * 0.25) else "Красный"
+
             row.append(diploma_type)
             ws.append(row)
 
