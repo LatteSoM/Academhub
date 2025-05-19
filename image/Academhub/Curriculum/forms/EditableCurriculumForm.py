@@ -129,77 +129,144 @@ class EditableCurriculumForm(forms.Form):
         disciplines_data = self.get_disciplines_data_from_edit_field()
         data_objects = self.data_objects
 
-        restored_curriculum = Curriculum.from_dict(data_objects.get("curriculum")[0])
-        admission_year = self.data.get("admission_year")
-        qualification_name = self.data.get("qualification_name")
-        if admission_year:
+        # 1. Сохранение Curriculum
+        curriculum_data = data_objects["curriculum"][0]
+        restored_curriculum = Curriculum.from_dict(curriculum_data)
+
+        # Обновление полей curriculum
+        if admission_year := self.data.get("admission_year"):
             restored_curriculum.admission_year = admission_year
-        if hasattr(restored_curriculum, "qualification") and isinstance(restored_curriculum.qualification, dict):
-            restored_curriculum.qualification.name = qualification_name
+        if qualification_name := self.data.get("qualification_name"):
+            if hasattr(restored_curriculum, "qualification") and isinstance(restored_curriculum.qualification, dict):
+                restored_curriculum.qualification.name = qualification_name
+
         restored_curriculum.save()
 
-        restored_categories = []
-        for cat_data in data_objects.get("categories", []):
-            category_obj = Category(
+        # 2. Сохранение Categories с bulk_create
+        categories_data = data_objects.get("categories", [])
+        restored_categories = [
+            Category(
                 identificator=cat_data["identificator"],
                 cycles=cat_data["cycles"],
                 curriculum=restored_curriculum,
                 warnings=cat_data["warnings"],
                 warning_description=cat_data["warning_description"]
             )
-            category_obj.save()
-            restored_categories.append(category_obj)
+            for cat_data in categories_data
+        ]
+        Category.objects.bulk_create(restored_categories)
 
-        restored_study_cycles = []
-        for sc_data in data_objects.get("study_cycles", []):
-            study_cycle_obj = StudyCycle(
+        # Создаем словарь для быстрого поиска категорий по identificator
+        categories_dict = {cat.identificator: cat for cat in restored_categories}
+
+        # 3. Сохранение StudyCycles с bulk_create
+        study_cycles_data = data_objects.get("study_cycles", [])
+        restored_study_cycles = [
+            StudyCycle(
                 identificator=sc_data["identificator"],
                 cycles=sc_data["cycles"],
-                categories=next((cat for cat in restored_categories if cat.identificator == sc_data["categories"]["identificator"]), None),
+                categories=categories_dict.get(sc_data["categories"]["identificator"]),
                 warnings=sc_data["warnings"],
                 warning_description=sc_data["warning_description"]
             )
-            study_cycle_obj.save()
-            restored_study_cycles.append(study_cycle_obj)
+            for sc_data in study_cycles_data
+        ]
+        StudyCycle.objects.bulk_create(restored_study_cycles)
 
-        restored_modules = []
-        for m_data in data_objects.get("modules", []):
-            module_obj = Module(
+        # Словарь для быстрого поиска циклов по identificator
+        study_cycles_dict = {sc.identificator: sc for sc in restored_study_cycles}
+
+        # 4. Сохранение Modules с bulk_create
+        modules_data = data_objects.get("modules", [])
+        restored_modules = [
+            Module(
                 name=m_data["module_name"],
                 code_of_discipline=m_data["code_of_discipline"],
                 code_of_cycle_block=m_data["code_of_cycle_block"],
-                study_cycles=next((sc for sc in restored_study_cycles if sc.identificator == m_data["study_cycles"]["identificator"]), None),
+                study_cycles=study_cycles_dict.get(m_data["study_cycles"]["identificator"])
             )
-            module_obj.save()
-            restored_modules.append(module_obj)
+            for m_data in modules_data
+        ]
+        Module.objects.bulk_create(restored_modules)
 
+        # Словарь для быстрого поиска модулей по имени
+        modules_dict = {m.name: m for m in restored_modules}
+
+        # 5. Сохранение Disciplines
+        disciplines_data = data_objects.get("disciplines", [])
+        existing_disciplines = Discipline.objects.filter(
+            name__in=[d['name'] for d in disciplines_data],
+            code__in=[d['code'] for d in disciplines_data]
+        ).select_related('specialty')
+
+        # Словарь существующих дисциплин для быстрого поиска
+        existing_disciplines_dict = {(d.name, d.code): d for d in existing_disciplines}
+
+        disciplines_to_create = []
         restored_disciplines = []
-        for discipline_id, d_data in enumerate(data_objects.get("disciplines", [])):
-            discipline_data = d_data
-            prompt = Discipline.objects.filter(name=discipline_data['name'], code=discipline_data['code'])
-            discipline = prompt[0] if prompt else None
-            if discipline:
-                discipline.modules.add(*[m for m in restored_modules if m.name == (d_data["module"]["module_name"] if d_data["module"] else None)])
-                discipline.study_cycles.add(*[rsc for rsc in restored_study_cycles if rsc.cycles == d_data["cycle_relation"]])
-                discipline.save()
-                restored_disciplines.append(discipline)
+
+        for d_data in disciplines_data:
+            key = (d_data['name'], d_data['code'])
+            if key in existing_disciplines_dict:
+                discipline = existing_disciplines_dict[key]
             else:
-                discipline_obj = Discipline(
-                    code=discipline_data["code"],
-                    name=discipline_data["name"],
+                discipline = Discipline(
+                    code=d_data["code"],
+                    name=d_data["name"],
                     specialty=Specialty.from_dict(d_data["specialty"]),
                 )
-                discipline_obj.save()
-                discipline_obj.modules.add(*[m for m in restored_modules if m.name == (d_data["module"]["module_name"] if d_data["module"] else None)])
-                discipline_obj.study_cycles.add(*[rsc for rsc in restored_study_cycles if rsc.cycles == d_data["cycle_relation"]])
-                discipline_obj.save()
-                restored_disciplines.append(discipline_obj)
+                disciplines_to_create.append(discipline)
 
-        restored_clock_cells = []
-        for cc_data in data_objects.get("clock_cells", []):
-            module = next((m for m in restored_modules if m.name == (cc_data["module"]["module_name"] if cc_data["module"] else None)), None)
-            discipline = next((d for d in restored_disciplines if f"{d.code}.{d.name}" == cc_data["discipline"]), None)
-            clock_cell_obj = ClockCell(
+            restored_disciplines.append(discipline)
+
+        # Массовое создание новых дисциплин
+        if disciplines_to_create:
+            Discipline.objects.bulk_create(disciplines_to_create)
+
+        # Подготовка данных для связей many-to-many
+        discipline_module_relations = []
+        discipline_cycle_relations = []
+
+        for d_data, discipline in zip(disciplines_data, restored_disciplines):
+            module_name = d_data["module"]["module_name"] if d_data["module"] else None
+            if module_name and module_name in modules_dict:
+                discipline_module_relations.append(
+                    Discipline.modules.through(
+                        discipline_id=discipline.id,
+                        module_id=modules_dict[module_name].id
+                    )
+                )
+
+            cycle_relation = d_data["cycle_relation"]
+            for sc in restored_study_cycles:
+                if sc.cycles == cycle_relation:
+                    discipline_cycle_relations.append(
+                        Discipline.study_cycles.through(
+                            discipline_id=discipline.id,
+                            studycycle_id=sc.id
+                        )
+                    )
+
+        # Массовое создание связей many-to-many
+        if discipline_module_relations:
+            Discipline.modules.through.objects.bulk_create(discipline_module_relations)
+
+        if discipline_cycle_relations:
+            Discipline.study_cycles.through.objects.bulk_create(discipline_cycle_relations)
+
+        # 6. Сохранение ClockCells с bulk_create
+        clock_cells_data = data_objects.get("clock_cells", [])
+        clock_cells_to_create = []
+
+        # Словарь для быстрого поиска дисциплин
+        disciplines_dict = {f"{d.code}.{d.name}": d for d in restored_disciplines}
+
+        for cc_data in clock_cells_data:
+            module_name = cc_data["module"]["module_name"] if cc_data["module"] else None
+            module = modules_dict.get(module_name) if module_name else None
+            discipline = disciplines_dict.get(cc_data["discipline"])
+
+            clock_cell = ClockCell(
                 code_of_type_work=cc_data["code_of_type_work"],
                 code_of_type_hours=cc_data["code_of_type_hours"],
                 course=cc_data["course"],
@@ -209,15 +276,9 @@ class EditableCurriculumForm(forms.Form):
                 discipline=discipline,
                 curriculum=restored_curriculum,
             )
-            if not ClockCell.objects.filter(
-                code_of_type_work=clock_cell_obj.code_of_type_work,
-                code_of_type_hours=clock_cell_obj.code_of_type_hours,
-                course=clock_cell_obj.course,
-                term=clock_cell_obj.term,
-                count_of_clocks=clock_cell_obj.count_of_clocks,
-                module=clock_cell_obj.module,
-                discipline=clock_cell_obj.discipline,
-                curriculum=clock_cell_obj.curriculum,
-            ):
-                clock_cell_obj.save()
-                restored_clock_cells.append(clock_cell_obj)
+
+            # Проверка на существование будет выполнена на уровне базы данных
+            clock_cells_to_create.append(clock_cell)
+
+        # Используем ignore_conflicts=True для пропуска дубликатов
+        ClockCell.objects.bulk_create(clock_cells_to_create, ignore_conflicts=True)
