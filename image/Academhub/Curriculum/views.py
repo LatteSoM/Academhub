@@ -105,22 +105,24 @@ class CurriculumEditableFormView(TemplateView):
     def post(self, request, *args, **kwargs):
         uploaded_data_json = request.session.get('uploaded_data')
         form = EditableCurriculumForm(uploaded_data_json)
-        if self.form_valid(form):
-            return redirect('curriculum_list')
-        else:
-            context = self.get_context_data(**kwargs)
-            context['editable_form'] = form
-            return self.render_to_response(context)
+        # if self.form_valid(form):
+        #     return redirect('curriculum_list')
+        # else:
+        #     context = self.get_context_data(**kwargs)
+        #     context['editable_form'] = form
+        # context = self.get_context_data(**kwargs)
+        # context['editable_form'] = form
+        # return self.render_to_response(context)
 
-        # uploaded_data_json = self.request.session.get('uploaded_data')
-        # if uploaded_data_json:
-        #     data = json.loads(uploaded_data_json)
-        #     print(f"Размер данных: {len(uploaded_data_json)} байт")  # Для локальной отладки
-        #     if len(uploaded_data_json) > 1024 * 1024:  # Например, лимит 1 МБ
-        #         messages.error(self.request, "Слишком большой объем данных")
-        #         return redirect('curriculum_list')
-        # form.save()
-        # messages.success(self.request, "Успешное сохранение учебного плана")
+        uploaded_data_json = self.request.session.get('uploaded_data')
+        if uploaded_data_json:
+            data = json.loads(uploaded_data_json)
+            print(f"Размер данных: {len(uploaded_data_json)} байт")  # Для локальной отладки
+            if len(uploaded_data_json) > 1024 * 1024:  # Например, лимит 1 МБ
+                messages.error(self.request, "Слишком большой объем данных")
+                return redirect('curriculum_list')
+        form.save()
+        messages.success(self.request, "Успешное сохранение учебного плана")
         return redirect('curriculum_list')
 
     def form_valid(self, form):
