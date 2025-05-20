@@ -208,6 +208,7 @@ class ViewStudentsGradesForSemester(ObjectTemplateView):
                     'total_average_grade': data['total_average_grade'],
                 })
 
+
             except Exception as e:
                 print(e)
                 messages.error(request, "Не удалось сгенерировать статистику!")
