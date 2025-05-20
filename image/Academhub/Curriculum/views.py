@@ -117,10 +117,10 @@ class CurriculumEditableFormView(TemplateView):
         uploaded_data_json = self.request.session.get('uploaded_data')
         if uploaded_data_json:
             data = json.loads(uploaded_data_json)
-            print(f"Размер данных: {len(uploaded_data_json)} байт")  # Для локальной отладки
-            if len(uploaded_data_json) > 1024 * 1024:  # Например, лимит 1 МБ
-                messages.error(self.request, "Слишком большой объем данных")
-                return redirect('curriculum_list')
+            # print(f"Размер данных: {len(uploaded_data_json)} байт")  # Для локальной отладки
+            # if len(uploaded_data_json) > 1024 * 1024:  # Например, лимит 1 МБ
+            #     messages.error(self.request, "Слишком большой объем данных")
+            #     return redirect('curriculum_list')
         form.save()
         messages.success(self.request, "Успешное сохранение учебного плана")
         return redirect('curriculum_list')
