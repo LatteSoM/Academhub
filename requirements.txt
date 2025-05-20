@@ -78,3 +78,7 @@ xlrd==2.0.1
 yarg==0.1.10
 zope.event==5.0
 zope.interface==7.2
+structlog==23.3.0
+transaction==3.1.0
+django-annotations==1.2.0
+regex==2024.4.16
