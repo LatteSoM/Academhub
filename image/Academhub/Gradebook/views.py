@@ -1,5 +1,6 @@
 import logging
 import re
+import time
 from collections import defaultdict
 
 from django.contrib import messages
@@ -121,7 +122,6 @@ class GradebookStudentBulkUpdateView(BulkUpdateView):
 class GradebookGenerateView(ObjectTemplateView):
     """Отдельный класс для обработки генерации"""
     template_name = 'Gradebook/inc/generate_form.html'
-
     permission_required = getpermission('Gradebook', 'create_gradebook')
 
     def get(self, request):
@@ -129,27 +129,27 @@ class GradebookGenerateView(ObjectTemplateView):
         return render(request, self.template_name, {'form': form})
 
     def post(self, request):
-        form = GenerateGradebookForm(request.POST)  # Создаем экземпляр формы
+        form = GenerateGradebookForm(request.POST)
 
-        if form.is_valid():  # Проверяем валидность ФОРМЫ, а не представления
+        if form.is_valid():
             try:
-                semester = form.cleaned_data['semester']  # Данные берем из формы
+                semester = form.cleaned_data['semester']
                 gradebook_type = form.cleaned_data['type_of_gradebook']
+
+                start_time = time.time()
                 result = perform_generation(semester, gradebook_type)
+                execution_time = time.time() - start_time
 
-                # Формируем базовое сообщение
-                success_part = []
+                logger.info(f"Время выполнения: {execution_time:.2f} секунд")
+
+                success_parts = []
                 if result['generated'] > 0:
-                    success_part.append(f"сгенерировано {result['generated']}")
+                    success_parts.append(f"сгенерировано {result['generated']}")
                 if result['updated'] > 0:
-                    success_part.append(f"обновлено {result['updated']}")
+                    success_parts.append(f"обновлено {result['updated']}")
 
-                # Проверяем, есть ли успешные действия
-                if success_part:
-                    success_message = " и ".join(success_part)
-                    message = f"Успешно {success_message} ведомостей для {semester} семестра! С типом {result['grade_book_type']}. Ошибок: {result['errors']}"
-
-                    # Выбираем тип сообщения в зависимости от наличия ошибок
+                if success_parts:
+                    message = f"Успешно {' и '.join(success_parts)} ведомостей для {semester} семестра! Тип: {result['grade_book_type']}. Ошибок: {result['errors']}"
                     if result['errors'] > 0:
                         messages.warning(request, message)
                     else:
@@ -158,12 +158,11 @@ class GradebookGenerateView(ObjectTemplateView):
                     messages.error(request, "Не удалось сгенерировать ни одной ведомости!")
 
                 return redirect('gradebook_list')
-
             except Exception as e:
+                logger.error(f"Ошибка генерации: {str(e)}", exc_info=True)
                 messages.error(request, f"Ошибка генерации: {str(e)}")
                 return redirect('gradebook_list')
 
-        # Если форма невалидна, показываем ее с ошибками
         return render(request, self.template_name, {'form': form})
 
 
