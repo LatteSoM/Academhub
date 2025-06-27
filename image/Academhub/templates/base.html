@@ -1,0 +1,38 @@
+{% extends 'blank.html' %}
+
+{% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'Academhub/css/sidebar.css' %}">
+    <link rel="stylesheet" href="{% static 'Academhub/css/responsive.css' %}">
+    <link rel="stylesheet" href="{% static 'Academhub/css/messages.css' %}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="{% static 'Academhub/css/table.css' %}">
+{% endblock %}
+
+{% block body %}
+    <div class="app-container">
+        <button id="burger-menu" class="burger-menu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </button>
+
+        {% include 'inc/sidebar.html' %}
+
+        <main class="main-content">
+            {% include 'inc/messages.html' %}
+            
+            {% block content %}
+
+            {% endblock %}
+        </main>
+
+    </div>
+{% endblock %}
+
+    
+{% block extra_js %}
+    {{ block.super }}
+    <script type="module" src="{% static 'Academhub/js/navigation.js' %}"></script>
+{% endblock %}

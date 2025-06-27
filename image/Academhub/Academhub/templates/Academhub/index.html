@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Послание от разработчиков
+{% endblock %}
+
+{% load static %}
+
+{% block extra_css %}
+    {{ block.super }}
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            text-align: center;
+            flex: 1;
+        }
+
+        .message {
+            margin-top: 20px;
+            font-size: 1.3rem;
+            margin-bottom: 40px;
+            animation: fadeIn 3s ease-in-out;
+        }
+
+        .signature {
+            font-size: 1.5rem;
+            margin-top: 40px;
+            animation: fadeIn 4s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        a {
+            color: var(--text-color);
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1>Послание от разработчиков</h1>
+        <div class="message">
+            <p>Дорогие пользователи,</p>
+            <p>Мы, команда разработчиков, вложили в этот продукт не только свои знания и навыки, но и частичку души. Наша цель — сделать вашу жизнь проще, удобнее и интереснее. Мы верим, что технологии должны служить людям, и стремимся создавать продукты, которые вдохновляют и помогают.</p>
+            <p>Спасибо, что выбрали нас. Ваша поддержка и обратная связь помогают нам становиться лучше каждый день.</p>
+        </div>
+        <div class="signature">
+            <p>© 2025 Команда разработчиков. Создано с ❤️ и кодом.</p>
+            <a href="#">Связаться с нами</a>
+        </div>
+    </div>
+{% endblock %}

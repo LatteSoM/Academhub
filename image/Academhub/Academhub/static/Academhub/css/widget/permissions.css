@@ -1,0 +1,156 @@
+/* Permissions Widget Styles */
+.permissions-widget {
+    display: flex;
+    gap: 1rem;
+    width: 100%;
+    padding: 1rem;
+    background-color: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 0.375rem;
+}
+
+/* Columns */
+.models-list,
+.permissions-list,
+.summary-list {
+    padding: 1rem;
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 0.375rem;
+    width: 33.33%;
+}
+
+/* Headers */
+.models-list h4,
+.permissions-list h4,
+.summary-list h4 {
+    margin-bottom: 1rem;
+    color: var(--text-color);
+    font-weight: 500;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
+}
+
+/* Model Items */
+.model_item_block {
+    padding: 0.5rem;
+    cursor: pointer;
+    color: var(--text-color);
+    border-radius: 0.375rem;
+    transition: all 0.2s ease;
+}
+
+.permission_block_deactivate {
+    display: none !important;
+}
+
+.model_item_block:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* Permission Items */
+.permission-item {
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--text-color);
+    border-radius: 0.375rem;
+    transition: all 0.2s ease;
+}
+
+.permission-item:hover {
+    background-color: var(--surface-color);
+}
+
+.model-active {
+    background-color: var(--primary-color);
+}
+
+.permission-item label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    width: 100%;
+}
+
+.permission-item input[type="checkbox"] {
+    accent-color: var(--primary-color);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .permissions-widget {
+        flex-direction: column;
+    }
+
+    .models-list,
+    .permissions-list,
+    .summary-list {
+        width: 100%;
+    }
+}
+
+/* Summary Items */
+.summary-items {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.summary-item {
+    padding: 0.75rem;
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 0.375rem;
+    color: var(--text-color);
+}
+
+.model-name {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.toggle-icon {
+    font-size: 0.8rem;
+    transition: transform 0.2s ease;
+}
+
+.action-list {
+    list-style: none;
+    padding-left: 1rem;
+    margin: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+    max-height: 500px; /* Максимальная высота для анимации */
+    opacity: 1;
+}
+
+.action-list.collapsed {
+    max-height: 0;
+    opacity: 0;
+}
+
+.action-item {
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    margin-bottom: 0.25rem;
+    color: var(--text-color);
+    transition: all 0.2s ease;
+}
+
+.action-item:last-child {
+    margin-bottom: 0;
+}
+
+.action-item:hover {
+    background-color: var(--primary-color);
+    color: white;
+}

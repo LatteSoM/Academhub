@@ -1,0 +1,163 @@
+from django import forms
+
+from Academhub.models import Gradebook, GradebookStudents, CustomUser, Discipline, Student, GroupStudents
+
+__all__ = (
+    'GradebookForm',
+    'GradebookStudentsForm',
+)
+
+class GenerateGradebookForm(forms.Form):
+
+    SEMESTER_NUMBERS = (
+        (1, 1),
+        (2, 2),
+        (3, 3),
+        (4, 4),
+        (5, 5),
+        (6, 6),
+        (7, 7),
+        (8, 8),
+    )
+
+    TYPE_CHOICES = (
+        ("Первичная сдача", "Первичная сдача"),
+        ("Пересдача", "Пересдача"),
+        ("Комиссия", "Комиссия")
+    )
+
+    semester = forms.ChoiceField(
+        choices=SEMESTER_NUMBERS,
+        label="Выберите семестр"
+    )
+
+    type_of_gradebook = forms.ChoiceField(
+        choices=TYPE_CHOICES,
+        label="Выберите тип ведомости"
+    )
+
+
+class GetStatisticksGradebookForm(forms.Form):
+
+    SEMESTER_NUMBERS = (
+        (1, 1),
+        (2, 2),
+        (3, 3),
+        (4, 4),
+        (5, 5),
+        (6, 6),
+        (7, 7),
+        (8, 8),
+    )
+
+    semester = forms.ChoiceField(
+        choices=SEMESTER_NUMBERS,
+        label="Выберите семестр"
+    )
+
+    group = forms.ModelChoiceField(
+        queryset=GroupStudents.objects.filter(is_active=True),
+        label="Группы"
+    )
+
+class GetDiplomTypeGradebookForm(forms.Form):
+    group = forms.ModelChoiceField(
+        queryset=GroupStudents.objects.filter(is_active=True),
+        label="Группы"
+    )
+
+
+class GradebookForm(forms.ModelForm):
+    """
+    Форма для создания и редактирования записей в журнале оценок.
+    """
+    teachers = forms.ModelMultipleChoiceField(
+        queryset=CustomUser.objects.filter(is_teacher=True, is_active=True),
+        label='Преподаватели',
+        widget=forms.CheckboxSelectMultiple
+    )
+    discipline = forms.ModelChoiceField(
+        queryset=Discipline.objects.all(),
+        label='Дисциплина',
+    )
+    group = forms.ModelChoiceField(
+        queryset=GroupStudents.objects.all(),
+        label='Группа'
+    )
+    students = forms.ModelMultipleChoiceField(
+        queryset=Student.objects.none(),  # Default empty, will be set in __init__
+        label='Студенты',
+        widget=forms.CheckboxSelectMultiple
+    )
+
+    class Meta:
+        """
+        Метакласс для настройки формы.
+        """
+        model = Gradebook
+        fields = ['name', 'semester_number', 'type_of_grade_book', 'amount_of_days_for_closing', 'teachers', 'group',
+                  'discipline', 'students']
+
+    def __init__(self, *args, **kwargs):
+        """
+        Инициализация формы.
+
+        Args:
+            *args: Позиционные аргументы.
+            **kwargs: Именованные аргументы, включая 'properties' для дополнительных параметров.
+        """
+        properties = kwargs.pop('properties', {})
+        super().__init__(*args, **kwargs)
+
+        # Determine group_id: use instance's group if editing, otherwise from properties
+        if self.instance.pk:
+            self.group_id = self.instance.group.pk
+        else:
+            self.group_id = properties.get('group_id', None)
+
+        # Set initial group and configure students queryset
+        if self.group_id:
+            self.initial['group'] = self.group_id
+            self.fields['students'].queryset = Student.objects.filter(group__id=self.group_id)
+
+            # Set initial students for editing existing gradebook
+            if self.instance.pk:
+                self.initial['students'] = self.instance.students.all()
+
+            # Configure discipline queryset based on group's specialty
+            group = GroupStudents.objects.filter(pk=self.group_id).first()
+            if group:
+                specialty = group.qualification.specialty
+                self.fields['discipline'].queryset = specialty.disciplines.all()
+
+        # Handle case where group_id is not provided but instance exists
+        elif self.instance.pk:
+            self.initial['group'] = self.instance.group.pk
+            self.fields['students'].queryset = Student.objects.filter(group__id=self.instance.group.pk)
+            self.initial['students'] = self.instance.students.all()  # Ensure assigned students are checked
+            self.fields['discipline'].queryset = self.instance.group.qualification.specialty.disciplines.all()
+
+class GradebookStudentsForm(forms.ModelForm):
+    ticket_number = forms.IntegerField(
+        min_value=1,
+        label='Номер билета',
+        required = False
+    )
+
+    grade = forms.ChoiceField(
+        choices=GradebookStudents.ASSESSMENT_CHOICES,
+        label='Оценка'
+    )
+
+    class Meta:
+        model = GradebookStudents
+        fields = ['student', 'ticket_number', 'grade']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk:
+            self.fields['student'].initial = self.instance.student
+            self.fields['ticket_number'].initial = self.instance.ticket_number
+            self.fields['grade'].initial = self.instance.grade
+            self.fields['student'].widget.attrs['disabled'] = 'disabled'
+            self.fields['student'].widget.attrs['handshakable'] = 'un'

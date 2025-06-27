@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'Academhub/css/form.css' %}">
+
+<h2>Отправить {{ student.full_name }} в академ</h2>
+<form method="post">
+    {% csrf_token %}
+
+    {% for field in form %}
+        <div class="form-group">
+            {{ field.errors }}
+            <label for="{{ field.id_for_label }}">
+                {{ field.label }}
+                {% if field.field.required %}
+                    <span class="required" style="color: red;">*</span>
+                {% endif %}
+            </label>
+            {{ field }}
+            {% if field.help_text %}
+                <p class="help" id="{{ field.auto_id }}_helptext">
+                    {{ field.help_text|safe }}
+                </p>
+            {% endif %}
+        </div>
+    {% endfor %}
+
+
+    <div class="d-flex gap-2 mt-3" style="margin-top: 3vh">
+        <button type="submit" class="btn btn-primary">Отправить</button>
+        <a href="{% url 'send_to_academ' pk=student.id %}" class="btn btn-secondary">Отмена</a>
+    </div>
+</form>
+{% endblock %}

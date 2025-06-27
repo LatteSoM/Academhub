@@ -1,0 +1,301 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+<div class="theme-surface p-4 rounded shadow-sm">
+    <div class="d-flex gap-4 flex-column flex-lg-row">
+        <!-- Левая колонка -->
+        <div class="flex-grow-1" style="min-width: 320px;">
+            <h5 class="mb-3 theme-text">Выбор группы</h5>
+            <div class="mb-3">
+                <div class="d-flex flex-column gap-3">
+                    <select class="form-select theme-input theme-text" id="specialty">
+                        <option selected value="">Выберите специальность</option>
+                        {% for specialty in specialties %}
+                        <option value="{{ specialty.id }}" class="theme-text">{{ specialty.name }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <select class="form-select theme-input theme-text" id="study_plan" disabled>
+                        <option selected value="">Сначала выберите специальность</option>
+                    </select>
+
+                    <select class="form-select theme-input theme-text" id="course" disabled>
+                        <option selected value="">Сначала выберите учебный план</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="groups" class="form-label theme-text">Группы:</label>
+                <div id="groups-container" class="theme-surface rounded border p-3" style="height: 250px; border-color: var(--border-color) !important;">
+                    <div id="groups" class="h-100 overflow-y-auto pe-2 theme-text">
+                        {# groups are passed in context, filtered by course in the view #}
+                        {% if groups %}
+                            {% for group in groups %}
+                            <div class="form-check">
+                                <input class="form-check-input group-select" type="checkbox" value="{{ group.id }}" id="group_{{ group.id }}" name="selected_groups_static" {% if group.id in initial_selections.group_ids %}checked{% endif %}> {# Use group-select class #}
+                                <label class="form-check-label theme-text" for="group_{{ group.id }}">
+                                    {{ group.name }} {# Assuming GroupStudents has 'name', adjust if needed (e.g., group.full_name) #}
+                                </label>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <em class="theme-text-secondary">Выберите курс для отображения групп.</em>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+             <!-- Placeholder for potential future actions like import/export if needed -->
+        </div>
+
+        <!-- Правая колонка -->
+        <div class="flex-grow-1 d-flex flex-column" style="min-width: 60%;">
+             <h5 class="mb-3 theme-text">Установка периодов аттестации</h5>
+            <div class="mb-3">
+                 <div class="d-flex align-items-center gap-2">
+                     <label for="termSelect" class="form-label theme-text mb-0">Семестр:</label>
+                     <select class="form-select theme-input theme-text w-auto" id="termSelect">
+                         {# Use initial_selections.term #}
+                         <option value="1" {% if initial_selections.term == 1 %}selected{% endif %}>1</option>
+                         <option value="2" {% if initial_selections.term == 2 %}selected{% endif %}>2</option>
+                         {# Add more terms if necessary #}
+                     </select>
+                 </div>
+             </div>
+
+            <!-- Bulk Period Setting -->
+            <div class="d-flex gap-3 mb-3 p-3 border rounded theme-surface-secondary align-items-end">
+                 <div class="flex-grow-1">
+                     <label for="bulk_start_date" class="form-label theme-text-secondary mb-1"><small>Начало периода (для выбранных)</small></label>
+                     <input type="date" class="form-control form-control-sm theme-input" id="bulk_start_date">
+                 </div>
+                 <div class="flex-grow-1">
+                     <label for="bulk_end_date" class="form-label theme-text-secondary mb-1"><small>Окончание периода (для выбранных)</small></label>
+                     <input type="date" class="form-control form-control-sm theme-input" id="bulk_end_date">
+                 </div>
+                 <button class="btn btn-sm btn-outline-primary theme-button-outline" id="apply_bulk_dates">Применить</button>
+            </div>
+
+            <!-- Table container -->
+            <div class="custom-table-container theme-surface rounded border flex-grow-1" style="border-color: var(--border-color) !important;">
+                <table class="table table-hover w-100 mb-0">
+                    <thead class="sticky-top theme-bg">
+                        <tr>
+                            <th class="theme-text" style="width: 50px;"><input type="checkbox" id="select_all_disciplines" title="Выбрать все"></th>
+                            <th class="theme-text" style="min-width: 150px;">Код Дисциплины</th>
+                            <th class="theme-text" style="min-width: 250px;">Дисциплина</th>
+                            <th class="theme-text" style="min-width: 180px;">Начало периода аттестации</th>
+                            <th class="theme-text" style="min-width: 180px;">Окончание периода аттестации</th>
+                        </tr>
+                    </thead>
+                    <tbody id="disciplines-body">
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Button container -->
+            <div class="d-flex gap-2 w-100 pt-3">
+                <button id="save_periods" type="submit" class="btn btn-primary theme-button flex-grow-1">Сохранить периоды</button>
+                {# Add a cancel button maybe? <a href="{% url 'previous_view' %}" class="btn btn-secondary theme-button-secondary flex-grow-1">Отмена</a> #}
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+{# Include the same styles as the original view, potentially refactor into a separate CSS file later #}
+<style>
+    /* Container for the table with scrolling */
+    .custom-table-container {
+        max-height: 450px; /* Adjust as needed */
+        min-height: 300px; /* Minimum height */
+        overflow-y: auto;
+        overflow-x: auto; /* Add horizontal scroll if needed */
+        border: 1px solid var(--border-color); /* Use theme variable */
+        border-radius: 0.375rem; /* Standard Bootstrap radius */
+    }
+
+    /* Table styling */
+    .table {
+        table-layout: fixed; /* Prevent column width changes */
+        width: 100%; /* Ensure table takes full width */
+    }
+    /* Table header styling */
+    .table thead th {
+        background-color: var(--surface-color); /* Theme surface color */
+        color: var(--text-color); /* Theme text color */
+        padding: 0.75rem 1rem;
+        border-bottom: 2px solid var(--border-color); /* Theme border color */
+        white-space: nowrap;
+        position: sticky; /* Keep header visible */
+        top: 0; /* Stick to the top of the container */
+        z-index: 10; /* Ensure header is above body */
+        vertical-align: middle;
+    }
+     .table thead th:first-child { /* Style for checkbox header */
+         padding: 0.75rem 0.5rem;
+         text-align: center;
+     }
+
+
+    /* Table body cell styling */
+    .table tbody td {
+        padding: 0.5rem 1rem; /* Slightly reduced padding for denser table */
+        border-top: 1px solid var(--border-color); /* Theme border color */
+        background-color: var(--surface-color); /* Use theme surface color */
+        color: var(--text-color); /* Use theme text color */
+        vertical-align: middle;
+        white-space: normal; /* Allow text wrapping */
+        overflow: hidden; /* Hide overflow */
+        text-overflow: ellipsis; /* Add ellipsis for overflow */
+    }
+     .table tbody td:first-child { /* Style for checkbox cell */
+         padding: 0.5rem 0.5rem;
+         text-align: center;
+     }
+
+    /* Ensure selects/inputs within table cells use theme */
+    .table .form-select,
+    .table .form-control {
+        background-color: var(--bg-color); /* Use background for contrast */
+        border-color: var(--border-color);
+        color: var(--text-color);
+        font-size: 0.875rem; /* Smaller font size for inputs in table */
+    }
+     .table .form-control[type="date"] {
+         min-width: 150px; /* Ensure date inputs have enough space */
+     }
+
+    /* Scrollbar styling for theme consistency */
+    #groups::-webkit-scrollbar,
+    .custom-table-container::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    #groups::-webkit-scrollbar-track,
+    .custom-table-container::-webkit-scrollbar-track {
+        background: var(--surface-color); /* Scrollbar track */
+        border-radius: 4px;
+    }
+
+    #groups::-webkit-scrollbar-thumb,
+    .custom-table-container::-webkit-scrollbar-thumb {
+        background-color: var(--border-color); /* Scrollbar handle */
+        border-radius: 4px;
+        border: 2px solid var(--surface-color); /* Padding around thumb */
+    }
+
+    #groups::-webkit-scrollbar-thumb:hover,
+    .custom-table-container::-webkit-scrollbar-thumb:hover {
+        background-color: var(--text-color); /* Darker on hover */
+    }
+
+    /* General form select styling */
+    .form-select.theme-input,
+    .form-control.theme-input {
+        background-color: var(--surface-color); /* Use surface color */
+        border: 1px solid var(--border-color);
+        color: var(--text-color);
+        min-width: 200px; /* Adjust as needed */
+    }
+
+    .form-select.theme-input:disabled,
+    .form-control.theme-input:disabled {
+        background-color: var(--bg-color); /* Different background when disabled */
+        opacity: 0.7;
+    }
+
+    /* Theme buttons */
+    .theme-button {
+        background-color: var(--bs-primary);
+        border-color: var(--bs-primary);
+        color: white;
+    }
+    .theme-button-secondary {
+        background-color: var(--bs-secondary);
+        border-color: var(--bs-secondary);
+        color: white;
+    }
+     .theme-button-success {
+        background-color: var(--bs-success);
+        border-color: var(--bs-success);
+        color: white;
+    }
+    .theme-button-outline {
+        color: var(--text-color);
+        border-color: var(--border-color);
+    }
+    .theme-button-outline:hover {
+        background-color: var(--surface-color);
+        color: var(--text-color);
+    }
+
+    /* Secondary text color utility */
+    .theme-text-secondary {
+        color: var(--text-secondary, #6c757d); /* Fallback color */
+        opacity: 0.8;
+    }
+     .theme-surface-secondary {
+         background-color: var(--surface-secondary, #f8f9fa); /* Example fallback */
+         border-color: var(--border-color) !important;
+     }
+
+    /* Placeholder row styling */
+    .empty-placeholder td {
+        height: 200px; /* Adjust height */
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 991.98px) {
+        .d-flex.flex-column.flex-lg-row {
+            gap: 1.5rem !important;
+        }
+        .table th,
+        .table td {
+            min-width: 150px;
+            font-size: 0.9rem;
+        }
+         .table .form-control[type="date"] {
+             min-width: 130px;
+         }
+    }
+
+    @media (max-width: 767.98px) {
+        .table th,
+        .table td {
+            min-width: 120px;
+            font-size: 0.85rem;
+        }
+         .table .form-control[type="date"] {
+             min-width: 120px;
+         }
+         .d-flex.gap-2.w-100.pt-3 {
+            flex-direction: column;
+            align-items: stretch;
+         }
+         .d-flex.gap-2.w-100.pt-3 .btn {
+            width: 100%;
+         }
+         .d-flex.gap-3.mb-3.p-3 { /* Stack bulk controls */
+             flex-direction: column;
+             align-items: stretch;
+             gap: 0.5rem !important;
+         }
+         .d-flex.gap-3.mb-3.p-3 .btn {
+             margin-top: 0.5rem;
+         }
+    }
+</style>
+
+{# Add JavaScript for interactions: select all, apply bulk dates, dynamic loading #}
+<script src="{% static 'js/attestation_period/set_period.js' %}"></script>
+
+{# Place the json_script tag here, just before the endblock #}
+{{ initial_selections|json_script:"initial-selections-data" }}
+
+{% endblock %}

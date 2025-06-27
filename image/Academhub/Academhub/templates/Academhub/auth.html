@@ -1,0 +1,18 @@
+{% extends 'blank.html' %}
+
+{% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'Academhub/css/form.css' %}">
+{% endblock %}
+
+{% block body %}
+    <div class="auth-container">
+        <h2>Авторизация в AcademHub</h2>
+        <form id="login-form" method="post" class="form" style="width: 100% !important;">
+            {% csrf_token %}
+            {% include 'inc/form/form.html' %}
+            <button type="submit" class="btn-primary">Войти</button>
+        </form>
+    </div>
+{% endblock %}

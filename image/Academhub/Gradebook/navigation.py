@@ -1,0 +1,36 @@
+from Academhub.models import Navigation, ParentLink, ChildLink
+from Academhub.utils import getpermission, getpattern
+
+navigation = Navigation(
+    ParentLink(
+        'Ведомости',
+        sub_links=[
+            ChildLink(
+                name='Все ведомости', 
+                url=getpattern('Gradebook', 'list'),
+                permission_required=getpermission('Gradebook', 'create_gradebook'),
+            ),
+            ChildLink(
+                name='Ваши ведомости', 
+                url="gradebookteacher_list",
+                permission_required=getpermission('Gradebook', 'view_gradebook'),
+                teacher=True
+            ),
+            ChildLink(
+                name='Закрытые ведомости',
+                url="gradebookclosed_list",
+                permission_required=getpermission('Gradebook', 'create_gradebook'),
+            ),
+            ChildLink(
+                name="Таблица оценок группы",
+                url="gradebook_view_group_grades",
+                permission_required=getpermission('Gradebook', 'view_student_statick'),
+            ),
+            ChildLink(
+                name="Таблица определения типа диплома",
+                url="diplom_identifier",
+                permission_required=getpermission('Gradebook', 'view_student_statick'),
+            )
+        ]
+    )
+)

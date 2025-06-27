@@ -1,0 +1,66 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'Academhub/css/table.css' %}">
+
+{% block extra2_css %}
+    <style>
+       /* Light Theme Colors */
+.theme-light tr.status-not-filled {
+    background-color: rgba(247, 232, 164, 0.7); /* Пастельный желтый */
+}
+.theme-light tr.status-opened {
+    background-color: rgba(179, 217, 255, 0.7); /* Пастельный голубой */
+}
+.theme-light tr.status-filled {
+    background-color: rgba(179, 230, 179, 0.7); /* Пастельный зеленый */
+}
+.theme-light tr.status-closed {
+    background-color: rgba(217, 217, 217, 0.7); /* Пастельный серый */
+}
+.theme-light tr.status-overdue {
+    background-color: rgba(255, 179, 179, 0.7); /* Пастельный красный */
+}
+.theme-light tr.status-unknown {
+    background-color: var(--light-surface); /* Оставляем как есть */
+}
+
+/* Dark Theme Colors */
+.theme-dark tr.status-not-filled {
+    background-color: rgba(230, 214, 138, 0.6); /* Желтый для темной темы */
+}
+.theme-dark tr.status-opened {
+    background-color: rgba(142, 203, 255, 0.6); /* Голубой для темной темы */
+}
+.theme-dark tr.status-filled {
+    background-color: rgba(142, 217, 142, 0.6); /* Зеленый для темной темы */
+}
+.theme-dark tr.status-closed {
+    background-color: rgba(179, 179, 179, 0.6); /* Серый для темной темы */
+}
+.theme-dark tr.status-overdue {
+    background-color: rgba(255, 153, 153, 0.6); /* Красный для темной темы */
+}
+.theme-dark tr.status-unknown {
+    background-color: var(--dark-surface); /* Оставляем как есть */
+}
+    </style>
+{% endblock %}
+
+<table class="data-table">
+    <thead>
+        <tr>
+            {% for column in table.columns %}
+                <th>{{ column.header }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in table.page.object_list %}
+            <tr {{ row.attrs.as_html }} >
+                {% for column, cell in row.items %}
+                    <td>{{ cell }}</td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

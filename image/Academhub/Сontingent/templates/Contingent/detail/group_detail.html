@@ -1,0 +1,33 @@
+{% extends 'base_detail.html' %}
+
+{% load django_tables2 %}
+{% load static %}
+{% load util %}
+
+{% block detail-header %}
+<h1>
+    Группа {{ object }}
+</h1>
+{% endblock %}
+
+{% block buttons %}
+
+    {{ block.super }}
+
+
+{#    {% if object.current_course == 4 %}#}
+{#        <a class="btn-primary" href="{% url 'group_record_books_generate' group_id=object.pk %}">#}
+{#            Деактивировать группу и студентов в связи с окончанием обучения#}
+{#        </a>#}
+{#    {% else %}#}
+{#        <a class="btn-primary" href="{% url 'promote_group_students_form' pk=object.pk %}">#}
+{#            перевести на след курс#}
+{#        </a>#}
+{#    {% endif %}#}
+
+{% endblock %}
+
+
+{% block subheader %}
+    <p>Количество студентов: {{ student_count }}</p>
+{% endblock %}

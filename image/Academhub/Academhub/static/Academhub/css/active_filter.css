@@ -1,0 +1,31 @@
+.used-filters-conn
+{
+    width: 100%;
+}
+
+.used-filters
+{
+    width: 100%;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.filter_item
+{
+    display: flex;
+    gap: 10px;
+    padding: 3px;
+    background-color: var(--surface-color);
+    border: 3px solid var(--border-color);
+}
+
+.remove-filter
+{
+    cursor: pointer;
+}
+
+.remove-filter:hover
+{
+    color: red;
+}

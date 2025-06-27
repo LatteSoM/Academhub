@@ -1,0 +1,12 @@
+{% extends 'base_detail.html' %}
+
+{% load django_tables2 %}
+{% load util %}
+
+{% block detail-header %}
+<h1>
+    Специализация:
+    <br>
+    {{ object }}
+</h1>
+{% endblock %}

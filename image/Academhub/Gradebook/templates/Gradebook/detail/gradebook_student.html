@@ -1,0 +1,97 @@
+{% extends 'base_detail.html' %}
+{% load static %}
+
+{% load django_tables2 %}
+{% load util %}
+
+{% block extra_css %}
+    {{ block.super }}
+    <style>
+        .custom-red-btn {
+        background-color: #dc3545; /* Красный цвет */
+        color: white; /* Белый текст */
+        border: none; /* Убираем границу */
+        padding: 10px 20px; /* Отступы */
+        border-radius: 5px; /* Закругленные углы */
+        text-decoration: none; /* Убираем подчеркивание */
+        cursor: pointer; /* Курсор в виде указателя */
+    }
+
+    .custom-red-btn:hover {
+        background-color: #c82333; /* Темнее красный при наведении */
+    }
+    </style>
+{% endblock %}
+
+{% block detail-header %}
+<h1>
+    {{object}}
+</h1>
+{% endblock %}
+
+{% block extra_js %}
+    {{ block.super }}
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+    const links = document.querySelectorAll('a[href*="download_report"]');
+
+    links.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const originalUrl = window.location.href;
+            const downloadUrl = this.href;
+
+            console.log('Starting download from URL:', downloadUrl);
+
+            fetch(downloadUrl, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                }
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers.get('Content-Disposition'));
+                if (!response.ok) {
+                    throw new Error(`Network response was not ok: ${response.status} ${response.statusText}`);
+                }
+                if (response.status === 302) {
+                    throw new Error('Redirect detected, possibly due to authentication');
+                }
+                return response.blob().then(blob => ({ blob, contentDisposition: response.headers.get('Content-Disposition') }));
+            })
+            .then(({ blob, contentDisposition }) => {
+                console.log('Blob received, size:', blob.size);
+                let fileName = 'downloaded_file.docx';
+                if (contentDisposition) {
+                    const fileNameMatch = contentDisposition.match(/filename="([^"]+)"/);
+                    if (fileNameMatch && fileNameMatch[1]) {
+                        fileName = fileNameMatch[1];
+                        console.log('Extracted filename:', fileName);
+                    }
+                } else {
+                    console.log('Content-Disposition header not found');
+                }
+
+                const blobUrl = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = blobUrl;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(blobUrl);
+                    window.location.href = originalUrl;
+                }, 100);
+            })
+            .catch(error => {
+                console.error('Download error:', error.message);
+                alert('Произошла ошибка при скачивании файла: ' + error.message);
+            });
+        });
+    });
+});
+    </script>
+{% endblock %}

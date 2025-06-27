@@ -1,0 +1,22 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'Academhub/css/form.css' %}">
+
+{% for field in form %}
+    {{ field.widget.media }}
+    <div class="form-group">
+        {{ field.errors }}
+        <label for="{{ field.id_for_label }}">
+            {{ field.label }}
+            {% if field.field.required %}
+                <span class="required" style="color: red;">*</span>
+            {% endif %}
+        </label>
+        {{ field }}
+        {% if field.help_text %}
+            <p class="help" id="{{ field.auto_id }}_helptext">
+                {{ field.help_text|safe }}
+            </p>
+        {% endif %}
+    </div>
+{% endfor %}

@@ -1,0 +1,40 @@
+{% load util %}
+{% load permission_tag %}
+
+{% if link|get_type == 'ParentLink' %}
+    <li>
+        <div name="parent" class="nav-item has-children">
+            {{ link.name }}
+        </div>
+        {% if link.sub_links %}
+            <ul>
+                {% for sub_link in link.sub_links %}
+                    {% include "inc/navigation_item.html" with link=sub_link %}
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </li>
+{% else %}
+    {# Получаем результат проверки прав #}
+
+    {% if link.teacher and user.is_teacher %}
+        <li>
+            <a href="{% url link.url %}" class="nav-item">
+                {{ link.name }}
+            </a>
+        </li>
+    {% else %}
+
+        {% has_perm link.permission_required as user_has_perm %}
+
+        {% if user_has_perm %}
+            <li>
+                <a href="{% url link.url %}" class="nav-item">
+                    {{ link.name }}
+                </a>
+            </li>
+        {% endif %}
+
+    {% endif %}
+    
+{% endif %}

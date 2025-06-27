@@ -1,0 +1,262 @@
+{% extends 'base_detail.html' %}
+
+{% load util %}
+{% load static %}
+
+{% block title %}
+Просмотр зачетной книжки - {{ record_book.student_name|default:"Не указано" }}
+{% endblock %}
+
+{% block detail-header %}
+<h1>
+    Зачетная книжка: {{ record_book.student_name|default:"Не указано" }}
+</h1>
+{% endblock %}
+
+{% block actions-button %}
+    {% if is_student_gradebook %}
+        <a class="btn-primary" href="{% url 'student_detail' pk=student_id %}">
+            К студенту
+        </a>
+    {% else %}
+        <a class="btn-primary" href="{% url 'qualification_detail' pk=qualification.id %}">
+            Назад к квалификации
+        </a>
+    {% endif %}
+{% endblock %}
+
+{% block tabs %}
+    {% for key, fields in fieldset.items %}
+        <div id="{{ key }}" class="tab-pane {% if forloop.counter0 == 0 %}active{% endif %}">
+            <div class="info-list">
+                {% if key == 'Информация' %}
+                    <div class="info-item">
+                        <span class="info-label">ФИО</span>
+                        <span class="info-value">{{ record_book.student_name|default:"Не указано" }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Номер зачетной книжки</span>
+                        <span class="info-value">{{ record_book.record_book_number|default:"Не указано" }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Направление подготовки</span>
+                        <span class="info-value">{{ qualification.specialty.name }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Приказ о зачислении</span>
+                        <span class="info-value">{{ record_book.admission_order|default:"Не указано" }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Дата выдачи</span>
+                        <span class="info-value">{{ record_book.issue_date|date:"d.m.Y"|default:"Не указано" }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Квалификация</span>
+                        <span class="info-value">{{ qualification.name }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Год поступления</span>
+                        <span class="info-value">{{ admission_year }}</span>
+                    </div>
+                {% else %}
+                    {% for field in fields %}
+                        <div class="info-item" style="display: flex; flex-direction: column; justify-content: center; align-items: center">
+                            {% if field == 'middle_certifications' %}
+                                <div class="certification-container">
+                                    <div class="certification-header">
+                                        <div class="column-header">Экзамены</div>
+                                        <div class="column-header">Зачеты</div>
+                                    </div>
+                                    <div class="certification-subheader">
+                                        <div class="column-subheader">Дисциплина</div>
+                                        <div class="column-subheader">Дисциплина</div>
+                                    </div>
+{#                                    {% regroup middle_certifications.exam|dictsort:"2" by 2 as exam_groups %}#}
+{#                                    {% regroup middle_certifications.credit|dictsort:"2" by 2 as credit_groups %}#}
+                                        {% regroup middle_certifications.exam|dictsort:"semester" by semester as exam_groups %}
+                                        {% regroup middle_certifications.credit|dictsort:"semester" by semester as credit_groups %}
+                                    {% for semester in semesters %}
+                                        <div class="semester-section">
+                                            <h4>{{ semester }} семестр</h4>
+                                            <div class="certification-grid">
+                                                <div class="exam-column">
+                                                    {% for exam in middle_certifications.exam %}
+                                                        {% if exam.semester == semester %}
+                                                            <div class="record-tile">
+                                                                <p>{{ exam.name|default:"Не указано" }}</p>
+                                                                <p>Семестр: {{ exam.semester|default:"Не указано" }}</p>
+                                                                <p>Часы: {{ exam.hours|default:"Не указано" }}</p>
+                                                            </div>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </div>
+                                                <div class="credit-column">
+                                                    {% for credit in middle_certifications.credit %}
+                                                        {% if credit.semester == semester %}
+                                                            <div class="record-tile">
+                                                                <p>{{ credit.name|default:"Не указано" }}</p>
+                                                                <p>Семестр: {{ credit.semester|default:"Не указано" }}</p>
+                                                                <p>Часы: {{ credit.hours|default:"Не указано" }}</p>
+                                                            </div>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+{#                                    {% for exam_group in exam_groups %}#}
+{#                                        <div class="semester-section">#}
+{#                                            <h4>{{ exam_group.grouper }} семестр</h4>#}
+{#                                            <div class="certification-grid">#}
+{#                                                <div class="exam-column">#}
+{#                                                    {% for cert in exam_group.list %}#}
+{#                                                        <div class="record-tile">#}
+{#                                                            <p>{{ cert.name|default:"Не указано" }}</p>#}
+{#                                                            <p>Семестр: {{ cert.semester|default:"Не указано" }}</p>#}
+{#                                                            <p>Часы: {{ cert.hours|default:"Не указано" }}</p>#}
+{#                                                            <p>{{ cert.0|default:"Не указано" }}</p>#}
+{#                                                            <p>Семестр: {{ cert.2|default:"Не указано" }}</p>#}
+{#                                                            <p>Часы: {{ cert.1|default:"Не указано" }}</p>#}
+{#                                                        </div>#}
+{#                                                    {% endfor %}#}
+{#                                                </div>#}
+{#                                                <div class="credit-column">#}
+{#                                                    {% for credit_group in credit_groups %}#}
+{#                                                        {% if credit_group.grouper == exam_group.grouper %}#}
+{#                                                            {% for cert in credit_group.list %}#}
+{#                                                                <div class="record-tile">#}
+{#                                                                    <p>{{ cert.name|default:"Не указано" }}</p>#}
+{#                                                                    <p>Семестр: {{ cert.semester|default:"Не указано" }}</p>#}
+{#                                                                    <p>Часы: {{ cert.hours|default:"Не указано" }}</p>#}
+{#                                                                </div>#}
+{#                                                            {% endfor %}#}
+{#                                                        {% endif %}#}
+{#                                                    {% endfor %}#}
+{#                                                </div>#}
+{#                                            </div>#}
+{#                                        </div>#}
+{#                                    {% endfor %}#}
+                                </div>
+                            {% elif field == 'professional_modules' %}
+                                <div class="record-grid">
+                                    {% for module in professional_modules.professional_modules %}
+                                        <div class="record-tile">
+                                            <p><strong>Название:</strong> {{ module.0|default:"Не указано" }}</p>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% elif field == 'practices' %}
+                                <div class="record-grid">
+                                    {% for practice in practices.study_practice %}
+                                        <div class="record-tile">
+                                            <p><strong>Название:</strong> {{ practice.0|default:"Не указано" }}</p>
+                                            <p><strong>Семестр:</strong> {{ practice.1|default:"Не указано" }}</p>
+                                            <p><strong>Часы:</strong> {{ practice.2|default:"Не указано" }}</p>
+                                            <p><strong>Тип:</strong> Учебная практика</p>
+                                        </div>
+                                    {% endfor %}
+                                    {% for practice in practices.work_practice %}
+                                        <div class="record-tile">
+                                            <p><strong>Название:</strong> {{ practice.0|default:"Не указано" }}</p>
+                                            <p><strong>Семестр:</strong> {{ practice.1|default:"Не указано" }}</p>
+                                            <p><strong>Часы:</strong> {{ practice.2|default:"Не указано" }}</p>
+                                            <p><strong>Тип:</strong> Производственная практика</p>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% elif field == 'term_papers' %}
+                                <div class="record-grid">
+                                    {% for paper in term_papers.term_papers %}
+                                        <div class="record-tile">
+                                            <p><strong>Дисциплина:</strong> {{ paper.0|default:"Не указано" }}</p>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}
+
+{% block extra-detail-content %}
+    <!-- Стили для кастомного отображения -->
+    <style>
+        .record-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 10px;
+        }
+        .record-tile {
+            background-color: var(--bg-color, #f9f9f9);
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .record-tile p {
+            margin: 5px 0;
+            font-size: 18px;
+            font-weight: 500;
+        }
+        .record-tile p strong {
+            color: var(--text-color, #333);
+        }
+        .certification-container {
+            padding: 10px;
+        }
+        .certification-header {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .column-header {
+            font-size: 18px;
+            color: var(--text-color, #333);
+        }
+        .certification-subheader {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .column-subheader {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--text-color, #333);
+        }
+        .semester-section {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 20px;
+        }
+        .semester-section:last-child {
+            border-bottom: none;
+        }
+        .semester-section h4 {
+            font-size: 16px;
+            color: var(--text-color, #333);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .certification-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .exam-column, .credit-column {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+    </style>
+{% endblock %}

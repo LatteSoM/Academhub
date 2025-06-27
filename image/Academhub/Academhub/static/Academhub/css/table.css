@@ -1,0 +1,68 @@
+/* Tabs */
+.tabs {
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.tab-btn {
+    padding: 0.5rem 1rem;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-color);
+    cursor: pointer;
+}
+
+.tab-btn.active {
+    border-bottom-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+/* Table */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.data-table th,
+.data-table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.data-table th {
+    background-color: var(--surface-color);
+    font-weight: 600;
+}
+
+.data-table tr:hover {
+    background-color: var(--surface-color);
+}
+
+.data-table .actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.desktop-table {
+    display: block; /* ПК-версия видна */
+}
+
+.mobile-table {
+    display: none; /* Скрыта на ПК */
+}
+
+/* Column widths */
+.discipline-name-col {
+    width: 50%; /* Шире для названия дисциплины */
+}
+
+.discipline-code-col {
+    width: 20%; /* Средняя ширина для кода */
+}
+
+.errors-col {
+    width: 30%; /* Уже для ошибок */
+}

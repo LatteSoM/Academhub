@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-container">
+    <div class="page-header">
+        <h2>Импорт студентов из Excel</h2>
+    </div>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn-primary">Загрузить</button>
+    </form>
+</div>
+{% endblock %}

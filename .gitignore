@@ -5,10 +5,26 @@ __pycache__/
 
 # Environment
 .env
+.venv/
 .idea/
-*.env
+.venv
+env/
+venv/
 
 # Django
-db.sqlite3
+#db.sqlite3
 /static/
 README.txt
+**/migrations/**
+!**/migrations
+!**/migrations/__init__.py
+# Visual Studio Code #
+.vscode/*
+.history
+.DS_Store
+
+Curriculum/media/
+
+*.log
+
+*.xlsx

@@ -1,0 +1,44 @@
+{% include "django/forms/widgets/input.html" %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll('input[data-mask="phone"]').forEach(input => {
+            input.addEventListener("input", function (event) {
+                let numbers = input.value.replace(/\D/g, ""); // Оставляем только цифры
+
+                if (numbers.startsWith("8")) numbers = "7" + numbers.slice(1); // Если начинается с 8, заменяем на 7
+                if (!numbers.startsWith("7")) numbers = "7" + numbers; // Если не начинается с 7, добавляем 7
+
+                let formatted = "+7 ";
+                if (numbers.length > 1) formatted += "(" + numbers.substring(1, 4);
+                if (numbers.length >= 5) formatted += ") " + numbers.substring(4, 7);
+                if (numbers.length >= 8) formatted += "-" + numbers.substring(7, 9);
+                if (numbers.length >= 10) formatted += "-" + numbers.substring(9, 11);
+
+                input.value = formatted;
+            });
+
+            input.addEventListener("keydown", function (event) {
+                if (input.selectionStart <= 3 && (event.key === "Backspace" || event.key === "Delete")) {
+                    event.preventDefault(); // Блокируем удаление "+7"
+                }
+            });
+
+            input.addEventListener("paste", function (event) {
+                event.preventDefault();
+                let paste = (event.clipboardData || window.clipboardData).getData("text");
+                paste = paste.replace(/\D/g, ""); // Оставляем только цифры
+                if (paste.startsWith("8")) paste = "7" + paste.slice(1);
+                if (!paste.startsWith("7")) paste = "7" + paste;
+
+                let formatted = "+7 ";
+                if (paste.length > 1) formatted += "(" + paste.substring(1, 4);
+                if (paste.length >= 5) formatted += ") " + paste.substring(4, 7);
+                if (paste.length >= 8) formatted += "-" + paste.substring(7, 9);
+                if (paste.length >= 10) formatted += "-" + paste.substring(9, 11);
+
+                input.value = formatted;
+            });
+        });
+    });
+</script>
+

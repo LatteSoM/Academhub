@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block extra_css %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'Academhub/css/403.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="page-container">
+        <div class="page-header">
+            <h1>404 ошибка</h1>
+        </div>
+        <div class="tab-content">
+            <span class="material-icons skull-bg">skull</span>
+            <a href="{% url 'home' %}" class="btn-primary">На главную страницу</a>
+        </div>
+    </div>
+{% endblock %}
